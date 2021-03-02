@@ -38,9 +38,15 @@ Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN�
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+2. dependencies {
+	        implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.0'
+	}
 
 #### 参与贡献
 
