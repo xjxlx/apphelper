@@ -11,7 +11,7 @@
       }
 
 2.    dependencies {        
-            implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.0'        
+            implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.1'        
       }
 
 3.    api('com.gitee.xjxlx:apphelper:v1.0.0.0.0') {     
