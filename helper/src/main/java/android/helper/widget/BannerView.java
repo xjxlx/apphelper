@@ -45,6 +45,9 @@ public class BannerView extends ViewGroup {
 
     private int mDataType; // 数据来源的类型
     private Scroller mScroller;
+    private int measuredWidth;
+    private int childCount;
+    private boolean isToLeft;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({DataType.Path, DataType.View, DataType.Fragment})
@@ -76,9 +79,10 @@ public class BannerView extends ViewGroup {
         int left = 0;
         int right = 0;
 
-        int measuredWidth = getMeasuredWidth();
+        // 获取屏幕的宽度
+        measuredWidth = getMeasuredWidth();
+        childCount = getChildCount();
 
-        int childCount = getChildCount();
         if (childCount > 0) {
             for (int i = 0; i < childCount; i++) {
                 View view = getChildAt(i);
@@ -188,45 +192,72 @@ public class BannerView extends ViewGroup {
         return mResourceList;
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-
-        int finalX = mScroller.getFinalX();
-        int left = this.getLeft();
-
-        float rawX = ev.getRawX();
-        float x = ev.getX();
-        LogUtil.e("--->rawX:" + rawX + "  left:" + left);
-        return super.dispatchTouchEvent(ev);
-    }
-
     float startX = 0;
+    int downScrollX = 0; // 按下时候滑动的X轴的距离
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        int mPositionValue;
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 startX = event.getRawX();
-                LogUtil.e("startX:" + startX);
                 if (!mScroller.isFinished()) {
                     mScroller.abortAnimation();
                 }
 
+                // 获取按下时候滑动的x轴距离
+                downScrollX = getScrollX();
                 break;
 
             case MotionEvent.ACTION_MOVE:
+
                 float endY = event.getRawX();
 
                 // 获取一个滑动的间距
                 float intervalValue = endY - startX;
+                isToLeft = !(intervalValue > 0);
 
-                // 滑动viewGroup中的子view
-                mScroller.startScroll(mScroller.getFinalX(), 0, (int) -intervalValue, 0, 3000);
-                invalidate();
+                scrollBy((int) -intervalValue, 0);
                 startX = endY;
                 break;
 
+            case MotionEvent.ACTION_UP: // 滑动的view
+                // 滑动的x轴距离
+                int scrollX = getScrollX();
+                // 获取当前view的X偏移位置
+                int offsetX = getOffsetXForScrollX(scrollX);
+                // 预设的滑动距离
+                int preset = measuredWidth / 3;
+
+                // 向左滑动的时候，如果当前view滑动的偏移值大于预设的值，则position加1
+                if (isToLeft) {
+                    // 这个值，如果滑动到了下一页，那么这个position就是下一个position
+                    mPositionValue = getPositionForScrollX(scrollX);
+                    if (offsetX > preset) {
+                        if (mPositionValue < childCount - 1) {
+                            mPositionValue++;
+                        }
+                    }
+                } else {
+                    // 如果向右滑动的时候，抬起的X值减去按下的X值，结果大于预设的值，说明滑动的距离够了，需要减去一，但是这里获取的position
+                    boolean flag = (downScrollX - scrollX) > preset;
+
+                    LogUtil.e("向右滑动--->" + ("scrll:" + scrollX + "  downScrollX:" + downScrollX + " 预设的值：" + preset + "  差值：" + (downScrollX - scrollX) + "   是否满足条件：" + (flag)));
+
+                    mPositionValue = getPositionForScrollX(scrollX); // 获取当前最新的positon
+                    if (!flag) {
+                        if (mPositionValue < childCount - 1) { // 如果不满足这个条件，因为当前的position已经是变小了，所以要回弹回去，因此要加1
+                            mPositionValue++;
+                        }
+                    }
+                }
+
+                LogUtil.e("positon:" + mPositionValue);
+                scrollTo(mPositionValue * measuredWidth, 0);
+                break;
         }
 
         return true;
@@ -236,10 +267,24 @@ public class BannerView extends ViewGroup {
     public void computeScroll() {
         super.computeScroll();
 
-        if (mScroller.computeScrollOffset()) {
-            scrollTo(mScroller.getCurrX(), 0);
-            invalidate();
-        }
+//        if (mScroller.computeScrollOffset()) {
+//            scrollTo(mScroller.getCurrX(), 0);
+//            invalidate();
+//        }
+    }
+
+    /**
+     * 根据滑动的距离，获取当前是第几个view
+     */
+    private int getPositionForScrollX(int scrollX) {
+        return (scrollX / measuredWidth);
+    }
+
+    /**
+     * @return 根据滑动的距离获取当前页面滑动的距离
+     */
+    private int getOffsetXForScrollX(int scrollX) {
+        return scrollX % measuredWidth;
     }
 
     /**
