@@ -161,4 +161,7 @@ public class BannerView extends ViewGroup {
         return mResourceList;
     }
 
+    public void reset() {
+
+    }
 }
