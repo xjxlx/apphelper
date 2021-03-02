@@ -6,19 +6,19 @@
 
 #### 使用说明
 1.    allprojects{      
-		repositories {      
-			...
-			maven { url 'https://jitpack.io' }      
-		}
+            repositories {      
+                ...
+                maven { url 'https://jitpack.io' }      
+            }       
      }
 
 2.    dependencies {        
-        github: implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.0'        
+            github: implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.0'        
       }
 
 3.    api('com.gitee.xjxlx:apphelper:v1.0.0.0.0') {     
-        exclude group: 'com.github.bumptech.glide'      
-        exclude group: 'com.scwang.smart:refresh-layout-kernel'     
+            exclude group: 'com.github.bumptech.glide'      
+            exclude group: 'com.scwang.smart:refresh-layout-kernel'     
       }
 
 
