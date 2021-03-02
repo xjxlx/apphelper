@@ -74,6 +74,11 @@ public class RetrofitHelper {
             }
         }
 
+        // 添加日志的log
+        if (BaseApplication.isDebug()) {
+            httpBuilder.addInterceptor(new HttpLogInterceptor());
+        }
+
         // 设置SSL证书
         setSSLFactory(httpBuilder);
 
@@ -204,6 +209,11 @@ public class RetrofitHelper {
             }
         }
 
+        // 添加日志的log
+        if (BaseApplication.isDebug()) {
+            httpBuilder.addInterceptor(new HttpLogInterceptor());
+        }
+
         // 设置SSL证书
         setSSLFactory(httpBuilder);
 
@@ -285,6 +295,11 @@ public class RetrofitHelper {
             for (Interceptor interceptor : interceptors) {
                 httpBuilder.addInterceptor(interceptor);
             }
+        }
+
+        // 添加日志的log
+        if (BaseApplication.isDebug()) {
+            httpBuilder.addInterceptor(new HttpLogInterceptor());
         }
 
         // 设置SSL证书

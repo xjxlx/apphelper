@@ -4,7 +4,6 @@ import android.app.Application;
 import android.helper.BuildConfig;
 import android.helper.R;
 import android.helper.httpclient.AutoInterceptor;
-import android.helper.httpclient.HttpLogInterceptor;
 import android.helper.interfaces.ICommonApplication;
 
 import okhttp3.Interceptor;
@@ -47,7 +46,7 @@ public class AppApplication extends Application {
 
             @Override
             public Interceptor[] getInterceptors() {
-                return new Interceptor[]{new AutoInterceptor(), new HttpLogInterceptor()};
+                return new Interceptor[]{new AutoInterceptor()};
             }
         });
     }
