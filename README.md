@@ -1,5 +1,3 @@
-# appHelper
-
 #### 介绍
 {**App开发的小工具**
 里面集成了网络、常用工具等组件，为了快速开发测试而生成，项目发布到了码云和github两个平台，可以对应的选择使用。}
@@ -10,7 +8,7 @@
                 ...
                 maven { url 'https://jitpack.io' }      
             }       
-     }
+      }
 
 2.    dependencies {        
             github: implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.0'        
