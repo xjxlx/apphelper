@@ -200,10 +200,21 @@ public class BannerView extends ViewGroup {
                 // 区分左右
                 isToLeft = !(interVal >= 0);
 
+                // 避免滑动到布局的外边
+                int scrollX1 = getScrollX();
+                if (isToLeft) {
+                    if (scrollX1 >= (measuredWidth * (childCount - 1))) {
+                        return false;
+                    }
+                } else {
+                    if (scrollX1 <= 0) {
+                        return false;
+                    }
+                }
+
                 scrollBy((int) -interVal, 0);
                 // 把移动后的距离赋值给开始距离，使得滑动充满连贯性
                 mStartX = rawX;
-
                 break;
 
             case MotionEvent.ACTION_UP:
