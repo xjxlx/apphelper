@@ -4,7 +4,7 @@ plugins {
 }
 
 apply plugin: 'com.github.dcendents.android-maven'
-group = 'com.github.xjxlx'
+group = ['com.github.xjxlx,com.gitee.appHelper']
 
 android {
     compileSdkVersion 28
