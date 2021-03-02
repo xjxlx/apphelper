@@ -5,15 +5,15 @@
 里面集成了网络、常用工具等组件，为了快速开发测试而生成，项目发布到了码云和github两个平台，可以对应的选择使用。}
 
 #### 使用说明
-1.    allprojects{
-		repositories {
+1.    allprojects{      
+		repositories {      
 			...
-			maven { url 'https://jitpack.io' }
+			maven { url 'https://jitpack.io' }      
 		}
      }
 
 2.    dependencies {        
-    	       github: implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.0'        
+        github: implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.0'        
       }
 
 3.    api('com.gitee.xjxlx:apphelper:v1.0.0.0.0') {     
