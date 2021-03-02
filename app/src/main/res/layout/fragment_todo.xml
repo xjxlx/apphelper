@@ -1,0 +1,37 @@
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_custom_widget"
+            style="@style/style_todo_item"
+            android:text="自定义Widget" />
+
+        <TextView
+            android:id="@+id/tv_animation_map"
+            style="@style/style_todo_item"
+            android:text="自定义动画组合" />
+
+        <TextView
+            android:id="@+id/tv_java_map"
+            style="@style/style_todo_item"
+            android:text="JAVA 相关" />
+
+        <TextView
+            android:id="@+id/tv_test_map"
+            style="@style/style_todo_item"
+            android:text="测试相关" />
+
+        <TextView
+            android:id="@+id/tv_other"
+            style="@style/style_todo_item"
+            android:text="其他工具" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

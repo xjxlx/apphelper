@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/tab_todo_selected"
+        android:title="首页" />
+
+    <item
+        android:id="@+id/navigation_moment"
+        android:icon="@drawable/tab_todo_unselected"
+        android:title="待办" />
+
+    <item
+        android:id="@+id/navigation_personal"
+        android:icon="@drawable/tab_todo_unselected"
+        android:title="个人中心" />
+</menu>

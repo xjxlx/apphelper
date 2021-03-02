@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_parent_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_round_left_top_right_16_blue_1"
+        android:paddingLeft="@dimen/dp_14"
+        android:paddingTop="@dimen/dp_11"
+        android:paddingRight="@dimen/dp_21"
+        android:paddingBottom="@dimen/dp_11"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_13"
+        tools:text="2020年6月1日" />
+
+</FrameLayout>

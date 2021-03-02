@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="android.helper">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".app.AppApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppThem"
+        tools:targetApi="n">
+        <activity android:name=".ui.activity.animation.ViewPagerActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.activity.widget.NestSlidingViewActivity" />
+        <activity android:name=".ui.activity.widget.InputPassWordActivity" />
+        <activity android:name=".ui.activity.widget.TouchUnlockActivity" />
+        <activity android:name=".ui.activity.widget.ProgressActivity" />
+        <activity android:name=".ui.activity.animation.RadiationAnimationActivity" />
+        <activity android:name=".ui.activity.animation.GifViewActivity" />
+        <activity android:name=".ui.activity.animation.AnimationMapActivity" />
+        <activity android:name=".ui.activity.widget.JointActivity" />
+        <activity
+            android:name=".ui.activity.widget.RandomActivity"
+            android:screenOrientation="landscape" />
+        <activity android:name=".ui.activity.widget.CustomRoundImageActivity" />
+        <activity android:name=".ui.activity.widget.CustomTestActivity" />
+        <activity android:name=".ui.activity.widget.MultipleListViewActivity" />
+        <activity android:name=".test.FlexBoxLayoutActivity" />
+        <activity android:name=".test.ExpandableActivity" />
+        <activity android:name=".test.TestHandlerActivity" />
+        <activity android:name=".test.TestMapActivity" />
+        <activity android:name=".ui.activity.SendSmsActivity" />
+        <activity android:name=".ui.activity.SelectorImageActivity" />
+        <activity android:name=".ui.activity.DownLoadListActivity" />
+        <activity android:name=".ui.activity.UploadingActivity" />
+        <activity android:name=".ui.activity.java.JavaMapActivity" />
+        <activity android:name=".ui.activity.java.TestJavaLifeActivity" />
+        <activity android:name=".ui.activity.RxJava2Activity" />
+        <activity android:name=".ui.activity.WriteXmlTitleActivity" />
+        <activity android:name=".ui.activity.ReceiveMapResultTitleActivity">
+
+            <!-- 处理文字的Intent 我们需要定义action,  category, 和文字对应的MIME -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/*" />
+            </intent-filter>
+
+            <!-- 处理单张图片的Intent -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
+            </intent-filter>
+
+            <!-- 处理多张图片的Intent -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".services.QywxService"
+            android:enabled="true"
+            android:exported="true"
+            android:label="微信消息的监听"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".ui.activity.WorkWxTitleActivity" />
+
+        <service
+            android:name=".services.MyService2"
+            android:label="server2"
+            android:process=":server2" />
+        <service
+            android:name=".services.MyService1"
+            android:label="server1"
+            android:process=":server1" />
+
+        <activity android:name=".ui.activity.DemoMapTitleActivity" />
+        <activity android:name=".ui.activity.LiveDataTitleActivity" />
+        <activity android:name=".ui.activity.H5StartNativeTitleActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="launch"
+                    android:scheme="xjx.app.helper" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="abc"
+                    android:scheme="http" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".receivers.AppTopTaskReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="TODO"
+            android:process=":remote"
+            tools:ignore="ExportedReceiver">
+            <intent-filter android:priority="1000">
+                <action android:name="com.bqxny.zhgj.app.info.task.top" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".ui.activity.UnLockTitleActivity"
+            android:launchMode="singleInstance" />
+
+        <service
+            android:name=".services.LookDogService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <activity android:name=".test.ControlAppTitleActivity" />
+        <activity android:name=".ui.activity.FaceVideoPlayerTitleActivity" />
+        <activity android:name=".ui.activity.FaceAuthenticationTitleActivity" />
+        <activity android:name=".ui.activity.widget.ViewMapTitleActivity" />
+        <activity android:name=".ui.activity.widget.ProgressTitleActivity" />
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:label="7.0临时访问目录权限的处理">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>

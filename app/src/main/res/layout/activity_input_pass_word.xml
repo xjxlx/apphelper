@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.widget.InputPassWordActivity">
+
+    <android.helper.widget.PassWordView
+        android:id="@+id/pd_view"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dp_43"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:pd_HorizontalSpacing="@dimen/dp_12"
+        app:pd_content_color="@color/black_5"
+        app:pd_drawable_size="4.5dp"
+        app:pd_selector_color="@color/gray_10"
+        app:pd_selector_error_color="@color/red_4"
+        app:pd_show_input="true"
+        app:pd_show_password="true"
+        app:pd_size="6"
+        app:pd_un_selector_color="@color/gray_12" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

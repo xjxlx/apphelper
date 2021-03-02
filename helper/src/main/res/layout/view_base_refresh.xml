@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.helper.base.refresh.BaseRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/brl_base_refresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.helper.base.refresh.BaseRefreshHeader
+        android:id="@+id/brh_base_refresh_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!--用于添加刷新控件顶部固定不动View的父布局-->
+            <FrameLayout
+                android:id="@+id/fl_base_refresh_top_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible" />
+
+            <FrameLayout
+                android:id="@+id/fl_base_refresh_content"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!--用于添加底部固定不动的view的父布局-->
+            <FrameLayout
+                android:id="@+id/fl_base_refresh_bottom_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible" />
+        </LinearLayout>
+
+        <!-- 站位图部分 -->
+        <android.helper.widget.BasePlaceholderView
+            android:id="@+id/bpv_base_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <android.helper.base.refresh.BaseRefreshFooter
+        android:id="@+id/brf_base_refresh_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srlTextNothing="没有更多数据了～" />
+
+</android.helper.base.refresh.BaseRefreshLayout>

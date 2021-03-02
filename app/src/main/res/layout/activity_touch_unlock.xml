@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="100dp"
+    tools:context=".ui.activity.widget.TouchUnlockActivity">
+
+    <android.helper.widget.TouchView
+        android:id="@+id/touch_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        app:tv_drawable="@mipmap/anxia"
+        app:tv_interval_Width="30dp"
+        app:tv_padding_Bottom="120dp"
+        app:tv_padding_Radius="@dimen/dp_20"
+        app:tv_padding_Top="60dp"
+        app:tv_speed="1.5" />
+
+</RelativeLayout>

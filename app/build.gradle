@@ -1,0 +1,90 @@
+plugins {
+    id 'com.android.application'
+}
+
+//kotlin的依赖
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+
+    defaultConfig {
+        applicationId "com.android.apphelper"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('apphelper.jks')
+            storePassword '123456'
+            keyAlias 'apphelper'
+            keyPassword '123456'
+        }
+        debug {
+            storeFile file('apphelper.jks')
+            storePassword '123456'
+            keyPassword '123456'
+            keyAlias 'apphelper'
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            buildConfigField("String", "APP_ID", project.APP_ID)
+            buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
+        }
+
+        debug {
+            signingConfig signingConfigs.debug
+            shrinkResources false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
+            buildConfigField("String", "APP_ID", project.APP_ID_DEBUG)
+            buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
+
+            // buildConfigField("boolean", "AppDebug", "false")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']  /**在libs文件夹下找so文件*/
+        }
+        main.jniLibs.srcDirs = ['libs']
+    }
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    testImplementation 'junit:junit:4.13.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android:flexbox:1.1.1' // 流式布局
+
+    implementation project(path: ':helper')
+    // implementation 'com.github.xjxlx:apphelper:1.0.0.0.0'
+}
