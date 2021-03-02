@@ -24,5 +24,5 @@
 
 #### 区分平台
 
-1.  github 的地址为：[ https://github.com/xjxlx/appHelper ]  
-2.  码云的地址为： [ https://gitee.com/xjxlx/apphelper ] 
+1.  github 的地址为：['https://github.com/xjxlx/appHelper']   
+2.  码云的地址为： ['https://gitee.com/xjxlx/apphelper'] 
