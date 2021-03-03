@@ -43,17 +43,14 @@ public class LeftView extends View {
         LogUtil.e("bitW:" + bitmapWidth + "  bitH:" + bitmapHeight + " vW:" + measureWidth + " vH:" + measureHeight);
 
         // 图片显示的区域
-        setMeasuredDimension(864 / 2, measureHeight);
+        setMeasuredDimension(measureWidth / 2, measureHeight);
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         LogUtil.e("--->onLayout");
-        int width = getWidth();
-        int height = getHeight();
-        LogUtil.e("left:" + left + "  top:" + top + " right:" + right + "  bottom:" + bottom + "   width:" + width + "  heigh:" + height);
-
+        requestLayout();
     }
 
     @SuppressLint("DrawAllocation")

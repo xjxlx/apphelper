@@ -1,6 +1,8 @@
 package android.helper.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -16,6 +18,23 @@ import org.jetbrains.annotations.NotNull;
  * bitmap的工具类
  */
 public class BitmapUtil {
+
+
+    /**
+     * @param context context
+     * @param id      资源的id
+     * @return 通过id的值，返回一个bitmap的对象
+     */
+    public static Bitmap getBitmapForResourceId(Context context, int id) {
+        Bitmap bitmap = null;
+        try {
+            if (context != null && id != 0) {
+                bitmap = BitmapFactory.decodeResource(context.getResources(), id);
+            }
+        } catch (Exception ignored) {
+        }
+        return bitmap;
+    }
 
     /**
      * @return 根据bitmap 生成一个缩放的bitmap
