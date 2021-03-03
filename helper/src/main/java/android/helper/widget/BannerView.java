@@ -176,6 +176,21 @@ public class BannerView extends ViewGroup {
         return mResourceList;
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+
+        // 避免滑动到布局的外边
+        int scrollX1 = getScrollX();
+
+        LogUtil.e("scroll --->" + scrollX1);
+        if ((scrollX1 < 0) || (scrollX1 > (childCount * (measuredWidth - 1)))) {
+            LogUtil.e("scroll --->停止滑动的scroll:" + scrollX1);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -202,19 +217,18 @@ public class BannerView extends ViewGroup {
 
                 // 避免滑动到布局的外边
                 int scrollX1 = getScrollX();
-                if (isToLeft) {
-                    if (scrollX1 >= (measuredWidth * (childCount - 1))) {
-                        return false;
-                    }
-                } else {
-                    if (scrollX1 <= 0) {
-                        return false;
-                    }
+
+                LogUtil.e("scroll --->" + scrollX1);
+                if ((scrollX1 < 0) || (scrollX1 > (childCount * (measuredWidth - 1)))) {
+                    LogUtil.e("scroll --->停止滑动的scroll:" + scrollX1);
+                    return false;
                 }
 
                 scrollBy((int) -interVal, 0);
+                LogUtil.e("scroll --->当前滑动的值为：:" + -interVal);
                 // 把移动后的距离赋值给开始距离，使得滑动充满连贯性
                 mStartX = rawX;
+
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -222,43 +236,6 @@ public class BannerView extends ViewGroup {
                 LogUtil.e("ACTION_UP:" + MotionEvent.ACTION_UP + "  isLeft:" + isToLeft);
                 // 预设的值
                 int preset = measuredWidth / 3;
-
-                if (isToLeft) {
-                    /*:
-                     * 向左滑动的逻辑
-                     * 1：如果向左滑动的距离，大于预设的值，则跳转到下一个界面
-                     */
-                    int positionLeft = getPositionForScrollX(scrollX);
-                    int offsetX = getOffsetX(scrollX);
-                    if (offsetX > preset) {
-                        if (positionLeft < childCount - 1) {
-                            position = positionLeft + 1;
-                        } else {
-                            position = positionLeft;
-                        }
-                    } else {
-                        position = positionLeft;
-                    }
-                } else {
-                    /*
-                     * 向右的逻辑：
-                     * 1：如果向右滑动的距离大于预设的值，那么position就是需要的那个position，不减一是因为滑动到了上一个view的时候
-                     * 获取的position就是上一个view的position
-                     * 2：如果向右滑动的距离小于预设的值，那么position就需要加1，因为这个时候获取到的position已经是上一个view的position了
-                     */
-                    int positionRight = getPositionForScrollX(scrollX);
-                    boolean b = interValRight > preset;
-                    LogUtil.e("--->position:" + positionRight + "  interval:" + interValRight + "  preset:" + preset + "  b:" + b);
-                    if (!(interValRight > preset)) {
-                        if (positionRight < childCount - 1) {
-                            position = positionRight + 1;
-                        } else {
-                            position = positionRight;
-                        }
-                    } else {
-                        position = positionRight;
-                    }
-                }
 
                 scrollTo(position * measuredWidth, 0);
                 break;
