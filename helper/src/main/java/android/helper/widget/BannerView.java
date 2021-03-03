@@ -178,22 +178,27 @@ public class BannerView extends ViewGroup {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        LogUtil.e("----> dispatchTouchEvent");
+        return super.dispatchTouchEvent(ev);
+    }
 
-        // 避免滑动到布局的外边
-        int scrollX1 = getScrollX();
-
-        LogUtil.e("scroll --->" + scrollX1);
-        if ((scrollX1 < 0) || (scrollX1 > (childCount * (measuredWidth - 1)))) {
-            LogUtil.e("scroll --->停止滑动的scroll:" + scrollX1);
-            return true;
-        } else {
-            return false;
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        LogUtil.e("----> onInterceptTouchEvent");
+        if (ev.getAction() == MotionEvent.ACTION_MOVE) {
+            int scrollX = getScrollX();
+            if ((scrollX < 0) || (scrollX > (childCount * (measuredWidth - 1)))) {
+                LogUtil.e("scroll --->停止滑动的scroll:" + scrollX);
+                return true;
+            }
         }
+        return super.onInterceptTouchEvent(ev);
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        LogUtil.e("----> onTouchEvent");
         int position = 0;
         int action = event.getAction();
 
@@ -218,26 +223,20 @@ public class BannerView extends ViewGroup {
                 // 避免滑动到布局的外边
                 int scrollX1 = getScrollX();
 
-                LogUtil.e("scroll --->" + scrollX1);
-                if ((scrollX1 < 0) || (scrollX1 > (childCount * (measuredWidth - 1)))) {
-                    LogUtil.e("scroll --->停止滑动的scroll:" + scrollX1);
-                    return false;
-                }
-
+                LogUtil.e("rawX   :" + rawX);
                 scrollBy((int) -interVal, 0);
-                LogUtil.e("scroll --->当前滑动的值为：:" + -interVal);
+//                    LogUtil.e("scroll --->当前滑动的值为：:" + -interVal);
                 // 把移动后的距离赋值给开始距离，使得滑动充满连贯性
                 mStartX = rawX;
 
                 break;
-
             case MotionEvent.ACTION_UP:
                 int scrollX = getScrollX();
                 LogUtil.e("ACTION_UP:" + MotionEvent.ACTION_UP + "  isLeft:" + isToLeft);
                 // 预设的值
                 int preset = measuredWidth / 3;
 
-                scrollTo(position * measuredWidth, 0);
+//                scrollTo(position * measuredWidth, 0);
                 break;
         }
         return true;

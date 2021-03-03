@@ -1,12 +1,14 @@
 package android.helper.ui.activity.widget;
 
-import android.view.View;
-
 import android.helper.R;
 import android.helper.base.BaseTitleActivity;
 import android.helper.utils.ClickUtil;
 import android.helper.utils.ToastUtil;
+import android.view.View;
 
+/**
+ * 自定义左右的布局
+ */
 public class JointActivity extends BaseTitleActivity {
 
     @Override
@@ -24,8 +26,10 @@ public class JointActivity extends BaseTitleActivity {
         viewById.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int height = viewById.getHeight();
+                int width = viewById.getWidth();
                 if (!ClickUtil.isDoubleClick(1500)) {
-                    ToastUtil.show("1111");
+                    ToastUtil.show("width:" + width + "   height:" + height);
                 }
             }
         });
