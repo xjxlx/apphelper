@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/blue_1"
     tools:context=".ui.activity.animation.ViewPagerActivity">
 
     <Button
@@ -16,6 +17,8 @@
     <android.helper.widget.BannerView
         android:id="@+id/banne_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_reset"
+        android:background="@color/yellow_1" />
 
 </RelativeLayout>

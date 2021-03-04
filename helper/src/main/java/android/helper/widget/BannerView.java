@@ -1,6 +1,5 @@
 package android.helper.widget;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.helper.utils.LogUtil;
@@ -41,12 +40,13 @@ public class BannerView extends ViewGroup {
     private List<Fragment> mFragmentList;
 
     private Scroller mScroller;
-    private int measuredWidth;
     private int childCount;
-    private float mStartX; // 开始滑动的X轴位置
-    private float mStartXRight;
-    private boolean isToLeft;// 是否是向左滑动
-    private float interValRight; // 右侧滑动所用到的距离
+    private int measuredWidth;
+    private boolean isToLeft;
+    private float startX;
+    private float interval;
+    private int scrollX;
+    private int preset;
 
     public BannerView(Context context) {
         super(context);
@@ -58,6 +58,7 @@ public class BannerView extends ViewGroup {
         initView(context, attrs);
     }
 
+
     private void initView(Context context, AttributeSet attrs) {
         mScroller = new Scroller(context);
         if (context instanceof Activity) {
@@ -65,37 +66,6 @@ public class BannerView extends ViewGroup {
         }
     }
 
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        int left = 0;
-        int right = 0;
-
-        // 获取屏幕的宽度
-        measuredWidth = getMeasuredWidth();
-        childCount = getChildCount();
-
-        if (childCount > 0) {
-            for (int i = 0; i < childCount; i++) {
-                View view = getChildAt(i);
-                if (view != null) {
-                    right += measuredWidth;
-                    LogUtil.e("当前的position:" + i + " left:" + left + "  right:" + right);
-
-                    view.layout(left, 0, right, b);
-                    left += measuredWidth;
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int width = resolveSize(widthMeasureSpec, MeasureSpec.getSize(widthMeasureSpec));
-        int height = resolveSize(heightMeasureSpec, MeasureSpec.getSize(heightMeasureSpec));
-        // 设置宽高
-        setMeasuredDimension(width, height);
-    }
 
     public void setDateListView(List<View> viewList) {
         this.mViewList = viewList;
@@ -115,8 +85,11 @@ public class BannerView extends ViewGroup {
         if (mPathList != null && mPathList.size() > 0) {
             for (int i = 0; i < mPathList.size(); i++) {
                 String path = mPathList.get(i);
+                LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                 if ((!TextUtils.isEmpty(path)) && (activity != null)) {
                     ImageView imageView = new ImageView(activity);
+                    imageView.setAdjustViewBounds(true);
+                    imageView.setLayoutParams(params);
                     GlideUtil.loadView(activity, path, imageView);
 
                     addView(imageView);
@@ -133,10 +106,12 @@ public class BannerView extends ViewGroup {
         this.mResourceList = resourceList;
         if (mResourceList != null && resourceList.length > 0) {
             for (int resourceId : resourceList) {
+                LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                 if (((resourceId != 0)) && (activity != null)) {
                     ImageView imageView = new ImageView(activity);
+                    imageView.setAdjustViewBounds(true);
+                    imageView.setLayoutParams(params);
                     imageView.setImageResource(resourceId);
-
                     addView(imageView);
                 }
             }
@@ -176,71 +151,6 @@ public class BannerView extends ViewGroup {
         return mResourceList;
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        LogUtil.e("----> dispatchTouchEvent");
-        return super.dispatchTouchEvent(ev);
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        LogUtil.e("----> onInterceptTouchEvent");
-        if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-            int scrollX = getScrollX();
-            if ((scrollX < 0) || (scrollX > (childCount * (measuredWidth - 1)))) {
-                LogUtil.e("scroll --->停止滑动的scroll:" + scrollX);
-                return true;
-            }
-        }
-        return super.onInterceptTouchEvent(ev);
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        LogUtil.e("----> onTouchEvent");
-        int position = 0;
-        int action = event.getAction();
-
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                LogUtil.e("ACTION_DOWN:" + MotionEvent.ACTION_DOWN);
-
-                float rawXLeft = event.getRawX();
-                mStartXRight = rawXLeft;
-                mStartX = rawXLeft;
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                float rawX = event.getRawX();
-                // 获取间距
-                // 滑动的间距，用来连续的滑动
-                float interVal = rawX - mStartX;
-                interValRight = rawX - mStartXRight;
-                // 区分左右
-                isToLeft = !(interVal >= 0);
-
-                // 避免滑动到布局的外边
-                int scrollX1 = getScrollX();
-
-                LogUtil.e("rawX   :" + rawX);
-                scrollBy((int) -interVal, 0);
-//                    LogUtil.e("scroll --->当前滑动的值为：:" + -interVal);
-                // 把移动后的距离赋值给开始距离，使得滑动充满连贯性
-                mStartX = rawX;
-
-                break;
-            case MotionEvent.ACTION_UP:
-                int scrollX = getScrollX();
-                LogUtil.e("ACTION_UP:" + MotionEvent.ACTION_UP + "  isLeft:" + isToLeft);
-                // 预设的值
-                int preset = measuredWidth / 3;
-
-//                scrollTo(position * measuredWidth, 0);
-                break;
-        }
-        return true;
-    }
 
     private int getPositionForScrollX(int scrollX) {
         return scrollX / measuredWidth;
@@ -252,5 +162,91 @@ public class BannerView extends ViewGroup {
 
     public void reset() {
         scrollTo(0, 0);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int measuredHeight = 0;
+        childCount = getChildCount();
+
+        int width = resolveSize(widthMeasureSpec, MeasureSpec.getSize(widthMeasureSpec));
+        for (int i = 0; i < childCount; i++) {
+            View childAt = getChildAt(i);
+            if (childAt != null) {
+
+                // 测量子view的 宽高
+                measureChild(childAt, widthMeasureSpec, heightMeasureSpec);
+
+                int height = childAt.getMeasuredHeight();
+                if (measuredHeight < height) {
+                    measuredHeight = height;
+                }
+            }
+        }
+        LogUtil.e("width:" + width + " height:" + measuredHeight);
+        setMeasuredDimension(width, measuredHeight);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        measuredWidth = getMeasuredWidth();
+        // 预设的值
+        preset = measuredWidth / 3;
+        int left = 0;
+        for (int i = 0; i < childCount; i++) {
+            View childAt = getChildAt(i);
+            if (childAt != null) {
+                LogUtil.e("l:" + l + " t:" + t + " r:" + r + " b:" + b);
+                int height = childAt.getMeasuredHeight();
+                childAt.layout(left, 0, (measuredWidth + left), height);
+                left += measuredWidth;
+            }
+        }
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                startX = event.getRawX();
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                float rawX = event.getRawX();
+                interval = rawX - startX;
+                isToLeft = interval < 0;
+
+
+                scrollBy((int) -interval, 0);
+
+                startX = rawX;
+                break;
+
+            case MotionEvent.ACTION_UP:
+                scrollX = getScrollX();
+                int position = getPositionForScrollX(scrollX);
+                int offsetX = getOffsetX(scrollX);
+
+                if (isToLeft) {
+                    if (offsetX >= preset) {
+                        if (position < childCount - 1) {
+                            position++;
+                        }
+                    }
+                } else {
+                    int rightOffset = measuredWidth - offsetX;
+                    LogUtil.e("rightOffset" + "   " + rightOffset + "  preset:" + preset);
+                    if (rightOffset <= preset) {
+                        if (position < childCount - 1) {
+                            position++;
+                        }
+                    }
+                }
+                scrollTo(position * measuredWidth, 0);
+                break;
+        }
+        return true;
     }
 }
