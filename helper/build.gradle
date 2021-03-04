@@ -57,7 +57,7 @@ dependencies {
     api 'android.arch.lifecycle:extensions:1.1.1'
 
     // 私有的类库引用
-    api project(path: ':picture') // 图片选择库的依赖
+    // api project(path: ':picture') // 图片选择库的依赖
     api 'org.greenrobot:eventbus:3.2.0'
     api 'com.tbruyelle.rxpermissions:rxpermissions:0.9.4'
     api 'com.google.code.gson:gson:2.8.6'
@@ -71,4 +71,6 @@ dependencies {
     api 'io.reactivex.rxjava2:rxandroid:2.1.0'// 必要rxAndroid依赖，切线程时需要用到
     api 'com.github.bumptech.glide:glide:4.11.0' // glide 图片加载库 ，尽量自己使用，避免版本冲突
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    api 'com.github.LuckSiege.PictureSelector:picture_library:v2.6.0' // 图片选择库
+
 }
