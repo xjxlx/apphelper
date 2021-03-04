@@ -5,21 +5,19 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.RectF;
+import android.helper.utils.BitmapUtil;
+import android.helper.utils.LogUtil;
 import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
-
-import android.helper.utils.BitmapUtil;
 
 /**
  * 只显示右侧图像的imageView
  */
 public class RightImageView extends androidx.appcompat.widget.AppCompatImageView {
 
-    private int measuredWidth;
-    private int measuredHeight;
-    private Bitmap mBitmap;
+    private int measuredWidth, measuredHeight;
+    private Bitmap bitmap;
 
     public RightImageView(Context context) {
         super(context);
@@ -32,30 +30,38 @@ public class RightImageView extends androidx.appcompat.widget.AppCompatImageView
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        // 获取view的宽高
-        measuredWidth = getMeasuredWidth();
-        measuredHeight = getMeasuredHeight();
 
-        if ((measuredWidth > 0) && (measuredHeight > 0)) {
+        // 高度就是view最大的高度
+        measuredHeight = resolveSize(heightMeasureSpec, MeasureSpec.getSize(heightMeasureSpec));
+
+        Bitmap bitmapForImageView = BitmapUtil.getBitmapForImageView(this);
+        if (bitmapForImageView != null) {
+            int width = bitmapForImageView.getWidth();
+            int height = bitmapForImageView.getHeight();
+
+            // 求出bitmap的宽高
+            float scaleBitmap = (float) width / height;
+
+            // 宽 / 高 = 比例  ，宽度 = 高度 * 比例
+            measuredWidth = (int) (measuredHeight * scaleBitmap);
+
+            LogUtil.e("measuredHeight:" + measuredHeight + "   width:" + width + "   height:" + height);
+            LogUtil.e("measuredWidth:" + measuredWidth + "   measuredHeight:" + measuredHeight + "   scaleBitmap:" + scaleBitmap);
+
             setMeasuredDimension(measuredWidth / 2, measuredHeight);
         }
-    }
 
+        bitmap = BitmapUtil.getBitmapForMatrixScale(bitmapForImageView, measuredWidth, measuredHeight);
+    }
 
     @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
-        //   super.onDraw(canvas);
-        mBitmap = BitmapUtil.getBitmapForImageView(this);
 
-        if (mBitmap != null && measuredWidth > 0) {
-            int width = mBitmap.getWidth();
-            int height = mBitmap.getHeight();
-            Rect rect = new Rect((width / 2), 0, width, height);
-            RectF rectF = new RectF(0, 0, measuredWidth >> 1, measuredHeight);
-            canvas.drawBitmap(mBitmap, rect, rectF, null);
-        }
+        Rect src = new Rect(measuredWidth / 2, 0, measuredWidth, measuredHeight);
+        Rect des = new Rect(0, 0, measuredWidth / 2, measuredHeight);
+
+        canvas.drawBitmap(bitmap, src, des, null);
     }
-
 
 }

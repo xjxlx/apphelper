@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BitmapUtil {
 
-
     /**
      * @param context context
      * @param id      资源的id
@@ -155,6 +154,34 @@ public class BitmapUtil {
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param bitmap       原来的bitmap
+     * @param targetWidth  目标的宽度
+     * @param targetHeight 目标的高度
+     * @return 把bitmap转换成一个适合指定宽高尺寸的缩放bitmap
+     */
+    public static Bitmap getBitmapForMatrixScale(Bitmap bitmap, int targetWidth, int targetHeight) {
+        Bitmap bitmapResult = null;
+        try {
+            if ((bitmap != null) && (targetWidth != 0) && (targetHeight != 0)) {
+                int bitmapWidth = bitmap.getWidth();
+                int bitmapHeight = bitmap.getHeight();
+
+                // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
+                float scaleWidth = (float) targetWidth / bitmapWidth;
+                float scaleHeight = (float) targetHeight / bitmapHeight;
+
+                Matrix matrix = new Matrix();
+                matrix.postScale(scaleWidth, scaleHeight);
+
+                bitmapResult = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
+            }
+        } catch (Exception ignored) {
+            LogUtil.e("图像缩放失败！");
+        }
+        return bitmapResult;
     }
 
 }

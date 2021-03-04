@@ -5,21 +5,19 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.RectF;
+import android.helper.utils.BitmapUtil;
+import android.helper.utils.LogUtil;
 import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
-
-import android.helper.utils.BitmapUtil;
 
 /**
  * 只显示左侧图像的imageView
  */
 public class LeftImageView extends androidx.appcompat.widget.AppCompatImageView {
 
-    private int measuredWidth;
-    private int measuredHeight;
-    private Bitmap mBitmap;
+    private Bitmap bitmap;
+    private int measuredWidth, measuredHeight;
 
     public LeftImageView(Context context) {
         super(context);
@@ -32,25 +30,47 @@ public class LeftImageView extends androidx.appcompat.widget.AppCompatImageView 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        // 获取view的宽高
-        measuredWidth = getMeasuredWidth();
-        measuredHeight = getMeasuredHeight();
-        setMeasuredDimension(measuredWidth / 2, measuredHeight);
-    }
 
+        // 获取view的高度
+        measuredHeight = getMeasuredHeight();
+        // 获取设置的bitmap
+        Bitmap bitmapForImageView = BitmapUtil.getBitmapForImageView(this);
+        if (bitmapForImageView != null) {
+            int width = bitmapForImageView.getWidth();
+            int height = bitmapForImageView.getHeight();
+
+            float scaleBitmap = (float) width / height;
+
+            LogUtil.e("view的高度：" + measuredHeight + "   bitmap的宽：" + width + "   bitmap的高：" + height + "  获取比例：" + scaleBitmap);
+
+            // view的高度就设置为view本身的高度，view的宽度要进行等比例的缩放
+            // 宽 / 高 = 比例   ，宽  高 * 比例，这样算出来的宽度能保持比例
+            measuredWidth = (int) (measuredHeight * scaleBitmap);
+
+            // 重新设置宽高
+            setMeasuredDimension(measuredWidth / 2, measuredHeight);
+            LogUtil.e("重新设置的宽高为：" + measuredWidth + "   高度：" + measuredHeight);
+        }
+
+        // 缩放bitmap
+        bitmap = BitmapUtil.getBitmapForMatrixScale(bitmapForImageView, measuredWidth, measuredHeight);
+    }
 
     @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
         //   super.onDraw(canvas);
-        mBitmap = BitmapUtil.getBitmapForImageView(this);
 
-        if (mBitmap != null && measuredWidth > 0) {
-            int width = mBitmap.getWidth();
-            int height = mBitmap.getHeight();
-            Rect rect = new Rect(0, 0, width / 2, height);
-            RectF rectF = new RectF(0, 0, measuredWidth >> 1, measuredHeight);
-            canvas.drawBitmap(mBitmap, rect, rectF, null);
+        int measuredWidth = getMeasuredWidth();
+        LogUtil.e("mea:" + measuredWidth);
+
+        // 右侧除以2，等于说是指显示宽度的一半
+        Rect src = new Rect(0, 0, this.measuredWidth, measuredHeight);
+        // 左侧除以2，等于说是从view宽度的一半开始显示
+        Rect des = new Rect(0, 0, this.measuredWidth, measuredHeight);
+
+        if (bitmap != null) {
+            canvas.drawBitmap(bitmap, src, des, null);
         }
     }
 
