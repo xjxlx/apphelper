@@ -11,10 +11,10 @@
       }
 
 2.    dependencies {        
-            implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.1'        
+            implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.4'        
       }
 
-3.    api('com.gitee.xjxlx:apphelper:v1.0.0.0.0') {     
+3.    api('com.gitee.xjxlx:apphelper:v1.0.0.0.4') {     
             exclude group: 'com.github.bumptech.glide'      
             exclude group: 'com.scwang.smart:refresh-layout-kernel'     
       }
