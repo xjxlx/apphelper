@@ -28,11 +28,10 @@ public class LeftImageView extends androidx.appcompat.widget.AppCompatImageView 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        Bitmap bitmapForImageView;
         // 获取view的高度
         measuredHeight = resolveSize(heightMeasureSpec, MeasureSpec.getSize(heightMeasureSpec));
         // 获取设置的bitmap
-        bitmapForImageView = BitmapUtil.getBitmapForImageView(this);
+        Bitmap bitmapForImageView = BitmapUtil.getBitmapForImageView(this);
         if (bitmapForImageView != null) {
             int width = bitmapForImageView.getWidth();
             int height = bitmapForImageView.getHeight();
@@ -53,12 +52,11 @@ public class LeftImageView extends androidx.appcompat.widget.AppCompatImageView 
     protected void onDraw(Canvas canvas) {
         //   super.onDraw(canvas);
 
-        int measuredWidth = getMeasuredWidth();
         // LogUtil.e("mea:" + measuredWidth);
         // 右侧除以2，等于说是指显示宽度的一半
-        Rect src = new Rect(0, 0, this.measuredWidth, measuredHeight);
+        Rect src = new Rect(0, 0, measuredWidth, measuredHeight);
         // 左侧除以2，等于说是从view宽度的一半开始显示
-        Rect des = new Rect(0, 0, this.measuredWidth, measuredHeight);
+        Rect des = new Rect(0, 0, measuredWidth, measuredHeight);
 
         // 缩放bitmap
         Bitmap bitmap = BitmapUtil.getBitmapForMatrixScale(BitmapUtil.getBitmapForImageView(this), measuredWidth, measuredHeight);

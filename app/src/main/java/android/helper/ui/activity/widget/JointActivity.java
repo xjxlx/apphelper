@@ -2,9 +2,8 @@ package android.helper.ui.activity.widget;
 
 import android.helper.R;
 import android.helper.base.BaseActivity;
-import android.helper.utils.ClickUtil;
-import android.helper.utils.ToastUtil;
-import android.view.View;
+import android.helper.utils.photo.GlideUtil;
+import android.widget.ImageView;
 
 /**
  * 自定义左右的布局
@@ -26,6 +25,15 @@ public class JointActivity extends BaseActivity {
 //                }
 //            }
 //        });
+
+        String url = "http://file.jollyeng.com/picture_book/201903/1553490074.png";
+
+        ImageView left = findViewById(R.id.iv_left);
+        ImageView iv_right = findViewById(R.id.iv_right);
+
+        GlideUtil.loadView(mContext, url, left);
+        GlideUtil.loadView(mContext, url, iv_right);
+
     }
 
     @Override
