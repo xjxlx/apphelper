@@ -16,13 +16,13 @@ class ViewPagerActivity : BaseTitleActivity() {
     override fun initData() {
         super.initData()
         setTitleContent("自定义ViewPager的类")
-
-        banne_view.setDateListResource(intArrayOf(R.mipmap.icon_banner_1, R.mipmap.icon_banner_2,
-                R.mipmap.icon_banner_3, R.mipmap.icon_banner_4))
-
-        btn_reset.setOnClickListener {
-            banne_view.reset()
-        }
+//
+//        banne_view.setDateListResource(intArrayOf(R.mipmap.icon_banner_1, R.mipmap.icon_banner_2,
+//                R.mipmap.icon_banner_3, R.mipmap.icon_banner_4))
+//
+//        btn_reset.setOnClickListener {
+//            banne_view.reset()
+//        }
     }
 
 }

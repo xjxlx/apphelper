@@ -67,8 +67,16 @@ public class BannerView extends ViewGroup {
         mDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                LogUtil.e("onScroll");
                 scrollBy((int) distanceX, 0);
                 return super.onScroll(e1, e2, distanceX, distanceY);
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                LogUtil.e("onFling");
+
+                return super.onFling(e1, e2, velocityX, velocityY);
             }
         });
     }
