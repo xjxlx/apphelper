@@ -1,16 +1,17 @@
 package android.helper.widget;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.helper.utils.LogUtil;
 import android.helper.utils.photo.GlideUtil;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Scroller;
 
 import androidx.fragment.app.Fragment;
 
@@ -39,14 +40,14 @@ public class BannerView extends ViewGroup {
      */
     private List<Fragment> mFragmentList;
 
-    private Scroller mScroller;
     private int childCount;
     private int measuredWidth;
-    private boolean isToLeft;
-    private float startX;
-    private float interval;
-    private int scrollX;
-    private int preset;
+
+    private GestureDetector mDetector;
+    private float mStartX;
+    private boolean isToLeft;//  是否是向左滑动
+    private int mPreset; // 预设的值
+    private int mPosition;
 
     public BannerView(Context context) {
         super(context);
@@ -58,14 +59,19 @@ public class BannerView extends ViewGroup {
         initView(context, attrs);
     }
 
-
     private void initView(Context context, AttributeSet attrs) {
-        mScroller = new Scroller(context);
         if (context instanceof Activity) {
             activity = (Activity) context;
         }
-    }
 
+        mDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                scrollBy((int) distanceX, 0);
+                return super.onScroll(e1, e2, distanceX, distanceY);
+            }
+        });
+    }
 
     public void setDateListView(List<View> viewList) {
         this.mViewList = viewList;
@@ -151,7 +157,6 @@ public class BannerView extends ViewGroup {
         return mResourceList;
     }
 
-
     private int getPositionForScrollX(int scrollX) {
         return scrollX / measuredWidth;
     }
@@ -184,7 +189,6 @@ public class BannerView extends ViewGroup {
                 }
             }
         }
-        LogUtil.e("width:" + width + " height:" + measuredHeight);
         setMeasuredDimension(width, measuredHeight);
     }
 
@@ -192,12 +196,11 @@ public class BannerView extends ViewGroup {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         measuredWidth = getMeasuredWidth();
         // 预设的值
-        preset = measuredWidth / 3;
+        mPreset = measuredWidth / 3;
         int left = 0;
         for (int i = 0; i < childCount; i++) {
             View childAt = getChildAt(i);
             if (childAt != null) {
-                LogUtil.e("l:" + l + " t:" + t + " r:" + r + " b:" + b);
                 int height = childAt.getMeasuredHeight();
                 childAt.layout(left, 0, (measuredWidth + left), height);
                 left += measuredWidth;
@@ -206,47 +209,53 @@ public class BannerView extends ViewGroup {
     }
 
 
+
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        mDetector.onTouchEvent(event);
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                startX = event.getRawX();
-                break;
+                mStartX = event.getX();
 
-            case MotionEvent.ACTION_MOVE:
-                float rawX = event.getRawX();
-                interval = rawX - startX;
-                isToLeft = interval < 0;
-
-
-                scrollBy((int) -interval, 0);
-
-                startX = rawX;
                 break;
 
             case MotionEvent.ACTION_UP:
-                scrollX = getScrollX();
+                float eventX = event.getX();
+                isToLeft = (eventX - mStartX) < 0;
+
+                LogUtil.e("向左滑动：" + isToLeft);
+
+                int scrollX = getScrollX();
                 int position = getPositionForScrollX(scrollX);
                 int offsetX = getOffsetX(scrollX);
 
+                LogUtil.e("scrollX:   " + scrollX + "   position:  " + position + "  offsetX:" + offsetX + "  mPreset: " + mPreset);
                 if (isToLeft) {
-                    if (offsetX >= preset) {
+                    if (offsetX >= mPreset) {
                         if (position < childCount - 1) {
-                            position++;
+                            mPosition = position + 1;
+                        } else {
+                            mPosition = position;
                         }
+                    } else {
+                        mPosition = position;
                     }
                 } else {
-                    int rightOffset = measuredWidth - offsetX;
-                    LogUtil.e("rightOffset" + "   " + rightOffset + "  preset:" + preset);
-                    if (rightOffset <= preset) {
-                        if (position < childCount - 1) {
-                            position++;
-                        }
+                    if ((measuredWidth - offsetX) >= mPreset) {
+                        mPosition = position;
+                    } else {
+                        mPosition = position + 1;
                     }
                 }
-                scrollTo(position * measuredWidth, 0);
+                scrollTo(mPosition * measuredWidth, 0);
+
                 break;
         }
         return true;
     }
+
 }
