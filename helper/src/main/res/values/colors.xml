@@ -13,4 +13,7 @@
     <color name="base_loading_button_background">#3E485A</color>
     <color name="base_loading_button_text">#3E485A</color>
 
+    <color name="banner_indicator_unselected">#4dffffff</color>
+    <color name="banner_indicator_selected">#fff</color>
+
 </resources>

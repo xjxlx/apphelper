@@ -20,7 +20,9 @@ class ViewPagerActivity : BaseTitleActivity() {
         banner_view.setDateListResource(intArrayOf(R.mipmap.icon_banner_1, R.mipmap.icon_banner_2,
                 R.mipmap.icon_banner_3, R.mipmap.icon_banner_4))
 
-        banner_view.setIndicatorView(fl_viewpager_indicator,30,R.drawable.selector_words_collection)
+        banner_view.setIndicatorView(fl_viewpager_indicator, 30, R.drawable.selector_banner_indicator_default)
+        banner_view.setLoop(true,0)
+
 
         btn_reset.setOnClickListener {
             banner_view.reset()

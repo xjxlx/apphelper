@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.helper.utils.photo.GlideUtil;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -12,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -24,6 +25,8 @@ import java.util.List;
  * 自定义BannerView
  */
 public class BannerView extends ViewGroup {
+
+    private final static int CODE_WHAT_LOOP = 10000;// 轮播的what
 
     private Activity activity;
 
@@ -47,10 +50,16 @@ public class BannerView extends ViewGroup {
     private int measuredWidth;
 
     private GestureDetector mDetector;
+    private int mPosition; // 当前的banner角标
     private float mStartX;
-    private boolean isToLeft;//  是否是向左滑动
     private int mPreset; // 预设的值
-    private int mPosition;
+    private BannerLoadListener mLoadFinish;
+    private LinearLayout mIndicatorLayout;// 指示器的父布局
+    private boolean isLoadDataFinish;// 数据是否已经加载完成了
+    private int mIndicatorInterval;// 指示器的间距
+    private int mIndicatorResource;// 指示器的资源
+    private boolean mLoop;// 是否轮播
+    private long mLoopDelayMillis = 3 * 1000; // 轮询的间隔,默认三秒的间隔
 
     public BannerView(Context context) {
         super(context);
@@ -79,6 +88,9 @@ public class BannerView extends ViewGroup {
                 return super.onFling(e1, e2, velocityX, velocityY);
             }
         });
+
+        // 数据加载完成后的监听
+        setLoadFinish(this::addIndicator);
     }
 
     public void setDateListView(List<View> viewList) {
@@ -90,7 +102,7 @@ public class BannerView extends ViewGroup {
                     addView(view);
                 }
             }
-            requestLayout();
+            loadFinish();
         }
     }
 
@@ -109,7 +121,7 @@ public class BannerView extends ViewGroup {
                     addView(imageView);
                 }
             }
-            requestLayout();
+            loadFinish();
         }
     }
 
@@ -129,7 +141,7 @@ public class BannerView extends ViewGroup {
                     addView(imageView);
                 }
             }
-            requestLayout();
+            loadFinish();
         }
     }
 
@@ -145,7 +157,7 @@ public class BannerView extends ViewGroup {
                     }
                 }
             }
-            requestLayout();
+            loadFinish();
         }
     }
 
@@ -225,7 +237,8 @@ public class BannerView extends ViewGroup {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mStartX = event.getX();
-
+                // 按下的时候，暂停轮播
+                onStopLoop();
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -242,8 +255,12 @@ public class BannerView extends ViewGroup {
                 break;
 
             case MotionEvent.ACTION_UP:
+                // 抬起的时候，开始轮播
+                onRestartBanner();
+
                 float eventX = event.getX();
-                isToLeft = (eventX - mStartX) < 0;
+                //  是否是向左滑动
+                boolean isToLeft = (eventX - mStartX) < 0;
 
                 int scrollX = getScrollX();
                 int position = getPositionForScrollX(scrollX);
@@ -279,8 +296,115 @@ public class BannerView extends ViewGroup {
      * @param resourceId 指示器的资源
      */
     public void setIndicatorView(@Nullable LinearLayout layout, int interval, int resourceId) {
-        TextView textView = new TextView(activity);
-        textView.setText("ssssss");
-        layout.addView(textView);
+        this.mIndicatorLayout = layout;
+        this.mIndicatorInterval = interval;
+        this.mIndicatorResource = resourceId;
+        addIndicator();
     }
+
+    /**
+     * 添加指示器
+     */
+    private void addIndicator() {
+        if (mIndicatorLayout != null && isLoadDataFinish) {
+            if (mIndicatorLayout.getChildCount() > 0) {
+                return;
+            }
+            int childCount = getChildCount();
+            if (childCount > 0) {
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                mIndicatorLayout.setOrientation(LinearLayout.HORIZONTAL);
+                for (int i = 0; i < childCount; i++) {
+                    ImageView imageView = new ImageView(activity);
+                    params.leftMargin = mIndicatorInterval;
+                    imageView.setLayoutParams(params);
+                    imageView.setAdjustViewBounds(true);
+                    imageView.setImageResource(mIndicatorResource);
+                    mIndicatorLayout.addView(imageView);
+                }
+            }
+        }
+    }
+
+    /**
+     * 数据加载完成
+     */
+    private void loadFinish() {
+        isLoadDataFinish = true;
+        if (mLoadFinish != null) {
+            mLoadFinish.onDataLoadFinish();
+        }
+    }
+
+    private void setLoadFinish(BannerLoadListener loadFinish) {
+        this.mLoadFinish = loadFinish;
+    }
+
+    interface BannerLoadListener {
+        void onDataLoadFinish();
+    }
+
+    /**
+     * @param loop 是否无限轮播
+     */
+    public void setLoop(boolean loop, long delayMillis) {
+        this.mLoop = loop;
+        if (delayMillis > 0) {
+            this.mLoopDelayMillis = delayMillis;
+        }
+
+        if (loop) {
+            // 发送轮播
+            Message message = mHandler.obtainMessage();
+            message.what = CODE_WHAT_LOOP;
+            mHandler.sendMessage(message);
+        } else {
+            // 移除轮播
+            mHandler.removeMessages(CODE_WHAT_LOOP);
+        }
+    }
+
+    /**
+     * 重新开始轮播
+     */
+    public void onRestartBanner() {
+        if (mLoop) {
+            // 发送轮播
+            Message message = mHandler.obtainMessage();
+            message.what = CODE_WHAT_LOOP;
+            mHandler.sendMessageDelayed(message, mLoopDelayMillis);
+        }
+    }
+
+    /**
+     * 暂停轮播
+     */
+    public void onStopLoop() {
+        mHandler.removeMessages(CODE_WHAT_LOOP);
+    }
+
+
+    @SuppressLint("HandlerLeak")
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == CODE_WHAT_LOOP) {
+
+                if (mPosition < childCount - 1) {
+                    mPosition++;
+                } else {
+                    mPosition = 0;
+                }
+                // 移动到下一个view
+                scrollTo((mPosition * measuredWidth), 0);
+
+                // 间隔一定的时间后，再次去轮询，由用户自己去指定时间
+                Message message = obtainMessage();
+                message.what = CODE_WHAT_LOOP;
+                sendMessageDelayed(message, mLoopDelayMillis);
+            }
+        }
+    };
+
 }
