@@ -3,6 +3,7 @@ package android.helper.widget;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.helper.utils.LogUtil;
 import android.helper.utils.photo.GlideUtil;
 import android.os.Handler;
 import android.os.Message;
@@ -62,6 +63,7 @@ public class BannerView extends ViewGroup {
     private boolean mLoop;// 是否轮播
     private long mLoopDelayMillis = 3 * 1000; // 轮询的间隔,默认三秒的间隔
     private Scroller mScroller;
+    private BannerChangeListener mChangeListener;
 
     public BannerView(Context context) {
         super(context);
@@ -81,13 +83,12 @@ public class BannerView extends ViewGroup {
         mDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                // 手动滑动
                 scrollBy((int) distanceX, 0);
-                return super.onScroll(e1, e2, distanceX, distanceY);
-            }
 
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                return super.onFling(e1, e2, velocityX, velocityY);
+                LogUtil.e("onScroll:");
+
+                return super.onScroll(e1, e2, distanceX, distanceY);
             }
         });
 
@@ -296,20 +297,43 @@ public class BannerView extends ViewGroup {
 
                 // scrollTo(mPosition * measuredWidth, 0);
 
-                /*
-                 * 使用平滑的滑动方式
-                 * 参1：起始x轴位置
-                 * 参2：起始y轴的位置
-                 * 参3：偏移的x轴位置（目标终点位置 - 起始的x轴位置）
-                 * 参4：偏移的y轴位置
-                 * 参5：持续的时间
-                 */
-                mScroller.startScroll(scrollX, 0, (mPosition * measuredWidth) - scrollX, 0);
-                invalidate();
+                setCurrentItem(mPosition);
                 break;
         }
         return true;
     }
+
+    /**
+     * 设置当前的item
+     *
+     * @param position 当前的position
+     */
+    public void setCurrentItem(int position) {
+        /*
+         * 使用平滑的滑动方式
+         * 参1：起始x轴位置
+         * 参2：起始y轴的位置
+         * 参3：偏移的x轴位置（目标终点位置 - 起始的x轴位置）
+         * 参4：偏移的y轴位置
+         * 参5：持续的时间
+         */
+        int scrollX = getScrollX();
+        mScroller.startScroll(scrollX, 0, (position * measuredWidth) - scrollX, 0);
+
+        // 更改指示器
+        if (mIndicatorLayout != null) {
+            for (int i = 0; i < mIndicatorLayout.getChildCount(); i++) {
+                View childAt = mIndicatorLayout.getChildAt(i);
+                childAt.setSelected(i == position);
+            }
+        }
+        if (mChangeListener != null) {
+            mChangeListener.onSelected(position);
+        }
+
+        invalidate();
+    }
+
 
     @Override
     public void computeScroll() {
@@ -427,7 +451,7 @@ public class BannerView extends ViewGroup {
                     mPosition = 0;
                 }
                 // 移动到下一个view
-                scrollTo((mPosition * measuredWidth), 0);
+                setCurrentItem(mPosition);
 
                 // 间隔一定的时间后，再次去轮询，由用户自己去指定时间
                 Message message = obtainMessage();
@@ -436,5 +460,13 @@ public class BannerView extends ViewGroup {
             }
         }
     };
+
+    public interface BannerChangeListener {
+        void onSelected(int position);
+    }
+
+    public void setBannerChangeListener(BannerChangeListener changeListener) {
+        this.mChangeListener = changeListener;
+    }
 
 }
