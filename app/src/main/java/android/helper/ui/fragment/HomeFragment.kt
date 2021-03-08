@@ -1,5 +1,6 @@
 package android.helper.ui.fragment
 
+import android.helper.BuildConfig
 import android.helper.R
 import android.helper.adapters.TestAdapter
 import android.helper.base.BaseRefreshFragment
@@ -11,6 +12,7 @@ import android.helper.utils.LogUtil
 import android.helper.utils.RecycleUtil
 import android.helper.utils.ToastUtil
 import android.view.View
+import com.scwang.smart.refresh.layout.api.RefreshLayout
 import io.reactivex.Flowable
 import kotlinx.android.synthetic.main.expandable_gpc_child.*
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -75,6 +77,11 @@ class HomeFragment : BaseRefreshFragment<Response<HomeBean>, HomeBean.ReturnData
     override fun onFailure(throwable: BaseException?) {
         LogUtil.e("error:" + throwable?.message)
         ToastUtil.show(throwable?.message)
+    }
+
+    override fun onLoadMore(refreshLayout: RefreshLayout) {
+        super.onLoadMore(refreshLayout)
+        LogUtil.e("load:"+BuildConfig.App_isDebug)
     }
 
 }

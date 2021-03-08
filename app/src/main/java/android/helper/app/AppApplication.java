@@ -22,7 +22,7 @@ public class AppApplication extends Application {
 
             @Override
             public boolean isDebug() {
-                return BuildConfig.DEBUG;
+                return BuildConfig.App_isDebug;
             }
 
             @Override

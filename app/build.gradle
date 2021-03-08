@@ -44,6 +44,7 @@ android {
 
             buildConfigField("String", "APP_ID", project.APP_ID)
             buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
+            buildConfigField("boolean", "App_isDebug", "false")
         }
 
         debug {
@@ -54,8 +55,7 @@ android {
 
             buildConfigField("String", "APP_ID", project.APP_ID_DEBUG)
             buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
-
-            // buildConfigField("boolean", "AppDebug", "false")
+            buildConfigField("boolean", "App_isDebug", "true")
         }
     }
 
@@ -85,6 +85,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.google.android:flexbox:1.1.1' // 流式布局
 
-//    implementation project(path: ':helper')
-     implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.8'
+    implementation project(path: ':helper')
+//    implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.9'
 }
