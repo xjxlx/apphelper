@@ -74,11 +74,6 @@ public class RetrofitHelper {
             }
         }
 
-        // 添加日志的log
-        if (BaseApplication.isDebug()) {
-            httpBuilder.addInterceptor(new HttpLogInterceptor());
-        }
-
         // 设置SSL证书
         setSSLFactory(httpBuilder);
 
@@ -209,11 +204,6 @@ public class RetrofitHelper {
             }
         }
 
-        // 添加日志的log
-        if (BaseApplication.isDebug()) {
-            httpBuilder.addInterceptor(new HttpLogInterceptor());
-        }
-
         // 设置SSL证书
         setSSLFactory(httpBuilder);
 
@@ -229,7 +219,14 @@ public class RetrofitHelper {
      */
     public static OkHttpClient.Builder getHttpBuilder() {
         // 构建HttpClient
-        return new OkHttpClient.Builder();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+        // 添加日志的log
+        if (BaseApplication.isDebug()) {
+            builder.addInterceptor(new HttpLogInterceptor());
+        }
+
+        return builder;
     }
 
     @SuppressLint("TrustAllX509TrustManager,BadHostnameVerifier")
@@ -295,11 +292,6 @@ public class RetrofitHelper {
             for (Interceptor interceptor : interceptors) {
                 httpBuilder.addInterceptor(interceptor);
             }
-        }
-
-        // 添加日志的log
-        if (BaseApplication.isDebug()) {
-            httpBuilder.addInterceptor(new HttpLogInterceptor());
         }
 
         // 设置SSL证书
