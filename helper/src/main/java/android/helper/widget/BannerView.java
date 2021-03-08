@@ -3,7 +3,6 @@ package android.helper.widget;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.helper.utils.LogUtil;
 import android.helper.utils.photo.GlideUtil;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -67,15 +66,12 @@ public class BannerView extends ViewGroup {
         mDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                LogUtil.e("onScroll");
                 scrollBy((int) distanceX, 0);
                 return super.onScroll(e1, e2, distanceX, distanceY);
             }
 
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                LogUtil.e("onFling");
-
                 return super.onFling(e1, e2, velocityX, velocityY);
             }
         });
@@ -216,9 +212,6 @@ public class BannerView extends ViewGroup {
         }
     }
 
-
-
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -231,17 +224,27 @@ public class BannerView extends ViewGroup {
 
                 break;
 
+            case MotionEvent.ACTION_MOVE:
+
+                int stopScrollX = getScrollX();
+                // 第一页禁止右划
+                if (stopScrollX <= 0) {
+                    scrollTo(0, 0);
+                } else if (stopScrollX >= ((childCount - 1) * measuredWidth)) {
+                    // 最后一页禁止左滑
+                    scrollTo((childCount - 1) * measuredWidth, 0);
+                }
+
+                break;
+
             case MotionEvent.ACTION_UP:
                 float eventX = event.getX();
                 isToLeft = (eventX - mStartX) < 0;
-
-                LogUtil.e("向左滑动：" + isToLeft);
 
                 int scrollX = getScrollX();
                 int position = getPositionForScrollX(scrollX);
                 int offsetX = getOffsetX(scrollX);
 
-                LogUtil.e("scrollX:   " + scrollX + "   position:  " + position + "  offsetX:" + offsetX + "  mPreset: " + mPreset);
                 if (isToLeft) {
                     if (offsetX >= mPreset) {
                         if (position < childCount - 1) {
