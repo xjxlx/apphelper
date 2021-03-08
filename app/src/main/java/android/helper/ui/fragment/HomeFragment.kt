@@ -81,7 +81,7 @@ class HomeFragment : BaseRefreshFragment<Response<HomeBean>, HomeBean.ReturnData
 
     override fun onLoadMore(refreshLayout: RefreshLayout) {
         super.onLoadMore(refreshLayout)
-        LogUtil.e("load:"+BuildConfig.App_isDebug)
+        LogUtil.e("load:"+BuildConfig.APP_DEBUG)
     }
 
 }

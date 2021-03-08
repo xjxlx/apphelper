@@ -44,7 +44,8 @@ android {
 
             buildConfigField("String", "APP_ID", project.APP_ID)
             buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
-            buildConfigField("boolean", "App_isDebug", "false")
+//            buildConfigField("boolean", "APP_DEBUG", "false")
+            project.extensions.findByName('android')?.defaultConfig?.buildConfigField("boolean", "APP_DEBUG", "false")
         }
 
         debug {
@@ -55,7 +56,9 @@ android {
 
             buildConfigField("String", "APP_ID", project.APP_ID_DEBUG)
             buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
-            buildConfigField("boolean", "App_isDebug", "true")
+//            buildConfigField("boolean", "APP_DEBUG", "true")
+            project.extensions.findByName('android')?.defaultConfig?.buildConfigField("boolean", "APP_DEBUG", "true")
+
         }
     }
 
