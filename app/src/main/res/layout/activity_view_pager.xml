@@ -15,10 +15,19 @@
         android:text="复原" />
 
     <android.helper.widget.BannerView
-        android:id="@+id/banne_view"
+        android:id="@+id/banner_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btn_reset"
-        android:background="@color/yellow_1" />
+        android:background="@color/black_10" />
+
+    <LinearLayout
+        android:id="@+id/fl_viewpager_indicator"
+        android:layout_width="@dimen/dp_310"
+        android:layout_height="@dimen/dp_100"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/yellow_1"
+        android:orientation="horizontal" />
 
 </RelativeLayout>

@@ -11,8 +11,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -269,4 +273,14 @@ public class BannerView extends ViewGroup {
         return true;
     }
 
+    /**
+     * @param layout     指示器的父类布局
+     * @param interval   指示器的间隔
+     * @param resourceId 指示器的资源
+     */
+    public void setIndicatorView(@Nullable LinearLayout layout, int interval, int resourceId) {
+        TextView textView = new TextView(activity);
+        textView.setText("ssssss");
+        layout.addView(textView);
+    }
 }

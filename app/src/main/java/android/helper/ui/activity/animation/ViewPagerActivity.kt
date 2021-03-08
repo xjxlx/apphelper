@@ -17,11 +17,13 @@ class ViewPagerActivity : BaseTitleActivity() {
         super.initData()
         setTitleContent("自定义ViewPager的类")
 
-        banne_view.setDateListResource(intArrayOf(R.mipmap.icon_banner_1, R.mipmap.icon_banner_2,
+        banner_view.setDateListResource(intArrayOf(R.mipmap.icon_banner_1, R.mipmap.icon_banner_2,
                 R.mipmap.icon_banner_3, R.mipmap.icon_banner_4))
 
+        banner_view.setIndicatorView(fl_viewpager_indicator,30,R.drawable.selector_words_collection)
+
         btn_reset.setOnClickListener {
-            banne_view.reset()
+            banner_view.reset()
         }
     }
 
