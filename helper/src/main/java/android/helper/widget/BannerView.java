@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Scroller;
 
 import androidx.fragment.app.Fragment;
 
@@ -60,6 +61,7 @@ public class BannerView extends ViewGroup {
     private int mIndicatorResource;// 指示器的资源
     private boolean mLoop;// 是否轮播
     private long mLoopDelayMillis = 3 * 1000; // 轮询的间隔,默认三秒的间隔
+    private Scroller mScroller;
 
     public BannerView(Context context) {
         super(context);
@@ -91,6 +93,9 @@ public class BannerView extends ViewGroup {
 
         // 数据加载完成后的监听
         setLoadFinish(this::addIndicator);
+
+        // 滑动组件
+        mScroller = new Scroller(activity);
     }
 
     public void setDateListView(List<View> viewList) {
@@ -237,6 +242,11 @@ public class BannerView extends ViewGroup {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mStartX = event.getX();
+
+                if (!mScroller.isFinished()) {
+                    mScroller.abortAnimation();
+                }
+
                 // 按下的时候，暂停轮播
                 onStopLoop();
                 break;
@@ -283,11 +293,31 @@ public class BannerView extends ViewGroup {
                         mPosition = position + 1;
                     }
                 }
-                scrollTo(mPosition * measuredWidth, 0);
 
+                // scrollTo(mPosition * measuredWidth, 0);
+
+                /*
+                 * 使用平滑的滑动方式
+                 * 参1：起始x轴位置
+                 * 参2：起始y轴的位置
+                 * 参3：偏移的x轴位置（目标终点位置 - 起始的x轴位置）
+                 * 参4：偏移的y轴位置
+                 * 参5：持续的时间
+                 */
+                mScroller.startScroll(scrollX, 0, (mPosition * measuredWidth) - scrollX, 0);
+                invalidate();
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void computeScroll() {
+        super.computeScroll();
+        if (mScroller.computeScrollOffset()) {
+            scrollTo(mScroller.getCurrX(), 0);
+            invalidate();
+        }
     }
 
     /**
