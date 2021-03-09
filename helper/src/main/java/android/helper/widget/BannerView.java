@@ -60,7 +60,7 @@ public class BannerView extends ViewGroup {
         // 获取view的宽度
         mMeasuredWidth = resolveSize(widthMeasureSpec, MeasureSpec.getSize(widthMeasureSpec));
         // 设置预设的值
-        mScrollPreset = mMeasuredWidth / 3;
+        mScrollPreset = mMeasuredWidth / 4;
         // 动态设置view的高度
         int measuredHeight = 0;
 
@@ -185,20 +185,18 @@ public class BannerView extends ViewGroup {
 
                 } else { // 向右滑动
 
-                    if ((mMeasuredWidth - offsetForScrollX) > mScrollPreset) {
-                        // 大于预设的值
-                        if (position > 0) {
+                    if (position == 0 && isEqualsDownAndUp) {
+                        if (offsetForScrollX >= mScrollPreset) {
+                            mPosition = mChildCount - 1;
+                        } else {
                             mPosition = position;
-                        } else { // 如果滑动到了第0个position，把角标给成最后一个
-                            if (isEqualsDownAndUp) {
-                                mPosition = mChildCount - 1;
-                            } else {
-                                mPosition = position;
-                            }
                         }
                     } else {
-                        // 小于预设的值
-                        mPosition = position + 1;
+                        if ((mMeasuredWidth - offsetForScrollX) >= mScrollPreset) {
+                            mPosition = position;
+                        } else {
+                            mPosition = position + 1;
+                        }
                     }
                 }
 
