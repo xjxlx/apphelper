@@ -3,6 +3,8 @@ package android.helper.widget;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.helper.utils.ConvertUtil;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -19,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BannerView extends ViewGroup {
 
+    private final int CODE_WHAT_LOOP = 10000;// 自动轮播的what
     private final LayoutParams mParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     private Context mContext;
     private int mChildCount;// 数据源的总长度
@@ -34,6 +37,8 @@ public class BannerView extends ViewGroup {
     private LinearLayout mIndicatorParentLayout;// 指示器的布局
     private int mIndicatorInterval = (int) ConvertUtil.toDp(5f);//指示器的间隔
     private int mIndicatorResource;//指示器的资源
+    private boolean mAutoLoop = true;// 是否自动轮播
+    private long mAutoLoopInterval = 3 * 1000;// 默认自动轮播的间隔
 
     public BannerView(Context context) {
         super(context);
@@ -174,6 +179,9 @@ public class BannerView extends ViewGroup {
             case MotionEvent.ACTION_DOWN:
                 mStartX = event.getX();
                 mPositionDown = getPositionForScrollX(getScrollX());
+
+                // 按下的时候，停止轮播
+                onStopLoop();
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -183,6 +191,9 @@ public class BannerView extends ViewGroup {
                 break;
 
             case MotionEvent.ACTION_UP:
+                // 抬起手指的时候，开始轮播
+                onRestartLoop();
+
                 int scrollX = getScrollX();
                 int position = getPositionForScrollX(scrollX);
                 int offsetForScrollX = getOffsetForScrollX(scrollX);
@@ -308,5 +319,64 @@ public class BannerView extends ViewGroup {
             }
         }
     }
+
+    /**
+     * @param loop         是否自动轮播
+     * @param loopInterval 自动轮播的时间间隔，单位毫秒
+     */
+    public void setAutoLoop(boolean loop, long loopInterval) {
+        this.mAutoLoop = loop;
+        if (loopInterval > 0) {
+            this.mAutoLoopInterval = loopInterval;
+        }
+
+        // 开始发送轮播的消息
+        onRestartLoop();
+    }
+
+    /**
+     * 开始发送轮播的消息
+     */
+    public void onRestartLoop() {
+        // 重新发送
+        if (mAutoLoop) {
+            Message message = mHandler.obtainMessage();
+            message.what = CODE_WHAT_LOOP;
+            mHandler.sendMessageDelayed(message, mAutoLoopInterval);
+        }
+    }
+
+    /**
+     * 停止轮询
+     */
+    public void onStopLoop() {
+        mHandler.removeMessages(CODE_WHAT_LOOP);
+    }
+
+
+    @SuppressLint("HandlerLeak")
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == CODE_WHAT_LOOP) {
+
+                int position = getPositionForScrollX(getScrollX());
+                if (mAutoLoop) {
+                    if (mPosition < mChildCount - 1) {
+                        mPosition = position + 1;
+                    } else {
+                        mPosition = 0;
+                    }
+                }
+                setCurrentItem(mPosition);
+
+                // 重新发送
+                Message message = obtainMessage();
+                message.what = CODE_WHAT_LOOP;
+                sendMessageDelayed(message, mAutoLoopInterval);
+            }
+        }
+    };
 
 }
