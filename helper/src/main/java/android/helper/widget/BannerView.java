@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Scroller;
 
 /**
  * 自定义BannerView
@@ -18,7 +19,13 @@ public class BannerView extends ViewGroup {
     private Context mContext;
     private int mChildCount;// 数据源的总长度
     private int mMeasuredWidth;// 屏幕的宽度
+    private int mScrollPreset; // 滑动预设的值，超过这个值，就会去滑动的下一页
     private GestureDetector mDetector;
+    private Scroller mScroller;
+    private float mStartX;// 按下的X轴坐标
+    private boolean isToLeft;// 是否向左滑动
+    private int mPosition;//当前角标的position
+    private boolean isEqualsDownAndUp;// 按下和抬起的是否是一个对象
 
     public BannerView(Context context) {
         super(context);
@@ -32,6 +39,9 @@ public class BannerView extends ViewGroup {
 
     private void initView(Context context, AttributeSet attrs) {
         mContext = context;
+
+        // 滑动计算工具
+        mScroller = new Scroller(mContext);
 
         // 手势滑动器
         mDetector = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
@@ -49,6 +59,8 @@ public class BannerView extends ViewGroup {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         // 获取view的宽度
         mMeasuredWidth = resolveSize(widthMeasureSpec, MeasureSpec.getSize(widthMeasureSpec));
+        // 设置预设的值
+        mScrollPreset = mMeasuredWidth / 3;
         // 动态设置view的高度
         int measuredHeight = 0;
 
@@ -133,12 +145,105 @@ public class BannerView extends ViewGroup {
         return imageView;
     }
 
+    int positionDown = 0;
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // 把手机滑动器添加给我触摸事件
         mDetector.onTouchEvent(event);
 
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mStartX = event.getX();
+                positionDown = getPositionForScrollX(getScrollX());
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                float endX = event.getX();
+                isToLeft = (endX - mStartX) < 0;
+
+                break;
+
+            case MotionEvent.ACTION_UP:
+                int scrollX = getScrollX();
+                int position = getPositionForScrollX(scrollX);
+                int offsetForScrollX = getOffsetForScrollX(scrollX);
+                // 按下和抬起的是否是一个角标
+                isEqualsDownAndUp = (positionDown == position);
+
+                if (isToLeft) { // 向左滑动
+                    if (offsetForScrollX >= mScrollPreset) { // 大于预设的值
+                        if (position < mChildCount - 1) {
+                            mPosition = position + 1;
+                        } else {
+                            mPosition = 0; // 如果滑到了最后面的那个位置，则把角标给改成第一个
+                        }
+                    } else { // 小于预设的值
+                        mPosition = position;
+                    }
+
+                } else { // 向右滑动
+
+                    if ((mMeasuredWidth - offsetForScrollX) > mScrollPreset) {
+                        // 大于预设的值
+                        if (position > 0) {
+                            mPosition = position;
+                        } else { // 如果滑动到了第0个position，把角标给成最后一个
+                            if (isEqualsDownAndUp) {
+                                mPosition = mChildCount - 1;
+                            } else {
+                                mPosition = position;
+                            }
+                        }
+                    } else {
+                        // 小于预设的值
+                        mPosition = position + 1;
+                    }
+                }
+
+                // 手指抬起时候的滑动
+                setCurrentItem(mPosition);
+                break;
+        }
+
         return true;
+    }
+
+    /**
+     * @return 根据滑动的值去获取当前的position
+     */
+    private int getPositionForScrollX(int scrollX) {
+        if (scrollX > 0) {
+            return scrollX / mMeasuredWidth;
+        }
+        return 0;
+    }
+
+    /**
+     * @return 根据滑动的值获取偏移的量
+     */
+    private int getOffsetForScrollX(int scrollX) {
+        return Math.abs(scrollX % mMeasuredWidth);
+    }
+
+    /**
+     * 设置当前的item
+     */
+    public void setCurrentItem(int position) {
+        int scrollX = getScrollX();
+
+        // 使用匀速滑动的效果
+        mScroller.startScroll(scrollX, 0, ((mMeasuredWidth * position) - scrollX), 0);
+        invalidate();
+    }
+
+    @Override
+    public void computeScroll() {
+        super.computeScroll();
+        if (mScroller.computeScrollOffset()) {
+            scrollTo(mScroller.getCurrX(), 0);
+            invalidate();
+        }
     }
 }
