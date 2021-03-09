@@ -29,6 +29,7 @@ import java.util.List;
 public class BannerView extends ViewGroup {
 
     private final static int CODE_WHAT_LOOP = 10000;// 轮播的what
+    private final LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
     private Activity activity;
 
@@ -139,12 +140,8 @@ public class BannerView extends ViewGroup {
         if (mResourceList != null && resourceList.length > 0) {
             childCount = resourceList.length;
             for (int resourceId : resourceList) {
-                LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                 if (((resourceId != 0)) && (activity != null)) {
-                    ImageView imageView = new ImageView(activity);
-                    imageView.setAdjustViewBounds(true);
-                    imageView.setLayoutParams(params);
-                    imageView.setImageResource(resourceId);
+                    ImageView imageView = getImageViewForResource(resourceId);
                     addView(imageView);
                 }
             }
@@ -166,6 +163,18 @@ public class BannerView extends ViewGroup {
             }
             loadFinish();
         }
+    }
+
+    /**
+     * @param resource 本地资源
+     * @return 获取一个设置本地资源的imageView
+     */
+    private ImageView getImageViewForResource(int resource) {
+        ImageView imageView = new ImageView(activity);
+        imageView.setAdjustViewBounds(true);
+        imageView.setLayoutParams(params);
+        imageView.setImageResource(resource);
+        return imageView;
     }
 
     public List<View> getViewList() {
