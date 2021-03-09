@@ -16,6 +16,8 @@ public class BannerView extends ViewGroup {
     private int mChildCount;// 数据源的总长度
     private int mMeasuredWidth;// 屏幕的宽度
 
+
+
     public BannerView(Context context) {
         super(context);
         initView(context, null);
