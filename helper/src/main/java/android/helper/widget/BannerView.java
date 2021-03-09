@@ -2,13 +2,17 @@ package android.helper.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.helper.utils.ConvertUtil;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Scroller;
+
+import org.jetbrains.annotations.Nullable;
 
 /**
  * 自定义BannerView
@@ -24,8 +28,11 @@ public class BannerView extends ViewGroup {
     private Scroller mScroller;
     private float mStartX;// 按下的X轴坐标
     private boolean isToLeft;// 是否向左滑动
-    private int mPosition;//当前角标的position
-    private boolean isEqualsDownAndUp;// 按下和抬起的是否是一个对象
+    private int mPositionDown = 0;// 按下的角标
+    private boolean isLoadFinish;// 数据是否已经加载完毕
+    private LinearLayout mIndicatorParentLayout;// 指示器的布局
+    private int mIndicatorInterval = (int) ConvertUtil.toDp(5f);//指示器的间隔
+    private int mIndicatorResource;//指示器的资源
 
     public BannerView(Context context) {
         super(context);
@@ -114,38 +121,47 @@ public class BannerView extends ViewGroup {
 
             if (mChildCount > 1) {
                 // 添加最左侧的图片
-                ImageView imageView = getImageViewForResource(resourceList[mChildCount - 1]);
+                ImageView imageView = getImageViewForResource(mParams, resourceList[mChildCount - 1]);
                 addView(imageView);
             }
 
             // 添加数据
             for (int i = 0; i < mChildCount; i++) {
                 int resourceId = resourceList[i];
-                ImageView imageView = getImageViewForResource(resourceId);
+                ImageView imageView = getImageViewForResource(mParams, resourceId);
                 addView(imageView);
             }
 
             if (mChildCount > 1) {
                 // 添加最右侧的图片
-                ImageView imageView = getImageViewForResource(resourceList[0]);
+                ImageView imageView = getImageViewForResource(mParams, resourceList[0]);
                 addView(imageView);
             }
+
+            dataLoadFinish();
         }
+    }
+
+    /**
+     * 数据加载完成后的逻辑
+     */
+    private void dataLoadFinish() {
+        isLoadFinish = true;
+        addIndicatorView();
     }
 
     /**
      * @param resource 本地图片的资源
      * @return 返回一个imageView，并设置本地的资源
      */
-    private ImageView getImageViewForResource(int resource) {
+    private ImageView getImageViewForResource(ViewGroup.LayoutParams params, int resource) {
         ImageView imageView = new ImageView(mContext);
         imageView.setAdjustViewBounds(true);
-        imageView.setLayoutParams(mParams);
+        imageView.setLayoutParams(params);
         imageView.setImageResource(resource);
         return imageView;
     }
 
-    int positionDown = 0;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -153,10 +169,12 @@ public class BannerView extends ViewGroup {
         // 把手机滑动器添加给我触摸事件
         mDetector.onTouchEvent(event);
 
+        //当前角标的position
+        int mPosition;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mStartX = event.getX();
-                positionDown = getPositionForScrollX(getScrollX());
+                mPositionDown = getPositionForScrollX(getScrollX());
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -170,7 +188,8 @@ public class BannerView extends ViewGroup {
                 int position = getPositionForScrollX(scrollX);
                 int offsetForScrollX = getOffsetForScrollX(scrollX);
                 // 按下和抬起的是否是一个角标
-                isEqualsDownAndUp = (positionDown == position);
+                // 按下和抬起的是否是一个对象
+                boolean isEqualsDownAndUp = (mPositionDown == position);
 
                 if (isToLeft) { // 向左滑动
                     if (offsetForScrollX >= mScrollPreset) { // 大于预设的值
@@ -184,7 +203,7 @@ public class BannerView extends ViewGroup {
                     }
 
                 } else { // 向右滑动
-
+                    // 只有满足了第一个角标，且点击和按下的都是角标0的时候，才触发滑动到最后一个item的效果
                     if (position == 0 && isEqualsDownAndUp) {
                         if (offsetForScrollX >= mScrollPreset) {
                             mPosition = mChildCount - 1;
@@ -233,6 +252,14 @@ public class BannerView extends ViewGroup {
 
         // 使用匀速滑动的效果
         mScroller.startScroll(scrollX, 0, ((mMeasuredWidth * position) - scrollX), 0);
+
+        // 更改指示器的效果
+        if ((mIndicatorParentLayout != null) && (mIndicatorParentLayout.getChildCount() > 0)) {
+            for (int i = 0; i < mIndicatorParentLayout.getChildCount(); i++) {
+                View childAt = mIndicatorParentLayout.getChildAt(i);
+                childAt.setSelected(i == position);
+            }
+        }
         invalidate();
     }
 
@@ -244,4 +271,42 @@ public class BannerView extends ViewGroup {
             invalidate();
         }
     }
+
+
+    /**
+     * @param indicatorParent 指示器的父布局
+     * @param interval        指示器之间的间距
+     * @param resource        指示器的资源
+     */
+    public void setIndicatorView(@Nullable LinearLayout indicatorParent, int interval, int resource) {
+        this.mIndicatorParentLayout = indicatorParent;
+        if (interval > 0) {
+            this.mIndicatorInterval = interval;
+        }
+        if (resource != 0) {
+            this.mIndicatorResource = resource;
+        }
+
+        addIndicatorView();
+    }
+
+    /**
+     * 添加指示器
+     */
+    private void addIndicatorView() {
+        if ((isLoadFinish) && (mIndicatorParentLayout != null) && (mChildCount > 0)) {
+            // 如果添加过了就不在添加了
+            if (mIndicatorParentLayout.getChildCount() > 0) {
+                return;
+            }
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.leftMargin = mIndicatorInterval;
+
+            for (int i = 0; i < mChildCount; i++) {
+                ImageView imageView = getImageViewForResource(params, mIndicatorResource);
+                mIndicatorParentLayout.addView(imageView);
+            }
+        }
+    }
+
 }
