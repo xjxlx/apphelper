@@ -184,11 +184,17 @@ public class BannerView extends ViewGroup {
     }
 
     private int getPositionForScrollX(int scrollX) {
-        return scrollX / measuredWidth;
+        if (scrollX > 0) {
+            return scrollX / measuredWidth;
+        }
+        return 0;
     }
 
     private int getOffsetX(int scrollX) {
-        return scrollX % measuredWidth;
+        if (scrollX > 0) {
+            return scrollX % measuredWidth;
+        }
+        return 0;
     }
 
     public void reset() {
@@ -334,7 +340,6 @@ public class BannerView extends ViewGroup {
         invalidate();
     }
 
-
     @Override
     public void computeScroll() {
         super.computeScroll();
@@ -436,7 +441,6 @@ public class BannerView extends ViewGroup {
     public void onStopLoop() {
         mHandler.removeMessages(CODE_WHAT_LOOP);
     }
-
 
     @SuppressLint("HandlerLeak")
     private final Handler mHandler = new Handler() {
