@@ -254,14 +254,14 @@ public class BannerView extends ViewGroup {
 
             case MotionEvent.ACTION_MOVE:
 
-                int stopScrollX = getScrollX();
-                // 第一页禁止右划
-                if (stopScrollX <= 0) {
-                    scrollTo(0, 0);
-                } else if (stopScrollX >= ((childCount - 1) * measuredWidth)) {
-                    // 最后一页禁止左滑
-                    scrollTo((childCount - 1) * measuredWidth, 0);
-                }
+//                int stopScrollX = getScrollX();
+//                // 第一页禁止右划
+//                if (stopScrollX <= 0) {
+//                    scrollTo(0, 0);
+//                } else if (stopScrollX >= ((childCount - 1) * measuredWidth)) {
+//                    // 最后一页禁止左滑
+//                    scrollTo((childCount - 1) * measuredWidth, 0);
+//                }
 
                 break;
 
