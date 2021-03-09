@@ -19,20 +19,20 @@ class ViewPagerActivity : BaseTitleActivity() {
         super.initData()
         setTitleContent("自定义ViewPager的类")
 
-        banner_view.setDateListResource(intArrayOf(R.mipmap.icon_banner_1, R.mipmap.icon_banner_2,
+        banner_view.setDataList(intArrayOf(R.mipmap.icon_banner_1, R.mipmap.icon_banner_2,
                 R.mipmap.icon_banner_3, R.mipmap.icon_banner_4))
 
-        banner_view.setIndicatorView(fl_viewpager_indicator, 30, R.drawable.selector_banner_indicator_default)
-        banner_view.setLoop(true, 0)
-        banner_view.setBannerChangeListener(object : BannerView.BannerChangeListener {
-            override fun onSelected(position: Int) {
-                LogUtil.e("当前的角标为：$position")
-            }
-        })
-
-        btn_reset.setOnClickListener {
-            banner_view.reset()
-        }
+//        banner_view.setIndicatorView(fl_viewpager_indicator, 30, R.drawable.selector_banner_indicator_default)
+//        banner_view.setLoop(true, 0)
+//        banner_view.setBannerChangeListener(object : BannerView.BannerChangeListener {
+//            override fun onSelected(position: Int) {
+//                LogUtil.e("当前的角标为：$position")
+//            }
+//        })
+//
+//        btn_reset.setOnClickListener {
+//            banner_view.reset()
+//        }
     }
 
 }
