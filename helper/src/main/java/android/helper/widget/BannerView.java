@@ -1,7 +1,10 @@
 package android.helper.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,8 +18,7 @@ public class BannerView extends ViewGroup {
     private Context mContext;
     private int mChildCount;// 数据源的总长度
     private int mMeasuredWidth;// 屏幕的宽度
-
-
+    private GestureDetector mDetector;
 
     public BannerView(Context context) {
         super(context);
@@ -30,6 +32,16 @@ public class BannerView extends ViewGroup {
 
     private void initView(Context context, AttributeSet attrs) {
         mContext = context;
+
+        // 手势滑动器
+        mDetector = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                // 可以滑动
+                scrollBy((int) distanceX, 0);
+                return super.onScroll(e1, e2, distanceX, distanceY);
+            }
+        });
     }
 
     @Override
@@ -121,4 +133,12 @@ public class BannerView extends ViewGroup {
         return imageView;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        // 把手机滑动器添加给我触摸事件
+        mDetector.onTouchEvent(event);
+
+        return true;
+    }
 }
