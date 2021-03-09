@@ -137,6 +137,7 @@ public class BannerView extends ViewGroup {
     public void setDateListResource(int[] resourceList) {
         this.mResourceList = resourceList;
         if (mResourceList != null && resourceList.length > 0) {
+            childCount = resourceList.length;
             for (int resourceId : resourceList) {
                 LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                 if (((resourceId != 0)) && (activity != null)) {
@@ -205,8 +206,6 @@ public class BannerView extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int measuredHeight = 0;
-        childCount = getChildCount();
-
         int width = resolveSize(widthMeasureSpec, MeasureSpec.getSize(widthMeasureSpec));
         for (int i = 0; i < childCount; i++) {
             View childAt = getChildAt(i);
@@ -369,7 +368,6 @@ public class BannerView extends ViewGroup {
             if (mIndicatorLayout.getChildCount() > 0) {
                 return;
             }
-            int childCount = getChildCount();
             if (childCount > 0) {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 mIndicatorLayout.setOrientation(LinearLayout.HORIZONTAL);
