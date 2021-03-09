@@ -2,6 +2,9 @@ package android.helper.ui.activity.animation
 
 import android.helper.R
 import android.helper.base.BaseTitleActivity
+import android.helper.interfaces.listener.BannerChangeListener
+import android.helper.utils.ToastUtil
+import android.util.Log
 import kotlinx.android.synthetic.main.activity_view_pager.*
 
 /**
@@ -22,11 +25,16 @@ class ViewPagerActivity : BaseTitleActivity() {
 
         banner_view.setIndicatorView(fl_viewpager_indicator, 30, R.drawable.selector_banner_indicator_default)
         banner_view.setAutoLoop(true, 0)
-//        banner_view.setBannerChangeListener(object : BannerView.BannerChangeListener {
-//            override fun onSelected(position: Int) {
-//                LogUtil.e("当前的角标为：$position")
-//            }
-//        })
+        banner_view.setBannerChangeListener(object : BannerChangeListener {
+            override fun onSelector(position: Int) {
+                Log.e(TAG, "onSelector: $position")
+            }
+        })
+
+        banner_view.setBannerClickListener { view, position ->
+            ToastUtil.show("position:" + position)
+        }
+
 //
 //        btn_reset.setOnClickListener {
 //            banner_view.reset()

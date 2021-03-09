@@ -2,7 +2,9 @@ package android.helper.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.helper.interfaces.listener.BannerChangeListener;
 import android.helper.utils.ConvertUtil;
+import android.helper.utils.LogUtil;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -39,6 +41,7 @@ public class BannerView extends ViewGroup {
     private int mIndicatorResource;//指示器的资源
     private boolean mAutoLoop = true;// 是否自动轮播
     private long mAutoLoopInterval = 3 * 1000;// 默认自动轮播的间隔
+    private BannerChangeListener mBannerChangeListener;
 
     public BannerView(Context context) {
         super(context);
@@ -154,6 +157,9 @@ public class BannerView extends ViewGroup {
     private void dataLoadFinish() {
         isLoadFinish = true;
         addIndicatorView();
+
+        // 初始化数据
+        setCurrentItem(mPosition);
     }
 
     /**
@@ -270,6 +276,13 @@ public class BannerView extends ViewGroup {
                 childAt.setSelected(i == position);
             }
         }
+
+        // 选中事件的回调
+        if (mBannerChangeListener != null) {
+            mBannerChangeListener.onSelector(position);
+        }
+
+
         invalidate();
     }
 
@@ -378,5 +391,36 @@ public class BannerView extends ViewGroup {
             }
         }
     };
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        LogUtil.e("onDetachedFromWindow");
+
+        onStopLoop();
+    }
+
+
+    public void setBannerChangeListener(BannerChangeListener bannerChange) {
+        this.mBannerChangeListener = bannerChange;
+    }
+
+    public interface BannerClickListener {
+        void onClick(View view, int position);
+    }
+
+    /**
+     * view的点击事件
+     */
+    public void setBannerClickListener(BannerClickListener bannerClickListener) {
+        if (bannerClickListener != null) {
+            for (int i = 0; i < mChildCount; i++) {
+                View childAt = getChildAt(i);
+                if (childAt != null) {
+                    childAt.setOnClickListener(v -> bannerClickListener.onClick(childAt, mPosition));
+                }
+            }
+        }
+    }
 
 }
