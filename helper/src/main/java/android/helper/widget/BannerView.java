@@ -26,6 +26,7 @@ public class BannerView extends ViewGroup {
     private int mScrollPreset; // 滑动预设的值，超过这个值，就会去滑动的下一页
     private GestureDetector mDetector;
     private Scroller mScroller;
+    private int mPosition;//当前角标的position
     private float mStartX;// 按下的X轴坐标
     private boolean isToLeft;// 是否向左滑动
     private int mPositionDown = 0;// 按下的角标
@@ -169,8 +170,6 @@ public class BannerView extends ViewGroup {
         // 把手机滑动器添加给我触摸事件
         mDetector.onTouchEvent(event);
 
-        //当前角标的position
-        int mPosition;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mStartX = event.getX();
@@ -304,6 +303,7 @@ public class BannerView extends ViewGroup {
 
             for (int i = 0; i < mChildCount; i++) {
                 ImageView imageView = getImageViewForResource(params, mIndicatorResource);
+                imageView.setSelected(i == mPosition);
                 mIndicatorParentLayout.addView(imageView);
             }
         }
