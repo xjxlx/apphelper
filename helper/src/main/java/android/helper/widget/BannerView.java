@@ -174,7 +174,6 @@ public class BannerView extends ViewGroup {
         return imageView;
     }
 
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -191,6 +190,9 @@ public class BannerView extends ViewGroup {
                 break;
 
             case MotionEvent.ACTION_MOVE:
+                // 移动的时候，停止轮播
+                onStopLoop();
+
                 float endX = event.getX();
                 isToLeft = (endX - mStartX) < 0;
 
@@ -282,7 +284,6 @@ public class BannerView extends ViewGroup {
             mBannerChangeListener.onSelector(position);
         }
 
-
         invalidate();
     }
 
@@ -294,7 +295,6 @@ public class BannerView extends ViewGroup {
             invalidate();
         }
     }
-
 
     /**
      * @param indicatorParent 指示器的父布局
@@ -366,7 +366,6 @@ public class BannerView extends ViewGroup {
         mHandler.removeMessages(CODE_WHAT_LOOP);
     }
 
-
     @SuppressLint("HandlerLeak")
     private final Handler mHandler = new Handler() {
         @Override
@@ -400,7 +399,6 @@ public class BannerView extends ViewGroup {
         onStopLoop();
     }
 
-
     public void setBannerChangeListener(BannerChangeListener bannerChange) {
         this.mBannerChangeListener = bannerChange;
     }
@@ -414,7 +412,7 @@ public class BannerView extends ViewGroup {
      */
     public void setBannerClickListener(BannerClickListener bannerClickListener) {
         if (bannerClickListener != null) {
-            for (int i = 0; i < mChildCount; i++) {
+            for (int i = 1; i < getChildCount(); i++) {
                 View childAt = getChildAt(i);
                 if (childAt != null) {
                     childAt.setOnClickListener(v -> bannerClickListener.onClick(childAt, mPosition));
