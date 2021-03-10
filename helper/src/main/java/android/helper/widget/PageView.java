@@ -3,7 +3,9 @@ package android.helper.widget;
 import android.content.Context;
 import android.helper.utils.LogUtil;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,13 +18,13 @@ public class PageView extends ViewGroup {
 
     private Context mContext;
     private int mResource;// 资源文件
-    private View mView;// 布局的文件
-    private int mMeasuredWidth;// view的整体宽度
+    private int mLayoutMeasuredWidth; // view整体的宽度
     private LayoutParams params = new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     private int mViewRows = 3; // view的行数
     private int mViewColumn = 4;// view的列数
     private int mRowInterval = 30;// view行的间距
     private int mPageCount;// 一页的个数
+    private GestureDetector mDetector;
 
     public PageView(Context context) {
         super(context);
@@ -37,6 +39,16 @@ public class PageView extends ViewGroup {
     private void initView(Context context, AttributeSet attrs) {
         mContext = context;
         mPageCount = mViewRows * mViewColumn;
+
+        mDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+
+                scrollBy((int) distanceX, 0);
+
+                return super.onScroll(e1, e2, distanceX, distanceY);
+            }
+        });
     }
 
     public void setDataList(int[] resources) {
@@ -57,11 +69,12 @@ public class PageView extends ViewGroup {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        int measuredHeight = 0;// view的整体高度
-
+        mLayoutMeasuredWidth = 0;
+        // view的整体高度
+        int measuredHeight = 0;
         // view整体的宽度
-        mMeasuredWidth = resolveSize(widthMeasureSpec, MeasureSpec.getSize(widthMeasureSpec));
+        mLayoutMeasuredWidth = resolveSize(widthMeasureSpec, MeasureSpec.getSize(widthMeasureSpec));
+        LogUtil.e("mLayoutWidth:" + mLayoutMeasuredWidth);
 
         int childCount = getChildCount();
         if (childCount > 0) {
@@ -73,31 +86,38 @@ public class PageView extends ViewGroup {
 
             int viewHeight = getChildAt(0).getMeasuredHeight();
             // 求出view布局的高度
-            // 说明大于一行
-            if (childCount > (mViewColumn)) {
+            if (childCount > (mViewColumn)) {// 说明大于一行
                 measuredHeight = viewHeight * mViewRows;
-            } else {
-                // 小于一行
+            } else {// 小于一行
                 // 因为布局都一样，所以测量一个就够用了
                 measuredHeight = viewHeight;
             }
+
+            // 加入行高
+            measuredHeight += ((mViewRows - 1) * mRowInterval);
+
+            if (childCount > (mViewRows * mViewColumn)) {
+                // 重新设置
+//                mLayoutMeasuredWidth = mLayoutMeasuredWidth * 2;
+            }
+            // 重新设置
+            setMeasuredDimension(mLayoutMeasuredWidth, measuredHeight);
+            LogUtil.e("w:" + mLayoutMeasuredWidth + "  h:" + measuredHeight);
         }
-        // 加入行高
-        measuredHeight += ((mViewRows - 1) * mRowInterval);
-        // 重新设置
-        setMeasuredDimension(mMeasuredWidth, measuredHeight);
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+
+        int measuredWidth1 = getMeasuredWidth();
+        LogUtil.e("View的宽度为：" + measuredWidth1);
         int childCount = getChildCount();
         if (childCount > 0) {
-
+            int layoutMeasuredWidth = 0;
             int left = 0;
             int top = 0;
             int right = 0;
             int bottom = 0;
-            int rowInterval = 0;// 行的间距
             int columnInterval = 0;// 列的间距
 
             // 循环设置view的位置
@@ -111,7 +131,7 @@ public class PageView extends ViewGroup {
                 int measuredHeight = childAt.getMeasuredHeight();
 
                 // 列的间距 = view的总宽度 减去view的所有宽度和 除以 列数 减一，因为第一列不用做view的间距
-                columnInterval = (mMeasuredWidth - (mViewColumn * measuredWidth)) / (mViewColumn - 1);
+                columnInterval = (layoutMeasuredWidth - (mViewColumn * measuredWidth)) / (mViewColumn - 1);
 
                 // 所在第几行
                 int positionForRow = getPositionForRow(i);
@@ -130,6 +150,13 @@ public class PageView extends ViewGroup {
                 childAt.layout(left, top, right, bottom);
             }
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        mDetector.onTouchEvent(event);
+
+        return true;
     }
 
     /**
