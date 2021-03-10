@@ -384,9 +384,9 @@ public class BannerView extends ViewGroup {
                 setCurrentItem(mPosition);
 
                 // 重新发送
-                Message message = obtainMessage();
-                message.what = CODE_WHAT_LOOP;
-                sendMessageDelayed(message, mAutoLoopInterval);
+//                Message message = obtainMessage();
+//                message.what = CODE_WHAT_LOOP;
+//                sendMessageDelayed(message, mAutoLoopInterval);
             }
         }
     };
