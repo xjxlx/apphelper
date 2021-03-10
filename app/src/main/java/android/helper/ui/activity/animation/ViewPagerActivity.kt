@@ -35,10 +35,10 @@ class ViewPagerActivity : BaseTitleActivity() {
             ToastUtil.show("position:" + position)
         }
 
-//
-//        btn_reset.setOnClickListener {
-//            banner_view.reset()
-//        }
+
+        btn_reset.setOnClickListener {
+            banner_view.reset()
+        }
     }
 
 }

@@ -174,6 +174,35 @@ public class BannerView extends ViewGroup {
         return imageView;
     }
 
+    float mInterceptStartX;
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        // 把手势委托给拦截事件
+        mDetector.onTouchEvent(event);
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mInterceptStartX = event.getX();
+                int scrollX = getScrollX();
+
+                mPositionDown = getPositionForScrollX(scrollX);
+
+                LogUtil.e("scroll:" + scrollX);
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+
+                if (Math.abs(mInterceptStartX - event.getX()) > 0) {
+                    return true;
+                }
+                break;
+
+            default:
+                break;
+        }
+        return false;
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -183,8 +212,6 @@ public class BannerView extends ViewGroup {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mStartX = event.getX();
-                mPositionDown = getPositionForScrollX(getScrollX());
-
                 // 按下的时候，停止轮播
                 onStopLoop();
                 break;
@@ -196,9 +223,13 @@ public class BannerView extends ViewGroup {
                 float endX = event.getX();
                 isToLeft = (endX - mStartX) < 0;
 
+                LogUtil.e("start:" + mStartX + "  --->end:" + endX + "  result:" + (endX - mStartX));
+                mStartX = endX;
                 break;
 
             case MotionEvent.ACTION_UP:
+                LogUtil.e("当前是向左：" + isToLeft);
+
                 // 抬起手指的时候，开始轮播
                 onRestartLoop();
 
@@ -373,15 +404,15 @@ public class BannerView extends ViewGroup {
             super.handleMessage(msg);
             if (msg.what == CODE_WHAT_LOOP) {
 
-                int position = getPositionForScrollX(getScrollX());
-                if (mAutoLoop) {
-                    if (mPosition < mChildCount - 1) {
-                        mPosition = position + 1;
-                    } else {
-                        mPosition = 0;
-                    }
-                }
-                setCurrentItem(mPosition);
+//                int position = getPositionForScrollX(getScrollX());
+//                if (mAutoLoop) {
+//                    if (mPosition < mChildCount - 1) {
+//                        mPosition = position + 1;
+//                    } else {
+//                        mPosition = 0;
+//                    }
+//                }
+//                setCurrentItem(mPosition);
 
                 // 重新发送
 //                Message message = obtainMessage();
@@ -403,6 +434,10 @@ public class BannerView extends ViewGroup {
         this.mBannerChangeListener = bannerChange;
     }
 
+    public void reset() {
+        scrollTo(0, 0);
+    }
+
     public interface BannerClickListener {
         void onClick(View view, int position);
     }
@@ -412,10 +447,15 @@ public class BannerView extends ViewGroup {
      */
     public void setBannerClickListener(BannerClickListener bannerClickListener) {
         if (bannerClickListener != null) {
-            for (int i = 1; i < getChildCount(); i++) {
+            int childCount = getChildCount();
+            for (int i = 1; i < childCount; i++) {
                 View childAt = getChildAt(i);
                 if (childAt != null) {
-                    childAt.setOnClickListener(v -> bannerClickListener.onClick(childAt, mPosition));
+                    // 只相应中间的数据，最左侧和最右侧的view不响应
+                    if (i < childCount - 1) {
+                        int position = (i - 1);
+                        childAt.setOnClickListener(v -> bannerClickListener.onClick(childAt, position));
+                    }
                 }
             }
         }
