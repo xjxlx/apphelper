@@ -29,7 +29,8 @@ public class ViewMapTitleActivity extends BaseTitleActivity {
                 R.id.tv_progress,
                 R.id.tv_multiple_list_view, R.id.tv_custom_text, R.id.tv_custom_round,
                 R.id.tv_custom_random, R.id.tv_custom_left_and_right, R.id.tv_custom_progress,
-                R.id.tv_custom_touch, R.id.tv_custom_input_password, R.id.tv_scroll_view
+                R.id.tv_custom_touch, R.id.tv_custom_input_password, R.id.tv_scroll_view,
+                R.id.tv_page_view
         );
     }
 
@@ -68,6 +69,9 @@ public class ViewMapTitleActivity extends BaseTitleActivity {
 
             case R.id.tv_scroll_view:
                 startActivity(NestSlidingViewActivity.class);
+                break;
+            case R.id.tv_page_view:
+                startActivity(ScrollPageViewActivity.class);
                 break;
         }
     }

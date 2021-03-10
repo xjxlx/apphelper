@@ -60,6 +60,10 @@
             style="@style/style_item_selector"
             android:text="自定义滑动 控件" />
 
+        <TextView
+            android:id="@+id/tv_page_view"
+            style="@style/style_item_selector"
+            android:text="自定义滑动的PageView" />
 
     </LinearLayout>
 

@@ -232,7 +232,6 @@ public class NestSlidingView extends ViewGroup {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        LogUtil.e("---> onDraw");
     }
 
     public void testRefesh() {

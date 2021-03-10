@@ -18,12 +18,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppThem"
         tools:targetApi="n">
-        <activity android:name=".ui.activity.animation.ViewPagerActivity">
+
+        <activity android:name=".ui.activity.widget.ScrollPageViewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.activity.animation.ViewPagerActivity" />
         <activity android:name=".ui.activity.widget.NestSlidingViewActivity" />
         <activity android:name=".ui.activity.widget.InputPassWordActivity" />
         <activity android:name=".ui.activity.widget.TouchUnlockActivity" />
@@ -57,21 +60,27 @@
             <!-- 处理文字的Intent 我们需要定义action,  category, 和文字对应的MIME -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/*" />
             </intent-filter>
 
             <!-- 处理单张图片的Intent -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="image/*" />
             </intent-filter>
 
             <!-- 处理多张图片的Intent -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
@@ -152,6 +161,7 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
