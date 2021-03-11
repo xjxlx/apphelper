@@ -69,4 +69,48 @@ public class ViewUtil {
         }
     }
 
+    public static int getMarginLeft(View view) {
+        if (view != null) {
+            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+            if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+                return marginLayoutParams.leftMargin;
+            }
+        }
+        return 0;
+    }
+
+    public static int getMarginRight(View view) {
+        if (view != null) {
+            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+            if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+                return marginLayoutParams.rightMargin;
+            }
+        }
+        return 0;
+    }
+
+    public static int getMarginTop(View view) {
+        if (view != null) {
+            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+            if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+                return marginLayoutParams.topMargin;
+            }
+        }
+        return 0;
+    }
+
+    public static int getMarginBottom(View view) {
+        if (view != null) {
+            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+            if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+                return marginLayoutParams.bottomMargin;
+            }
+        }
+        return 0;
+    }
+
 }
