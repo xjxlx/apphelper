@@ -14,4 +14,7 @@
         android:layout_marginRight="@dimen/dp_20"
         android:background="@color/yellow_1" />
 
+    <!--    android:paddingLeft="@dimen/dp_20"-->
+    <!--    android:paddingRight="@dimen/dp_20"-->
+
 </RelativeLayout>
