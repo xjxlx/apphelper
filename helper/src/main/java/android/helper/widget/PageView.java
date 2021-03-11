@@ -28,7 +28,10 @@ public class PageView extends ViewGroup {
     private int mViewRows = 2; // view的行数
     private int mViewColumn = 4;// view的列数
     private int mRowInterval = 30;// view行的间距
-    private int mPageCount;// 一页的个数
+    private int mScrollPresetValue;// 滑动预设的值
+    private int viewIntervalWidth;// 宽度的间距
+    private int mOnePageCount;// 一页的个数
+    private int mPageCount;// 一共有几页
     private GestureDetector mDetector;
     private int mMarginLeft;
     private int mMarginRight;
@@ -47,8 +50,7 @@ public class PageView extends ViewGroup {
 
     private void initView(Context context, AttributeSet attrs) {
         mContext = context;
-        mPageCount = mViewRows * mViewColumn;
-
+        mOnePageCount = mViewRows * mViewColumn;
         mScroller = new Scroller(context);
 
         // 屏幕的宽度
@@ -59,7 +61,10 @@ public class PageView extends ViewGroup {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
-                scrollBy((int) distanceX, 0);
+                // 大于一页的时候，才可以滑动
+                if (mOnePageCount > 0) {
+                    scrollBy((int) distanceX, 0);
+                }
 
                 return super.onScroll(e1, e2, distanceX, distanceY);
             }
@@ -77,6 +82,10 @@ public class PageView extends ViewGroup {
         }
         // view的宽度 =  屏幕的宽度 -  左右的margin值
         mMeasuredWidth = mScreenWidth - mMarginLeft - mMarginRight;
+
+        // 预设的值
+        mScrollPresetValue = mMeasuredWidth / 4;
+
     }
 
     public void setDataList(int[] resources) {
@@ -93,6 +102,9 @@ public class PageView extends ViewGroup {
                     addView(view);
                 }
             }
+
+            // 一共有多少页
+            mPageCount = (resources.length / mOnePageCount) + 1;
         }
     }
 
@@ -130,12 +142,6 @@ public class PageView extends ViewGroup {
             // 加入行高
             measuredHeight += ((Math.abs(mViewRows - 1)) * mRowInterval);
 
-            if (childCount > mPageCount) {
-                measuredWidth = mMeasuredWidth * 2;
-            } else {
-                measuredWidth = mMeasuredWidth;
-            }
-
             // 重新设置
             setMeasuredDimension(mMeasuredWidth, measuredHeight);
             LogUtil.e("w:" + mMeasuredWidth + "  h:" + measuredHeight);
@@ -154,7 +160,6 @@ public class PageView extends ViewGroup {
             int top = 0;
             int right = 0;
             int bottom = 0;
-            int viewIntervalWidth;// 宽度的间距
 
             // 循环设置view的位置
             for (int i = 0; i < childCount; i++) {
@@ -204,6 +209,7 @@ public class PageView extends ViewGroup {
     }
 
     private float mDownStartX;
+    private int mPage;// 当前是第几页
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -213,6 +219,9 @@ public class PageView extends ViewGroup {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mDownStartX = event.getX();
+
+                // 当前按下的时候，是第几页
+                mPage = getScrollX() / mMeasuredWidth;
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -220,21 +229,51 @@ public class PageView extends ViewGroup {
                 float v = eventX - mDownStartX;
                 isToLeft = v < 0;
 
-                LogUtil.e("向左：" + isToLeft);
-
+                // 向左滑动的限制
                 int scrollX = getScrollX();
-                if (true) {
-                    return false;
+                LogUtil.e("向左：" + isToLeft + "   scrollX:" + scrollX);
+                if (scrollX <= 0) {
+                    setScrollX(0);
                 }
-                mDownStartX = eventX;
+                // 向右滑动的限制
+                if (scrollX >= ((mOnePageCount - 1) * mMeasuredWidth)) {
+
+                }
                 break;
 
             case MotionEvent.ACTION_UP:
+                int scrollX1 = getScrollX();
 
+                LogUtil.e("isToLeft:" + isToLeft);
+                if (isToLeft) { // 向左
+                    if (scrollX1 >= mScrollPresetValue) {
+                        // 向右滑动的时候，页数增加1
+                        mPage += 1;
+                        startScrollX(scrollX1, mMeasuredWidth - viewIntervalWidth);
+                    } else {
+                        startScrollX(scrollX1, 0);
+                    }
+                } else { // 向右
+
+                    if (Math.abs(scrollX1 - mMeasuredWidth) >= mScrollPresetValue) {
+                        // 向左滑动的时候，页数减去1
+                        if (mPage > 0) {
+                            mPage -= 1;
+                        }
+                        startScrollX(scrollX1, 0);
+                    } else {
+                        startScrollX(scrollX1, mMeasuredWidth);
+                    }
+                }
                 break;
         }
+        return true;
+    }
 
-        return super.onTouchEvent(event);
+    private void startScrollX(int scrollX, int target) {
+        LogUtil.e("page:" + mPage);
+        mScroller.startScroll(scrollX, 0, target - scrollX, 0);
+        invalidate();
     }
 
     /**
@@ -270,4 +309,12 @@ public class PageView extends ViewGroup {
         return (position / (mViewRows * mViewColumn));
     }
 
+    @Override
+    public void computeScroll() {
+        super.computeScroll();
+        if (mScroller.computeScrollOffset()) {
+            scrollTo(mScroller.getCurrX(), 0);
+            invalidate();
+        }
+    }
 }
