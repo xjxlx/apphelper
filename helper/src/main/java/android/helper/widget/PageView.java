@@ -297,12 +297,10 @@ public class PageView extends ViewGroup {
         return (position / (mViewRows * mViewColumn));
     }
 
-    public int getPageForScrollX(int scrollX) {
-        if (scrollX > 0) {
-            return 0;
-        }
-        return scrollX / (mLayoutMeasuredWidth - mRowInterval);
+    public void setOnClickListener(View.OnClickListener onClickListener){
+
     }
+
 
     @Override
     public void computeScroll() {
