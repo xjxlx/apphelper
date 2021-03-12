@@ -10,6 +10,7 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Scroller;
 
@@ -91,8 +92,7 @@ public class PageView extends ViewGroup {
         mLayoutMeasuredWidth = mScreenWidth - mMarginLeft - mMarginRight;
 
         // 预设的值
-        mScrollPresetValue = mLayoutMeasuredWidth / 4;
-
+        mScrollPresetValue = ViewConfiguration.get(mContext).getScaledTouchSlop();
     }
 
     public void setDataList(int[] resources) {
