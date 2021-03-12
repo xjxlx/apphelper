@@ -12,7 +12,9 @@
         android:layout_centerInParent="true"
         android:layout_marginLeft="@dimen/dp_20"
         android:layout_marginRight="@dimen/dp_20"
-        android:background="@color/yellow_1" />
+        android:background="@color/yellow_1"
+        android:paddingLeft="@dimen/dp_50"
+        android:paddingRight="@dimen/dp_50" />
 
     <!--    android:paddingLeft="@dimen/dp_20"-->
     <!--    android:paddingRight="@dimen/dp_20"-->

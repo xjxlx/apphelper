@@ -29,7 +29,7 @@ public class PageView extends ViewGroup {
     private int mViewColumn = 4;// view的列数
     private int mRowInterval = 30;// view行的间距
     private int mScrollPresetValue;// 滑动预设的值
-    private int viewIntervalWidth;// 宽度的间距
+    private int mViewIntervalWidth;// 宽度的间距
     private int mOnePageCount;// 一页的个数
     private int mPageCount;// 一共有几页
     private GestureDetector mDetector;
@@ -37,6 +37,11 @@ public class PageView extends ViewGroup {
     private int mMarginRight;
     private boolean isToLeft;
     private Scroller mScroller;
+    private float mScrollInterval; // 滑动的间距
+    private int mMeasuredHeight;// layout的高度
+    private int mViewMeasuredHeight;// view的高度
+    private int mViewMeasuredWidth;// view的宽度
+    private int mChildCount;
 
     public PageView(Context context) {
         super(context);
@@ -102,7 +107,6 @@ public class PageView extends ViewGroup {
                     addView(view);
                 }
             }
-
             // 一共有多少页
             mPageCount = (resources.length / mOnePageCount) + 1;
         }
@@ -116,96 +120,68 @@ public class PageView extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        int measuredHeight;// view的高度
-        int measuredWidth;// view的宽度
         getMargin();
 
         LogUtil.e("screenWidth:" + mScreenWidth + " marginLeft:" + mMarginLeft + "  marginRight: " + mMarginRight + "  result:" + mMeasuredWidth);
 
-        int childCount = getChildCount();
-        if (childCount > 0) {
+        mChildCount = getChildCount();
+        if (mChildCount > 0) {
 
             // 测量每一个view的宽高
-            for (int i = 0; i < childCount; i++) {
+            for (int i = 0; i < mChildCount; i++) {
                 View childAt = getChildAt(i);
                 measureChild(childAt, widthMeasureSpec, heightMeasureSpec);
             }
 
-            int viewHeight = getChildAt(0).getMeasuredHeight();
+            if (mViewMeasuredHeight <= 0) {
+                mViewMeasuredHeight = getChildAt(0).getMeasuredHeight();
+            }
+            if (mViewMeasuredWidth <= 0) {
+                mViewMeasuredWidth = getChildAt(0).getMeasuredWidth();
+            }
 
-            if (childCount > (mViewColumn)) {
-                measuredHeight = viewHeight * mViewRows;// 说明大于一行就需要叠加view的高度
+            if (mChildCount > (mViewColumn)) {
+                mMeasuredHeight = mViewMeasuredHeight * mViewRows;// 说明大于一行就需要叠加view的高度
             } else {
-                measuredHeight = viewHeight;// 小于一行，一个view的高度就可以了
+                mMeasuredHeight = mViewMeasuredHeight;// 小于一行，一个view的高度就可以了
             }
 
             // 加入行高
-            measuredHeight += ((Math.abs(mViewRows - 1)) * mRowInterval);
+            mMeasuredHeight += ((Math.abs(mViewRows - 1)) * mRowInterval);
 
             // 重新设置
-            setMeasuredDimension(mMeasuredWidth, measuredHeight);
-            LogUtil.e("w:" + mMeasuredWidth + "  h:" + measuredHeight);
+            setMeasuredDimension(mMeasuredWidth, mMeasuredHeight);
+            LogUtil.e("w:" + mMeasuredWidth + "  h:" + mViewMeasuredHeight);
         }
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        // 可以使用的总宽度 = 屏幕的宽度 - marginLeft -marginRight
-        int width = mMeasuredWidth - getPaddingLeft() - getPaddingRight();
-        LogUtil.e("View的宽度为：" + mMeasuredWidth + "   width:" + width);
-
+        // 重新布局
+        int right, top, bottom;
         int childCount = getChildCount();
-        if (childCount > 0) {
+
+        for (int i = 0; i < childCount; i++) {
+            View childAt = getChildAt(i);
             int left = 0;
-            int top = 0;
-            int right = 0;
-            int bottom = 0;
+            // 列间距 = view的宽度 - 一排view的宽度和 除以 列数 +1
+            mViewIntervalWidth = (mMeasuredWidth - getPaddingLeft() - getPaddingRight() - (mViewColumn * mViewMeasuredWidth)) / (mViewColumn + 1);
 
-            // 循环设置view的位置
-            for (int i = 0; i < childCount; i++) {
+            int positionForColumn = getPositionForColumn(i);
+            int positionForRow = getPositionForRow(i);
+            int page = getPageForPosition(i);
 
-                View childAt = getChildAt(i);
+            // （间距 *（列数 +1）） + （列数 * view的宽度）+ paddingLeft  = 一屏view的宽度
+            left += (((positionForColumn + 1) * mViewIntervalWidth) + (positionForColumn * mViewMeasuredWidth) + getPaddingLeft());
+            // 增加 页数 =（屏幕的宽度 -左右的padding - 间距）
+            left += (page * ((mMeasuredWidth - getPaddingLeft() - getPaddingRight()) - mViewIntervalWidth));
 
-                // 每个view的宽度
-                int viewMeasuredWidth = childAt.getMeasuredWidth();
-                // 每个view的高度
-                int viewMeasuredHeight = childAt.getMeasuredHeight();
+            right = left + mViewMeasuredWidth;
+            top = positionForRow * mViewMeasuredHeight + (positionForRow * mRowInterval);
+            bottom = top + mViewMeasuredHeight;
 
-                // 当前的页数
-                int page = getPageForPosition(i);
-                // 所在第几行
-                int positionForRow = getPositionForRow(i);
-                // 所在第几列
-                int positionForColumn = getPositionForColumn(i);
-
-                // 行的间距 =  可用的区间 -  （ 列数 +1 ）
-                viewIntervalWidth = (width - (mViewColumn * viewMeasuredWidth)) / (mViewColumn + 1);
-
-                // 获取当前的页数
-                LogUtil.e("当前view是：" + i + "  在第 " + positionForRow + " 行，在第 " + positionForColumn + " 列" + "  当前的页数：" + page);
-
-                // 左侧 = 左侧padding + 左侧间距  +左侧的view
-                if (page == 0) {
-                    left = (((page) * mMeasuredWidth)) + ((positionForColumn + 1) * viewIntervalWidth) + (positionForColumn * viewMeasuredWidth);
-                } else {
-                    left = (((page) * mMeasuredWidth) - viewIntervalWidth) + ((positionForColumn + 1) * viewIntervalWidth) + (positionForColumn * viewMeasuredWidth);
-                }
-
-                if (positionForColumn == 0) {
-                    left += ((page + 1) * getPaddingLeft());
-                }
-
-                right = left + viewMeasuredWidth;
-
-                top = getPaddingTop() + (viewMeasuredHeight * positionForRow) + (positionForRow * mRowInterval);
-
-                bottom = top + viewMeasuredHeight;
-
-                // 重新设置view的位置
-                childAt.layout(left, top, right, bottom);
-            }
+            childAt.layout(left, top, right, bottom);
         }
-
     }
 
     private float mDownStartX;
@@ -214,6 +190,10 @@ public class PageView extends ViewGroup {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // 小于一页就不执行
+        if (mChildCount <= mOnePageCount) {
+            return false;
+        }
         mDetector.onTouchEvent(event);
 
         switch (event.getAction()) {
@@ -221,50 +201,46 @@ public class PageView extends ViewGroup {
                 mDownStartX = event.getX();
 
                 // 当前按下的时候，是第几页
-                mPage = getScrollX() / mMeasuredWidth;
+                mPage = getScrollX() / (mMeasuredWidth - getPaddingLeft() - getPaddingRight() - mViewIntervalWidth);
                 break;
 
             case MotionEvent.ACTION_MOVE:
                 float eventX = event.getX();
-                float v = eventX - mDownStartX;
-                isToLeft = v < 0;
+                // 求出差值
+                mScrollInterval = eventX - mDownStartX;
+                // 向左还是向右
+                isToLeft = mScrollInterval < 0;
 
-                // 向左滑动的限制
                 int scrollX = getScrollX();
-                LogUtil.e("向左：" + isToLeft + "   scrollX:" + scrollX);
+                // 滑动的限制
                 if (scrollX <= 0) {
                     setScrollX(0);
                 }
-                // 向右滑动的限制
-                if (scrollX >= ((mOnePageCount - 1) * mMeasuredWidth)) {
-
+                if (scrollX >= ((mPageCount - 1) * (mMeasuredWidth - mViewIntervalWidth - getPaddingLeft()) - getPaddingRight())) {
+                    scrollTo(((mPageCount - 1) * (mMeasuredWidth - mViewIntervalWidth - getPaddingLeft()) - getPaddingRight()), 0);
                 }
                 break;
 
             case MotionEvent.ACTION_UP:
-                int scrollX1 = getScrollX();
-
-                LogUtil.e("isToLeft:" + isToLeft);
-                if (isToLeft) { // 向左
-                    if (scrollX1 >= mScrollPresetValue) {
-                        // 向右滑动的时候，页数增加1
-                        mPage += 1;
-                        startScrollX(scrollX1, mMeasuredWidth - viewIntervalWidth);
+                int targetEndX = 0;
+                int scrollXUp = getScrollX();
+                // 抬起的动作
+                if ((Math.abs(mScrollInterval)) > mScrollPresetValue) {
+                    if (isToLeft) {
+                        if (mPage < mPageCount - 1) {
+                            mPage += 1;
+                        }
                     } else {
-                        startScrollX(scrollX1, 0);
-                    }
-                } else { // 向右
-
-                    if (Math.abs(scrollX1 - mMeasuredWidth) >= mScrollPresetValue) {
-                        // 向左滑动的时候，页数减去1
                         if (mPage > 0) {
                             mPage -= 1;
                         }
-                        startScrollX(scrollX1, 0);
-                    } else {
-                        startScrollX(scrollX1, mMeasuredWidth);
                     }
                 }
+
+                targetEndX = mPage * (mMeasuredWidth - getPaddingLeft() - getPaddingRight() - mViewIntervalWidth);
+
+                startScrollX(scrollXUp, targetEndX);
+
                 break;
         }
         return true;
@@ -307,6 +283,13 @@ public class PageView extends ViewGroup {
             return 0;
         }
         return (position / (mViewRows * mViewColumn));
+    }
+
+    public int getPageForScrollX(int scrollX) {
+        if (scrollX > 0) {
+            return 0;
+        }
+        return scrollX / (mMeasuredWidth - mRowInterval);
     }
 
     @Override
