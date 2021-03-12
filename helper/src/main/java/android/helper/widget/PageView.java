@@ -297,10 +297,15 @@ public class PageView extends ViewGroup {
         return (position / (mViewRows * mViewColumn));
     }
 
-    public void setOnClickListener(View.OnClickListener onClickListener){
-
+    public void setOnItemClickListener(View.OnClickListener onClickListener) {
+        int childCount = getChildCount();
+        if (childCount > 0) {
+            for (int i = 0; i < childCount; i++) {
+                View childAt = getChildAt(i);
+                childAt.setOnClickListener(onClickListener);
+            }
+        }
     }
-
 
     @Override
     public void computeScroll() {
