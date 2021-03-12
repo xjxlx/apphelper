@@ -31,7 +31,7 @@ public class PageView extends ViewGroup {
     private int mViewRows = 2; // view的行数
     private int mViewColumn = 4;// view的列数
     private int mRowInterval = 30;// view行的间距
-    
+
     private int mScrollPresetValue;// 滑动预设的值
     private int mViewIntervalWidth;// 宽度的间距
     private int mOnePageCount;// 一页的个数
@@ -157,7 +157,7 @@ public class PageView extends ViewGroup {
             // 加入行高
             mLayoutMeasuredHeight += ((Math.abs(mViewRows - 1)) * mRowInterval);
             // 重新设置
-            setMeasuredDimension(mLayoutMeasuredWidth, mLayoutMeasuredHeight);
+            setMeasuredDimension(mLayoutMeasuredWidth, mLayoutMeasuredHeight + getPaddingTop() + getPaddingBottom());
             LogUtil.e("w:" + mLayoutMeasuredWidth + "  h:" + mViewMeasuredHeight);
         }
     }
@@ -184,7 +184,7 @@ public class PageView extends ViewGroup {
             left += (page * ((mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight()) - mViewIntervalWidth));
 
             right = left + mViewMeasuredWidth;
-            top = positionForRow * mViewMeasuredHeight + (positionForRow * mRowInterval);
+            top = positionForRow * mViewMeasuredHeight + (positionForRow * mRowInterval) + getPaddingTop();
             bottom = top + mViewMeasuredHeight;
 
             childAt.layout(left, top, right, bottom);
