@@ -108,7 +108,13 @@ public class PageView extends ViewGroup {
                 }
             }
             // 一共有多少页
-            mPageCount = (resources.length / mOnePageCount) + 1;
+            int value = resources.length / mOnePageCount;
+            int i = resources.length % mOnePageCount;
+            if (i > 0) {
+                mPageCount = (value + 1);
+            } else {
+                mPageCount = value;
+            }
         }
     }
 
@@ -214,11 +220,16 @@ public class PageView extends ViewGroup {
                 int scrollX = getScrollX();
                 // 滑动的限制
                 if (scrollX <= 0) {
-                    setScrollX(0);
+                    scrollTo(0, 0);
                 }
-                if (scrollX >= ((mPageCount - 1) * (mMeasuredWidth - mViewIntervalWidth - getPaddingLeft()) - getPaddingRight())) {
-                    scrollTo(((mPageCount - 1) * (mMeasuredWidth - mViewIntervalWidth - getPaddingLeft()) - getPaddingRight()), 0);
+                LogUtil.e("scroll:" + scrollX);
+                if (isToLeft) {
+                    if (scrollX > ((mPageCount - 1) * (mMeasuredWidth - getPaddingLeft() - getPaddingRight() - mViewIntervalWidth))) {
+
+                        scrollTo(((mPageCount - 1) * (mMeasuredWidth - getPaddingLeft() - getPaddingRight() - mViewIntervalWidth)), 0);
+                    }
                 }
+
                 break;
 
             case MotionEvent.ACTION_UP:
