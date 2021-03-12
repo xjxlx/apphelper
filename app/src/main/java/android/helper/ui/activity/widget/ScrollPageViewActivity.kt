@@ -2,6 +2,8 @@ package android.helper.ui.activity.widget
 
 import android.helper.R
 import android.helper.base.BaseTitleActivity
+import android.helper.utils.ToastUtil
+import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_scroll_page_view.*
 
 /**
@@ -37,6 +39,15 @@ class ScrollPageViewActivity : BaseTitleActivity() {
 
         pv_group.setLayout(R.layout.item_page_view)
         pv_group.setDataList(resources)
+        pv_group.setOnItemClickListener { v ->
+            val position = v?.tag
+            ToastUtil.show("position:$position")
+
+            if (position == 3) {
+                val textview = v.findViewById<TextView>(R.id.tv_content)
+                textview.setText("sss")
+            }
+        }
     }
 
 }
