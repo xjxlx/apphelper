@@ -103,7 +103,7 @@ public class PageView extends ViewGroup {
             if (mResource != 0) {
                 for (int i = 0; i < resources.length; i++) {
                     View view = LayoutInflater.from(mContext).inflate(mResource, null);
-                    // view.setLayoutParams(params);
+                    view.setLayoutParams(params);
                     addView(view);
                 }
             }
