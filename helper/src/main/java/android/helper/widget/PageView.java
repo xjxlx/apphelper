@@ -43,7 +43,6 @@ public class PageView extends ViewGroup {
     private float mScrollInterval; // 滑动的间距
     private int mViewMeasuredHeight;// view的高度
     private int mViewMeasuredWidth;// view的宽度
-    private int mChildCount;
 
     public PageView(Context context) {
         super(context);
@@ -104,7 +103,7 @@ public class PageView extends ViewGroup {
             if (mResource != 0) {
                 for (int i = 0; i < resources.length; i++) {
                     View view = LayoutInflater.from(mContext).inflate(mResource, null);
-                    view.setLayoutParams(params);
+                    // view.setLayoutParams(params);
                     addView(view);
                 }
             }
@@ -117,6 +116,8 @@ public class PageView extends ViewGroup {
                 mPageCount = value;
             }
         }
+
+        requestLayout();
     }
 
     public void setLayout(@LayoutRes int resource) {
@@ -131,7 +132,7 @@ public class PageView extends ViewGroup {
 
         LogUtil.e("screenWidth:" + mScreenWidth + " marginLeft:" + mMarginLeft + "  marginRight: " + mMarginRight + "  result:" + mLayoutMeasuredWidth);
 
-        mChildCount = getChildCount();
+        int mChildCount = getChildCount();
         if (mChildCount > 0) {
 
             // 测量每一个view的宽高
@@ -156,9 +157,9 @@ public class PageView extends ViewGroup {
             // 加入行高
             mLayoutMeasuredHeight += ((Math.abs(mViewRows - 1)) * mRowInterval);
             // 重新设置
-            setMeasuredDimension(mLayoutMeasuredWidth, mLayoutMeasuredHeight + getPaddingTop() + getPaddingBottom());
-            LogUtil.e("w:" + mLayoutMeasuredWidth + "  h:" + mViewMeasuredHeight);
         }
+        setMeasuredDimension(mLayoutMeasuredWidth, mLayoutMeasuredHeight + getPaddingTop() + getPaddingBottom());
+        LogUtil.e("w:" + mLayoutMeasuredWidth + "  h:" + mViewMeasuredHeight);
     }
 
     @Override
