@@ -68,12 +68,11 @@ public class PageView extends ViewGroup {
         mDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-
+                LogUtil.e("onScroll:" + mOnePageCount);
                 // 大于一页的时候，才可以滑动
                 if (mOnePageCount > 0) {
                     scrollBy((int) distanceX, 0);
                 }
-
                 return super.onScroll(e1, e2, distanceX, distanceY);
             }
         });
@@ -191,17 +190,56 @@ public class PageView extends ViewGroup {
         }
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        LogUtil.e("action-> disptouch:" + ev.getAction());
+        return super.dispatchTouchEvent(ev);
+    }
+
+    private float mInterceptDown;
+    private float mInterceptDx;// 移动的偏移量
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                /*
+                 * 此处必须要增加手势识别器的事件，因为在move的时候，已经做了返回，此处如果不做的，会固定返回false，导致手势的动作被拦截，导致出现异常情况
+                 */
+                mDetector.onTouchEvent(ev);
+
+                mInterceptDown = ev.getX();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float x = ev.getX();
+                float dx = Math.abs(x - mInterceptDown);
+                mInterceptDx += dx;
+                if (mInterceptDx > 0) {
+                    // 此处是为了区分是点击事件还是移动的时间，让移动和点击同时进行，因为点击事件是在移动事件的后面，所以返回为true,就是要中断点击的事件，让滑动的事件继续进行
+                    return true;
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                // 每次都要清空数据
+                mInterceptDx = 0;
+                break;
+        }
+        return super.onInterceptTouchEvent(ev);
+    }
+
     private float mDownStartX;
     private int mPage;// 当前是第几页
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        mDetector.onTouchEvent(event);
+
+        LogUtil.e("action:" + event.getAction());
         // 小于一页就不执行
         if (mChildCount <= mOnePageCount) {
             return false;
         }
-        mDetector.onTouchEvent(event);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -302,6 +340,7 @@ public class PageView extends ViewGroup {
         if (childCount > 0) {
             for (int i = 0; i < childCount; i++) {
                 View childAt = getChildAt(i);
+                childAt.setTag(i);
                 childAt.setOnClickListener(onClickListener);
             }
         }
