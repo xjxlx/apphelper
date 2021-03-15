@@ -10,7 +10,6 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Scroller;
 
@@ -39,7 +38,7 @@ public class PageView extends ViewGroup {
     private int mPageCount;// 一共有几页
     private GestureDetector mDetector;
 
-    private boolean isToLeft;
+    private int isToLeft; // 1：向左，2：向右 ，其他不处理
     private Scroller mScroller;
     private float mScrollInterval; // 滑动的间距
     private int mViewMeasuredHeight;// view的高度
@@ -91,7 +90,8 @@ public class PageView extends ViewGroup {
         mLayoutMeasuredWidth = mScreenWidth - mMarginLeft - mMarginRight;
 
         // 预设的值
-        mScrollPresetValue = ViewConfiguration.get(mContext).getScaledTouchSlop();
+        // mScrollPresetValue = ViewConfiguration.get(mContext).getScaledTouchSlop();
+        mScrollPresetValue = (mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight()) / 4;
     }
 
     public void setDataList(int[] resources) {
@@ -227,77 +227,79 @@ public class PageView extends ViewGroup {
         return super.onInterceptTouchEvent(ev);
     }
 
+    private float mDownDx;
     private float mDownStartX;
-    private int mPage;// 当前是第几页
+    private int mCurrentPage;// 当前是第几页
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mDetector.onTouchEvent(event);
-
-        LogUtil.e("action:" + event.getAction());
-        // 小于一页就不执行
-        if (mChildCount <= mOnePageCount) {
-            return false;
-        }
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mDownStartX = event.getX();
-
-                // 当前按下的时候，是第几页
-                mPage = getScrollX() / (mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight() - mViewIntervalWidth);
+                float startX = event.getX();
+                mDownDx = startX;
+                mDownStartX = startX;
+                // 求出当前的页面是哪一个page
+                mCurrentPage = getScrollX() / (mLayoutMeasuredWidth - getPaddingLeft() - mViewIntervalWidth - getPaddingRight());
                 break;
 
             case MotionEvent.ACTION_MOVE:
                 float eventX = event.getX();
-                // 求出差值
-                mScrollInterval = eventX - mDownStartX;
-                // 向左还是向右
-                isToLeft = mScrollInterval < 0;
+                float dx = eventX - mDownStartX;
+                // 防止手指抖动的设置
+                if (dx < -0.5) {
+                    isToLeft = 1;
+                } else if (dx > 1) {
+                    isToLeft = 2;
+                }
+
+                // 右侧的边距
+                float rightInterval = (mPageCount - 1) * (mLayoutMeasuredWidth - mViewIntervalWidth - getPaddingLeft() - getPaddingRight());
 
                 int scrollX = getScrollX();
-                // 滑动的限制
-                if (scrollX <= 0) {
+                if (scrollX < 0) {
                     scrollTo(0, 0);
-                }
-                LogUtil.e("scroll:" + scrollX);
-                if (isToLeft) {
-                    if (scrollX > ((mPageCount - 1) * (mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight() - mViewIntervalWidth))) {
-
-                        scrollTo(((mPageCount - 1) * (mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight() - mViewIntervalWidth)), 0);
-                    }
+                } else if (scrollX >= (rightInterval)) {
+                    scrollTo((int) rightInterval, 0);
                 }
 
+                LogUtil.e("isToLeft:" + isToLeft + "   sx:" + mDownStartX + "  ex:" + eventX + "   rx:" + dx);
+                mDownStartX = eventX; // 这句话的含义是为了更快的测量出来手指的方向
                 break;
 
             case MotionEvent.ACTION_UP:
-                int targetEndX = 0;
-                int scrollXUp = getScrollX();
-                // 抬起的动作
-                if ((Math.abs(mScrollInterval)) > mScrollPresetValue) {
-                    if (isToLeft) {
-                        if (mPage < mPageCount - 1) {
-                            mPage += 1;
+                LogUtil.e("mScrollInterval:" + mScrollInterval + "   mCurrentPage:" + mCurrentPage);
+
+                float dxUp = event.getX();
+                mScrollInterval = dxUp - mDownDx;
+                int scrollX1 = getScrollX();
+                if (isToLeft == 1) {
+                    if (Math.abs(mScrollInterval) >= mScrollPresetValue) {
+                        if (mCurrentPage < mPageCount - 1) {
+                            mCurrentPage += 1;
                         }
-                    } else {
-                        if (mPage > 0) {
-                            mPage -= 1;
+                    }
+                } else if (isToLeft == 2) {
+                    if (mScrollInterval >= mScrollPresetValue) {
+                        if (mCurrentPage > 0) {
+                            mCurrentPage -= 1;
                         }
                     }
                 }
 
-                targetEndX = mPage * (mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight() - mViewIntervalWidth);
+                startScrollX(scrollX1, mCurrentPage * (mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight() - mViewIntervalWidth));
 
-                startScrollX(scrollXUp, targetEndX);
-
+                // 清空数据
+                isToLeft = 0;
+                mScrollInterval = 0;
                 break;
         }
         return true;
     }
 
     private void startScrollX(int scrollX, int target) {
-        LogUtil.e("page:" + mPage);
+        LogUtil.e("page:" + mCurrentPage);
         mScroller.startScroll(scrollX, 0, target - scrollX, 0);
         invalidate();
     }
