@@ -15,6 +15,8 @@ import android.widget.Scroller;
 
 import androidx.annotation.LayoutRes;
 
+import java.util.ArrayList;
+
 /**
  * 可以滑动的九宫格View
  */
@@ -43,6 +45,7 @@ public class PageView extends ViewGroup {
     private float mScrollInterval; // 滑动的间距
     private int mViewMeasuredHeight;// view的高度
     private int mViewMeasuredWidth;// view的宽度
+    private ItemClickListener mListener;
 
     public PageView(Context context) {
         super(context);
@@ -93,23 +96,37 @@ public class PageView extends ViewGroup {
         mScrollPresetValue = (mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight()) / 4;
     }
 
-    public void setDataList(int[] resources) {
+    /**
+     * @param dataList 设置数据
+     */
+    public <T> void setDataList(ArrayList<T> dataList) {
+
         getMargin();
 
         ViewGroup.LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-
-        if (resources != null && resources.length > 0) {
-            LogUtil.e("size:" + resources.length);
+        if ((dataList != null) && (dataList.size() > 0)) {
+            int size = dataList.size();
             if (mResource != 0) {
-                for (int i = 0; i < resources.length; i++) {
+                for (int i = 0; i < size; i++) {
                     View view = LayoutInflater.from(mContext).inflate(mResource, null);
                     view.setLayoutParams(params);
+                    view.setTag(i);
+                    if (mListener != null) {
+                        int finalI = i;
+                        int finalI1 = i;
+                        view.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mListener.onItemClickListener(finalI, view, dataList.get(finalI1));
+                            }
+                        });
+                    }
                     addView(view);
                 }
             }
             // 一共有多少页
-            int value = resources.length / mOnePageCount;
-            int i = resources.length % mOnePageCount;
+            int value = size / mOnePageCount;
+            int i = size % mOnePageCount;
             if (i > 0) {
                 mPageCount = (value + 1);
             } else {
@@ -144,6 +161,7 @@ public class PageView extends ViewGroup {
             if (mViewMeasuredHeight <= 0) {
                 mViewMeasuredHeight = getChildAt(0).getMeasuredHeight();
             }
+
             if (mViewMeasuredWidth <= 0) {
                 mViewMeasuredWidth = getChildAt(0).getMeasuredWidth();
             }
@@ -189,12 +207,6 @@ public class PageView extends ViewGroup {
 
             childAt.layout(left, top, right, bottom);
         }
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        LogUtil.e("action-> disptouch:" + ev.getAction());
-        return super.dispatchTouchEvent(ev);
     }
 
     private float mInterceptDown;
@@ -338,15 +350,14 @@ public class PageView extends ViewGroup {
         return (position / (mViewRows * mViewColumn));
     }
 
-    public void setOnItemClickListener(View.OnClickListener onClickListener) {
-        int childCount = getChildCount();
-        if (childCount > 0) {
-            for (int i = 0; i < childCount; i++) {
-                View childAt = getChildAt(i);
-                childAt.setTag(i);
-                childAt.setOnClickListener(onClickListener);
-            }
-        }
+    /**
+     * 必须在设置数据前面设置
+     *
+     * @param onClickListener 监听器
+     * @param <T>             泛型类型
+     */
+    public <T> void setOnItemClickListener(ItemClickListener<T> onClickListener) {
+        this.mListener = onClickListener;
     }
 
     @Override
@@ -357,4 +368,9 @@ public class PageView extends ViewGroup {
             invalidate();
         }
     }
+
+    public interface ItemClickListener<T> {
+        void onItemClickListener(int position, View view, T t);
+    }
+
 }
