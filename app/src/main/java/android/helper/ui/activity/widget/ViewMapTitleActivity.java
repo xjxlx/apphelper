@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.helper.R;
 import android.helper.base.BaseTitleActivity;
 import android.helper.databinding.ActivityViewMapBinding;
+import android.helper.ui.activity.hmview.HmCustomViewActivity;
 import android.view.View;
 
 public class ViewMapTitleActivity extends BaseTitleActivity {
@@ -30,7 +31,7 @@ public class ViewMapTitleActivity extends BaseTitleActivity {
                 R.id.tv_multiple_list_view, R.id.tv_custom_text, R.id.tv_custom_round,
                 R.id.tv_custom_random, R.id.tv_custom_left_and_right, R.id.tv_custom_progress,
                 R.id.tv_custom_touch, R.id.tv_custom_input_password, R.id.tv_scroll_view,
-                R.id.tv_page_view
+                R.id.tv_page_view, R.id.tv_test_hm
         );
     }
 
@@ -72,6 +73,10 @@ public class ViewMapTitleActivity extends BaseTitleActivity {
                 break;
             case R.id.tv_page_view:
                 startActivity(ScrollPageViewActivity.class);
+                break;
+
+            case R.id.tv_test_hm:  // 自定义黑马的view
+                startActivity(HmCustomViewActivity.class);
                 break;
         }
     }
