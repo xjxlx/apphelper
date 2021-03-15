@@ -17,7 +17,7 @@ public class SwitchView extends View {
 
     private Bitmap mBitmapBackground;
     private Bitmap mBitmapSelector;
-    private float left = 0;
+    private float left = 20;
     private int mBackgroundWidth;
     private int mSelectorWidth;
     private int mTop;
@@ -66,7 +66,7 @@ public class SwitchView extends View {
 
         canvas.drawBitmap(mBitmapBackground, 0, 0, null);
         LogUtil.e("onDraw:--->left:" + left);
-        canvas.drawBitmap(mBitmapSelector, left + 20, mTop, null);
+        canvas.drawBitmap(mBitmapSelector, left, mTop, null);
     }
 
     private float mStartX;
@@ -85,19 +85,20 @@ public class SwitchView extends View {
 
                 // 限制左边
                 if (left < 0) {
-                    left = 0;
+                    left = 20;
                 }
                 // 限制右侧
-                if ((left + mSelectorWidth + 40) > mBackgroundWidth) {
-                    left = mBackgroundWidth - mSelectorWidth - 40;
+                if ((left + mSelectorWidth + 20) > mBackgroundWidth) {
+                    left = mBackgroundWidth - mSelectorWidth - 20;
                 }
 
                 invalidate();
                 LogUtil.e("left:" + left + "  mSelectorWidth:" + mSelectorWidth + "   mBackgroundWidth:" + mBackgroundWidth);
+
                 break;
 
             case MotionEvent.ACTION_UP:
-
+                left = event.getX()+20;
                 break;
         }
 
