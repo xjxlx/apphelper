@@ -17,10 +17,12 @@ public class SwitchView extends View {
 
     private Bitmap mBitmapBackground;
     private Bitmap mBitmapSelector;
-    private int left = 20;
+    private float mLeft = 20;
     private int mBackgroundWidth;
     private int mSelectorWidth;
-    private int mTop;
+    private float mTop;
+    private boolean isOpen;// 默认是关闭的状态
+    private SwitchChangeListener mListener;
 
     public SwitchView(Context context) {
         super(context);
@@ -36,8 +38,8 @@ public class SwitchView extends View {
         Bitmap background = BitmapUtil.getBitmapForResourceId(context, R.mipmap.switch_background);
         Bitmap selector = BitmapUtil.getBitmapForResourceId(context, R.mipmap.slide_button);
 
-        mBitmapBackground = BitmapUtil.getScaleBitmap(background, background.getWidth() * 4, background.getHeight() * 4);
-        mBitmapSelector = BitmapUtil.getScaleBitmap(selector, selector.getWidth() * 4, selector.getHeight() * 4);
+        mBitmapBackground = BitmapUtil.getScaleBitmap(background, background.getWidth() * 2, background.getHeight() * 2);
+        mBitmapSelector = BitmapUtil.getScaleBitmap(selector, selector.getWidth() * 2, selector.getHeight() * 2);
 
         // 背景的宽度
         mBackgroundWidth = mBitmapBackground.getWidth();
@@ -47,6 +49,18 @@ public class SwitchView extends View {
         int height1 = mBitmapSelector.getHeight();
         int i = height - height1;
         mTop = i / 2;
+
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isOpen) {
+                    mLeft = 20;
+                } else {
+                    mLeft = mBackgroundWidth - mSelectorWidth - 20;
+                }
+                invalidate();
+            }
+        });
     }
 
     @Override
@@ -65,47 +79,94 @@ public class SwitchView extends View {
         super.onDraw(canvas);
 
         canvas.drawBitmap(mBitmapBackground, 0, 0, null);
-        LogUtil.e("onDraw:--->left:" + left);
-        canvas.drawBitmap(mBitmapSelector, left, mTop, null);
+        LogUtil.e("onDraw:--->left:" + mLeft);
+        canvas.drawBitmap(mBitmapSelector, mLeft, mTop, null);
     }
 
-    private int mStartX;
-    private int mOffestX;
+    private float mStartX;
+    private boolean isMove;
+    private float mOffsetX;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mStartX = (int) event.getX();
 
+                mStartX = event.getX();
                 break;
+
             case MotionEvent.ACTION_MOVE:
-                int endX = (int) event.getX();
-                mOffestX = endX - mStartX;
+                float eventX = event.getX();
+                float dx = eventX - mStartX;
 
-                LogUtil.e("sx:" + mStartX + "  endx:" + endX + "  dx:" + mOffestX);
+                mLeft += dx;
 
-                // 限制左侧
-                if (mOffestX < 20) {
-                    mOffestX = 20;
+                mOffsetX = Math.abs(mLeft);
+
+                // 左侧的边界
+                if (mLeft < 20) {
+                    mLeft = 20;
                 }
 
-                // 限制右侧
-                if ((mOffestX + mSelectorWidth + 20) > mBackgroundWidth) {
-                    mOffestX = mBackgroundWidth - mSelectorWidth - 20;
+                // 右侧的边界
+                int i = mBackgroundWidth - mSelectorWidth - 20;
+                if (mLeft > i) {
+                    mLeft = i;
                 }
+
+                LogUtil.e("left:" + mLeft);
+
                 invalidate();
-                left = mOffestX;
+                mStartX = eventX;
 
-                LogUtil.e("移动的值为：" + mOffestX);
                 break;
 
             case MotionEvent.ACTION_UP:
 
+                // 移动还是惦记
+                isMove = mOffsetX > 5;
+
+                // 去除左侧的边距，剩余的距离
+                int i1 = mBackgroundWidth - mSelectorWidth - 20;
+                int offsetX = (i1) / 2;
+                LogUtil.e("isMove:" + isMove);
+
+                if (isMove) { // 如果是移动的话，那么入股哦当前left的值大于
+                    if (mLeft > offsetX) {
+                        mLeft = i1;
+                        isOpen = true;
+                    } else {
+                        mLeft = 20;
+                        isOpen = false;
+                    }
+                } else {
+                    if (isOpen) {
+                        mLeft = 20;
+                        isOpen = false;
+                    } else {
+                        mLeft = i1;
+                        isOpen = true;
+                    }
+                }
+
+                if (mListener != null) {
+                    mListener.onChange(isOpen);
+                }
+
+                invalidate();
+                // 清空数据
+                mOffsetX = 0;
                 break;
         }
-
         return true;
+    }
+
+    public interface SwitchChangeListener {
+        void onChange(boolean isOpen);
+    }
+
+    public void setSwitchChangeListener(SwitchChangeListener listener) {
+        mListener = listener;
     }
 }

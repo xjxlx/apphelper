@@ -8,10 +8,10 @@
     tools:context=".ui.activity.hmview.HmCustomViewActivity">
 
     <android.helper.widget.hm.SwitchView
+        android:id="@+id/sv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/dp_50"
-        android:background="@color/yellow_1" />
+        android:layout_marginTop="@dimen/dp_30" />
 
 </LinearLayout>
