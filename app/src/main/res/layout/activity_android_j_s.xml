@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".test.AndroidJSActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/yellow_1"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Android模块"
+            android:textColor="#000"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_androidcalljs"
+            android:layout_width="170dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/blue_1"
+            android:gravity="center"
+            android:text="Android调用Js"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/tv_androidcalljsargs"
+            android:layout_width="170dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/blue_1"
+            android:gravity="center"
+            android:text="Android调用Js并传参数"
+            android:textColor="@color/white" />
+        <TextView
+            android:id="@+id/tv_androidgetjsarg"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/blue_1"
+            android:gravity="center"
+            android:text="Android调用Js并获取Js参数"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/tv_showmsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="调用Android显示结果"
+            android:textColor="#000"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <WebView
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+</LinearLayout>

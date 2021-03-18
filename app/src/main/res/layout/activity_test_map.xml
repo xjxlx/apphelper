@@ -25,6 +25,11 @@
             style="@style/style_todo_item"
             android:text="测试FlexboxLayout" />
 
+        <TextView
+            android:id="@+id/tv_test_js_to_android"
+            style="@style/style_todo_item"
+            android:text="Android和JS互相调用" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

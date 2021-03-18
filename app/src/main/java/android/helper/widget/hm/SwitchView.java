@@ -17,7 +17,7 @@ public class SwitchView extends View {
 
     private Bitmap mBitmapBackground;
     private Bitmap mBitmapSelector;
-    private float left = 20;
+    private int left = 20;
     private int mBackgroundWidth;
     private int mSelectorWidth;
     private int mTop;
@@ -69,40 +69,43 @@ public class SwitchView extends View {
         canvas.drawBitmap(mBitmapSelector, left, mTop, null);
     }
 
-    private float mStartX;
+    private int mStartX;
+    private int mOffestX;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mStartX = event.getX();
+                mStartX = (int) event.getX();
 
                 break;
             case MotionEvent.ACTION_MOVE:
-                float endX = event.getX();
-                left = endX - mStartX;
+                int endX = (int) event.getX();
+                mOffestX = endX - mStartX;
 
-                // 限制左边
-                if (left < 0) {
-                    left = 20;
+                LogUtil.e("sx:" + mStartX + "  endx:" + endX + "  dx:" + mOffestX);
+
+                // 限制左侧
+                if (mOffestX < 20) {
+                    mOffestX = 20;
                 }
+
                 // 限制右侧
-                if ((left + mSelectorWidth + 20) > mBackgroundWidth) {
-                    left = mBackgroundWidth - mSelectorWidth - 20;
+                if ((mOffestX + mSelectorWidth + 20) > mBackgroundWidth) {
+                    mOffestX = mBackgroundWidth - mSelectorWidth - 20;
                 }
-
                 invalidate();
-                LogUtil.e("left:" + left + "  mSelectorWidth:" + mSelectorWidth + "   mBackgroundWidth:" + mBackgroundWidth);
+                left = mOffestX;
 
+                LogUtil.e("移动的值为：" + mOffestX);
                 break;
 
             case MotionEvent.ACTION_UP:
-                left = event.getX()+20;
+
                 break;
         }
 
-//        return super.onTouchEvent(event);
         return true;
     }
 }
