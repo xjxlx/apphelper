@@ -53,8 +53,8 @@ public class AndroidJSActivity extends BaseTitleActivity {
          * 前端调用移动端时候，必须的设置
          */
         settings.setJavaScriptEnabled(true);
-//        webview.loadUrl("file:///android_asset/测试.html");
-        webview.loadUrl("https://www.vipandroid.cn/apk/index.html");
+        webview.loadUrl("file:///android_asset/测试.html");
+        // webview.loadUrl("https://www.vipandroid.cn/apk/index.html");
         webview.addJavascriptInterface(AndroidJs.getInstance(), AndroidJs.getJsInterfaceName());
 
         // android 调用JS 无参数方法,不带返回值
