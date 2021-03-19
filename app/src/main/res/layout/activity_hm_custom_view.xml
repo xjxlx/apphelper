@@ -14,4 +14,8 @@
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/dp_30" />
 
+    <android.helper.widget.hm.WareView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>
