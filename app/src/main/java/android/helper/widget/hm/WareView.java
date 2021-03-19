@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.helper.utils.LogUtil;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,8 +46,9 @@ public class WareView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        // 绘制所有的圆形
         for (Point point : mList) {
-            canvas.drawCircle(point.x, point.y, 30, point.getPaint());
+            canvas.drawCircle(point.getX(), point.getY(), 30, point.getPaint());
         }
     }
 
@@ -64,6 +64,12 @@ public class WareView extends View {
         return true;
     }
 
+    /**
+     * 添加一个新的圆形
+     *
+     * @param x 按下的X轴
+     * @param y 按下的Y轴
+     */
     private void addPoint(float x, float y) {
 
         Point point = new Point();
@@ -75,11 +81,10 @@ public class WareView extends View {
         paint.setAlpha(255);
         Random random = new Random();
         int round = random.nextInt(mColors.length);
-        LogUtil.e("round:" + round);
+        paint.setColor(mColors[round]);
+        paint.setStrokeWidth(30);
 
-        paint.setColor(round);
-        paint.setStrokeWidth(20);
-
+        point.setPaint(paint);
         point.setPaint(paint);
         point.setRadius(0);
 
@@ -91,17 +96,14 @@ public class WareView extends View {
     }
 
     private void refreshView() {
-        for (Point point : mList) {
-            point.radius += 3;
-        }
 
     }
 
     public static class Point {
-        float x; // X轴
-        float y; // Y轴
-        float radius; // 圆心
-        Paint paint; // 因为要设置不同的颜色，不同的透明度，所以每一次都要初始化一次
+        private float x; // X轴
+        private float y; // Y轴
+        private float radius; // 圆心
+        private Paint paint; // 因为要设置不同的颜色，不同的透明度，所以每一次都要初始化一次
 
         public float getX() {
             return x;
