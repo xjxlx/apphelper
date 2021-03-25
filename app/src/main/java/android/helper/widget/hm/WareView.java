@@ -14,6 +14,9 @@ import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 波浪圆的view
  */
@@ -22,10 +25,8 @@ public class WareView extends BaseView {
     // 颜色集合
     private final int[] mColors = new int[]{Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
 
-    private float cx;
-    private float cy;
-    private Paint mPain;
-    private float mRadius; // 半径
+    // 圆环的集合
+    private final List<Point> mListData = new ArrayList<>();
 
     public WareView(Context context) {
         super(context);
@@ -38,21 +39,18 @@ public class WareView extends BaseView {
     @Override
     public void initView(Context context, AttributeSet attrs) {
         super.initView(context, attrs);
-        mRadius = 0;
 
-        mPain = new Paint();
-        mPain.setStyle(Paint.Style.STROKE);
-        mPain.setColor(Color.RED);
-        mPain.setStrokeWidth(30);
-        mPain.setAntiAlias(true);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if ((cx > 0) && (cy > 0)) {
-            canvas.drawCircle(cx, cy, mRadius, mPain);
+
+        for (Point point : mListData) {
+
+            canvas.drawCircle(point.x, point.y, point.radius, point.paint);
         }
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -61,50 +59,88 @@ public class WareView extends BaseView {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
-                cx = event.getX();
-                cy = event.getY();
+                // 1:在按下或者移动的时候，去添加一个点到集合中去
 
-                // 重新初始化消息
-                initView(null, null);
+                if (mListData.isEmpty()) {
+                    addPoint(event.getX(), event.getY());
 
-                mHandler.sendEmptyMessage(1);
+                    mHandler.sendEmptyMessage(1);
+                } else {
+                    // 上一个view
+                    Point point = mListData.get(mListData.size() - 1);
+
+                    // 避免间距过大
+                    if (((Math.abs(point.x - (event.getX())) > 10)) || ((Math.abs(point.y - (event.getY())) > 10))) {
+                        addPoint(event.getX(), event.getY());
+                    }
+                }
+
                 break;
         }
-        return super.onTouchEvent(event);
+
+        return true;
+    }
+
+    private void addPoint(float x, float y) {
+        Point point = new Point();
+        point.x = x;
+        point.y = y;
+        point.radius = 2;
+
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(10);
+        paint.setAlpha(255);
+        int index = (int) (Math.random() * mColors.length);
+        paint.setColor(mColors[index]);
+        paint.setAntiAlias(true);
+
+        point.paint = paint;
+
+        mListData.add(point);
     }
 
     @SuppressLint("HandlerLeak")
-    private Handler mHandler = new Handler() {
+    private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            // 想让圆环发生动态的改变
-            LogUtil.e("持续发送消息---->");
 
-            // 清空之前的handler,避免不停的轮询，导致数据异常
-            removeMessages(1);
+            ArrayList<Point> removeList = new ArrayList<>();
 
-            // 宽度变大
-            mRadius += 5;
+            LogUtil.e("handler在轮询");
+            // 让圆圈动起来
+            for (Point point : mListData) {
 
-            // view的宽度也渐渐变大
-            mPain.setStrokeWidth(mRadius / 3);
+                point.radius += 5; // 半径增加
+                point.paint.setStrokeWidth(point.radius / 3); // view的宽度随着扩散而变大
+                int alpha = point.paint.getAlpha();
+                alpha -= 5;
+                if (alpha <= 0) {
+                    alpha = 0;// 避免透明度为负数
+                    // 移除不用的view
+                    //  mListData.remove(point); 便利集合的时候，不能去操作集合，不然会触发并发的异常
+                    removeList.add(point);
+                }
 
-            // 颜色变淡
-            int alpha = mPain.getAlpha();
-            alpha -= 5;
-            if (alpha <= 0) {
-                alpha = 0;
+                point.paint.setAlpha(alpha);// 透明度递减
             }
 
-            mPain.setAlpha(alpha);
-            if (alpha <= 0) {
-                mHandler.removeMessages(1);
-            } else {
-                invalidate();
+            // 移除不用的集合view
+            mListData.removeAll(removeList);
+
+            if (!mListData.isEmpty()) {
+                // 循环便利
                 mHandler.sendEmptyMessageDelayed(1, 50);
+                invalidate();
             }
         }
     };
 
+    static class Point {
+        public float x;
+        public float y;
+        public float radius;
+        public Paint paint;
+    }
 }
