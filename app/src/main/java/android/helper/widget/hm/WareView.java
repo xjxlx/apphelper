@@ -5,50 +5,53 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.helper.base.BaseView;
+import android.helper.utils.LogUtil;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 
 import androidx.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 /**
  * 波浪圆的view
  */
-public class WareView extends View {
+public class WareView extends BaseView {
 
     // 颜色集合
     private final int[] mColors = new int[]{Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
 
-    /**
-     * 封装点击或者移动时候的按下位置
-     */
-    private final List<Point> mList = new ArrayList<>();
+    private float cx;
+    private float cy;
+    private Paint mPain;
+    private float mRadius; // 半径
 
     public WareView(Context context) {
         super(context);
-        initView(context, null);
     }
 
     public WareView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        initView(context, attrs);
     }
 
-    private void initView(Context context, AttributeSet attrs) {
+    @Override
+    public void initView(Context context, AttributeSet attrs) {
+        super.initView(context, attrs);
+        mRadius = 0;
 
+        mPain = new Paint();
+        mPain.setStyle(Paint.Style.STROKE);
+        mPain.setColor(Color.RED);
+        mPain.setStrokeWidth(30);
+        mPain.setAntiAlias(true);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        // 绘制所有的圆形
-        for (Point point : mList) {
-            canvas.drawCircle(point.getX(), point.getY(), 30, point.getPaint());
+        if ((cx > 0) && (cy > 0)) {
+            canvas.drawCircle(cx, cy, mRadius, mPain);
         }
     }
 
@@ -58,83 +61,50 @@ public class WareView extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
-                addPoint(event.getX(), event.getY());
+                cx = event.getX();
+                cy = event.getY();
+
+                // 重新初始化消息
+                initView(null, null);
+
+                mHandler.sendEmptyMessage(1);
                 break;
         }
-        return true;
+        return super.onTouchEvent(event);
     }
 
-    /**
-     * 添加一个新的圆形
-     *
-     * @param x 按下的X轴
-     * @param y 按下的Y轴
-     */
-    private void addPoint(float x, float y) {
+    @SuppressLint("HandlerLeak")
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            // 想让圆环发生动态的改变
+            LogUtil.e("持续发送消息---->");
 
-        Point point = new Point();
-        point.setX(x);
-        point.setY(y);
+            // 清空之前的handler,避免不停的轮询，导致数据异常
+            removeMessages(1);
 
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.STROKE);// 空心
-        paint.setAlpha(255);
-        Random random = new Random();
-        int round = random.nextInt(mColors.length);
-        paint.setColor(mColors[round]);
-        paint.setStrokeWidth(30);
+            // 宽度变大
+            mRadius += 5;
 
-        point.setPaint(paint);
-        point.setPaint(paint);
-        point.setRadius(0);
+            // view的宽度也渐渐变大
+            mPain.setStrokeWidth(mRadius / 3);
 
-        mList.add(point);
+            // 颜色变淡
+            int alpha = mPain.getAlpha();
+            alpha -= 5;
+            if (alpha <= 0) {
+                alpha = 0;
+            }
 
-        refreshView();
-
-        invalidate();
-    }
-
-    private void refreshView() {
-
-    }
-
-    public static class Point {
-        private float x; // X轴
-        private float y; // Y轴
-        private float radius; // 圆心
-        private Paint paint; // 因为要设置不同的颜色，不同的透明度，所以每一次都要初始化一次
-
-        public float getX() {
-            return x;
+            mPain.setAlpha(alpha);
+            if (alpha <= 0) {
+                mHandler.removeMessages(1);
+            } else {
+                invalidate();
+                mHandler.sendEmptyMessageDelayed(1, 50);
+            }
         }
+    };
 
-        public void setX(float x) {
-            this.x = x;
-        }
-
-        public float getY() {
-            return y;
-        }
-
-        public void setY(float y) {
-            this.y = y;
-        }
-
-        public float getRadius() {
-            return radius;
-        }
-
-        public void setRadius(float radius) {
-            this.radius = radius;
-        }
-
-        public Paint getPaint() {
-            return paint;
-        }
-
-        public void setPaint(Paint paint) {
-            this.paint = paint;
-        }
-    }
 }
