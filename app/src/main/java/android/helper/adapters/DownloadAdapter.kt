@@ -9,7 +9,9 @@ import android.helper.interfaces.listener.ProgressListener
 import android.helper.utils.LogUtil
 import android.helper.utils.download.DownLoadManager
 import android.view.View
-import kotlinx.android.synthetic.main.item_download.view.*
+import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.TextView
 import okhttp3.Response
 import java.util.*
 
@@ -30,56 +32,55 @@ class DownloadAdapter(mContext: BaseActivity, mList: ArrayList<DownLoadBean>) : 
         val contentLength = bean.contentLength
 
         if ((tempFileLength > 0) && (tempFileLength < contentLength)) {
-            holder.itemView.tv_download.text = "继续下载"
-
+            holder.tv_download.text = "继续下载"
             val fl = tempFileLength.toFloat() / contentLength * 100
             // 进度条
-            holder.itemView.progress.progress = fl.toInt()
+            holder.progress.progress = fl.toInt()
 
             // 百分比进度
-            holder.itemView.tv_current_progress.text = fl.toString()
+            holder.tv_current_progress.text = fl.toString()
         }
 
-        holder.itemView.tv_download.setOnClickListener {
+        holder.tv_download.setOnClickListener {
 
             downLoadManager.download(bean.url!!, bean.outputPath!!, object : ProgressListener {
                 override fun onComplete(response: Response?) {
                     LogUtil.e("" + position + "下载结束了！")
-                    holder.itemView.tv_download.text = "下载完成"
+                    holder.tv_download.text = "下载完成"
                 }
 
                 override fun onProgress(progress: Double, contentLength: Long, percentage: String?) {
-                    holder.itemView.progress.progress = (progress / contentLength * 100).toInt()
-                    holder.itemView.tv_current_progress.text = percentage
+                    holder.progress.progress = (progress / contentLength * 100).toInt()
+                    holder.tv_current_progress.text = percentage
                 }
 
                 override fun onError(throwable: Throwable?) {
                     LogUtil.e("" + position + "--->onError：" + throwable!!.message)
                     val currentStatus = downLoadManager.currentStatus
                     if (currentStatus == 3) {
-                        holder.itemView.tv_download.text = "下载中断"
+                        holder.tv_download.text = "下载中断"
                     } else if (currentStatus == 4) {
-                        holder.itemView.tv_download.text = "下载取消"
+                        holder.tv_download.text = "下载取消"
                     }
                 }
 
                 override fun onStart(contentLength: Long) {
                     LogUtil.e("" + position + "开始下载了！")
-                    holder.itemView.tv_download.text = "下载中"
+                    holder.tv_download.text = "下载中"
                 }
             })
             if (mItemClickListener != null) {
-                mItemClickListener.onItemClick(holder.itemView.tv_download, position, bean)
+                mItemClickListener.onItemClick(holder.tv_download, position, bean)
             }
         }
 
 
-        holder.itemView.tv_cancel.setOnClickListener {
+        holder.tv_cancel.setOnClickListener {
             // 取消下载
             downLoadManager.cancel(bean.url!!, bean.outputPath!!)
 
             if (mItemClickListener != null) {
-                mItemClickListener.onItemClick(holder.itemView.tv_cancel, position, bean)
+                mItemClickListener.onItemClick(holder.tv_cancel, position, bean)
             }
         }
 
@@ -90,6 +91,10 @@ class DownloadAdapter(mContext: BaseActivity, mList: ArrayList<DownLoadBean>) : 
     }
 
     class DlHolder(itemView: View) : BaseVH(itemView) {
+        val tv_download: Button = itemView.findViewById(R.id.tv_download)
+        val tv_cancel: Button = itemView.findViewById(R.id.tv_cancel)
+        val tv_current_progress: TextView = itemView.findViewById(R.id.tv_current_progress)
+        val progress: ProgressBar = itemView.findViewById(R.id.progress)
     }
 
     override fun onBindHolder(holder: DlHolder, position: Int) {
