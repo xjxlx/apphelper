@@ -48,20 +48,9 @@ public class ScrollHelperLayout extends BaseViewGroup {
             }
             // 限制右侧的边距
             int measuredWidth = ScrollHelperLayout.this.getMeasuredWidth();
-//            for (int i = 0; i < mChildCount; i++) {
-//                View childAt = getChildAt(i);
-//                if (childAt == child) {
-//                    // 每个view的宽度
-//                    int childViewMeasuredWidth = childAt.getMeasuredWidth();
-//
-//                    if (left >= (measuredWidth - childViewMeasuredWidth)) {
-//                        left = measuredWidth - childViewMeasuredWidth;
-//                    }
-//                }
-//            }
 
-            if (mCurrentView != null) {
-                int childMeasuredWidth = mCurrentView.getMeasuredWidth();
+            if (child != null) {
+                int childMeasuredWidth = child.getMeasuredWidth();
                 if (left >= (measuredWidth - childMeasuredWidth)) {
                     left = measuredWidth - childMeasuredWidth;
                 }
@@ -79,6 +68,37 @@ public class ScrollHelperLayout extends BaseViewGroup {
         public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
 
+            // 布局的宽度
+            int layoutMeasuredWidth = ScrollHelperLayout.this.getMeasuredWidth();
+            // view的宽度
+            int childMeasuredWidth = releasedChild.getMeasuredWidth();
+
+            int left = releasedChild.getLeft();
+            int value = layoutMeasuredWidth - childMeasuredWidth;
+
+            // 移动绿色的view
+            if (left <= (value / 2)) {
+                mViewDragHelper.settleCapturedViewAt(0, releasedChild.getTop());
+            } else {
+                mViewDragHelper.settleCapturedViewAt(value, releasedChild.getTop());
+            }
+
+            postInvalidate();
+        }
+
+        // 拖动view的位置发生变化的时候回调
+        @Override
+        public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
+            super.onViewPositionChanged(changedView, left, top, dx, dy);
+
+            // 让两个view保持同步移动
+            if (changedView == blueView) {
+                readView.layout(readView.getLeft() + dx, readView.getTop() + dy, readView.getRight() + dx, readView.getBottom() + dy);
+            } else if (changedView == readView) {
+                blueView.layout(blueView.getLeft() + dx, blueView.getTop() + dy, blueView.getRight() + dx, blueView.getBottom() + dy);
+            }
+
+
         }
 
         // view滑动到边缘的时候，回调的方法
@@ -94,7 +114,6 @@ public class ScrollHelperLayout extends BaseViewGroup {
                 case ViewDragHelper.EDGE_LEFT:
                     ToastUtil.show("滑动到左侧");
                     break;
-
             }
         }
     };
@@ -160,4 +179,12 @@ public class ScrollHelperLayout extends BaseViewGroup {
         return true;
     }
 
+    // 滑动惯性的处理
+    @Override
+    public void computeScroll() {
+        super.computeScroll();
+        if (mViewDragHelper.continueSettling(true)) {
+            invalidate();
+        }
+    }
 }
