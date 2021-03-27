@@ -20,7 +20,6 @@ public abstract class BaseViewGroup extends ViewGroup {
     }
 
     public void initView(Context context, AttributeSet attrs) {
-
     }
 
 }
