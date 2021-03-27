@@ -68,7 +68,7 @@
         <TextView
             android:id="@+id/tv_test_hm"
             style="@style/style_item_selector"
-            android:text="练习自定义的view" />
+            android:text="自定义滑动按钮和水波纹效果" />
 
     </LinearLayout>
 

@@ -18,7 +18,7 @@ public class TestMapActivity extends BaseTitleActivity {
     @Override
     protected void initListener() {
         super.initListener();
-        setonClickListener(R.id.tv_test_handler, R.id.tv_elv, R.id.tv_flex_box, R.id.tv_test_js_to_android);
+        setonClickListener(R.id.tv_test_handler, R.id.tv_elv, R.id.tv_flex_box, R.id.tv_test_js_to_android, R.id.tv_test_scroll_help);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -37,6 +37,9 @@ public class TestMapActivity extends BaseTitleActivity {
                 break;
             case R.id.tv_test_js_to_android:
                 startActivity(AndroidJSActivity.class);
+                break;
+            case R.id.tv_test_scroll_help:
+                startActivity(TestScrollHelperActivity.class);
                 break;
         }
     }

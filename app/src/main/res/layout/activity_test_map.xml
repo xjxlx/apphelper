@@ -30,6 +30,11 @@
             style="@style/style_todo_item"
             android:text="Android和JS互相调用" />
 
+        <TextView
+            android:id="@+id/tv_test_scroll_help"
+            style="@style/style_todo_item"
+            android:text="测试滑动帮助类" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

@@ -19,7 +19,7 @@ public class HmCustomViewActivity extends BaseTitleActivity {
     @Override
     protected void initView() {
         super.initView();
-        setTitleContent("自定义View的测试");
+        setTitleContent("自定义开关和水波纹");
 
         sv = findViewById(R.id.sv);
 
