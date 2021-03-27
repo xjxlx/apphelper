@@ -2,8 +2,10 @@ package android.helper.widget.hm;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.helper.R;
 import android.helper.base.BaseViewGroup;
+import android.helper.utils.ColorUtil;
 import android.helper.utils.LogUtil;
 import android.helper.utils.ToastUtil;
 import android.util.AttributeSet;
@@ -98,7 +100,17 @@ public class ScrollHelperLayout extends BaseViewGroup {
                 blueView.layout(blueView.getLeft() + dx, blueView.getTop() + dy, blueView.getRight() + dx, blueView.getBottom() + dy);
             }
 
+            // 计算比例
+            int layoutMeasuredWidth = ScrollHelperLayout.this.getMeasuredWidth();
+            int redMeasuredWidth = readView.getMeasuredWidth();
+            // 求出运动的总长度
+            int value = layoutMeasuredWidth - redMeasuredWidth;
 
+            // 求出当前left和运动总长度的比值
+            float percent = blueView.getLeft() * 1.0f / value;
+
+            // 动画类的扩展
+            startAnimation(percent);
         }
 
         // view滑动到边缘的时候，回调的方法
@@ -117,6 +129,12 @@ public class ScrollHelperLayout extends BaseViewGroup {
             }
         }
     };
+
+    private void startAnimation(float percent) {
+//        ViewHelper.setRotationY(readView, percent * 360);
+
+        readView.setBackgroundColor(ColorUtil.evaluateColor(percent, Color.RED, Color.BLUE));
+    }
 
     public ScrollHelperLayout(Context context) {
         super(context);
