@@ -21,7 +21,6 @@ public class ScrollHelperLayout extends BaseViewGroup {
     private View blueView;
     private ViewDragHelper mViewDragHelper;
     private int mChildCount;
-    private View mCurrentView;// 当前的view
 
     private final ViewDragHelper.Callback mCallback = new ViewDragHelper.Callback() {
         // 哪一个view可以被移动
@@ -38,12 +37,12 @@ public class ScrollHelperLayout extends BaseViewGroup {
         public void onViewCaptured(@NonNull View capturedChild, int activePointerId) {
             super.onViewCaptured(capturedChild, activePointerId);
             // 当前的view
-            mCurrentView = capturedChild;
+            View mCurrentView = capturedChild;
         }
 
+        // 横向移动view的回调
         @Override
         public int clampViewPositionHorizontal(@NonNull View child, int left, int dx) {
-
             // 限制左侧的边距
             if (left < 0) {
                 left = 0;
@@ -60,6 +59,7 @@ public class ScrollHelperLayout extends BaseViewGroup {
             return left;
         }
 
+        // 竖向移动view的回调
         @Override
         public int clampViewPositionVertical(@NonNull View child, int top, int dy) {
             return top;
@@ -113,26 +113,36 @@ public class ScrollHelperLayout extends BaseViewGroup {
             startAnimation(percent);
         }
 
-        // view滑动到边缘的时候，回调的方法
+        // 当触摸到view的边缘的时候，回调的方法，不是view滑动到边缘
         @Override
         public void onEdgeTouched(int edgeFlags, int pointerId) {
             super.onEdgeTouched(edgeFlags, pointerId);
             LogUtil.e("edgeFlags:" + edgeFlags);
             switch (edgeFlags) {
-                case ViewDragHelper.EDGE_TOP:
-                    ToastUtil.show("滑动到顶部了");
-                    break;
-
                 case ViewDragHelper.EDGE_LEFT:
                     ToastUtil.show("滑动到左侧");
+                    mViewDragHelper.captureChildView(getChildAt(1), pointerId);
+
                     break;
+
+                case ViewDragHelper.EDGE_TOP:
+                    ToastUtil.show("滑动到上方了");
+                    break;
+
+                case ViewDragHelper.EDGE_RIGHT:
+                    ToastUtil.show("滑动到右侧");
+                    break;
+
+                case ViewDragHelper.EDGE_BOTTOM:
+                    ToastUtil.show("滑动到下侧");
+                    break;
+
             }
         }
     };
 
     private void startAnimation(float percent) {
-//        ViewHelper.setRotationY(readView, percent * 360);
-
+        // ViewHelper.setRotationY(readView, percent * 360);
         readView.setBackgroundColor(ColorUtil.evaluateColor(percent, Color.RED, Color.BLUE));
     }
 
@@ -156,8 +166,7 @@ public class ScrollHelperLayout extends BaseViewGroup {
         mViewDragHelper = ViewDragHelper.create(ScrollHelperLayout.this, mCallback);
 
         // 设置view滑动到边缘时候的回调
-        mViewDragHelper.setEdgeTrackingEnabled(ViewDragHelper.EDGE_LEFT);
-        mViewDragHelper.setEdgeTrackingEnabled(ViewDragHelper.EDGE_TOP);
+        mViewDragHelper.setEdgeTrackingEnabled(ViewDragHelper.EDGE_ALL);
     }
 
     @Override
