@@ -136,8 +136,18 @@ public class ScrollHelperLayout extends BaseViewGroup {
                 case ViewDragHelper.EDGE_BOTTOM:
                     ToastUtil.show("滑动到下侧");
                     break;
-
             }
+        }
+
+        @Override
+        public void onEdgeDragStarted(int edgeFlags, int pointerId) {
+            super.onEdgeDragStarted(edgeFlags, pointerId);
+            LogUtil.e("onEdgeDragStarted" + edgeFlags);
+        }
+
+        @Override
+        public boolean onEdgeLock(int edgeFlags) {
+            return super.onEdgeLock(edgeFlags);
         }
     };
 
