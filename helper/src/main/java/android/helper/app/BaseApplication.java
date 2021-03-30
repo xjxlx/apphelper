@@ -5,6 +5,7 @@ import android.helper.base.refresh.BaseRefreshFooter;
 import android.helper.base.refresh.BaseRefreshHeader;
 import android.helper.interfaces.ICommonApplication;
 import android.helper.utils.ScreenUtil;
+import android.helper.utils.dialog.DialogUtil;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -209,5 +210,12 @@ public class BaseApplication {
                 return new BaseRefreshFooter(context).setDrawableSize(20);
             }
         });
+    }
+
+    /**
+     * 释放掉所有不用的数据
+     */
+    public static void releaseAll() {
+        DialogUtil.getInstance().release();
     }
 }
