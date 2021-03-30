@@ -3,6 +3,10 @@ package android.helper.utils.dialog;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.helper.R;
+import android.helper.common.CommonConstants;
+import android.helper.common.EventMessage;
+import android.helper.utils.LogUtil;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,14 +16,13 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
 
-import android.helper.R;
-import android.helper.common.CommonConstants;
-import android.helper.common.EventMessage;
-import android.helper.utils.LogUtil;
-
 import org.greenrobot.eventbus.EventBus;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public class DialogUtil {
 
@@ -32,6 +35,14 @@ public class DialogUtil {
     private int mGravity = Gravity.CENTER;// 默认居中显示
     private int mAnimation = R.style.base_dialog_animation;// 动画
     private View mRootView; // 布局的veiw
+    private int mDialogType = DialogType.DEFAULT_DIALOG;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({DialogType.DEFAULT_DIALOG, DialogType.HINT_DIALOG})
+    public @interface DialogType {
+        int DEFAULT_DIALOG = 1;
+        int HINT_DIALOG = 2;
+    }
 
     private DialogUtil() {
     }
@@ -47,38 +58,43 @@ public class DialogUtil {
     }
 
     public DialogUtil setDefaultDialog(Activity activity) {
-        if (activity == null || activity.isFinishing()) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             return null;
         }
         mActivity = activity;
-
-        // 避免重复出现弹窗
-        if (mDialog != null) {
-            if (mDialog.isShowing()) {
-                mDialog.dismiss();
-            }
-        }
-        mDialog = new Dialog(activity, R.style.base_dialog_default);
+        mDialogType = DialogType.DEFAULT_DIALOG;
         return dialogUtil;
     }
 
     public DialogUtil setHintDialog(Activity activity) {
-        if (activity == null || activity.isFinishing()) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             return null;
         }
         mActivity = activity;
+        mDialogType = DialogType.HINT_DIALOG;
+        return dialogUtil;
+    }
+
+    public DialogUtil setContentView(Activity activity, @LayoutRes int resource) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+            return null;
+        }
+        this.mActivity = activity;
+
         // 避免重复出现弹窗
         if (mDialog != null) {
             if (mDialog.isShowing()) {
                 mDialog.dismiss();
             }
         }
-        mDialog = new Dialog(activity, R.style.base_dialog_hint);
-        return dialogUtil;
-    }
 
+        // 设置dialog的方式
+        if (mDialogType == DialogType.DEFAULT_DIALOG) {
+            mDialog = new Dialog(activity, R.style.base_dialog_default);
+        } else if (mDialogType == DialogType.HINT_DIALOG) {
+            mDialog = new Dialog(activity, R.style.base_dialog_hint);
+        }
 
-    public DialogUtil setContentView(@LayoutRes int resource) {
         View view = LayoutInflater.from(mActivity).inflate(resource, null, false);
         if (view != null) {
             mRootView = view;
@@ -88,7 +104,26 @@ public class DialogUtil {
         return dialogUtil;
     }
 
-    public DialogUtil setContentView(View view) {
+    public DialogUtil setContentView(Activity activity, View view) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+            return null;
+        }
+        this.mActivity = activity;
+
+        // 避免重复出现弹窗
+        if (mDialog != null) {
+            if (mDialog.isShowing()) {
+                mDialog.dismiss();
+            }
+        }
+
+        // 设置dialog的方式
+        if (mDialogType == DialogType.DEFAULT_DIALOG) {
+            mDialog = new Dialog(activity, R.style.base_dialog_default);
+        } else if (mDialogType == DialogType.HINT_DIALOG) {
+            mDialog = new Dialog(activity, R.style.base_dialog_hint);
+        }
+
         if (view != null) {
             mRootView = view;
             mDialog.setContentView(view);
@@ -117,7 +152,6 @@ public class DialogUtil {
             mDialog.setOnDismissListener(dialog -> EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_DISMISS)));
         }
     }
-
 
     /**
      * @param width 设置宽度
@@ -155,7 +189,6 @@ public class DialogUtil {
         return dialogUtil;
     }
 
-
     /**
      * @param cancel false时为点击周围空白处弹出层不自动消失
      * @return 弹窗点击周围空白处弹出层自动消失弹窗消失(false时为点击周围空白处弹出层不自动消失)
@@ -179,7 +212,7 @@ public class DialogUtil {
     }
 
     public void show() {
-        if ((mActivity != null) && (!mActivity.isFinishing()) && (mDialog != null) && (!mDialog.isShowing())) {
+        if ((mActivity != null) && (!mActivity.isFinishing()) && (!mActivity.isDestroyed()) && (mDialog != null) && (!mDialog.isShowing())) {
             mDialog.show();
         } else {
             try {
@@ -195,12 +228,9 @@ public class DialogUtil {
         }
     }
 
-
     /**
-     * 设置title内容，title的id必须是：R.id.tv_title
-     *
-     * @param text
-     * @return
+     * @param text 内容
+     * @return 设置title内容，title的id必须是：R.id.tv_title
      */
     public DialogUtil setText(@IdRes int id, String text) {
         if (!TextUtils.isEmpty(text)) {
@@ -269,7 +299,7 @@ public class DialogUtil {
      * @param listener 点击事件
      * @return 按钮设置文字，并设置点击事件
      */
-    public DialogUtil setButtonClickListener(@IdRes int id, String content, View.OnClickListener listener) {
+    public DialogUtil setOnClickListener(@IdRes int id, String content, View.OnClickListener listener) {
         if (mRootView != null) {
             View view = mRootView.findViewById(id);
             if (!TextUtils.isEmpty(content)) {
