@@ -315,4 +315,14 @@ public class DialogUtil {
         return dialogUtil;
     }
 
+    /**
+     * 释放掉dialog，
+     */
+    public void release() {
+        if ((mDialog != null) && (mDialog.isShowing())) {
+            dismiss();
+            mDialog = null;
+        }
+    }
+
 }
