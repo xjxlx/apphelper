@@ -141,7 +141,9 @@ public class DialogUtil {
                 if (attributes != null) {
                     attributes.width = mWidth;
                     attributes.height = mHeight;
-                    attributes.windowAnimations = mAnimation;
+                    if (mAnimation != 0) {
+                        attributes.windowAnimations = mAnimation;
+                    }
                 }
             }
 
