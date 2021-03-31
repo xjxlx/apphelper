@@ -33,6 +33,12 @@ android {
     viewBinding {
         enabled = true
     }
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
 }
 
 dependencies {
