@@ -79,5 +79,6 @@ dependencies {
     api 'com.github.bumptech.glide:glide:4.11.0' // glide 图片加载库 ，尽量自己使用，避免版本冲突
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     api 'com.github.LuckSiege.PictureSelector:picture_library:v2.6.0' // 图片选择库
+    api 'com.contrarywind:Android-PickerView:4.1.9' // 日历选择器
 
 }
