@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 public class AssetsUtil {
 
     public static AssetsUtil assetsUtil;
-    private Thread thread;
 
     private AssetsUtil() {
     }
@@ -33,15 +32,13 @@ public class AssetsUtil {
      * 异步线程获取数据
      */
     public void initJson(Context context, String fileName, CallBackListener<String> callBackListener) {
-        if (thread == null) {
-            thread = new Thread() {
-                @Override
-                public void run() {
-                    super.run();
-                    getJsonForAssets(context, fileName, callBackListener);
-                }
-            };
-        }
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                getJsonForAssets(context, fileName, callBackListener);
+            }
+        };
         thread.start();
     }
 
@@ -56,8 +53,7 @@ public class AssetsUtil {
             StringBuilder stringBuilder = new StringBuilder();
             try {
                 AssetManager assetManager = context.getAssets();
-                BufferedReader bf = new BufferedReader(new InputStreamReader(
-                        assetManager.open(fileName)));
+                BufferedReader bf = new BufferedReader(new InputStreamReader(assetManager.open(fileName)));
                 String line;
                 while ((line = bf.readLine()) != null) {
                     stringBuilder.append(line);
@@ -86,10 +82,12 @@ public class AssetsUtil {
      */
     public static byte[] getAssetsResource(Context context, String fileName) {
         byte[] bytes = null;
+        InputStream inputStream = null;
+        ByteArrayOutputStream output = null;
         AssetManager assets = context.getAssets();
         try {
-            InputStream inputStream = assets.open(fileName);
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            inputStream = assets.open(fileName);
+            output = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024 * 4];
             int n = 0;
             while (-1 != (n = inputStream.read(buffer))) {
@@ -100,14 +98,22 @@ public class AssetsUtil {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            // assets.close();
+            try {
+                // 先开的后关闭，后打开的先关闭
+                if (output != null) {
+                    output.close();
+                }
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return bytes;
     }
 
     public void clear() {
-        if (thread != null) {
-            thread = null;
-        }
+
     }
 }
