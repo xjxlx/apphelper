@@ -2,6 +2,7 @@ package android.helper.utils;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.helper.httpclient.RxUtil;
 import android.helper.interfaces.listener.CallBackListener;
 import android.text.TextUtils;
 
@@ -10,6 +11,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.subscribers.DisposableSubscriber;
 
 public class AssetsUtil {
 
@@ -32,21 +40,58 @@ public class AssetsUtil {
      * 异步线程获取数据
      */
     public void initJson(Context context, String fileName, CallBackListener<String> callBackListener) {
-        Thread thread = new Thread() {
+
+        Flowable.create(new FlowableOnSubscribe<String>() {
             @Override
-            public void run() {
-                super.run();
-                getJsonForAssets(context, fileName, callBackListener);
+            public void subscribe(@NonNull FlowableEmitter<String> emitter) throws Exception {
+                String jsonForAssets = getJsonForAssets(context, fileName);
+                if (TextUtils.isEmpty(jsonForAssets)) {
+                    emitter.onError(new NullPointerException("获取数据为空"));
+                } else {
+                    emitter.onNext(jsonForAssets);
+                }
+                emitter.onComplete();
             }
-        };
-        thread.start();
+        }, BackpressureStrategy.LATEST)
+                .compose(RxUtil.getScheduler())
+                .subscribe(new DisposableSubscriber<String>() {
+                    @Override
+                    protected void onStart() {
+                        super.onStart();
+                        if (callBackListener != null) {
+                            callBackListener.onBack(false, "数据获取中", "");
+                        }
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+
+                        if (callBackListener != null) {
+                            callBackListener.onBack(true, "数据获取成功", s);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        if (callBackListener != null) {
+                            callBackListener.onBack(false, t.getMessage(), "");
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        if (callBackListener != null) {
+                            callBackListener.onBack(false, "数据获取完成", "");
+                        }
+                    }
+                });
     }
 
     /**
      * @param context  上下文
      * @param fileName assets中的文件名字,全文见路径，例如：address.json
      */
-    public void getJsonForAssets(Context context, String fileName, CallBackListener<String> callBackListener) {
+    public String getJsonForAssets(Context context, String fileName) {
         String result = "";  // 数据的结果
 
         if ((context != null) && (!TextUtils.isEmpty(fileName))) {
@@ -59,28 +104,20 @@ public class AssetsUtil {
                     stringBuilder.append(line);
                 }
                 result = stringBuilder.toString();
-
-                if (callBackListener != null) {
-                    callBackListener.onBack(true, "数据获取成功", result);
-                }
+                return result;
             } catch (IOException e) {
                 e.printStackTrace();
-                if (callBackListener != null) {
-                    callBackListener.onBack(false, e.getMessage(), result);
-                }
-            }
-        } else {
-            if (callBackListener != null) {
-                callBackListener.onBack(false, "对象为空", result);
+
             }
         }
+        return result;
     }
 
     /**
      * @param fileName 例如：c62.crt
      * @return 获取资源目录下的文件，返回一个字节数组
      */
-    public static byte[] getAssetsResource(Context context, String fileName) {
+    public byte[] getAssetsResource(Context context, String fileName) {
         byte[] bytes = null;
         InputStream inputStream = null;
         ByteArrayOutputStream output = null;
