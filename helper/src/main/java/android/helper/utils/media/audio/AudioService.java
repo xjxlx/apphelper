@@ -42,8 +42,6 @@ public class AudioService extends Service {
     private AudioManager audioManager;
     private String mAudioPath, mOldAudioPath;
     private AudioPlayerCallBackListener mCallBackListener;
-    private AudioProgressListener mAudioProgressListener;
-
     private int mDuration; // 时长
     private DisposableSubscriber<Long> disposableSubscriber;
     private boolean mSendProgress = true;// 是否正常发送当前的进度，默认为true
@@ -306,11 +304,6 @@ public class AudioService extends Service {
         }
 
         @Override
-        public void setProgressListener(AudioProgressListener progressListener) {
-            setAudioProgressListener(progressListener);
-        }
-
-        @Override
         public void clear() {
             AudioService.this.clear();
         }
@@ -321,13 +314,6 @@ public class AudioService extends Service {
      */
     public void setAudioCallBackListener(AudioPlayerCallBackListener callBackListener) {
         mCallBackListener = callBackListener;
-    }
-
-    /**
-     * @param audioProgressListener 进度回调的监听
-     */
-    public void setAudioProgressListener(AudioProgressListener audioProgressListener) {
-        mAudioProgressListener = audioProgressListener;
     }
 
     /**
@@ -497,8 +483,8 @@ public class AudioService extends Service {
 
             LogUtil.e("当前的缓冲进度为:" + currentProgress);
 
-            if (mAudioProgressListener != null) {
-                mAudioProgressListener.onBufferProgress(mDuration, currentProgress, percent);
+            if (mCallBackListener != null) {
+                mCallBackListener.onBufferProgress(mDuration, currentProgress, percent);
             }
         }
     };
@@ -554,7 +540,7 @@ public class AudioService extends Service {
                     @Override
                     public void onNext(Long aLong) {
                         try {
-                            if (mAudioProgressListener != null) {
+                            if (mCallBackListener != null) {
                                 String value;
 
                                 int currentPosition = mediaPlayer.getCurrentPosition();
@@ -567,7 +553,7 @@ public class AudioService extends Service {
                                     }
                                     value = String.format(Locale.CHINA, "%.2f", ((currentPosition * 1.0d) / mDuration));
                                 }
-                                mAudioProgressListener.onProgress(mDuration, currentPosition, value);
+                                mCallBackListener.onProgress(mDuration, currentPosition, value);
                             }
                         } catch (Exception e) {
                             LogUtil.e("getProgress ---->:" + e.getMessage());

@@ -28,12 +28,10 @@ public class AudioPlayerActivity extends BaseTitleActivity {
             LogUtil.e("onPrepared");
         }
 
-        @Override
         public void onStart() {
             LogUtil.e("onStart");
         }
 
-        @Override
         public void onPause() {
             LogUtil.e("onPause");
         }
@@ -48,7 +46,6 @@ public class AudioPlayerActivity extends BaseTitleActivity {
             LogUtil.e("onError：" + e.getMessage());
         }
 
-        @Override
         public void onComplete() {
             LogUtil.e("onComplete");
         }

@@ -25,8 +25,6 @@ public interface AudioControlInterface {
 
     void setAudioCallBackListener(AudioPlayerCallBackListener callBackListener);
 
-    void setProgressListener(AudioProgressListener progressListener);
-
     void clear();
 
 }

@@ -21,7 +21,7 @@ import static android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
 /**
  * 音频播放的工具类
  */
-public class AudioPlayerUtil implements AudioProgressListener, AudioPlayerCallBackListener {
+public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     private AudioServiceConnection connection;
     private boolean bindService;
@@ -128,9 +128,6 @@ public class AudioPlayerUtil implements AudioProgressListener, AudioPlayerCallBa
 
                     // 生命周期的回调
                     audioBinder.setAudioCallBackListener(AudioPlayerUtil.this);
-
-                    // 回调进度
-                    audioBinder.setProgressListener(AudioPlayerUtil.this);
                 }
             }
         }
