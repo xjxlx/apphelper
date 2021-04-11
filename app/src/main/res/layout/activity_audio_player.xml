@@ -55,4 +55,11 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/iv_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_20"
+        android:src="@drawable/selector_new_music_player_start" />
+
 </LinearLayout>

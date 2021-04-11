@@ -18,36 +18,14 @@ public class AudioPlayerActivity extends BaseTitleActivity {
     private android.widget.SeekBar mSeekbar;
     private android.widget.TextView mTvLeft;
     private android.widget.TextView mTvRight;
+    private android.widget.ImageView mIvStart;
 
     private AudioPlayerUtil playerUtil;
     private String url = "http://dlfile.buddyeng.cn/sv/48717030-177bd5eff7d/48717030-177bd5eff7d.mp3";
 
     private final AudioPlayerCallBackListener audioPlayerCallBackListener = new AudioPlayerCallBackListener() {
-        @Override
-        public void onPrepared() {
-            LogUtil.e("onPrepared");
-        }
-
-        public void onStart() {
-            LogUtil.e("onStart");
-        }
-
-        public void onPause() {
-            LogUtil.e("onPause");
-        }
-
-        @Override
-        public void onStop() {
-            LogUtil.e("onStop");
-        }
-
-        @Override
-        public void onError(Exception e) {
-            LogUtil.e("onError：" + e.getMessage());
-        }
-
         public void onComplete() {
-            LogUtil.e("onComplete");
+            playerUtil.setResource(url);
         }
     };
 
@@ -70,6 +48,7 @@ public class AudioPlayerActivity extends BaseTitleActivity {
         setonClickListener(mBtnPlayer, mBtnPause, mBtnStop);
         mTvLeft = findViewById(R.id.tv_left);
         mTvRight = findViewById(R.id.tv_right);
+        mIvStart = findViewById(R.id.iv_start);
     }
 
     @Override
@@ -83,6 +62,7 @@ public class AudioPlayerActivity extends BaseTitleActivity {
 
                 playerUtil.setSeekBarProgressTime(mTvLeft);
                 playerUtil.setSeekBarTotalTime(mTvRight);
+                playerUtil.setStartButton(mIvStart);
             }
         });
     }

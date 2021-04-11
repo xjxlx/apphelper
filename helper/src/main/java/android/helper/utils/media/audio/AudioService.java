@@ -135,7 +135,7 @@ public class AudioService extends Service {
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
                     mediaPlayer.setDataSource(mAudioPath);//为多媒体对象设置播放路径
-                    mediaPlayer.prepare();//异步准备（准备播放
+                    mediaPlayer.prepareAsync();//异步准备（准备播放
                 } catch (IOException e) {
                     e.printStackTrace();
                     LogUtil.e("player:" + e.getMessage());

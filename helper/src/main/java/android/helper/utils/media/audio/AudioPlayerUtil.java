@@ -34,6 +34,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     private TextView mSeekBarProgressView, mSeekBarTotalView;
     private View mStartButton; // 开始按钮
     private AudioPlayerCallBackListener mCallBackListener;
+    private String mAudioPath; // 播放的路径
 
     public AudioPlayerUtil(Context context) {
         this.context = context;
@@ -76,6 +77,8 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     public void setResource(String audioPath) {
         if (audioBinder != null) {
             audioBinder.setAudioResource(audioPath);
+
+            this.mAudioPath = audioPath;
         }
     }
 
@@ -211,7 +214,18 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         }
         this.mStartButton = view;
         // 播放按钮的点击事件
-        view.setOnClickListener(v -> start());
+        view.setOnClickListener(v -> {
+
+            if (audioBinder != null) {
+                int status = audioBinder.getStatus();
+                // 如果是暂停或者播放的状态，那么就去执行start方法，否则就去执行重新播放的操作
+                if (status == AudioConstant.STATUS_PLAYING || status == AudioConstant.STATUS_PAUSE) {
+                    start();
+                } else {
+                    setResource(mAudioPath);
+                }
+            }
+        });
     }
 
     public void switchStartButton(boolean selector) {
@@ -251,7 +265,6 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     @Override
     public void onProgress(int total, int current, String percent) {
-        LogUtil.e("onProgress:-->total:" + total + "  --->current:" + current + " --->percent:" + percent);
         if (mSeekBar != null) {
             mSeekBar.setMax(total);
             mSeekBar.setProgress(current);
@@ -269,12 +282,14 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             TextViewUtil.setText(mSeekBarProgressView, charSequence);
         }
 
-        // 更正按钮的转改
+        // 更正按钮的转改,加到这个地方，更加靠谱
         switchStartButton(true);
     }
 
     @Override
     public void onPrepared() {
+        super.onPrepared();
+        LogUtil.e("onPrepared");
         if (mCallBackListener != null) {
             mCallBackListener.onPrepared();
         }
@@ -282,45 +297,61 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     @Override
     public void onStart() {
+        super.onStart();
+        LogUtil.e("onStart");
+        switchStartButton(true);
         if (mCallBackListener != null) {
             mCallBackListener.onStart();
         }
-
-        switchStartButton(true);
     }
 
     @Override
     public void onPause() {
+        super.onPause();
+        LogUtil.e("onPause");
+        switchStartButton(false);
         if (mCallBackListener != null) {
             mCallBackListener.onPause();
         }
-        switchStartButton(false);
     }
 
     @Override
     public void onStop() {
+        super.onStop();
+        LogUtil.e("onStop");
+        switchStartButton(false);
+
+        if (mSeekBar != null) {
+            mSeekBar.setProgress(0);
+        }
+
+        if (mSeekBarProgressView != null) {
+            TextViewUtil.setText(mSeekBarProgressView, "00:00");
+        }
+
         if (mCallBackListener != null) {
             mCallBackListener.onStop();
         }
-
-        switchStartButton(false);
     }
 
     @Override
     public void onError(Exception e) {
+        super.onError(e);
+        LogUtil.e("onError");
+        switchStartButton(false);
         if (mCallBackListener != null) {
             mCallBackListener.onError(e);
         }
 
-        switchStartButton(false);
     }
 
     @Override
     public void onComplete() {
+        super.onComplete();
+        LogUtil.e("onComplete");
+        switchStartButton(false);
         if (mCallBackListener != null) {
             mCallBackListener.onComplete();
         }
-
-        switchStartButton(false);
     }
 }
