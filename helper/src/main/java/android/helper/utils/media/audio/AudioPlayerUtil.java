@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.IBinder;
 
 /**
@@ -36,6 +37,10 @@ public class AudioPlayerUtil {
 
         // 启动后台服务
         context.startService(intent);
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            context.startForegroundService(intent);
+//        }
 
         // 绑定前台的服务,禁止冲洗请的绑定
         if (!bindService) {

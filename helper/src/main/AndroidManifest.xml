@@ -6,7 +6,11 @@
         <service
             android:name=".utils.media.audio.AudioService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true">
+            <intent-filter android:priority="1000">
+                <action android:name="com.xjx.audioplayer" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
