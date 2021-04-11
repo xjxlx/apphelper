@@ -2,7 +2,7 @@ package android.helper.utils.media.audio;
 
 import android.media.MediaPlayer;
 
-public interface AudioInterface {
+public interface AudioControlInterface {
 
     MediaPlayer getMediaPlayer();
 

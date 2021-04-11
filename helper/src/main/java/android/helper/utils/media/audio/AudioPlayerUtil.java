@@ -21,7 +21,7 @@ import static android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
 /**
  * 音频播放的工具类
  */
-public class AudioPlayerUtil implements AudioProgressListener {
+public class AudioPlayerUtil implements AudioProgressListener, AudioPlayerCallBackListener {
 
     private AudioServiceConnection connection;
     private boolean bindService;
@@ -32,6 +32,8 @@ public class AudioPlayerUtil implements AudioProgressListener {
     private BindServiceListener mBindServiceListener;
     private SeekBar mSeekBar;
     private TextView mSeekBarProgressView, mSeekBarTotalView;
+    private View mStartButton; // 开始按钮
+    private AudioPlayerCallBackListener mCallBackListener;
 
     public AudioPlayerUtil(Context context) {
         this.context = context;
@@ -124,6 +126,9 @@ public class AudioPlayerUtil implements AudioProgressListener {
                 if ((audioBinder != null) && (AudioPlayerUtil.this.mBindServiceListener != null)) {
                     AudioPlayerUtil.this.mBindServiceListener.bindResult(bindService);
 
+                    // 生命周期的回调
+                    audioBinder.setAudioCallBackListener(AudioPlayerUtil.this);
+
                     // 回调进度
                     audioBinder.setProgressListener(AudioPlayerUtil.this);
                 }
@@ -136,9 +141,12 @@ public class AudioPlayerUtil implements AudioProgressListener {
         }
     }
 
+    /**
+     * @param callBackListener 数据回调
+     */
     public void setAudioCallBackListener(AudioPlayerCallBackListener callBackListener) {
-        if (audioBinder != null) {
-            audioBinder.setAudioCallBackListener(callBackListener);
+        if (callBackListener != null) {
+            this.mCallBackListener = callBackListener;
         }
     }
 
@@ -197,8 +205,20 @@ public class AudioPlayerUtil implements AudioProgressListener {
         TextViewUtil.setText(mSeekBarTotalView, "00:00");
     }
 
+    /**
+     * @param view 设置开关按钮的变换
+     */
     public void setStartButton(View view) {
+        if (view == null) {
+            return;
+        }
+        this.mStartButton = view;
+    }
 
+    public void switchStartButton(boolean selector) {
+        if (mStartButton != null) {
+            mStartButton.setSelected(selector);
+        }
     }
 
     @Override
@@ -249,5 +269,56 @@ public class AudioPlayerUtil implements AudioProgressListener {
             CharSequence charSequence = DateUtil.formatMillis(current);
             TextViewUtil.setText(mSeekBarProgressView, charSequence);
         }
+    }
+
+    @Override
+    public void onPrepared() {
+        if (mCallBackListener != null) {
+            mCallBackListener.onPrepared();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        if (mCallBackListener != null) {
+            mCallBackListener.onStart();
+        }
+
+        switchStartButton(true);
+    }
+
+    @Override
+    public void onPause() {
+        if (mCallBackListener != null) {
+            mCallBackListener.onPause();
+        }
+
+        switchStartButton(false);
+    }
+
+    @Override
+    public void onStop() {
+        if (mCallBackListener != null) {
+            mCallBackListener.onStop();
+        }
+
+        switchStartButton(false);
+    }
+
+    @Override
+    public void onError(Exception e) {
+        if (mCallBackListener != null) {
+            mCallBackListener.onError(e);
+        }
+
+        switchStartButton(false);
+    }
+
+    @Override
+    public void onComplete() {
+        if (mCallBackListener != null) {
+            mCallBackListener.onComplete();
+        }
+        switchStartButton(false);
     }
 }

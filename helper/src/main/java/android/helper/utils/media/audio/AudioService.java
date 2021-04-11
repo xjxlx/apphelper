@@ -259,7 +259,7 @@ public class AudioService extends Service {
         clear();
     }
 
-    class AudioBinder extends Binder implements AudioInterface {
+    class AudioBinder extends Binder implements AudioControlInterface {
         @Override
         public MediaPlayer getMediaPlayer() {
             return AudioService.this.getMediaPlayer();
