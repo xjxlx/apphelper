@@ -210,6 +210,8 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             return;
         }
         this.mStartButton = view;
+        // 播放按钮的点击事件
+        view.setOnClickListener(v -> start());
     }
 
     public void switchStartButton(boolean selector) {
