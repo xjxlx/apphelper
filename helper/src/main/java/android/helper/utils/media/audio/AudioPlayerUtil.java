@@ -268,6 +268,9 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             CharSequence charSequence = DateUtil.formatMillis(current);
             TextViewUtil.setText(mSeekBarProgressView, charSequence);
         }
+
+        // 更正按钮的转改
+        switchStartButton(true);
     }
 
     @Override
@@ -291,7 +294,6 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         if (mCallBackListener != null) {
             mCallBackListener.onPause();
         }
-
         switchStartButton(false);
     }
 
@@ -318,6 +320,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         if (mCallBackListener != null) {
             mCallBackListener.onComplete();
         }
+
         switchStartButton(false);
     }
 }
