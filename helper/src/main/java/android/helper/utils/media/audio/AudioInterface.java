@@ -1,6 +1,13 @@
 package android.helper.utils.media.audio;
 
+import android.media.MediaPlayer;
+
 public interface AudioInterface {
+
+    MediaPlayer getMediaPlayer();
+
+    int getStatus();
+
     /**
      * @param audioResource 音频播放的资源
      */
@@ -14,9 +21,12 @@ public interface AudioInterface {
 
     boolean isPlaying();
 
-    void autoPlayer(boolean autoPlayer);
+    void sendProgress(boolean sendProgress);
 
     void setAudioCallBackListener(AudioPlayerCallBackListener callBackListener);
 
+    void setProgressListener(AudioProgressListener progressListener);
+
     void clear();
+
 }

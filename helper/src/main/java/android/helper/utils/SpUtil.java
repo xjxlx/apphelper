@@ -278,7 +278,7 @@ public class SpUtil {
      * @param mapKey   存入到集合中的key
      * @param mapValue 存入到集合总的value
      */
-    public static void putMap(String key, String mapKey, String mapValue) {
+    public static void putMap(String key, String mapKey, Object mapValue) {
         if ((TextUtils.isEmpty(key)) || (TextUtils.isEmpty(mapKey))) {
             throw new NullPointerException("map数据的Key为空,无法继续存入！");
         }
@@ -286,7 +286,7 @@ public class SpUtil {
         try {
             // 校验之前是否有存储过该对象
             Gson gson = new Gson();
-            HashMap<String, String> map = null;
+            HashMap<String, Object> map = null;
             // 获取存储的数据
             String string = getString(key);
             // 数据不为空
@@ -316,7 +316,7 @@ public class SpUtil {
      * @param mapKey map的key
      * @return 根据指定的key返回map中存储的value
      */
-    public static String getMap(String key, String mapKey) {
+    public static String getStringForMap(String key, String mapKey) {
         if ((TextUtils.isEmpty(key)) || (TextUtils.isEmpty(mapKey))) {
             return null;
         }
@@ -340,7 +340,31 @@ public class SpUtil {
             }
         }
     }
-    
+
+    public static int getIntForMap(String key, String mapKey) {
+        if ((TextUtils.isEmpty(key)) || (TextUtils.isEmpty(mapKey))) {
+            return 0;
+        }
+        // 获取存储的数据
+        String string = getString(key);
+        if (TextUtils.isEmpty(string)) {
+            return 0;
+        } else {
+            try {
+                Gson gson = new Gson();
+                HashMap<String, Integer> hashMap = gson.fromJson(string, HashMap.class);
+                if (hashMap == null || hashMap.size() <= 0) {
+                    return 0;
+                } else {
+                    return hashMap.get(mapKey);
+                }
+            } catch (JsonSyntaxException e) {
+                LogUtil.e("转换HasMap数据失败！");
+                return 0;
+            }
+        }
+    }
+
     /**
      * @param key sp的key
      * @return 根据指定的key返回map中存储的value

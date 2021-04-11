@@ -2,8 +2,10 @@ package android.helper.utils;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 @SuppressLint("SimpleDateFormat")
@@ -37,4 +39,16 @@ public class DateUtil {
         return result;
     }
 
+    /**
+     * @param duration 当前的时间
+     * @return 格式化一个long类型的毫秒值，如果有小时，则格式化为：01:30:59，否则格式化为：30:59
+     */
+    public static CharSequence formatMillis(long duration) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.add(Calendar.MILLISECOND, (int) duration);
+        boolean hasHour = duration / (60 * 60 * 1000) > 0;
+        CharSequence pattern = hasHour ? "kk:mm:ss" : "mm:ss";
+        return DateFormat.format(pattern, calendar);
+    }
 }

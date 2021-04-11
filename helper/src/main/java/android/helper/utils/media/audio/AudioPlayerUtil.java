@@ -5,13 +5,23 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Build;
+import android.helper.utils.DateUtil;
+import android.helper.utils.LogUtil;
+import android.helper.utils.TextViewUtil;
+import android.media.MediaPlayer;
 import android.os.IBinder;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
+
+import static android.helper.utils.media.audio.AudioConstant.STATUS_ERROR;
+import static android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
 
 /**
  * 音频播放的工具类
  */
-public class AudioPlayerUtil {
+public class AudioPlayerUtil implements AudioProgressListener {
 
     private AudioServiceConnection connection;
     private boolean bindService;
@@ -20,6 +30,8 @@ public class AudioPlayerUtil {
     @SuppressLint("StaticFieldLeak")
     private static AudioService.AudioBinder audioBinder;
     private BindServiceListener mBindServiceListener;
+    private SeekBar mSeekBar;
+    private TextView mSeekBarProgressView, mSeekBarTotalView;
 
     public AudioPlayerUtil(Context context) {
         this.context = context;
@@ -37,10 +49,6 @@ public class AudioPlayerUtil {
 
         // 启动后台服务
         context.startService(intent);
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            context.startForegroundService(intent);
-//        }
 
         // 绑定前台的服务,禁止冲洗请的绑定
         if (!bindService) {
@@ -87,15 +95,10 @@ public class AudioPlayerUtil {
         }
     }
 
-    public void setAutoPlayer(boolean autoPlayer) {
-        if (audioBinder != null) {
-            audioBinder.autoPlayer(autoPlayer);
-        }
-    }
-
     public void clear() {
         if (audioBinder != null) {
             audioBinder.clear();
+            LogUtil.e("clear--->释放播放器");
         }
     }
 
@@ -120,6 +123,9 @@ public class AudioPlayerUtil {
                 audioBinder = (AudioService.AudioBinder) service;
                 if ((audioBinder != null) && (AudioPlayerUtil.this.mBindServiceListener != null)) {
                     AudioPlayerUtil.this.mBindServiceListener.bindResult(bindService);
+
+                    // 回调进度
+                    audioBinder.setProgressListener(AudioPlayerUtil.this);
                 }
             }
         }
@@ -133,6 +139,115 @@ public class AudioPlayerUtil {
     public void setAudioCallBackListener(AudioPlayerCallBackListener callBackListener) {
         if (audioBinder != null) {
             audioBinder.setAudioCallBackListener(callBackListener);
+        }
+    }
+
+    public void setSeekBar(SeekBar seekBar) {
+        if (seekBar == null || audioBinder == null) {
+            return;
+        }
+        this.mSeekBar = seekBar;
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    MediaPlayer mediaPlayer = audioBinder.getMediaPlayer();
+                    if (mediaPlayer != null) {
+                        int status = audioBinder.getStatus();
+                        if ((status != STATUS_IDLE) && (status != STATUS_ERROR)) {
+                            mediaPlayer.seekTo(progress);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                audioBinder.sendProgress(false);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                audioBinder.sendProgress(true);
+            }
+        });
+    }
+
+    /**
+     * @param progressTimeView 设置SeekBar不停变换进度的view
+     */
+    public void setSeekBarProgressTime(TextView progressTimeView) {
+        this.mSeekBarProgressView = progressTimeView;
+
+        // 设置默认的进度
+        TextViewUtil.setText(mSeekBarProgressView, "00:00");
+    }
+
+    /**
+     * @param totalTimeView 设置SeekBar固定不变的view
+     */
+    public void setSeekBarTotalTime(TextView totalTimeView) {
+        if (totalTimeView == null) {
+            return;
+        }
+        this.mSeekBarTotalView = totalTimeView;
+
+        // 设置默认的进度
+        TextViewUtil.setText(mSeekBarTotalView, "00:00");
+    }
+
+    public void setStartButton(View view) {
+
+    }
+
+    @Override
+    public void onBufferProgress(int total, double current, int percent) {
+        LogUtil.e("onBufferProgress:-->total:" + total + "  --->current:" + current + " --->percent:" + percent);
+        if (mSeekBar != null) {
+            mSeekBar.setMax(total);
+            mSeekBar.setSecondaryProgress((int) current);
+        }
+
+        if (total > 0) {
+            // 设置总的进度
+            CharSequence totalContent = mSeekBarTotalView.getText();
+            if (TextUtils.isEmpty(totalContent)) {
+                CharSequence charSequence = DateUtil.formatMillis(total);
+                TextViewUtil.setText(mSeekBarTotalView, charSequence);
+            }
+
+            // 设置默认的进度
+            CharSequence text = mSeekBarProgressView.getText();
+            if (TextUtils.isEmpty(text)) {
+                int length = totalContent.length();
+                if (length == 3) {
+                    TextViewUtil.setText(mSeekBarProgressView, "00:00:00");
+                } else {
+                    TextViewUtil.setText(mSeekBarProgressView, "00:00");
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onProgress(int total, int current, String percent) {
+        LogUtil.e("onProgress:-->total:" + total + "  --->current:" + current + " --->percent:" + percent);
+        if (mSeekBar != null) {
+            mSeekBar.setMax(total);
+            mSeekBar.setProgress(current);
+        }
+
+        // 设置总的进度
+        if (mSeekBarTotalView != null && total > 0) {
+            CharSequence charSequence = DateUtil.formatMillis(total);
+            TextViewUtil.setText(mSeekBarTotalView, charSequence);
+        }
+
+        // 设置默认的进度
+        if (current > 0) {
+            CharSequence charSequence = DateUtil.formatMillis(current);
+            TextViewUtil.setText(mSeekBarProgressView, charSequence);
         }
     }
 }

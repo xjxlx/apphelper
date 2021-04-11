@@ -23,44 +23,16 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Predicate;
 import io.reactivex.subscribers.DisposableSubscriber;
 
+import static android.helper.utils.media.audio.AudioConstant.STATUS_COMPLETE;
+import static android.helper.utils.media.audio.AudioConstant.STATUS_ERROR;
+import static android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
+import static android.helper.utils.media.audio.AudioConstant.STATUS_PAUSE;
+import static android.helper.utils.media.audio.AudioConstant.STATUS_PLAYING;
+import static android.helper.utils.media.audio.AudioConstant.STATUS_PREPARED;
+import static android.helper.utils.media.audio.AudioConstant.STATUS_STOP;
 import static android.media.MediaPlayer.MEDIA_ERROR_IO;
 
 public class AudioService extends Service {
-
-    /**
-     * 状态 --- 闲置的状态
-     */
-    private final int STATUS_IDLE = 0;
-
-    /**
-     * 状态 --- 数据准备好了
-     */
-    private final int STATUS_PREPARED = 1;
-
-    /**
-     * 状态 --- 播放中
-     */
-    private final int STATUS_PLAYING = 2;
-
-    /**
-     * 状态 --- 暂停了播放
-     */
-    private final int STATUS_PAUSE = 3;
-
-    /**
-     * 状态 --- 状态错误
-     */
-    private final int STATUS_ERROR = 4;
-
-    /**
-     * 状态 --- 停止了播放
-     */
-    private final int STATUS_STOP = 5;
-
-    /**
-     * 状态 --- 播放完成了
-     */
-    private final int STATUS_COMPLETE = 6;
 
     // 当前的状态，默认等于闲置的状态
     private int STATUS_TYPE = STATUS_IDLE;
@@ -70,10 +42,11 @@ public class AudioService extends Service {
     private AudioManager audioManager;
     private String mAudioPath, mOldAudioPath;
     private AudioPlayerCallBackListener mCallBackListener;
+    private AudioProgressListener mAudioProgressListener;
 
-    private boolean mAutoPlayer; // 加载完成后是否自动播放音频
     private int mDuration; // 时长
     private DisposableSubscriber<Long> disposableSubscriber;
+    private boolean mSendProgress = true;// 是否正常发送当前的进度，默认为true
 
     public AudioService() {
 
@@ -288,6 +261,16 @@ public class AudioService extends Service {
 
     class AudioBinder extends Binder implements AudioInterface {
         @Override
+        public MediaPlayer getMediaPlayer() {
+            return AudioService.this.getMediaPlayer();
+        }
+
+        @Override
+        public int getStatus() {
+            return STATUS_TYPE;
+        }
+
+        @Override
         public void setAudioResource(String audioResource) {
             AudioService.this.setResource(audioResource);
         }
@@ -313,13 +296,18 @@ public class AudioService extends Service {
         }
 
         @Override
-        public void autoPlayer(boolean autoPlayer) {
-            AudioService.this.mAutoPlayer = autoPlayer;
+        public void sendProgress(boolean sendProgress) {
+            AudioService.this.mSendProgress = sendProgress;
         }
 
         @Override
         public void setAudioCallBackListener(AudioPlayerCallBackListener callBackListener) {
             AudioService.this.setAudioCallBackListener(callBackListener);
+        }
+
+        @Override
+        public void setProgressListener(AudioProgressListener progressListener) {
+            setAudioProgressListener(progressListener);
         }
 
         @Override
@@ -336,6 +324,13 @@ public class AudioService extends Service {
     }
 
     /**
+     * @param audioProgressListener 进度回调的监听
+     */
+    public void setAudioProgressListener(AudioProgressListener audioProgressListener) {
+        mAudioProgressListener = audioProgressListener;
+    }
+
+    /**
      * 加载的回调
      */
     private final MediaPlayer.OnPreparedListener onPreparedListener = new MediaPlayer.OnPreparedListener() {
@@ -347,10 +342,8 @@ public class AudioService extends Service {
                 mCallBackListener.onPrepared();
             }
 
-            if (mAutoPlayer) {
-                // 加载完毕，就开始播放
-                start();
-            }
+            // 加载完毕，就开始播放
+            start();
         }
     };
 
@@ -500,12 +493,12 @@ public class AudioService extends Service {
             // 计算出当前的缓冲比例
             double percentFloat = percent / 100d;// 注意：两个整数相除的结果是整数
             // 缓冲比例 乘以 总数大小 ==  当前缓冲的进度
-            double currentProgress = getDuration() * percentFloat;
+            double currentProgress = mDuration * percentFloat;
 
             LogUtil.e("当前的缓冲进度为:" + currentProgress);
 
-            if (mCallBackListener != null) {
-                mCallBackListener.onBufferProgress(mDuration, currentProgress, percent);
+            if (mAudioProgressListener != null) {
+                mAudioProgressListener.onBufferProgress(mDuration, currentProgress, percent);
             }
         }
     };
@@ -554,14 +547,14 @@ public class AudioService extends Service {
                 .filter(new Predicate<Long>() {
                     @Override
                     public boolean test(@NonNull Long aLong) throws Exception {
-                        return isPlaying();
+                        return mSendProgress && isPlaying();
                     }
                 }).compose(RxUtil.getScheduler())
                 .subscribeWith(new DisposableSubscriber<Long>() {
                     @Override
                     public void onNext(Long aLong) {
                         try {
-                            if (mCallBackListener != null) {
+                            if (mAudioProgressListener != null) {
                                 String value;
 
                                 int currentPosition = mediaPlayer.getCurrentPosition();
@@ -574,7 +567,7 @@ public class AudioService extends Service {
                                     }
                                     value = String.format(Locale.CHINA, "%.2f", ((currentPosition * 1.0d) / mDuration));
                                 }
-                                mCallBackListener.onProgress(mDuration, currentPosition, value);
+                                mAudioProgressListener.onProgress(mDuration, currentPosition, value);
                             }
                         } catch (Exception e) {
                             LogUtil.e("getProgress ---->:" + e.getMessage());

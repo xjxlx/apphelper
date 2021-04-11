@@ -15,6 +15,10 @@ public class AudioPlayerActivity extends BaseTitleActivity {
     private android.widget.Button mBtnPlayer;
     private android.widget.Button mBtnPause;
     private android.widget.Button mBtnStop;
+    private android.widget.SeekBar mSeekbar;
+    private android.widget.TextView mTvLeft;
+    private android.widget.TextView mTvRight;
+
     private AudioPlayerUtil playerUtil;
     private String url = "http://dlfile.buddyeng.cn/sv/48717030-177bd5eff7d/48717030-177bd5eff7d.mp3";
 
@@ -48,17 +52,6 @@ public class AudioPlayerActivity extends BaseTitleActivity {
         public void onComplete() {
             LogUtil.e("onComplete");
         }
-
-        @Override
-        public void onBufferProgress(int total, double current, int percent) {
-            LogUtil.e("onBufferProgress:-->total:" + total + "  --->current:" + current + " --->percent:" + percent);
-        }
-
-        @Override
-        public void onProgress(int total, int current, String percent) {
-            LogUtil.e("onProgress:-->total:" + total + "  --->current:" + current + " --->percent:" + percent);
-
-        }
     };
 
     @Override
@@ -75,8 +68,11 @@ public class AudioPlayerActivity extends BaseTitleActivity {
         mBtnPlayer = findViewById(R.id.btn_player);
         mBtnPause = findViewById(R.id.btn_pause);
         mBtnStop = findViewById(R.id.btn_stop);
+        mSeekbar = findViewById(R.id.seekbar);
 
         setonClickListener(mBtnPlayer, mBtnPause, mBtnStop);
+        mTvLeft = findViewById(R.id.tv_left);
+        mTvRight = findViewById(R.id.tv_right);
     }
 
     @Override
@@ -85,8 +81,11 @@ public class AudioPlayerActivity extends BaseTitleActivity {
         playerUtil = new AudioPlayerUtil(mContext);
         playerUtil.bindService(success -> {
             if (success) {
-                playerUtil.setAutoPlayer(true);
+                playerUtil.setSeekBar(mSeekbar);
                 playerUtil.setAudioCallBackListener(audioPlayerCallBackListener);
+
+                playerUtil.setSeekBarProgressTime(mTvLeft);
+                playerUtil.setSeekBarTotalTime(mTvRight);
             }
         });
     }
@@ -116,5 +115,6 @@ public class AudioPlayerActivity extends BaseTitleActivity {
     protected void onDestroy() {
         super.onDestroy();
         playerUtil.destroy();
+        LogUtil.e("onDestroy");
     }
 }
