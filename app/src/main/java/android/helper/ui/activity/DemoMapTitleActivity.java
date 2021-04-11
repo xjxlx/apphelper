@@ -3,6 +3,7 @@ package android.helper.ui.activity;
 import android.helper.R;
 import android.helper.base.BaseTitleActivity;
 import android.helper.databinding.ActivityDemoMapBinding;
+import android.helper.ui.activity.otherutils.AudioPlayerActivity;
 import android.view.View;
 
 public class DemoMapTitleActivity extends BaseTitleActivity {
@@ -21,7 +22,7 @@ public class DemoMapTitleActivity extends BaseTitleActivity {
 
         setonClickListener(R.id.tv_live_data, R.id.tv_open_qywx, R.id.tv_receive_map_result,
                 R.id.tv_xml_write_data, R.id.tv_rxjava2, R.id.tv_download, R.id.tv_uploading,
-                R.id.tv_selector_image, R.id.tv_send_sms);
+                R.id.tv_selector_image, R.id.tv_send_sms,R.id.tv_audio_player);
     }
 
     @Override
@@ -66,6 +67,10 @@ public class DemoMapTitleActivity extends BaseTitleActivity {
 
             case R.id.tv_send_sms:
                 startActivity(SendSmsActivity.class);
+                break;
+
+            case R.id.tv_audio_player:
+                startActivity(AudioPlayerActivity.class);
                 break;
         }
     }

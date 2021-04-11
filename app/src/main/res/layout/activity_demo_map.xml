@@ -55,6 +55,11 @@
             style="@style/style_todo_item"
             android:text="发送短信" />
 
+        <TextView
+            android:id="@+id/tv_audio_player"
+            style="@style/style_todo_item"
+            android:text="音乐播放器" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>
