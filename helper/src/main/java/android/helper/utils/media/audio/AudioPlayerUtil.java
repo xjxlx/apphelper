@@ -342,7 +342,6 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         if (mCallBackListener != null) {
             mCallBackListener.onError(e);
         }
-
     }
 
     @Override
