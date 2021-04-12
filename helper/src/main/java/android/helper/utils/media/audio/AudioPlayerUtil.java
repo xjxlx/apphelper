@@ -102,6 +102,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     public void clear() {
         if (audioBinder != null) {
+            audioBinder.stop();
             audioBinder.clear();
             LogUtil.e("clear--->释放播放器");
         }
