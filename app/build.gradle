@@ -91,6 +91,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.google.android:flexbox:1.1.1' // 流式布局
 
-     implementation project(path: ':helper')
-//    implementation'com.gitee.xjxlx:apphelper:1.0.0.2.5'
+//     implementation project(path: ':helper')
+    implementation'com.gitee.xjxlx:apphelper:1.0.0.2.8'
 }
