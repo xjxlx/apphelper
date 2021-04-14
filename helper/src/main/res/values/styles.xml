@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <!--基类dialog的style-->
     <style name="base_dialog_default" parent="@android:style/Theme.Dialog">
         <item name="android:windowIsTranslucent">false</item>

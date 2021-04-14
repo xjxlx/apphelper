@@ -35,6 +35,11 @@
             style="@style/style_todo_item"
             android:text="测试滑动帮助类" />
 
+        <TextView
+            android:id="@+id/tv_test_more_adapter"
+            style="@style/style_todo_item"
+            android:text="测试多adapter" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

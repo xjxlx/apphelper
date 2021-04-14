@@ -18,7 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppThem"
         tools:targetApi="n">
-        <activity android:name=".ui.activity.otherutils.AudioPlayerActivity"></activity>
+        <activity android:name=".test.MoreAdapterActivity"></activity>
+        <activity android:name=".ui.activity.otherutils.AudioPlayerActivity" />
         <activity android:name=".test.TestScrollHelperActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
