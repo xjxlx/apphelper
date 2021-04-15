@@ -40,15 +40,18 @@ public class AssetsUtil {
      * 异步线程获取数据
      */
     public void initJson(Context context, String fileName, CallBackListener<String> callBackListener) {
-
         Flowable.create(new FlowableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull FlowableEmitter<String> emitter) throws Exception {
-                String jsonForAssets = getJsonForAssets(context, fileName);
-                if (TextUtils.isEmpty(jsonForAssets)) {
-                    emitter.onError(new NullPointerException("获取数据为空"));
+                if (context == null || (TextUtils.isEmpty(fileName))) {
+                    emitter.onError(new NullPointerException("对象为空"));
                 } else {
-                    emitter.onNext(jsonForAssets);
+                    String jsonForAssets = getJsonForAssets(context, fileName);
+                    if (TextUtils.isEmpty(jsonForAssets)) {
+                        emitter.onError(new NullPointerException("获取数据为空"));
+                    } else {
+                        emitter.onNext(jsonForAssets);
+                    }
                 }
                 emitter.onComplete();
             }
