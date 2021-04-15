@@ -5,6 +5,13 @@
     android:layout_height="match_parent"
     tools:context=".test.TestScrollHelperActivity">
 
+    <ImageView
+        android:id="@+id/iv_head"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/abc" />
+
     <android.helper.widget.hm.ScrollHelperLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
