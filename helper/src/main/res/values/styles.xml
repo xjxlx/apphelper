@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <!--基类dialog的style-->
     <style name="base_dialog_default" parent="@android:style/Theme.Dialog">
         <item name="android:windowIsTranslucent">false</item>
@@ -37,93 +38,5 @@
         <!-- 退出时的动画 -->
         <item name="android:windowExitAnimation">@anim/base_dialog_out_to_bottom</item>
     </style>
-
-    <!--自定义双行view的列表-->
-    <declare-styleable name="MultipleListView">
-        <attr name="mlv_text_color" format="color" />
-        <attr name="mlv_text_size" format="dimension" />
-        <attr name="mlv_text_font" format="string" />
-        <attr name="mlv_line_height" format="dimension" />
-    </declare-styleable>
-
-    <!--圆形图片的定义-->
-    <declare-styleable name="RoundView">
-        <!--圆形的类型-->
-        <attr name="rv_roundType" format="enum">
-            <!--圆形-->
-            <enum name="Circle" value="1" />
-            <!--圆角-->
-            <enum name="Round" value="2" />
-        </attr>
-
-        <attr name="rv_angle">
-            <!--四个角度-->
-            <flag name="all" value="0" />
-            <flag name="leftTop" value="2" />
-            <flag name="leftBottom" value="4" />
-            <flag name="rightTop" value="8" />
-            <flag name="rightBottom" value="16" />
-        </attr>
-
-        <!--圆形的半径-->
-        <attr name="rv_radius" format="dimension" />
-        <!--是否有占位图-->
-        <attr name="rv_placeholder" format="boolean" />
-    </declare-styleable>
-
-    <!--验证阿门输入框-->
-    <declare-styleable name="PassWordView">
-        <attr name="pd_size" format="integer" /> <!--验证码的个数-->
-        <attr name="pd_HorizontalSpacing" format="dimension" /> <!--每个view之间的间隔-->
-        <attr name="pd_un_selector_color" format="color" /> <!--没有选中的颜色-->
-        <attr name="pd_un_selector_height" format="dimension" /> <!--没有选中的高度-->
-        <attr name="pd_selector_color" format="color" /> <!--选中的颜色-->
-        <attr name="pd_selector_error_color" format="color" /> <!--选中错误的颜色-->
-        <attr name="pd_selector_height" format="dimension" /> <!--选中的高度-->
-        <attr name="pd_drawable_color" format="color" /> <!--密文的颜色-->
-        <attr name="pd_drawable_size" format="dimension" /> <!--密文的大小-->
-        <attr name="pd_content_color" format="color" /> <!--默认内容的颜色-->
-        <attr name="pd_content_size" format="dimension" /> <!--默认内容的大小-->
-        <attr name="pd_show_input" format="boolean" /><!--是否展示输入框-->
-        <attr name="pd_show_password" format="boolean" /> <!--是否显示密码-->
-    </declare-styleable>
-
-    <declare-styleable name="SendProgressView">
-        <attr name="drawable" format="reference" />
-        <attr name="stroke_Width" format="integer" />
-        <attr name="inner_layer_color" format="color" />
-        <attr name="inner_alpha" format="float" />
-        <attr name="outer_layer_color" format="color" />
-        <attr name="time" format="integer" /><!--多少秒走完整个布局-->
-        <attr name="drawable_width" format="integer" />
-        <attr name="drawable_height" format="integer" />
-    </declare-styleable>
-
-    <!--自定义touchView-->
-    <declare-styleable name="TextViewGradient">
-        <attr name="tvg_text_size" format="dimension" />
-        <attr name="tvg_text" format="string" />
-        <attr name="tvg_stroke_color" format="color" />
-        <attr name="tvg_stroke_width" format="dimension" />
-    </declare-styleable>
-
-    <!--滑块的view-->
-    <declare-styleable name="SliderView">
-        <attr name="hk_drawable" format="reference" /> <!--滑块的图片-->
-        <attr name="hk_background" format="color" /> <!--背景的颜色-->
-        <attr name="hk_background_Height" format="dimension" /> <!--背景的高度-->
-        <attr name="hk_drawable_Height" format="dimension" /> <!--滑块的高度-->
-        <attr name="hk_selector_background" format="color" /> <!--背景选中后的颜色-->
-    </declare-styleable>
-
-    <!--自定义touchView-->
-    <declare-styleable name="TouchView">
-        <attr name="tv_drawable" format="reference" />
-        <attr name="tv_padding_Top" format="dimension" />
-        <attr name="tv_padding_Bottom" format="dimension" />
-        <attr name="tv_padding_Radius" format="dimension" />
-        <attr name="tv_interval_Width" format="dimension" />
-        <attr name="tv_speed" format="float" />
-    </declare-styleable>
 
 </resources>

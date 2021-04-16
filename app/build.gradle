@@ -94,5 +94,5 @@ dependencies {
     implementation project(path: ':helper')
 //    implementation'com.gitee.xjxlx:apphelper:1.0.0.2.8'
 
-    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
+    // implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
 }
