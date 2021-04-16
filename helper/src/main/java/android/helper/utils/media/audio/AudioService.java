@@ -112,6 +112,7 @@ public class AudioService extends Service {
      * @param audioPath 设置播放资源
      */
     public void setResource(String audioPath) {
+
         if (TextUtils.isEmpty(audioPath)) {
             ToastUtil.show("播放地址不能为空！");
             LogUtil.e(AudioConstant.TAG, "setResource--->播放地址为空");
@@ -133,13 +134,10 @@ public class AudioService extends Service {
             if (!TextUtils.equals(mAudioPath, mOldAudioPath)) {
                 LogUtil.e(AudioConstant.TAG, "player--->播放地址不相同，执行后续的逻辑！");
 
-                if (initialized) {
-                    reset();
-                }
-
-                // 指定参数为音频文件
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
+                    reset();
+                    // 指定参数为音频文件
+                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     mediaPlayer.setDataSource(mAudioPath);//为多媒体对象设置播放路径
                     mediaPlayer.prepareAsync();//异步准备（准备播放
                     LogUtil.e(AudioConstant.TAG, "player--->重新重置了资源，并设置了数据！");
@@ -564,10 +562,9 @@ public class AudioService extends Service {
      * 清空资源
      */
     public void reset() {
-        mDuration = 0;
-
         LogUtil.e(AudioConstant.TAG, "reset--->走入了清空资源的方法中！");
-        if (initialized) {
+        mDuration = 0;
+        if (mediaPlayer != null) {
             mediaPlayer.reset();
             LogUtil.e(AudioConstant.TAG, "reset--->清空了资源！");
         }

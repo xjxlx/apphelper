@@ -59,14 +59,15 @@ public class AudioPlayerActivity extends BaseTitleActivity {
         LogUtil.e(AudioConstant.TAG, "initData");
 
         playerUtil = new AudioPlayerUtil(mContext);
-        playerUtil.autoPlayer(false);
-        playerUtil.setSeekBar(mSeekbar);
-        playerUtil.setSeekBarProgressTime(mTvLeft);
-        playerUtil.setSeekBarTotalTime(mTvRight);
-        playerUtil.setStartButton(mIvStart);
-        playerUtil.setAudioCallBackListener(audioPlayerCallBackListener);
-        playerUtil.setResource(url);
-        playerUtil.bindService(null);
+        playerUtil.bindService(success -> {
+            playerUtil.autoPlayer(false);
+            playerUtil.setSeekBar(mSeekbar);
+            playerUtil.setSeekBarProgressTime(mTvLeft);
+            playerUtil.setSeekBarTotalTime(mTvRight);
+            playerUtil.setStartButton(mIvStart);
+            playerUtil.setAudioCallBackListener(audioPlayerCallBackListener);
+            playerUtil.setResource(url);
+        });
     }
 
     @SuppressLint("NonConstantResourceId")
