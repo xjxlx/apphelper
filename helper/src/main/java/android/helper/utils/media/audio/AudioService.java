@@ -45,6 +45,7 @@ public class AudioService extends Service {
     private int mDuration; // 时长
     private DisposableSubscriber<Long> disposableSubscriber;
     private boolean mSendProgress = true;// 是否正常发送当前的进度，默认为true
+    private boolean initialized; // 是否已经完成了初始化
 
     public AudioService() {
 
@@ -53,6 +54,8 @@ public class AudioService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        initialized = false;
+
         if (context == null) {
             context = getApplication();
         }
@@ -75,7 +78,6 @@ public class AudioService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         // 创建对象
         mediaPlayer = getMediaPlayer();
 
@@ -85,6 +87,7 @@ public class AudioService extends Service {
     public MediaPlayer getMediaPlayer() {
         if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
+            LogUtil.e(AudioConstant.TAG, "getMediaPlayer--->重新构建了MediaPlayer");
         }
         return mediaPlayer;
     }
@@ -111,10 +114,11 @@ public class AudioService extends Service {
     public void setResource(String audioPath) {
         if (TextUtils.isEmpty(audioPath)) {
             ToastUtil.show("播放地址不能为空！");
+            LogUtil.e(AudioConstant.TAG, "setResource--->播放地址为空");
             return;
         }
         mAudioPath = audioPath;
-        LogUtil.e("播放地址为:" + audioPath);
+        LogUtil.e(AudioConstant.TAG, "setResource--->播放地址为:" + audioPath);
 
         // 开始去播放资源
         player();
@@ -127,7 +131,9 @@ public class AudioService extends Service {
         // 清空数据
         if (mediaPlayer != null) {
             if (!TextUtils.equals(mAudioPath, mOldAudioPath)) {
-                if (STATUS_TYPE != STATUS_IDLE) {
+                LogUtil.e(AudioConstant.TAG, "player--->播放地址不相同，执行后续的逻辑！");
+
+                if (initialized) {
                     reset();
                 }
 
@@ -136,9 +142,12 @@ public class AudioService extends Service {
                 try {
                     mediaPlayer.setDataSource(mAudioPath);//为多媒体对象设置播放路径
                     mediaPlayer.prepareAsync();//异步准备（准备播放
+                    LogUtil.e(AudioConstant.TAG, "player--->重新重置了资源，并设置了数据！");
+
                 } catch (IOException e) {
                     e.printStackTrace();
-                    LogUtil.e("player:" + e.getMessage());
+                    LogUtil.e(AudioConstant.TAG, "player--->设置数据异常：" + e.getMessage());
+
                     if (mCallBackListener != null) {
                         mCallBackListener.onError(new Exception("player--->" + e.getMessage()));
                     }
@@ -157,8 +166,9 @@ public class AudioService extends Service {
         try {
             if (mediaPlayer != null) {
                 // 无论是开始还是暂停，都不能是在闲置状态的时候去执行，否则就会异常
-                if (STATUS_TYPE != STATUS_IDLE) {
-                    if (STATUS_TYPE == STATUS_PLAYING) { // 播放中的状态
+                LogUtil.e(AudioConstant.TAG, "start--->initialized：" + initialized);
+                if (initialized) {
+                    if (isPlaying()) { // 播放中的状态
                         // 暂停播放
                         pause();
                     } else {
@@ -166,17 +176,22 @@ public class AudioService extends Service {
                         mediaPlayer.start();
                         STATUS_TYPE = STATUS_PLAYING;
 
+                        // 开始轮询的统计
+                        mSendProgress = true;
+
                         if (mCallBackListener != null) {
                             mCallBackListener.onStart();
-
                             // 路径更换
                             mOldAudioPath = mAudioPath;
                         }
+                        LogUtil.e(AudioConstant.TAG, "start--->initialized：正常进行了播放！");
                     }
+                } else {
+                    LogUtil.e(AudioConstant.TAG, "start--->initialized 为空，停止后续的操作！");
                 }
             }
         } catch (Exception e) {
-            LogUtil.e("开始失败：" + e.getMessage());
+            LogUtil.e(AudioConstant.TAG, "start--->开始播放失败--->" + e.getMessage());
             if (mCallBackListener != null) {
                 mCallBackListener.onError(new Exception("start--->" + e.getMessage()));
             }
@@ -189,6 +204,7 @@ public class AudioService extends Service {
     public void pause() {
 
         boolean playing = isPlaying();
+        LogUtil.e(AudioConstant.TAG, "pause--->走入了暂停的方法中，playing:" + playing);
         if (playing) {
             try {
                 mediaPlayer.pause();
@@ -199,32 +215,47 @@ public class AudioService extends Service {
                     mCallBackListener.onPause();
                 }
 
+                // 暂停轮询的统计
+                mSendProgress = false;
+
+                LogUtil.e(AudioConstant.TAG, "pause--->走入了暂停的方法中，成功暂停了！");
             } catch (Exception e) {
                 LogUtil.e("暂停失败");
                 if (mCallBackListener != null) {
                     mCallBackListener.onError(new Exception("pause--->" + e.getMessage()));
                 }
+                LogUtil.e(AudioConstant.TAG, "pause--->走入了暂停的方法中，暂停异常了--->" + e.getMessage());
             }
         }
     }
 
     public void stop() {
+        LogUtil.e(AudioConstant.TAG, "stop--->走入了停止的方法中，initialized：" + initialized);
+
         try {
             if (mediaPlayer != null) {
-                if (STATUS_TYPE != STATUS_IDLE) {
-                    mediaPlayer.stop();
-                    STATUS_TYPE = STATUS_STOP;
+                if (isPlaying()) {
+                    if (initialized) {
+                        mediaPlayer.pause();
+                        mediaPlayer.seekTo(0);
 
-                    if (mCallBackListener != null) {
-                        mCallBackListener.onStop();
+                        STATUS_TYPE = STATUS_STOP;
+
+                        // 暂停轮询的统计
+                        mSendProgress = false;
+
+                        if (mCallBackListener != null) {
+                            mCallBackListener.onStop();
+                        }
+
+                        // 重新去执行播放的资源
+                        mOldAudioPath = "";
+                        LogUtil.e(AudioConstant.TAG, "stop--->正常停止了播放");
                     }
-
-                    // 重新去执行播放的资源
-                    mOldAudioPath = "";
                 }
             }
         } catch (Exception e) {
-            LogUtil.e("停止失败");
+            LogUtil.e(AudioConstant.TAG, "stop--->停止失败--->" + e.getMessage());
             if (mCallBackListener != null) {
                 mCallBackListener.onError(new Exception("stop--->" + e.getMessage()));
             }
@@ -236,14 +267,16 @@ public class AudioService extends Service {
      */
     public boolean isPlaying() {
         boolean playing = false;
+        LogUtil.e(AudioConstant.TAG, "isPlaying--->走入了isPlaying的方法中，initialized:" + initialized);
         try {
             if (mediaPlayer != null) {
-                if (STATUS_TYPE != STATUS_IDLE) {
+                if (initialized) {
                     playing = mediaPlayer.isPlaying();
+                    LogUtil.e(AudioConstant.TAG, "isPlaying--->正常获取了播放的状态，状态为：" + playing);
                 }
             }
         } catch (Exception e) {
-            LogUtil.e("播放状态异常：" + e.getMessage());
+            LogUtil.e(AudioConstant.TAG, "isPlaying--->播放状态异常--->" + e.getMessage());
             if (mCallBackListener != null) {
                 mCallBackListener.onError(new Exception("isPlaying--->" + e.getMessage()));
             }
@@ -254,6 +287,7 @@ public class AudioService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stop();
         clear();
     }
 
@@ -266,6 +300,11 @@ public class AudioService extends Service {
         @Override
         public int getStatus() {
             return STATUS_TYPE;
+        }
+
+        @Override
+        public boolean initialized() {
+            return AudioService.this.initialized;
         }
 
         @Override
@@ -323,6 +362,8 @@ public class AudioService extends Service {
         @Override
         public void onPrepared(MediaPlayer iMediaPlayer) {
             STATUS_TYPE = STATUS_PREPARED;
+            initialized = true;
+            LogUtil.e(AudioConstant.TAG, "onPrepared--->数据准备完成了！");
 
             if (mCallBackListener != null) {
                 mCallBackListener.onPrepared();
@@ -336,6 +377,13 @@ public class AudioService extends Service {
     private final MediaPlayer.OnErrorListener onErrorListener = new MediaPlayer.OnErrorListener() {
         @Override
         public boolean onError(MediaPlayer iMediaPlayer, int what, int extra) {
+            LogUtil.e(AudioConstant.TAG, "onError--->发生了错误！ what:" + what);
+
+            if (what == -38) {
+                // 如果一旦遇到了这个错误，则需要整体重置一下播放器
+                clear();
+            }
+
             STATUS_TYPE = STATUS_ERROR;
 
             switch (what) {
@@ -381,10 +429,12 @@ public class AudioService extends Service {
      * @param e 错误的处理
      */
     private void setErrorData(Exception e) {
-        LogUtil.e("音频播放器错误：" + e.getMessage());
+        LogUtil.e(AudioConstant.TAG, "setErrorData--->音频播放器错误：" + e.getMessage());
         if (mCallBackListener != null) {
             mCallBackListener.onError(e);
         }
+        // 暂停轮询的统计
+        mSendProgress = false;
     }
 
     /**
@@ -394,7 +444,9 @@ public class AudioService extends Service {
         @Override
         public void onCompletion(MediaPlayer iMediaPlayer) {
             STATUS_TYPE = STATUS_COMPLETE;
-
+            LogUtil.e(AudioConstant.TAG, "onCompletion--->播放完成了！");
+            // 暂停轮询的统计
+            mSendProgress = false;
             /*
              * 置空临时变量，让程序重新开始,这一步非常关键，
              * 如果不置空，那么就会出现在播放完成之后，点击播放按钮程序无法重新开始的情况
@@ -471,7 +523,8 @@ public class AudioService extends Service {
     // 播放进度的回调
     private final MediaPlayer.OnBufferingUpdateListener onBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
         public void onBufferingUpdate(MediaPlayer mp, int percent) {
-            LogUtil.e("当前的缓冲百分比为:" + percent);
+
+            LogUtil.e(AudioConstant.TAG, "onBufferingUpdate--->播放进度的回调，当前的缓冲百分比为:" + percent);
 
             if (mDuration <= 0) {
                 mDuration = getDuration();
@@ -480,8 +533,6 @@ public class AudioService extends Service {
             double percentFloat = percent / 100d;// 注意：两个整数相除的结果是整数
             // 缓冲比例 乘以 总数大小 ==  当前缓冲的进度
             double currentProgress = mDuration * percentFloat;
-
-            LogUtil.e("当前的缓冲进度为:" + currentProgress);
 
             if (mCallBackListener != null) {
                 mCallBackListener.onBufferProgress(mDuration, currentProgress, percent);
@@ -493,10 +544,19 @@ public class AudioService extends Service {
      * @return 获取资源的时长
      */
     public int getDuration() {
+        LogUtil.e(AudioConstant.TAG, "getDuration--->走入了获取视频时长的方法中！");
         int result = 0;
-        if (mediaPlayer != null) {
-            result = mediaPlayer.getDuration();
+        try {
+            if (mediaPlayer != null) {
+                if (initialized) {
+                    result = mediaPlayer.getDuration();
+                    LogUtil.e(AudioConstant.TAG, "getDuration--->正常获取视频的时长:" + result);
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.e(AudioConstant.TAG, "getDuration--->异常了--->" + e.getMessage());
         }
+
         return result;
     }
 
@@ -505,24 +565,36 @@ public class AudioService extends Service {
      */
     public void reset() {
         mDuration = 0;
-        mediaPlayer.reset();
+
+        LogUtil.e(AudioConstant.TAG, "reset--->走入了清空资源的方法中！");
+        if (initialized) {
+            mediaPlayer.reset();
+            LogUtil.e(AudioConstant.TAG, "reset--->清空了资源！");
+        }
     }
 
     /**
      * 清空资源
      */
     public void clear() {
+        LogUtil.e(AudioConstant.TAG, "clear--->走入了clear的方法中！");
+
         if (mediaPlayer != null) {
-            if (STATUS_TYPE != STATUS_IDLE) {
-                mediaPlayer.reset();
+            if (initialized) {
+                if (disposableSubscriber != null) {
+                    disposableSubscriber.dispose();
+                }
+
+                stop();
                 mediaPlayer.release();
+                LogUtil.e(AudioConstant.TAG, "clear--->正常清空了mediaPlayer！");
+
                 STATUS_TYPE = STATUS_IDLE;
+                initialized = false;
+                mediaPlayer = null;
             }
         }
 
-        if (disposableSubscriber != null) {
-            disposableSubscriber.dispose();
-        }
     }
 
     /**
@@ -533,7 +605,7 @@ public class AudioService extends Service {
                 .filter(new Predicate<Long>() {
                     @Override
                     public boolean test(@NonNull Long aLong) throws Exception {
-                        return mSendProgress && isPlaying();
+                        return (mediaPlayer != null) && mSendProgress && isPlaying();
                     }
                 }).compose(RxUtil.getScheduler())
                 .subscribeWith(new DisposableSubscriber<Long>() {
@@ -549,7 +621,7 @@ public class AudioService extends Service {
                                     value = "0";
                                 } else {
                                     if (mDuration <= 0) {
-                                        mDuration = mediaPlayer.getDuration();
+                                        mDuration = getDuration();
                                     }
                                     value = String.format(Locale.CHINA, "%.2f", ((currentPosition * 1.0d) / mDuration));
                                 }

@@ -9,6 +9,11 @@ public interface AudioControlInterface {
     int getStatus();
 
     /**
+     * @return 是否初始化成功了
+     */
+    boolean initialized();
+
+    /**
      * @param audioResource 音频播放的资源
      */
     void setAudioResource(String audioResource);

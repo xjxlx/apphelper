@@ -1,7 +1,9 @@
 package android.helper.utils.media.audio;
 
-
 public class AudioConstant {
+
+    public static final String TAG = "AudioPlayer";
+
     /**
      * 状态 --- 闲置的状态
      */

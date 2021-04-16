@@ -1,8 +1,10 @@
 package android.helper.ui.activity.otherutils;
 
+import android.annotation.SuppressLint;
 import android.helper.R;
 import android.helper.base.BaseTitleActivity;
 import android.helper.utils.LogUtil;
+import android.helper.utils.media.audio.AudioConstant;
 import android.helper.utils.media.audio.AudioPlayerCallBackListener;
 import android.helper.utils.media.audio.AudioPlayerUtil;
 import android.view.View;
@@ -21,7 +23,7 @@ public class AudioPlayerActivity extends BaseTitleActivity {
     private android.widget.ImageView mIvStart;
 
     private AudioPlayerUtil playerUtil;
-    private String url = "http://dlfile.buddyeng.cn/sv/48717030-177bd5eff7d/48717030-177bd5eff7d.mp3";
+    private String url = "http://dlfile.buddyeng.cn/sv/316606-177bd6adfb0/316606-177bd6adfb0.mp3";
 
     private final AudioPlayerCallBackListener audioPlayerCallBackListener = new AudioPlayerCallBackListener() {
         public void onComplete() {
@@ -54,19 +56,24 @@ public class AudioPlayerActivity extends BaseTitleActivity {
     @Override
     protected void initData() {
         super.initData();
-        playerUtil = new AudioPlayerUtil(mContext);
-        playerUtil.bindService(success -> {
-            if (success) {
-                playerUtil.setSeekBar(mSeekbar);
-                playerUtil.setAudioCallBackListener(audioPlayerCallBackListener);
+        LogUtil.e(AudioConstant.TAG, "initData");
 
-                playerUtil.setSeekBarProgressTime(mTvLeft);
-                playerUtil.setSeekBarTotalTime(mTvRight);
-                playerUtil.setStartButton(mIvStart);
-            }
+        playerUtil = new AudioPlayerUtil(mContext);
+        playerUtil.autoPlayer(true);
+        playerUtil.setSeekBar(mSeekbar);
+        playerUtil.setSeekBarProgressTime(mTvLeft);
+        playerUtil.setSeekBarTotalTime(mTvRight);
+        playerUtil.setStartButton(mIvStart);
+        playerUtil.setAudioCallBackListener(audioPlayerCallBackListener);
+
+        playerUtil.bindService(success -> {
+            LogUtil.e(AudioConstant.TAG, "bindResult--->绑定结果的回调：" + success);
         });
+
+        playerUtil.setResource(url);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         super.onClick(v);
@@ -91,7 +98,8 @@ public class AudioPlayerActivity extends BaseTitleActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        LogUtil.e(AudioConstant.TAG, "onDestroy");
+
         playerUtil.destroy();
-        LogUtil.e("onDestroy");
     }
 }

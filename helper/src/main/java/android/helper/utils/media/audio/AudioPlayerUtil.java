@@ -35,6 +35,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     private View mStartButton; // 开始按钮
     private AudioPlayerCallBackListener mCallBackListener;
     private String mAudioPath; // 播放的路径
+    private boolean mAutoPlayer;// 是否自动播放
 
     public AudioPlayerUtil(Context context) {
         this.context = context;
@@ -45,6 +46,8 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
      */
     public void bindService(BindServiceListener bindServiceListener) {
         this.mBindServiceListener = bindServiceListener;
+        LogUtil.e(AudioConstant.TAG, "bindService--->开始绑定服务！");
+
         intent = new Intent(context, AudioService.class);
         if (connection == null) {
             connection = new AudioServiceConnection();
@@ -57,6 +60,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         if (!bindService) {
             bindService = context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
         }
+        LogUtil.e(AudioConstant.TAG, "bindService--->后台服务绑定成功：" + bindService);
     }
 
     /**
@@ -67,19 +71,23 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             context.unbindService(connection);
             bindService = false;
         }
-        // 停止后台的服务
-        context.stopService(intent);
     }
 
     /**
      * @param audioPath 播放地址
      */
     public void setResource(String audioPath) {
+        this.mAudioPath = audioPath;
         if (audioBinder != null) {
             audioBinder.setAudioResource(audioPath);
-
-            this.mAudioPath = audioPath;
         }
+    }
+
+    /**
+     * @param autoPlayer 是否自动播放
+     */
+    public void autoPlayer(boolean autoPlayer) {
+        this.mAutoPlayer = autoPlayer;
     }
 
     public void start() {
@@ -102,7 +110,6 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     public void clear() {
         if (audioBinder != null) {
-            audioBinder.stop();
             audioBinder.clear();
             LogUtil.e("clear--->释放播放器");
         }
@@ -112,14 +119,22 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
      * 页面停止不可见时候的处理
      */
     public void destroy() {
-        if (audioBinder != null) {
-            boolean playing = audioBinder.isPlaying();
-            if (!playing) {
-                unBindService();
-
-                clear();
-            }
+        if (bindService) {
+            unBindService();
         }
+
+        // 停止后台的服务
+        context.stopService(intent);
+        audioBinder = null;
+        bindService = false;
+        mBindServiceListener = null;
+        mSeekBar = null;
+        mSeekBarProgressView = null;
+        mSeekBarTotalView = null;
+        mStartButton = null;
+        mCallBackListener = null;
+        mAudioPath = null;
+        mAutoPlayer = false;
     }
 
     class AudioServiceConnection implements ServiceConnection {
@@ -127,11 +142,22 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         public void onServiceConnected(ComponentName name, IBinder service) {
             if (service instanceof AudioService.AudioBinder) {
                 audioBinder = (AudioService.AudioBinder) service;
-                if ((audioBinder != null) && (AudioPlayerUtil.this.mBindServiceListener != null)) {
-                    AudioPlayerUtil.this.mBindServiceListener.bindResult(bindService);
+                LogUtil.e(AudioConstant.TAG, "onServiceConnected--->服务回调成功：" + (audioBinder));
+
+                if (audioBinder != null) {
 
                     // 生命周期的回调
                     audioBinder.setAudioCallBackListener(AudioPlayerUtil.this);
+
+                    AudioPlayerUtil.this.mBindServiceListener.bindResult(bindService);
+                    setSeekBar(mSeekBar);
+                    setStartButton(mStartButton);
+                }
+
+                // 绑定成功后自动播放
+                if (mAutoPlayer) {
+                    LogUtil.e(AudioConstant.TAG, "onServiceConnected--->服务回调成功,开始自动播放！");
+                    setResource(mAudioPath);
                 }
             }
         }
@@ -152,10 +178,17 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     }
 
     public void setSeekBar(SeekBar seekBar) {
-        if (seekBar == null || audioBinder == null) {
+        if (seekBar == null) {
             return;
         }
         this.mSeekBar = seekBar;
+
+        // 设置默认的进度
+        seekBar.setProgress(0);
+
+        if (audioBinder == null) {
+            return;
+        }
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -218,10 +251,14 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         view.setOnClickListener(v -> {
 
             if (audioBinder != null) {
-                int status = audioBinder.getStatus();
-                // 如果是暂停或者播放的状态，那么就去执行start方法，否则就去执行重新播放的操作
-                if (status == AudioConstant.STATUS_PLAYING || status == AudioConstant.STATUS_PAUSE) {
-                    start();
+
+                boolean initialized = audioBinder.initialized();
+                if (initialized) {
+                    if (audioBinder.isPlaying()) {
+                        pause();
+                    } else {
+                        start();
+                    }
                 } else {
                     setResource(mAudioPath);
                 }
@@ -245,20 +282,23 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
         if (total > 0) {
             // 设置总的进度
-            CharSequence totalContent = mSeekBarTotalView.getText();
-            if (TextUtils.isEmpty(totalContent)) {
-                CharSequence charSequence = DateUtil.formatMillis(total);
-                TextViewUtil.setText(mSeekBarTotalView, charSequence);
-            }
-
-            // 设置默认的进度
-            CharSequence text = mSeekBarProgressView.getText();
-            if (TextUtils.isEmpty(text)) {
-                int length = totalContent.length();
-                if (length == 3) {
-                    TextViewUtil.setText(mSeekBarProgressView, "00:00:00");
-                } else {
-                    TextViewUtil.setText(mSeekBarProgressView, "00:00");
+            if (mSeekBarTotalView != null) {
+                CharSequence totalContent = mSeekBarTotalView.getText();
+                if (TextUtils.isEmpty(totalContent)) {
+                    CharSequence charSequence = DateUtil.formatMillis(total);
+                    TextViewUtil.setText(mSeekBarTotalView, charSequence);
+                }
+                // 设置默认的进度
+                if (mSeekBarProgressView != null) {
+                    CharSequence text = mSeekBarProgressView.getText();
+                    if (TextUtils.isEmpty(text)) {
+                        int length = totalContent.length();
+                        if (length == 3) {
+                            TextViewUtil.setText(mSeekBarProgressView, "00:00:00");
+                        } else {
+                            TextViewUtil.setText(mSeekBarProgressView, "00:00");
+                        }
+                    }
                 }
             }
         }
@@ -321,14 +361,6 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         super.onStop();
         LogUtil.e("onStop");
         switchStartButton(false);
-
-        if (mSeekBar != null) {
-            mSeekBar.setProgress(0);
-        }
-
-        if (mSeekBarProgressView != null) {
-            TextViewUtil.setText(mSeekBarProgressView, "00:00");
-        }
 
         if (mCallBackListener != null) {
             mCallBackListener.onStop();
