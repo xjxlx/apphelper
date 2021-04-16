@@ -66,7 +66,6 @@ public class AudioPlayerActivity extends BaseTitleActivity {
             playerUtil.setSeekBarTotalTime(mTvRight);
             playerUtil.setStartButton(mIvStart);
             playerUtil.setAudioCallBackListener(audioPlayerCallBackListener);
-            playerUtil.setResource(url);
         });
     }
 

@@ -108,13 +108,6 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         }
     }
 
-    public void clear() {
-        if (audioBinder != null) {
-            audioBinder.clear();
-            LogUtil.e("clear--->释放播放器");
-        }
-    }
-
     /**
      * 页面停止不可见时候的处理
      */
@@ -160,7 +153,9 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                 // 绑定成功后自动播放
                 if (mAutoPlayer) {
                     LogUtil.e(AudioConstant.TAG, "onServiceConnected--->服务回调成功,开始自动播放！");
-                    setResource(mAudioPath);
+                    if (!TextUtils.isEmpty(mAudioPath)) {
+                        setResource(mAudioPath);
+                    }
                 }
             }
         }
@@ -250,21 +245,21 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             return;
         }
         this.mStartButton = view;
+        if (audioBinder == null) {
+            return;
+        }
+
         // 播放按钮的点击事件
         view.setOnClickListener(v -> {
-
-            if (audioBinder != null) {
-
-                boolean initialized = audioBinder.initialized();
-                if (initialized) {
-                    if (audioBinder.isPlaying()) {
-                        pause();
-                    } else {
-                        start();
-                    }
+            boolean initialized = audioBinder.initialized();
+            if (initialized) {
+                if (audioBinder.isPlaying()) {
+                    pause();
                 } else {
-                    setResource(mAudioPath);
+                    start();
                 }
+            } else {
+                setResource(mAudioPath);
             }
         });
     }
