@@ -59,18 +59,14 @@ public class AudioPlayerActivity extends BaseTitleActivity {
         LogUtil.e(AudioConstant.TAG, "initData");
 
         playerUtil = new AudioPlayerUtil(mContext);
-        playerUtil.autoPlayer(true);
+        playerUtil.autoPlayer(false);
         playerUtil.setSeekBar(mSeekbar);
         playerUtil.setSeekBarProgressTime(mTvLeft);
         playerUtil.setSeekBarTotalTime(mTvRight);
         playerUtil.setStartButton(mIvStart);
         playerUtil.setAudioCallBackListener(audioPlayerCallBackListener);
-
-        playerUtil.bindService(success -> {
-            LogUtil.e(AudioConstant.TAG, "bindResult--->绑定结果的回调：" + success);
-        });
-
         playerUtil.setResource(url);
+        playerUtil.bindService(null);
     }
 
     @SuppressLint("NonConstantResourceId")

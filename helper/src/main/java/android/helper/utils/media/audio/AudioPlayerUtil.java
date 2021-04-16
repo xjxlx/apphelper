@@ -147,9 +147,12 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                 if (audioBinder != null) {
 
                     // 生命周期的回调
+                    if (AudioPlayerUtil.this.mBindServiceListener != null) {
+                        AudioPlayerUtil.this.mBindServiceListener.bindResult(bindService);
+                    }
+
                     audioBinder.setAudioCallBackListener(AudioPlayerUtil.this);
 
-                    AudioPlayerUtil.this.mBindServiceListener.bindResult(bindService);
                     setSeekBar(mSeekBar);
                     setStartButton(mStartButton);
                 }
