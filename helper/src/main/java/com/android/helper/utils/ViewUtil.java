@@ -21,7 +21,7 @@ public class ViewUtil {
 
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams marginLayoutParams = new ViewGroup.MarginLayoutParams(layoutParams);
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
             int left = array[0];
             int top = array[1];
             int right = array[2];
@@ -50,6 +50,24 @@ public class ViewUtil {
         if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
             marginLayoutParams.topMargin = (int) ConvertUtil.toDp(topMargin);
+            view.setLayoutParams(marginLayoutParams);
+        }
+    }
+
+    public static void setLeftMargin(View view, int topMargin) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+            marginLayoutParams.leftMargin = (int) ConvertUtil.toDp(topMargin);
+            view.setLayoutParams(marginLayoutParams);
+        }
+    }
+
+    public static void setRightMargin(View view, int topMargin) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+            marginLayoutParams.rightMargin = (int) ConvertUtil.toDp(topMargin);
             view.setLayoutParams(marginLayoutParams);
         }
     }
