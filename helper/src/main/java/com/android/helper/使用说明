@@ -1,3 +1,19 @@
 
 
-implementation 'com.github.xjxlx:apphelper:v1.0.1'
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+
+
+	dependencies {
+    	        implementation 'com.gitee.xjxlx:apphelper:Tag'
+    	}
+
+<!-- 音乐播放器的服务 -->
+        <service
+            android:name="com.android.helper.utils.media.audio.AudioService"
+            android:enabled="true"
+            android:exported="false" />

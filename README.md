@@ -11,14 +11,20 @@
       }
 
 2.    dependencies {        
-            implementation 'com.gitee.xjxlx:apphelper:v1.0.0.0.4'        
+	        implementation 'com.gitee.xjxlx:apphelper:1.0.1.0.0'
       }
 
-3.    api('com.gitee.xjxlx:apphelper:v1.0.0.0.4') {     
+3.    api('com.gitee.xjxlx:apphelper:1.0.1.0.0') {     
             exclude group: 'com.github.bumptech.glide'      
             exclude group: 'com.scwang.smart:refresh-layout-kernel'     
       }
 
+4.
+<!-- 音乐播放器的服务 -->
+        <service
+            android:name="com.android.helper.utils.media.audio.AudioService"
+            android:enabled="true"
+            android:exported="false" />
 
 #### 区分平台
 
