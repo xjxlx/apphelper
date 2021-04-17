@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import com.android.helper.utils.LogUtil;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 
@@ -57,14 +58,19 @@ public class GlideUtil {
      * @param placeResourceId 加载成功前显示的图片
      */
     @SuppressLint("CheckResult")
-    public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull ImageView imageView,
-                                @DrawableRes int placeResourceId) {
+    public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull ImageView imageView, @DrawableRes int placeResourceId) {
         boolean checkParameter = checkParameter(activity, url);
+
         if (checkParameter) {
+            RequestOptions options = new RequestOptions();
+            if (placeResourceId != 0) {
+                options.placeholder(placeResourceId);
+            }
+
             Glide
                     .with(activity)
                     .load(url)
-                    .placeholder(placeResourceId)
+                    .apply(options)
                     .into(imageView);
         }
     }
@@ -76,14 +82,25 @@ public class GlideUtil {
     @SuppressLint("CheckResult")
     public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull ImageView imageView,
                                 @DrawableRes int placeResourceId, @DrawableRes int errorResourceId) {
+
         boolean checkParameter = checkParameter(activity, url);
         if (checkParameter) {
+
+            RequestOptions options = new RequestOptions();
+            if (placeResourceId != 0) {
+                options.placeholder(placeResourceId);
+            }
+
+            if (errorResourceId != 0) {
+                options
+                        .error(errorResourceId)
+                        .override(errorResourceId);
+            }
+
             Glide
                     .with(activity)
                     .load(url)
-                    .placeholder(placeResourceId)
-                    .error(errorResourceId)
-                    .fallback(errorResourceId)
+                    .apply(options)
                     .into(imageView);
         }
     }
@@ -113,14 +130,20 @@ public class GlideUtil {
      * @param placeResourceId 加载成功前显示的图片
      */
     @SuppressLint("CheckResult")
-    public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull View view,
-                                @DrawableRes int placeResourceId) {
+    public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull View view, @DrawableRes int placeResourceId) {
+
         boolean checkParameter = checkParameter(activity, url);
         if (checkParameter) {
+
+            RequestOptions options = new RequestOptions();
+            if (placeResourceId != 0) {
+                options.placeholder(placeResourceId);
+            }
+
             Glide
                     .with(activity)
                     .load(url)
-                    .placeholder(placeResourceId)
+                    .apply(options)
                     .into(new CustomTarget<Drawable>() {
                         @Override
                         public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
@@ -140,12 +163,22 @@ public class GlideUtil {
                                 @DrawableRes int placeResourceId, @DrawableRes int errorResourceId) {
         boolean checkParameter = checkParameter(activity, url);
         if (checkParameter) {
+            RequestOptions options = new RequestOptions();
+            if (placeResourceId != 0) {
+                options.placeholder(placeResourceId);
+            }
+
+            if (errorResourceId != 0) {
+                options
+                        .error(errorResourceId)
+                        .override(errorResourceId);
+            }
+
+
             Glide
                     .with(activity)
                     .load(url)
-                    .placeholder(placeResourceId)
-                    .error(errorResourceId)
-                    .fallback(errorResourceId)
+                    .apply(options)
                     .into(new CustomTarget<Drawable>() {
                         @Override
                         public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
