@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.android.helper">
+<manifest package="com.android.helper">
+
+    <application>
+        <!-- 音乐播放器的服务 -->
+<!--        <service-->
+        <!--            android:name="com.android.helper.utils.media.audio.AudioService"-->
+        <!--            android:enabled="true"-->
+        <!--            android:exported="false" />-->
+    </application>
 
 </manifest>

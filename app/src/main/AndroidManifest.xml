@@ -180,6 +180,13 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- 音乐播放器的服务 -->
+        <service
+            android:name="com.android.helper.utils.media.audio.AudioService"
+            android:enabled="true"
+            android:exported="false" />
+
     </application>
 
 </manifest>
