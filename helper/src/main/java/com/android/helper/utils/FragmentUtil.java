@@ -126,4 +126,80 @@ public class FragmentUtil {
         }
     }
 
+    /**
+     * @param containerViewId 父类的容器id
+     * @param fragment        目标的fragment，用于展示
+     * @param tag             目标fragment的tag
+     */
+    public void replace(@IdRes int containerViewId, Fragment fragment, @Nullable String tag, CallBackListener<Object> listener) {
+        boolean isSuccess = false;
+        try {
+            // 如果fragment为空，则停止后续的所有操作
+            if (fragment == null) {
+                throw new NullPointerException("fragment 不能为空");
+            }
+
+            if (manager != null) {
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.replace(containerViewId, fragment, tag);
+                transaction.commitAllowingStateLoss();
+
+                mBeforeFragment = fragment;
+                LogUtil.e(TAG, "fragment添加成功：" + fragment.toString());
+                isSuccess = true;
+            }
+        } catch (Exception e) {
+            isSuccess = false;
+            LogUtil.e(TAG, "fragment添加失败 --->Error:" + e.getMessage());
+        }
+
+        if (listener != null) {
+            listener.onBack(isSuccess, tag, "");
+        }
+    }
+
+    /**
+     * @param containerViewId 父类的容器id
+     * @param fragment        目标的fragment，用于展示
+     */
+    public void replace(@IdRes int containerViewId, Fragment fragment, CallBackListener<Object> listener) {
+        boolean isSuccess = false;
+        try {
+            // 如果fragment为空，则停止后续的所有操作
+            if (fragment == null) {
+                throw new NullPointerException("fragment 不能为空");
+            }
+
+            if (manager != null) {
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.replace(containerViewId, fragment);
+                transaction.commitAllowingStateLoss();
+
+                mBeforeFragment = fragment;
+                LogUtil.e(TAG, "fragment添加成功：" + fragment.toString());
+                isSuccess = true;
+            }
+        } catch (Exception e) {
+            isSuccess = false;
+            LogUtil.e(TAG, "fragment添加失败 --->Error:" + e.getMessage());
+        }
+
+        if (listener != null) {
+            listener.onBack(isSuccess, "", "");
+        }
+    }
+
+    /**
+     * @param tag tag
+     * @return 根据tag查找fragment
+     */
+    public Fragment getFragmentForTag(String tag) {
+        if (!TextUtils.isEmpty(tag)) {
+            if (manager != null) {
+                return manager.findFragmentByTag(tag);
+            }
+        }
+        return null;
+    }
+
 }
