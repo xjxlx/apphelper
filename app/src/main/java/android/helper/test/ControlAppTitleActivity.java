@@ -8,6 +8,11 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.helper.R;
+import android.helper.adapters.AppInfoAdapter;
+import android.helper.bean.AppInfoBean;
+import android.helper.databinding.ActivityControlAppBinding;
+import android.helper.services.LookDogService;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -15,14 +20,9 @@ import android.provider.Settings;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.helper.R;
-import android.helper.adapters.AppInfoAdapter;
-import android.helper.bean.AppInfoBean;
-import android.helper.databinding.ActivityControlAppBinding;
-import android.helper.services.LookDogService;
-import android.helper.base.BaseTitleActivity;
-import android.helper.utils.LogUtil;
-import android.helper.utils.RxPermissionsUtil;
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.RxPermissionsUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -73,8 +73,6 @@ public class ControlAppTitleActivity extends BaseTitleActivity {
                     mListAppInfo2.add(bean);
                 }
             }
-
-
 
             if (adapter != null) {
                 adapter.notifyDataSetChanged();

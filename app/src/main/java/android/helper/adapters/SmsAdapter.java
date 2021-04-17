@@ -1,13 +1,14 @@
 package android.helper.adapters;
 
 import android.helper.R;
-import android.helper.base.BaseActivity;
-import android.helper.base.BaseRecycleAdapter;
-import android.helper.base.BaseVH;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+
+import com.android.helper.base.BaseActivity;
+import com.android.helper.base.BaseRecycleAdapter;
+import com.android.helper.base.BaseVH;
 
 public class SmsAdapter extends BaseRecycleAdapter<String, SmsAdapter.SmsVH> {
     private int type;

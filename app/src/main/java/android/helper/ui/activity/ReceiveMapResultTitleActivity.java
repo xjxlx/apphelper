@@ -2,6 +2,8 @@ package android.helper.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.helper.R;
+import android.helper.databinding.ActivityReceiveMapResultBinding;
 import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +13,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import android.helper.R;
-import android.helper.databinding.ActivityReceiveMapResultBinding;
-import android.helper.base.BaseTitleActivity;
+import com.android.helper.base.BaseTitleActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,24 +21,24 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class ReceiveMapResultTitleActivity extends BaseTitleActivity {
-    
+
     private ActivityReceiveMapResultBinding binding;
-    
+
     @Override
     protected int getTitleLayout() {
         return R.layout.activity_receive_map_result;
     }
-    
+
     @Override
     protected void initView() {
         super.initView();
         binding = ActivityReceiveMapResultBinding.inflate(getLayoutInflater());
     }
-    
+
     @Override
     protected void initData() {
         super.initData();
-        
+
         Intent intent = getIntent();
         if (intent != null) {
             String action = intent.getAction();
@@ -63,7 +63,7 @@ public class ReceiveMapResultTitleActivity extends BaseTitleActivity {
             }
         }
     }
-    
+
     /**
      * 用TextView显示文本
      * 可以打开一般的文本文件
@@ -72,13 +72,13 @@ public class ReceiveMapResultTitleActivity extends BaseTitleActivity {
      */
     private void handleSendText(Intent intent) {
         TextView textView = new TextView(this);
-        
+
         //一般的文本处理，我们直接显示字符串
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (sharedText != null) {
             textView.setText(sharedText);
         }
-        
+
         //文本文件处理，从Uri中获取输入流，然后将输入流转换成字符串
         Uri textUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
         if (textUri != null) {
@@ -89,11 +89,11 @@ public class ReceiveMapResultTitleActivity extends BaseTitleActivity {
                 e.printStackTrace();
             }
         }
-        
+
         //设置给Activity
         setContentView(textView);
     }
-    
+
     /**
      * 将输入流转换成字符串
      *
@@ -103,20 +103,20 @@ public class ReceiveMapResultTitleActivity extends BaseTitleActivity {
      */
     private String inputStream2Byte(InputStream inputStream) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        
+
         byte[] buffer = new byte[1024];
         int len = -1;
-        
+
         while ((len = inputStream.read(buffer)) != -1) {
             bos.write(buffer, 0, len);
         }
-        
+
         bos.close();
-        
+
         //指定编码格式为UIT-8
         return new String(bos.toByteArray(), "UTF-8");
     }
-    
+
     /**
      * 用ImageView显示单张图片
      *
@@ -130,7 +130,7 @@ public class ReceiveMapResultTitleActivity extends BaseTitleActivity {
             setContentView(imageView);
         }
     }
-    
+
     /**
      * 用GridView显示多张图片
      *
@@ -146,13 +146,13 @@ public class ReceiveMapResultTitleActivity extends BaseTitleActivity {
             gridView.setNumColumns(GridView.AUTO_FIT);
             gridView.setAdapter(new GridAdapter(this, imageUris));
             setContentView(gridView);
-            
+
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                
+
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                                         final int position, long id) {
-                    
+
                     //点击GridView的item 可以分享图片给其他应用
                     //这里可以参考http://blog.csdn.net/xiaanming/article/details/9395991
                     Intent intent = new Intent();
@@ -162,10 +162,10 @@ public class ReceiveMapResultTitleActivity extends BaseTitleActivity {
                     startActivity(Intent.createChooser(intent, "共享图片"));
                 }
             });
-            
+
         }
     }
-    
+
     /**
      * 重写BaseAdapter
      *
@@ -174,27 +174,27 @@ public class ReceiveMapResultTitleActivity extends BaseTitleActivity {
     public class GridAdapter extends BaseAdapter {
         private Context mContext;
         private ArrayList<Uri> list;
-        
+
         public GridAdapter(Context mContext, ArrayList<Uri> list) {
             this.list = list;
             this.mContext = mContext;
         }
-        
+
         @Override
         public int getCount() {
             return list.size();
         }
-        
+
         @Override
         public Object getItem(int position) {
             return list.get(position);
         }
-        
+
         @Override
         public long getItemId(int position) {
             return position;
         }
-        
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ImageView imageView;

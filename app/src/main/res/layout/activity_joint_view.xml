@@ -52,7 +52,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
 
-    <android.helper.widget.LeftImageView
+    <com.android.helper.widget.LeftImageView
         android:id="@+id/iv_left"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
@@ -64,7 +64,7 @@
         app:layout_constraintRight_toLeftOf="@+id/iv_right"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <android.helper.widget.RightImageView
+    <com.android.helper.widget.RightImageView
         android:id="@+id/iv_right"
         android:layout_width="wrap_content"
         android:layout_height="0dp"

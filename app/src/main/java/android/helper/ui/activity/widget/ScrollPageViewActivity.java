@@ -1,10 +1,11 @@
 package android.helper.ui.activity.widget;
 
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
-import android.helper.utils.ToastUtil;
-import android.helper.widget.PageView;
 import android.view.View;
+
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.ToastUtil;
+import com.android.helper.widget.PageView;
 
 import java.util.ArrayList;
 

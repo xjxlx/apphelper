@@ -1,12 +1,12 @@
 package android.helper.ui.activity
 
 import android.helper.R
-import android.helper.base.BaseTitleActivity
-import android.helper.utils.FileUtil
-import android.helper.utils.LogUtil
-import android.helper.utils.photo.GlideEngine
-import android.helper.utils.photo.GlideUtil
 import android.view.View
+import com.android.helper.base.BaseTitleActivity
+import com.android.helper.utils.FileUtil
+import com.android.helper.utils.LogUtil
+import com.android.helper.utils.photo.GlideEngine
+import com.android.helper.utils.photo.GlideUtil
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia

@@ -4,7 +4,8 @@ import android.annotation.SuppressLint;
 import android.view.View;
 
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
+
+import com.android.helper.base.BaseTitleActivity;
 
 public class JavaMapActivity extends BaseTitleActivity {
     

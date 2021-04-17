@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:descendantFocusability="afterDescendants"
     tools:context=".ui.activity.widget.ProgressActivity">
 
@@ -11,8 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.helper.widget.SendProgressView
+        <com.android.helper.widget.SendProgressView
             android:id="@+id/spv"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dp_20"
+            android:background="@color/black"
             app:drawable="@mipmap/icon_progress_phone"
             app:inner_alpha="0.2"
             app:inner_layer_color="@color/white"
@@ -24,81 +29,83 @@
             app:layout_constraintVertical_bias="0"
             app:outer_layer_color="@color/white"
             app:stroke_Width="3"
-            app:time="90"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/dp_20"
-            android:background="@color/black" />
+            app:time="90" />
 
         <Button
             android:id="@+id/btn1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintLeft_toLeftOf="@+id/spv"
-            app:layout_constraintRight_toRightOf="@+id/spv"
-            app:layout_constraintTop_toBottomOf="@+id/spv"
-            app:layout_constraintVertical_bias="0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/spv"
             android:layout_alignLeft="@+id/spv"
             android:layout_marginTop="@dimen/dp_20"
-            android:text="开始" />
-
-        <Button
-            android:id="@+id/btn2"
+            android:text="开始"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintLeft_toLeftOf="@+id/spv"
             app:layout_constraintRight_toRightOf="@+id/spv"
             app:layout_constraintTop_toBottomOf="@+id/spv"
-            app:layout_constraintVertical_bias="0"
+            app:layout_constraintVertical_bias="0" />
+
+        <Button
+            android:id="@+id/btn2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/spv"
             android:layout_alignRight="@+id/spv"
             android:layout_marginTop="@dimen/dp_20"
-            android:text="结束" />
+            android:text="结束"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintLeft_toLeftOf="@+id/spv"
+            app:layout_constraintRight_toRightOf="@+id/spv"
+            app:layout_constraintTop_toBottomOf="@+id/spv"
+            app:layout_constraintVertical_bias="0" />
 
         <android.helper.widget.ProgressView2
             android:id="@+id/pb2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btn2"
+            android:layout_marginTop="@dimen/dp_20"
+            android:background="@color/yellow_1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintLeft_toLeftOf="@+id/spv"
             app:layout_constraintRight_toRightOf="@+id/spv"
             app:layout_constraintTop_toBottomOf="@+id/btn2"
-            app:layout_constraintVertical_bias="0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btn2"
-            android:layout_marginTop="@dimen/dp_20"
-            android:background="@color/yellow_1" />
+            app:layout_constraintVertical_bias="0" />
 
         <EditText
             android:id="@+id/ed_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_20"
+            android:inputType="number"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="@+id/pb2"
             app:layout_constraintRight_toRightOf="@+id/pb2"
             app:layout_constraintTop_toBottomOf="@+id/pb2"
-            app:layout_constraintVertical_bias="0"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_20"
-            android:inputType="number" />
+            app:layout_constraintVertical_bias="0" />
 
         <Button
             android:id="@+id/btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开始"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="@+id/pb2"
             app:layout_constraintRight_toRightOf="@+id/pb2"
             app:layout_constraintTop_toBottomOf="@+id/ed_input"
-            app:layout_constraintVertical_bias="0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="开始" />
+            app:layout_constraintVertical_bias="0" />
 
-        <android.helper.widget.SliderView
+        <com.android.helper.widget.SliderView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginRight="@dimen/dp_20"
+            android:focusable="true"
             app:hk_background="@color/gray_22"
             app:hk_drawable="@mipmap/icon_control_vehicle_xp_zdbc_yz"
             app:hk_drawable_Height="@dimen/dp_50"
@@ -107,14 +114,7 @@
             app:layout_constraintLeft_toLeftOf="@+id/pb2"
             app:layout_constraintRight_toRightOf="@+id/pb2"
             app:layout_constraintTop_toBottomOf="@+id/btn"
-            app:layout_constraintVertical_bias="0"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_20"
-            android:layout_marginRight="@dimen/dp_20"
-            android:focusable="true" />
+            app:layout_constraintVertical_bias="0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

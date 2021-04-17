@@ -1,17 +1,17 @@
 package android.helper.adapters
 
 import android.helper.R
-import android.helper.base.BaseActivity
-import android.helper.base.BaseRecycleAdapter
-import android.helper.base.BaseVH
 import android.helper.bean.DownLoadBean
-import android.helper.interfaces.listener.ProgressListener
-import android.helper.utils.LogUtil
-import android.helper.utils.download.DownLoadManager
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.android.helper.base.BaseActivity
+import com.android.helper.base.BaseRecycleAdapter
+import com.android.helper.base.BaseVH
+import com.android.helper.interfaces.listener.ProgressListener
+import com.android.helper.utils.LogUtil
+import com.android.helper.utils.download.DownLoadManager
 import okhttp3.Response
 import java.util.*
 

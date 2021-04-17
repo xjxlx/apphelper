@@ -1,13 +1,14 @@
 package android.helper.ui.activity.widget
 
+import android.helper.R
 import android.view.Gravity
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import android.helper.R
-import android.helper.base.BaseTitleActivity
-import android.helper.utils.TextViewUtil
-import android.helper.utils.ToastUtil
+import com.android.helper.base.BaseTitleActivity
+import com.android.helper.utils.TextViewUtil
+import com.android.helper.utils.ToastUtil
 import kotlinx.android.synthetic.main.activity_random.*
+import kotlinx.android.synthetic.main.activity_test_handler.view.*
 
 /**
  * 随机布局的activity

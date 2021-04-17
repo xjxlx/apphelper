@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.widget.ScrollPageViewActivity">
 
-    <android.helper.widget.PageView
+    <com.android.helper.widget.PageView
         android:id="@+id/pv_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

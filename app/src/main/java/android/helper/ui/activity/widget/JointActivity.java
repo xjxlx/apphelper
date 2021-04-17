@@ -1,9 +1,10 @@
 package android.helper.ui.activity.widget;
 
 import android.helper.R;
-import android.helper.base.BaseActivity;
-import android.helper.utils.photo.GlideUtil;
 import android.widget.ImageView;
+
+import com.android.helper.base.BaseActivity;
+import com.android.helper.utils.photo.GlideUtil;
 
 /**
  * 自定义左右的布局

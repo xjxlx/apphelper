@@ -1,10 +1,10 @@
 package android.helper.ui.activity.animation
 
 import android.helper.R
-import android.helper.base.BaseTitleActivity
-import android.helper.interfaces.listener.BannerChangeListener
-import android.helper.utils.ToastUtil
 import android.util.Log
+import com.android.helper.base.BaseTitleActivity
+import com.android.helper.interfaces.listener.BannerChangeListener
+import com.android.helper.utils.ToastUtil
 import kotlinx.android.synthetic.main.activity_view_pager.*
 
 /**

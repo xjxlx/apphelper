@@ -1,9 +1,10 @@
 package android.helper.test;
 
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
-import android.helper.utils.LogUtil;
 import android.view.View;
+
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.LogUtil;
 
 /**
  * 测试滑动工具的帮助类

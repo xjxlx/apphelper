@@ -2,13 +2,14 @@ package android.helper.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
-import android.helper.httpclient.RetrofitHelper;
-import android.helper.httpclient.RxUtil;
-import android.helper.httpclient.TestApi;
-import android.helper.utils.LogUtil;
-import android.helper.utils.ToastUtil;
 import android.view.View;
+
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.httpclient.RetrofitHelper;
+import com.android.helper.httpclient.RxUtil;
+import com.android.helper.httpclient.TestApi;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ToastUtil;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;

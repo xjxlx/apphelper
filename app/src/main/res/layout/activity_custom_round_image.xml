@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".ui.activity.widget.CustomRoundImageActivity">
 
-    <android.helper.widget.RoundView
+    <com.android.helper.widget.RoundView
         android:id="@+id/rv_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

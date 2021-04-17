@@ -1,0 +1,8 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <!--嵌套滑动view的tag标记-->
+    <string name="nest_sliding_top">top_view</string>
+    <string name="nest_sliding_middle">middle_view</string>
+    <string name="nest_sliding_bottom">bottom_view</string>
+
+</resources>

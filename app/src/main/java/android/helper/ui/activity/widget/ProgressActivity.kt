@@ -1,10 +1,9 @@
 package android.helper.ui.activity.widget
 
-import android.text.TextUtils
-import android.view.View
 import android.helper.R
-import android.helper.base.BaseTitleActivity
-import android.helper.utils.ToastUtil
+import android.text.TextUtils
+import com.android.helper.base.BaseTitleActivity
+import com.android.helper.utils.ToastUtil
 import kotlinx.android.synthetic.main.activity_progress2.*
 
 class ProgressActivity : BaseTitleActivity() {

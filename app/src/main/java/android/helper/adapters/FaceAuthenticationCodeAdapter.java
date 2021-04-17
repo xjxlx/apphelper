@@ -1,15 +1,16 @@
 package android.helper.adapters;
 
 import android.helper.R;
-import android.helper.base.BaseActivity;
-import android.helper.base.BaseRecycleAdapter;
-import android.helper.base.BaseVH;
-import android.helper.utils.TextViewUtil;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+
+import com.android.helper.base.BaseActivity;
+import com.android.helper.base.BaseRecycleAdapter;
+import com.android.helper.base.BaseVH;
+import com.android.helper.utils.TextViewUtil;
 
 /**
  * 车库---补充信息---验证码的adapter

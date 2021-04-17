@@ -1,8 +1,8 @@
 package android.helper.ui.activity.widget
 
 import android.helper.R
-import android.helper.base.BaseTitleActivity
-import android.helper.utils.photo.GlideUtil
+import com.android.helper.base.BaseTitleActivity
+import com.android.helper.utils.photo.GlideUtil
 import kotlinx.android.synthetic.main.activity_custom_round_image.*
 
 class CustomRoundImageActivity : BaseTitleActivity() {

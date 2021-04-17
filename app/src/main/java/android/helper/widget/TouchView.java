@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.helper.R;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -17,11 +18,10 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import android.helper.R;
-import android.helper.utils.BitmapUtil;
-import android.helper.utils.ConvertUtil;
-import android.helper.utils.LogUtil;
-import android.helper.utils.ToastUtil;
+import com.android.helper.utils.BitmapUtil;
+import com.android.helper.utils.ConvertUtil;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;

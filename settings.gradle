@@ -1,4 +1,4 @@
-//include ':ucrop'
+include ':helper'//include ':ucrop'
 //include ':picture'
 include ':app'
 rootProject.name = "apphelper"

@@ -1,18 +1,19 @@
 package android.helper.adapters;
 
 import android.helper.R;
-import android.helper.base.BaseActivity;
-import android.helper.base.BaseRecycleAdapter;
-import android.helper.base.BaseVH;
 import android.helper.bean.DownLoadBean;
-import android.helper.httpclient.CommonApi;
-import android.helper.interfaces.listener.UploadProgressListener;
-import android.helper.utils.download.UploadManagerRetrofit;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+
+import com.android.helper.base.BaseActivity;
+import com.android.helper.base.BaseRecycleAdapter;
+import com.android.helper.base.BaseVH;
+import com.android.helper.httpclient.CommonApi;
+import com.android.helper.interfaces.listener.UploadProgressListener;
+import com.android.helper.utils.download.UploadManagerRetrofit;
 
 import java.io.File;
 import java.util.ArrayList;

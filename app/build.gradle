@@ -83,6 +83,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation files('libs/nineoldandroids-2.4.0.jar')
+    implementation project(path: ':helper')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -92,7 +93,7 @@ dependencies {
     implementation 'com.google.android:flexbox:1.1.1' // 流式布局
 
 //    implementation project(path: ':helper')
-    implementation'com.gitee.xjxlx:apphelper:1.0.0.2.8'
+//    implementation'com.gitee.xjxlx:apphelper:1.0.0.2.8'
 
     // implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
 }

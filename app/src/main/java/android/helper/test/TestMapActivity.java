@@ -2,8 +2,9 @@ package android.helper.test;
 
 import android.annotation.SuppressLint;
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
 import android.view.View;
+
+import com.android.helper.base.BaseTitleActivity;
 
 /**
  * 测试功能的集合

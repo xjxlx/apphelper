@@ -1,7 +1,8 @@
 package android.helper.test;
 
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
+
+import com.android.helper.base.BaseTitleActivity;
 
 public class MoreAdapterActivity extends BaseTitleActivity {
 

@@ -1,8 +1,9 @@
 package android.helper.ui.activity.hmview;
 
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
-import android.helper.utils.ToastUtil;
+
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.ToastUtil;
 
 /**
  * 自定义view的练习

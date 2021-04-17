@@ -1,8 +1,8 @@
 package android.helper.ui.activity.animation
 
-import android.widget.Button
 import android.helper.R
-import android.helper.base.BaseTitleActivity
+import android.widget.Button
+import com.android.helper.base.BaseTitleActivity
 import kotlinx.android.synthetic.main.activity_radiation_animation.*
 
 /**

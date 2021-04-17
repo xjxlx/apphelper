@@ -1,10 +1,11 @@
 package android.helper.ui.activity;
 
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
 import android.helper.databinding.ActivityDemoMapBinding;
 import android.helper.ui.activity.otherutils.AudioPlayerActivity;
 import android.view.View;
+
+import com.android.helper.base.BaseTitleActivity;
 
 public class DemoMapTitleActivity extends BaseTitleActivity {
 

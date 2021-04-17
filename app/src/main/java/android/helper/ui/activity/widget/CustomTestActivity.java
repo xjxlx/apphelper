@@ -1,8 +1,9 @@
 package android.helper.ui.activity.widget;
 
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
-import android.helper.utils.LogUtil;
+
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.LogUtil;
 
 public class CustomTestActivity extends BaseTitleActivity {
 

@@ -8,19 +8,19 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
-import android.helper.utils.LogUtil;
-import android.helper.utils.ServiceUtil;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ServiceUtil;
 
 public class MyService2 extends Service {
     public MyService2() {
     }
-    
+
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         return null;
     }
-    
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         LogUtil.e("MyService2:--->onStartCommand");
@@ -31,7 +31,7 @@ public class MyService2 extends Service {
         }
         return super.onStartCommand(intent, flags, startId);
     }
-    
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -40,16 +40,16 @@ public class MyService2 extends Service {
             Intent intent = new Intent(getBaseContext(), MyService1.class);
             startService(intent);
         }
-        
+
         if (mHandler != null) {
             mHandler.removeCallbacksAndMessages(null);
         }
-        
+
         boolean serviceRunning1 = ServiceUtil.isServiceRunning(getBaseContext(), "com.xjx.apphelper");
-        
+
         LogUtil.e("MyService2:--->onDestroy ---> 主线程是否存活：" + serviceRunning1 + " 二线程是否存活：" + serviceRunning);
     }
-    
+
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @Override

@@ -14,7 +14,7 @@
         android:layout_marginTop="@dimen/dp_100"
         android:text="复原" />
 
-    <android.helper.widget.BannerView
+    <com.android.helper.widget.BannerView
         android:id="@+id/banner_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.helper.R;
-import android.helper.utils.LogUtil;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -14,6 +13,8 @@ import android.view.ViewParent;
 import android.widget.Scroller;
 
 import androidx.annotation.StringDef;
+
+import com.android.helper.utils.LogUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

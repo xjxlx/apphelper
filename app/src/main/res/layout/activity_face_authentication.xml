@@ -47,7 +47,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toRightOf="@+id/line3"
         app:layout_constraintRight_toLeftOf="@+id/line4"
-        app:layout_constraintTop_toBottomOf="@+id/tv_base_enpty_title"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -95,7 +95,7 @@
             app:layout_constraintRight_toLeftOf="@+id/line6"
             app:layout_constraintTop_toBottomOf="@+id/line7" />
 
-        <android.helper.widget.TextViewGradient
+        <com.android.helper.widget.TextViewGradient
             android:id="@+id/tv_count_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

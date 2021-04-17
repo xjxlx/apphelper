@@ -3,15 +3,15 @@ package android.helper.ui.activity.animation;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.helper.R;
 import android.view.ViewTreeObserver;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
-import android.helper.R;
-import android.helper.base.BaseTitleActivity;
-import android.helper.utils.LogUtil;
-import android.helper.utils.ScreenUtil;
-import android.helper.utils.ToastUtil;
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ScreenUtil;
+import com.android.helper.utils.ToastUtil;
 
 /**
  * 自定义gifView

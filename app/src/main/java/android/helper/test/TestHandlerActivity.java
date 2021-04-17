@@ -2,12 +2,13 @@ package android.helper.test;
 
 import android.annotation.SuppressLint;
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
-import android.helper.utils.LogUtil;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.TextView;
+
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;

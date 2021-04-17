@@ -1,13 +1,13 @@
 package android.helper.ui.fragment
 
 import android.helper.R
-import android.helper.base.BaseFragment
 import android.helper.test.TestMapActivity
 import android.helper.ui.activity.DemoMapTitleActivity
 import android.helper.ui.activity.animation.AnimationMapActivity
 import android.helper.ui.activity.java.JavaMapActivity
 import android.helper.ui.activity.widget.ViewMapTitleActivity
 import android.view.View
+import com.android.helper.base.BaseFragment
 
 /**
  * 待办的fragment

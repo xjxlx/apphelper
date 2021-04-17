@@ -15,8 +15,8 @@ import android.os.Message;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import android.helper.utils.LogUtil;
-import android.helper.utils.SpUtil;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.SpUtil;
 
 import java.util.Calendar;
 import java.util.List;
@@ -27,7 +27,7 @@ public class LookDogService extends Service {
     private long endTime;
     private long startTime;
     private boolean aBoolean;
-    
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         usageStatsManager = (UsageStatsManager) getBaseContext().getApplicationContext().getSystemService(Context.USAGE_STATS_SERVICE);
@@ -35,14 +35,14 @@ public class LookDogService extends Service {
         endTime = calendar.getTimeInMillis();
         calendar.add(Calendar.DAY_OF_WEEK, -2);
         startTime = calendar.getTimeInMillis();
-        
+
         Message message = mHandler.obtainMessage();
         message.what = 123;
         mHandler.sendMessage(message);
-        
+
         return super.onStartCommand(intent, flags, startId);
     }
-    
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -53,7 +53,7 @@ public class LookDogService extends Service {
 //    public IBinder onBind(Intent intent) {
 //
 //    }
-    
+
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
@@ -64,7 +64,7 @@ public class LookDogService extends Service {
                 return;
             }
             mHandler.removeCallbacksAndMessages(null);
-            
+
             List<UsageStats> usageStatses = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, startTime, endTime);
             if (usageStatses != null && usageStatses.size() > 0) {
                 for (UsageStats usageStats : usageStatses) {
@@ -91,5 +91,5 @@ public class LookDogService extends Service {
             mHandler.sendMessageDelayed(message, 1000);
         }
     };
-    
+
 }

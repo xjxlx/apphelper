@@ -1,7 +1,8 @@
 package android.helper.test;
 
-import android.helper.utils.ToastUtil;
 import android.webkit.JavascriptInterface;
+
+import com.android.helper.utils.ToastUtil;
 
 public class AndroidJs {
 

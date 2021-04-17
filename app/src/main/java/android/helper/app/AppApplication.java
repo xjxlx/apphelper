@@ -3,8 +3,10 @@ package android.helper.app;
 import android.app.Application;
 import android.helper.BuildConfig;
 import android.helper.R;
-import android.helper.httpclient.AutoInterceptor;
-import android.helper.interfaces.ICommonApplication;
+
+import com.android.helper.app.BaseApplication;
+import com.android.helper.httpclient.AutoInterceptor;
+import com.android.helper.interfaces.ICommonApplication;
 
 import okhttp3.Interceptor;
 

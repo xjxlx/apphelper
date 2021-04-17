@@ -5,11 +5,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.helper.R
 import android.helper.adapters.DownloadAdapter
 import android.helper.bean.DownLoadBean
-import android.helper.base.BaseTitleActivity
-import android.helper.utils.EncryptionUtil
-import android.helper.utils.FileUtil
-import android.helper.utils.LogUtil
-import android.helper.utils.RxPermissionsUtil
+import com.android.helper.base.BaseTitleActivity
+import com.android.helper.utils.EncryptionUtil
+import com.android.helper.utils.FileUtil
+import com.android.helper.utils.LogUtil
+import com.android.helper.utils.RxPermissionsUtil
 import kotlinx.android.synthetic.main.activity_down_load_list.*
 import java.io.File
 import java.util.*

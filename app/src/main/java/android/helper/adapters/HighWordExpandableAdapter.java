@@ -2,11 +2,7 @@ package android.helper.adapters;
 
 import android.app.Activity;
 import android.helper.R;
-import android.helper.base.BaseExpandableAdapter;
 import android.helper.bean.ExpandableBean;
-import android.helper.utils.TextViewUtil;
-import android.helper.utils.photo.GlideUtil;
-import android.helper.widget.MultipleListView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +12,10 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.helper.base.BaseExpandableAdapter;
+import com.android.helper.utils.TextViewUtil;
+import com.android.helper.utils.photo.GlideUtil;
+import com.android.helper.widget.MultipleListView;
 import com.google.android.flexbox.FlexboxLayout;
 
 import org.jetbrains.annotations.NotNull;

@@ -7,7 +7,7 @@
     android:paddingTop="100dp"
     tools:context=".ui.activity.widget.TouchUnlockActivity">
 
-    <android.helper.widget.TouchView
+    <com.android.helper.widget.TouchView
         android:id="@+id/touch_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

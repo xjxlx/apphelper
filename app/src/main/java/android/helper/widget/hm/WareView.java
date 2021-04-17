@@ -5,14 +5,15 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.helper.base.BaseView;
-import android.helper.utils.LogUtil;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
+
+import com.android.helper.base.BaseView;
+import com.android.helper.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;

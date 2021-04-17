@@ -1,7 +1,8 @@
 package android.helper.bean;
 
 import android.graphics.drawable.Drawable;
-import android.helper.base.BaseEntity;
+
+import com.android.helper.base.BaseEntity;
 
 public class AppInfoBean extends BaseEntity {
 

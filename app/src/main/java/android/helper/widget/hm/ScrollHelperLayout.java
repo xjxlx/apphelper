@@ -4,16 +4,17 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.helper.R;
-import android.helper.base.BaseViewGroup;
-import android.helper.utils.ColorUtil;
-import android.helper.utils.LogUtil;
-import android.helper.utils.ToastUtil;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.customview.widget.ViewDragHelper;
+
+import com.android.helper.base.BaseViewGroup;
+import com.android.helper.utils.ColorUtil;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ToastUtil;
 
 public class ScrollHelperLayout extends BaseViewGroup {
 

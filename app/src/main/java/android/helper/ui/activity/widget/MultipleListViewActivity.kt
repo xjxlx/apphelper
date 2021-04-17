@@ -1,8 +1,7 @@
 package android.helper.ui.activity.widget
 
 import android.helper.R
-import android.helper.base.BaseTitleActivity
-import android.helper.utils.CustomViewUtil
+import com.android.helper.base.BaseTitleActivity
 import kotlinx.android.synthetic.main.activity_multiple_list_view.*
 
 /**

@@ -1,12 +1,12 @@
 package android.helper.test
 
+import android.helper.R
 import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.TextView
+import com.android.helper.base.BaseTitleActivity
+import com.android.helper.utils.LogUtil
 import com.google.android.flexbox.FlexboxLayout
-import android.helper.R
-import android.helper.base.BaseTitleActivity
-import android.helper.utils.LogUtil
 import kotlinx.android.synthetic.main.activity_flex_box_layout.*
 
 /**

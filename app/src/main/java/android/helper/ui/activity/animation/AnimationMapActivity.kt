@@ -1,9 +1,9 @@
 package android.helper.ui.activity.animation
 
 import android.helper.R
-import android.helper.base.BaseTitleActivity
-import android.helper.utils.ToastUtil
 import android.view.View
+import com.android.helper.base.BaseTitleActivity
+import com.android.helper.utils.ToastUtil
 
 class AnimationMapActivity : BaseTitleActivity() {
 

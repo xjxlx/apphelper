@@ -3,15 +3,15 @@ package android.helper.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.helper.R;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import android.helper.R;
-import android.helper.utils.ConvertUtil;
-import android.helper.utils.CustomViewUtil;
+import com.android.helper.utils.ConvertUtil;
+import com.android.helper.utils.CustomViewUtil;
 
 public class CustomTextView extends View {
 

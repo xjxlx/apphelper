@@ -1,7 +1,7 @@
 package android.helper.ui.activity.widget
 
 import android.helper.R
-import android.helper.base.BaseTitleActivity
+import com.android.helper.base.BaseTitleActivity
 
 class InputPassWordActivity : BaseTitleActivity() {
 

@@ -11,7 +11,7 @@
         android:layout_height="13dp"
         android:background="@color/green_1" />
 
-    <android.helper.widget.RandomLayout
+    <com.android.helper.widget.RandomLayout
         android:id="@+id/rl_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_80"

@@ -3,10 +3,6 @@ package android.helper.ui.activity;
 import android.annotation.SuppressLint;
 import android.helper.R;
 import android.helper.adapters.SmsAdapter;
-import android.helper.base.BaseTitleActivity;
-import android.helper.httpclient.RetrofitHelper;
-import android.helper.utils.SpUtil;
-import android.helper.utils.ToastUtil;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -16,6 +12,11 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.httpclient.RetrofitHelper;
+import com.android.helper.utils.SpUtil;
+import com.android.helper.utils.ToastUtil;
 
 import org.jetbrains.annotations.NotNull;
 

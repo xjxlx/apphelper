@@ -1,6 +1,6 @@
 package android.helper.bean;
 
-import android.helper.base.BaseEntity;
+import com.android.helper.base.BaseEntity;
 
 import java.util.List;
 

@@ -1,30 +1,30 @@
 package android.helper.ui.activity;
 
 import android.Manifest;
-import android.view.View;
-
 import android.helper.R;
 import android.helper.databinding.ActivityWriteXmlBinding;
-import android.helper.base.BaseTitleActivity;
-import android.helper.utils.FileUtil;
-import android.helper.utils.RxPermissionsUtil;
-import android.helper.utils.XmlUtil;
+import android.view.View;
+
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.FileUtil;
+import com.android.helper.utils.RxPermissionsUtil;
+import com.android.helper.utils.XmlUtil;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WriteXmlTitleActivity extends BaseTitleActivity {
-    
+
     private ActivityWriteXmlBinding binding;
     private File file1;
-    
+
     @Override
     protected void initView() {
         super.initView();
         binding = ActivityWriteXmlBinding.inflate(getLayoutInflater());
     }
-    
+
     @Override
     protected void initData() {
         super.initData();
@@ -34,7 +34,7 @@ public class WriteXmlTitleActivity extends BaseTitleActivity {
             i += 0.5;
             integers.add(i);
         }
-        
+
         binding.start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,7 +54,7 @@ public class WriteXmlTitleActivity extends BaseTitleActivity {
             }
         });
     }
-    
+
     @Override
     protected int getTitleLayout() {
         return R.layout.activity_write_xml;

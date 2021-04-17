@@ -3,15 +3,15 @@ package android.helper.ui.fragment
 import android.helper.BuildConfig
 import android.helper.R
 import android.helper.adapters.TestAdapter
-import android.helper.base.BaseRefreshFragment
 import android.helper.bean.HomeBean
 import android.helper.http.service.CommonApiService
-import android.helper.httpclient.BaseException
-import android.helper.httpclient.RetrofitHelper
-import android.helper.utils.LogUtil
-import android.helper.utils.RecycleUtil
-import android.helper.utils.ToastUtil
 import android.view.View
+import com.android.helper.base.BaseRefreshFragment
+import com.android.helper.httpclient.BaseException
+import com.android.helper.httpclient.RetrofitHelper
+import com.android.helper.utils.LogUtil
+import com.android.helper.utils.RecycleUtil
+import com.android.helper.utils.ToastUtil
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import io.reactivex.Flowable
 import kotlinx.android.synthetic.main.expandable_gpc_child.*
@@ -81,7 +81,7 @@ class HomeFragment : BaseRefreshFragment<Response<HomeBean>, HomeBean.ReturnData
 
     override fun onLoadMore(refreshLayout: RefreshLayout) {
         super.onLoadMore(refreshLayout)
-        LogUtil.e("load:"+BuildConfig.APP_DEBUG)
+        LogUtil.e("load:" + BuildConfig.APP_DEBUG)
     }
 
 }

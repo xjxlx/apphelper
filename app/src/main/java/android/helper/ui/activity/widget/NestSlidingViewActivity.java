@@ -1,9 +1,10 @@
 package android.helper.ui.activity.widget;
 
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
 import android.helper.widget.NestSlidingView;
 import android.view.View;
+
+import com.android.helper.base.BaseTitleActivity;
 
 public class NestSlidingViewActivity extends BaseTitleActivity {
 

@@ -1,8 +1,8 @@
 package android.helper.ui.fragment
 
 import android.helper.R
-import android.helper.base.BaseFragment
 import android.view.View
+import com.android.helper.base.BaseFragment
 
 /**
  * 个人中心的fragment

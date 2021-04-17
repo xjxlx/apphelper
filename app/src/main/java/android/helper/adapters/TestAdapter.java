@@ -2,17 +2,18 @@ package android.helper.adapters;
 
 import android.app.Activity;
 import android.helper.R;
-import android.helper.base.BaseRecycleAdapter;
-import android.helper.base.BaseVH;
 import android.helper.bean.HomeBean;
-import android.helper.utils.TextViewUtil;
-import android.helper.utils.ToastUtil;
-import android.helper.utils.photo.GlideUtil;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+
+import com.android.helper.base.BaseRecycleAdapter;
+import com.android.helper.base.BaseVH;
+import com.android.helper.utils.TextViewUtil;
+import com.android.helper.utils.ToastUtil;
+import com.android.helper.utils.photo.GlideUtil;
 
 import java.util.List;
 

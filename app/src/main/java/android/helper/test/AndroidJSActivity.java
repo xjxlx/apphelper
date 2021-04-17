@@ -2,9 +2,6 @@ package android.helper.test;
 
 import android.annotation.SuppressLint;
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
-import android.helper.utils.LogUtil;
-import android.helper.utils.ToastUtil;
 import android.net.Uri;
 import android.view.View;
 import android.webkit.JsResult;
@@ -17,6 +14,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.annotation.Nullable;
+
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ToastUtil;
 
 /**
  * JS和前端的交互

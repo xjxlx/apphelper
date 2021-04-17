@@ -1,13 +1,13 @@
 package android.helper.test
 
-import android.text.TextUtils
-import com.google.gson.Gson
 import android.helper.R
 import android.helper.adapters.HighWordExpandableAdapter
 import android.helper.bean.ExpandableBean
-import android.helper.base.BaseTitleActivity
-import android.helper.utils.ExpandableUtil
-import android.helper.utils.StreamUtil
+import android.text.TextUtils
+import com.android.helper.base.BaseTitleActivity
+import com.android.helper.utils.ExpandableUtil
+import com.android.helper.utils.StreamUtil
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_expandable.*
 
 /**

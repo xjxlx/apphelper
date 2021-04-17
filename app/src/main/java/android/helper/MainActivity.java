@@ -1,16 +1,16 @@
 package android.helper;
 
 import android.annotation.SuppressLint;
+import android.helper.ui.fragment.HomeFragment;
+import android.helper.ui.fragment.PersonalFragment;
+import android.helper.ui.fragment.TodoFragment;
 
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import android.helper.ui.fragment.HomeFragment;
-import android.helper.ui.fragment.PersonalFragment;
-import android.helper.ui.fragment.TodoFragment;
-import android.helper.base.BaseFragmentPagerAdapter;
-import android.helper.base.BaseTitleActivity;
-import android.helper.utils.LogUtil;
+import com.android.helper.base.BaseFragmentPagerAdapter;
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.LogUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;

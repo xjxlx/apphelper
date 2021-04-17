@@ -3,17 +3,18 @@ package android.helper.ui.activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
 import android.helper.bean.LiveDataModel;
 import android.helper.databinding.ActivityLiveDataBinding;
 import android.helper.services.MyService1;
 import android.helper.services.MyService2;
-import android.helper.utils.LogUtil;
-import android.helper.utils.ScreenUtil;
-import android.helper.utils.ServiceUtil;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+
+import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ScreenUtil;
+import com.android.helper.utils.ServiceUtil;
 
 public class LiveDataTitleActivity extends BaseTitleActivity {
 

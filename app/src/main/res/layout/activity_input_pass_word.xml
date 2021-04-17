@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.widget.InputPassWordActivity">
 
-    <android.helper.widget.PassWordView
+    <com.android.helper.widget.PassWordView
         android:id="@+id/pd_view"
         android:layout_width="0dp"
         android:layout_height="@dimen/dp_43"

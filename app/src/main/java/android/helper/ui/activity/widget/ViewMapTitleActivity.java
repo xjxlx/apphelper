@@ -2,10 +2,11 @@ package android.helper.ui.activity.widget;
 
 import android.annotation.SuppressLint;
 import android.helper.R;
-import android.helper.base.BaseTitleActivity;
 import android.helper.databinding.ActivityViewMapBinding;
 import android.helper.ui.activity.hmview.HmCustomViewActivity;
 import android.view.View;
+
+import com.android.helper.base.BaseTitleActivity;
 
 public class ViewMapTitleActivity extends BaseTitleActivity {
 

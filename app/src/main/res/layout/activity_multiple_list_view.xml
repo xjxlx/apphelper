@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.widget.MultipleListViewActivity">
 
-    <android.helper.widget.MultipleListView
+    <com.android.helper.widget.MultipleListView
         android:id="@+id/mlv_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
