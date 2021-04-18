@@ -30,8 +30,6 @@
 
         <!--圆形的半径-->
         <attr name="rv_radius" format="dimension" />
-        <!--是否有占位图-->
-        <attr name="rv_placeholder" format="boolean" />
     </declare-styleable>
 
     <!--验证阿门输入框-->

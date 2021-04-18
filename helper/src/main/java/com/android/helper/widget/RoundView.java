@@ -52,7 +52,6 @@ public class RoundView extends androidx.appcompat.widget.AppCompatImageView {
     private int measuredHeight;
     private Matrix matrix;
     private int mRoundDiameter; // 直径
-    private boolean mRoundPlaceholder; // view是否设置了占位图
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FlagType.FLAG_ALL, FlagType.FLAG_LEFT_TOP, FlagType.FLAG_LEFT_BOTTOM, FlagType.FLAG_LEFT_TOP_BOTTOM, FlagType.FLAG_RIGHT_TOP, FlagType.FLAG_RIGHT_BOTTOM, FlagType.FLAG_RIGHT_TOP_BOTTOM})
@@ -88,9 +87,6 @@ public class RoundView extends androidx.appcompat.widget.AppCompatImageView {
             mRoundAngle = typedArray.getInt(R.styleable.RoundView_rv_angle, 0);
             // 圆角的度数
             mRoundRadius = typedArray.getDimension(R.styleable.RoundView_rv_radius, 0);
-            // 是否有站位图
-            mRoundPlaceholder = typedArray.getBoolean(R.styleable.RoundView_rv_placeholder, false);
-
             typedArray.recycle();
         }
 
@@ -104,18 +100,25 @@ public class RoundView extends androidx.appcompat.widget.AppCompatImageView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         // 获取view的宽高
-        measuredWidth = getMeasuredWidth();
-        measuredHeight = getMeasuredHeight();
+        if (mBitmap != null) {
+            measuredWidth = mBitmap.getWidth();
+            measuredHeight = mBitmap.getHeight();
+        } else {
+            measuredWidth = getMeasuredWidth();
+            measuredHeight = getMeasuredHeight();
+        }
 
         /* 如果类型是圆形，则强制改变view的宽高一致，以小值为准 */
-        if (mRoundType == 1) { // 圆形图片
-            // 求出圆形图片的直径
-            float mRadius = Math.min(measuredWidth, measuredHeight);
-            // 四舍五入的计算，数据只能多，不能少
-            mRoundDiameter = Math.round(mRadius);
-            setMeasuredDimension(mRoundDiameter, mRoundDiameter);
-        } else if (mRoundType == 2) { // 圆角图片
-            setMeasuredDimension(measuredWidth, measuredHeight);
+        if ((measuredWidth > 0) && (measuredHeight > 0)) {
+            if (mRoundType == 1) { // 圆形图片
+                // 求出圆形图片的直径
+                float mRadius = Math.min(measuredWidth, measuredHeight);
+                // 四舍五入的计算，数据只能多，不能少
+                mRoundDiameter = Math.round(mRadius);
+                setMeasuredDimension(mRoundDiameter, mRoundDiameter);
+            } else if (mRoundType == 2) { // 圆角图片
+                setMeasuredDimension(measuredWidth, measuredHeight);
+            }
         }
     }
 
@@ -132,24 +135,13 @@ public class RoundView extends androidx.appcompat.widget.AppCompatImageView {
         }
 
         // 获取bitmap
-        if (mRoundPlaceholder) {// 有站位图
-            mBitmap = getBitmap();
-        } else { // 没有站位图
-            if (mBitmap == null || mBitmap.isRecycled()) {
-                mBitmap = getBitmap();
-            }
-        }
-
+        mBitmap = getBitmap();
         if (mBitmap == null) {
             return;
         }
 
         // 新建矩形图像
-        if ((measuredWidth > 0) && (measuredHeight > 0)) {
-            if (mDstRectF == null) {
-                mDstRectF = new RectF(0, 0, measuredWidth, measuredHeight);
-            }
-        }
+        mDstRectF = new RectF(0, 0, measuredWidth, measuredHeight);
 
         // 新建图层
         int saveLayer = canvas.saveLayer(mDstRectF, mPaint);
@@ -248,8 +240,13 @@ public class RoundView extends androidx.appcompat.widget.AppCompatImageView {
                 Canvas c = new Canvas(bitmap);
                 int color = ((ColorDrawable) drawable).getColor();
                 c.drawARGB(Color.alpha(color), Color.red(color), Color.green(color), Color.blue(color));
+            } else {
+                // 获取应该还会有其他类型的图片需要处理，待定
+
             }
-            // 获取应该还会有其他类型的图片需要处理，待定
+
+            // 重新绘制
+            requestLayout();
         }
         return bitmap;
     }

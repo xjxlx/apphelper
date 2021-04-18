@@ -17,7 +17,6 @@
         android:src="@drawable/abc"
         android:visibility="visible"
         app:rv_angle="leftTop|rightTop|rightBottom"
-        app:rv_placeholder="true"
         app:rv_radius="@dimen/dp_20"
         app:rv_roundType="Round" />
 
