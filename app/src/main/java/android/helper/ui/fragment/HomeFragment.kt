@@ -38,7 +38,6 @@ class HomeFragment : BaseRefreshFragment<Response<HomeBean>, HomeBean.ReturnData
     }
 
     override fun initView(container: View?) {
-        LogUtil.e("444");
     }
 
     override fun initData() {

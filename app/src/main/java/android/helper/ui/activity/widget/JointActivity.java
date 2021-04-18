@@ -32,9 +32,8 @@ public class JointActivity extends BaseActivity {
         ImageView left = findViewById(R.id.iv_left);
         ImageView iv_right = findViewById(R.id.iv_right);
 
-        GlideUtil.loadView(mContext, url, left);
-        GlideUtil.loadView(mContext, url, iv_right);
-
+        GlideUtil.loadView(mContext, url, left, R.drawable.abc);
+        GlideUtil.loadView(mContext, url, iv_right, R.drawable.abc);
     }
 
     @Override
