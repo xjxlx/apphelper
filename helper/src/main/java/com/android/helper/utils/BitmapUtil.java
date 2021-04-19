@@ -12,7 +12,22 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
+
+import com.android.helper.httpclient.RxUtil;
+import com.android.helper.interfaces.listener.CallBackListener;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+
 import org.jetbrains.annotations.NotNull;
+
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.subscribers.DisposableSubscriber;
 
 /**
  * bitmap的工具类
@@ -182,6 +197,76 @@ public class BitmapUtil {
             LogUtil.e("图像缩放失败！");
         }
         return bitmapResult;
+    }
+
+    /**
+     * @param context          上下文
+     * @param path             图片路径
+     * @param callBackListener 返回接口，msg: 开始：start，成功： success，失败：error:
+     */
+    public static void getBitmapForService(Context context, final String path, CallBackListener<Bitmap> callBackListener) {
+
+        Flowable.create(new FlowableOnSubscribe<Bitmap>() {
+            @Override
+            public void subscribe(@NonNull FlowableEmitter<Bitmap> emitter) throws Exception {
+                Glide.with(context)
+                        .load(path)
+                        .into(new CustomTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@androidx.annotation.NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                if (resource instanceof BitmapDrawable) {
+                                    BitmapDrawable bitmapDrawable = (BitmapDrawable) resource;
+                                    Bitmap bitmap = bitmapDrawable.getBitmap();
+                                    if (bitmap != null) {
+                                        emitter.onNext(bitmap);
+                                    } else {
+                                        emitter.onError(new Exception("获取的bitmap为空"));
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                            }
+
+                            @Override
+                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                                super.onLoadFailed(errorDrawable);
+                                emitter.onError(new Exception("获取的bitmap异常"));
+                            }
+                        });
+            }
+        }, BackpressureStrategy.LATEST)
+                .compose(RxUtil.getScheduler())
+                .subscribe(new DisposableSubscriber<Bitmap>() {
+                    @Override
+                    protected void onStart() {
+                        super.onStart();
+                        if (callBackListener != null) {
+                            callBackListener.onBack(false, "start", null);
+                        }
+                    }
+
+                    @Override
+                    public void onNext(Bitmap bitmap) {
+                        if (callBackListener != null) {
+                            callBackListener.onBack(true, "success", bitmap);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        if (callBackListener != null) {
+                            callBackListener.onBack(false, "error:" + t.getMessage(), null);
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
 }
