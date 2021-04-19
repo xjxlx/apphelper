@@ -34,6 +34,10 @@ import io.reactivex.subscribers.DisposableSubscriber;
  */
 public class BitmapUtil {
 
+    public static final String STATUS_START = "start";
+    public static final String STATUS_SUCCESS = "success";
+    public static final String STATUS_ERROR = "error:";
+
     /**
      * @param context context
      * @param id      资源的id
@@ -244,21 +248,21 @@ public class BitmapUtil {
                     protected void onStart() {
                         super.onStart();
                         if (callBackListener != null) {
-                            callBackListener.onBack(false, "start", null);
+                            callBackListener.onBack(false, STATUS_START, null);
                         }
                     }
 
                     @Override
                     public void onNext(Bitmap bitmap) {
                         if (callBackListener != null) {
-                            callBackListener.onBack(true, "success", bitmap);
+                            callBackListener.onBack(true, STATUS_SUCCESS, bitmap);
                         }
                     }
 
                     @Override
                     public void onError(Throwable t) {
                         if (callBackListener != null) {
-                            callBackListener.onBack(false, "error:" + t.getMessage(), null);
+                            callBackListener.onBack(false, STATUS_ERROR + t.getMessage(), null);
                         }
                     }
 

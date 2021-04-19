@@ -33,7 +33,7 @@ public class MoreAdapterActivity extends BaseTitleActivity {
         super.initData();
         String url = "http://file.jollyeng.com/anims/201903/1552874954.jpg";
 
-        BitmapUtil.getBitmapForService(mContext, url, new CallBackListener<Bitmap>() {
+        BitmapUtil.getBitmapForService(mContext, "", new CallBackListener<Bitmap>() {
             @Override
             public void onBack(boolean successful, Object tag, Bitmap bitmap) {
                 LogUtil.e("successful:" + successful + " --->tag:" + tag + "  --->bitmap:" + bitmap);
