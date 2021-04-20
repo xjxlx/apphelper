@@ -40,6 +40,11 @@
             style="@style/style_todo_item"
             android:text="测试多adapter" />
 
+        <TextView
+            android:id="@+id/tv_test_ch"
+            style="@style/style_todo_item"
+            android:text="侧滑的View" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

@@ -18,15 +18,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppThem"
         tools:targetApi="n">
-        <activity android:name=".test.MoreAdapterActivity"></activity>
-        <activity android:name=".ui.activity.otherutils.AudioPlayerActivity" />
-        <activity android:name=".test.TestScrollHelperActivity">
+
+        <activity android:name=".test.SlidingMenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".test.MoreAdapterActivity" />
+        <activity android:name=".ui.activity.otherutils.AudioPlayerActivity" />
+        <activity android:name=".test.TestScrollHelperActivity" />
         <activity android:name=".test.AndroidJSActivity" />
         <activity android:name=".ui.activity.hmview.HmCustomViewActivity" />
         <activity android:name=".ui.activity.widget.ScrollPageViewActivity" />
@@ -179,14 +181,11 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
-        </provider>
-
-        <!-- 音乐播放器的服务 -->
+        </provider> <!-- 音乐播放器的服务 -->
         <service
             android:name="com.android.helper.utils.media.audio.AudioService"
             android:enabled="true"
             android:exported="false" />
-
     </application>
 
 </manifest>
