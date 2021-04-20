@@ -20,15 +20,15 @@ import com.android.helper.utils.LogUtil;
  */
 public class SlidingMenuLayout extends FrameLayout {
 
-    private LinearLayout mMenu;
-    private RelativeLayout mContent;
+    private LinearLayout mMenuLayout;
+    private RelativeLayout mContentLayout;
     private ViewDragHelper mViewDragHelper;
     private int mMaxRight; // 右侧最多滑动的距离
 
     private final ViewDragHelper.Callback mCallback = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(@NonNull View child, int pointerId) {
-            return child == mMenu || child == mContent;
+            return child == mMenuLayout || child == mContentLayout;
         }
 
         @Override
@@ -56,10 +56,13 @@ public class SlidingMenuLayout extends FrameLayout {
         public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
 
-            if (changedView == mMenu) {
-
+            if (changedView == mMenuLayout) {
                 // 触摸到菜单按钮的时候，让菜单按钮固定位置，不去滑动
-                changedView.layout(0, 0, changedView.getMeasuredWidth(), changedView.getMeasuredHeight());
+                mMenuLayout.layout(0, 0, changedView.getMeasuredWidth(), changedView.getMeasuredHeight());
+
+                // todo
+                // 移动menuView的时候，让右侧的content的布局也跟着滑动
+                mContentLayout.layout(mMenuLayout.getLeft(), mContentLayout.getTop(), mContentLayout.getMeasuredWidth() + mMenuLayout.getLeft(), mContentLayout.getBottom());
             }
         }
     };
@@ -89,10 +92,10 @@ public class SlidingMenuLayout extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mMenu = findViewWithTag("menu");
-        mContent = findViewWithTag("content");
-        LogUtil.e("menu:" + mMenu);
-        LogUtil.e("content:" + mContent);
+        mMenuLayout = findViewWithTag("menu");
+        mContentLayout = findViewWithTag("content");
+        LogUtil.e("menu:" + mMenuLayout);
+        LogUtil.e("content:" + mContentLayout);
     }
 
     @Override
