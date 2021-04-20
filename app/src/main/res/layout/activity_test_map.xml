@@ -45,6 +45,11 @@
             style="@style/style_todo_item"
             android:text="侧滑的View" />
 
+        <TextView
+            android:id="@+id/tv_test_web_socket"
+            style="@style/style_todo_item"
+            android:text="测试长连接的" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

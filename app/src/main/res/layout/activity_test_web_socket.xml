@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/dp_20"
+    android:paddingRight="@dimen/dp_20"
+    tools:context=".test.TestWebSocketActivity">
+
+    <LinearLayout
+        android:id="@+id/ll_content_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_50"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_input_app"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lines="1" />
+
+        <Button
+            android:id="@+id/btn_start_app"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
+            android:text="发送消息到服务端" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_content_service"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ll_content_app"
+        android:layout_marginTop="@dimen/dp_50"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_input_service"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lines="1" />
+
+        <Button
+            android:id="@+id/btn_start_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
+            android:text="发送消息到App端" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_button_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ll_content_service"
+        android:layout_marginTop="@dimen/dp_20"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_cancel_app"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消App连接" />
+
+        <Button
+            android:id="@+id/btn_close_app"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
+            android:text="关闭App连接" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_button_service"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ll_button_app"
+        android:layout_marginTop="@dimen/dp_20"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_cancel_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消Service连接" />
+
+        <Button
+            android:id="@+id/btn_close_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
+            android:text="关闭Service连接" />
+
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/ll_button_service"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:paddingBottom="@dimen/dp_20">
+
+        <LinearLayout
+            android:id="@+id/rv_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>
