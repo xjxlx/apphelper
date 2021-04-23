@@ -9,15 +9,24 @@
 
     <com.android.helper.widget.RoundView
         android:id="@+id/rv_image"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/dp_65"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_start"
         android:layout_centerHorizontal="true"
         android:layout_margin="@dimen/dp_50"
         android:adjustViewBounds="true"
-        android:src="@drawable/abc"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/icon_head"
         android:visibility="visible"
         app:rv_angle="leftTop|rightTop|rightBottom"
         app:rv_radius="@dimen/dp_20"
         app:rv_roundType="Round" />
+
+    <Button
+        android:id="@+id/btn_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_100" />
 
 </RelativeLayout>

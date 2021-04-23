@@ -17,7 +17,13 @@ class CustomRoundImageActivity : BaseTitleActivity() {
 
         val url1 = "http://file.jollyeng.com/picture_book/201805/When I grow up.png";
         val url = "http://file.jollyeng.com/picture_book/201809/1537253778.png";
-        GlideUtil.loadView(mContext, url, rv_image, R.drawable.abc)
+        val url3 = "http://file.jollyeng.com/picture_book/201809/1537253778.png";
+        val url4 = "http://file.jollyeng.com/wan/baby_pic/20200903/1599115743677-2020-09-03ios_file";
+
+
+        btn_start.setOnClickListener { view ->
+            GlideUtil.loadView(mContext, url4, rv_image, R.mipmap.icon_head)
+        }
     }
 
 }
