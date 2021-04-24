@@ -1,18 +1,22 @@
 package com.android.helper.utils.media.audio;
 
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.util.TypedValue;
 
 import androidx.annotation.Nullable;
 
 import com.android.helper.R;
-import com.android.helper.httpclient.BaseHttpSubscriber;
 import com.android.helper.httpclient.RxUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
@@ -28,6 +32,11 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.subscribers.DisposableSubscriber;
 
 import static android.media.MediaPlayer.MEDIA_ERROR_IO;
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_LEFT;
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_PAUSE;
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_RIGHT;
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_START;
+import static com.android.helper.utils.media.audio.AudioConstant.CODE_SEND_BROADCAST_RECEIVER;
 import static com.android.helper.utils.media.audio.AudioConstant.STATUS_COMPLETE;
 import static com.android.helper.utils.media.audio.AudioConstant.STATUS_ERROR;
 import static com.android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
@@ -51,7 +60,7 @@ public class AudioService extends Service {
     private boolean mSendProgress = true;// 是否正常发送当前的进度，默认为true
     private boolean initialized; // 是否已经完成了初始化
     private NotificationUtil notificationUtil;
-    private BaseHttpSubscriber<Long> subscribe;
+    private AudioReceiver mAudioReceiver;
 
     public AudioService() {
 
@@ -73,14 +82,68 @@ public class AudioService extends Service {
         // 创建对象
         mediaPlayer = getMediaPlayer();
 
+        // 动态注册广播接收者
+        if (mAudioReceiver == null) {
+            mAudioReceiver = new AudioReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(AudioConstant.ACTION_START);
+            intentFilter.addAction(AudioConstant.ACTION_PAUSE);
+            intentFilter.addAction(AudioConstant.ACTION_LEFT);
+            intentFilter.addAction(AudioConstant.ACTION_RIGHT);
+            // 注册
+            registerReceiver(mAudioReceiver, intentFilter);
+        }
+
         try {
-            notificationUtil = NotificationUtil.getInstance(getBaseContext());
-            notificationUtil
-                    .setTickerText("首次出现在通知栏")
-                    .setContentTitle("消息通知栏")
-                    .setContentText("消息的内容")
-                    .setSmallIcon(R.drawable.icon_left_right)
-                    .sendNotification();
+            if (notificationUtil == null) {
+                notificationUtil = NotificationUtil.getInstance(getBaseContext());
+                notificationUtil
+                        .setTickerText("首次出现在通知栏")
+                        .setContentTitle("消息通知栏")
+                        .setContentText("消息的内容")
+                        .setSmallIcon(R.drawable.icon_left_right)
+                        .setRemoteView(R.layout.notification_audio, (view, remoteViews) -> {
+                            if (remoteViews != null) {
+                                // 图片的资源
+                                remoteViews.setImageViewResource(R.id.iv_launcher, R.drawable.icon_music_start);
+                                // 标题
+                                remoteViews.setTextViewText(R.id.tv_title, "123");
+                                remoteViews.setTextColor(R.id.tv_title, Color.BLACK);
+                                remoteViews.setTextViewTextSize(R.id.tv_title, TypedValue.COMPLEX_UNIT_SP, 16);
+
+                                // 左侧的按钮
+                                remoteViews.setImageViewResource(R.id.iv_to_left, R.drawable.icon_music_left);
+                                // 中间的按钮
+                                remoteViews.setImageViewResource(R.id.iv_start, R.drawable.selector_audio_play);
+                                // 右侧的按钮
+                                remoteViews.setImageViewResource(R.id.iv_to_right, R.drawable.icon_music_right);
+
+                                // 播放按钮点击事件的处理
+                                Intent intentStart = new Intent();
+                                if (isPlaying()) {
+                                    intentStart.setAction(ACTION_PAUSE);
+                                } else {
+                                    intentStart.setAction(ACTION_START);
+                                }
+                                PendingIntent btPendingIntentStart = PendingIntent.getBroadcast(context, CODE_SEND_BROADCAST_RECEIVER, intentStart, PendingIntent.FLAG_UPDATE_CURRENT);
+                                remoteViews.setOnClickPendingIntent(R.id.iv_start, btPendingIntentStart);
+
+                                // 左侧按钮点击事件的处理
+                                Intent intentLeft = new Intent();
+                                intentLeft.setAction(ACTION_LEFT);
+                                PendingIntent btPendingIntentLeft = PendingIntent.getBroadcast(context, CODE_SEND_BROADCAST_RECEIVER, intentLeft, PendingIntent.FLAG_UPDATE_CURRENT);
+                                remoteViews.setOnClickPendingIntent(R.id.iv_to_left, btPendingIntentLeft);
+
+                                // 左侧按钮点击事件的处理
+                                Intent intentRight = new Intent();
+                                intentRight.setAction(ACTION_RIGHT);
+                                PendingIntent btPendingIntentRight = PendingIntent.getBroadcast(context, CODE_SEND_BROADCAST_RECEIVER, intentRight, PendingIntent.FLAG_UPDATE_CURRENT);
+                                remoteViews.setOnClickPendingIntent(R.id.iv_to_right, btPendingIntentRight);
+                            }
+                        })
+                        .sendNotification()
+                        .startForeground(this);
+            }
         } catch (Exception e) {
             LogUtil.e("------------->:" + e.getMessage());
         }
@@ -324,6 +387,11 @@ public class AudioService extends Service {
         // 停止间隔的轮询
         if (notificationUtil != null) {
             notificationUtil.stopLoopForeground();
+        }
+
+        // 解除注册广播接收者
+        if (mAudioReceiver != null) {
+            unregisterReceiver(mAudioReceiver);
         }
 
         stop();
@@ -691,4 +759,34 @@ public class AudioService extends Service {
                 });
     }
 
+    public class AudioReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                String action = intent.getAction();
+                LogUtil.e("-------------------------------->AudioReceiver ---> onReceive:" + action);
+                switch (action) {
+                    case ACTION_START:
+
+                        pause();
+
+                        break;
+
+                    case ACTION_PAUSE:
+                        start();
+
+                        break;
+
+                    case ACTION_LEFT:
+
+                        break;
+
+                    case ACTION_RIGHT:
+
+                        break;
+
+                }
+            }
+        }
+    }
 }

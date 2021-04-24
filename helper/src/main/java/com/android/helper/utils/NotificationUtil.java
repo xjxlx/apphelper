@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.widget.RemoteViews;
 
 import androidx.annotation.DrawableRes;
 import androidx.core.app.NotificationCompat;
@@ -21,6 +22,8 @@ import androidx.core.app.NotificationCompat;
 import com.android.helper.R;
 import com.android.helper.httpclient.BaseException;
 import com.android.helper.httpclient.BaseHttpSubscriber;
+import com.android.helper.httpclient.RxUtil;
+import com.android.helper.interfaces.listener.ViewCallBackListener;
 
 import java.util.concurrent.TimeUnit;
 
@@ -48,13 +51,20 @@ public class NotificationUtil {
     private int mContentSmallIcon;         // 消息的图标
     private PendingIntent pendingIntent;
 
-    // 自定义震动
+    /**
+     * 自定义震动
+     * <p>
+     * vibrate属性是一个长整型的数组，用于设置手机静止和振动的时长，以毫秒为单位。
+     * 参数中下标为0的值表示手机静止的时长，下标为1的值表示手机振动的时长， 下标为2的值又表示手机静止的时长，以此类推。
+     */
     private final long[] vibrates = {0, 1000, 1000, 1000};
 
     private String mChannelDescription;     // 渠道的描述
     private String mChannelName;            // 渠道的名字
     private NotificationManager manager;
     private BaseHttpSubscriber<Long> mLoopSubscribe; // 轮询发送前台服务的计时器
+    private int mRemoteViewsLayout; // 状态栏布局
+    private ViewCallBackListener<RemoteViews> mViewCallBackListener;
 
     private NotificationUtil(Context context) {
         this.mContext = context;
@@ -145,6 +155,16 @@ public class NotificationUtil {
     }
 
     /**
+     * @param layoutId 布局的资源
+     * @return 设置消息的通知栏布局
+     */
+    public <T> NotificationUtil setRemoteView(int layoutId, ViewCallBackListener<RemoteViews> callBackListener) {
+        this.mRemoteViewsLayout = layoutId;
+        this.mViewCallBackListener = callBackListener;
+        return util;
+    }
+
+    /**
      * 创建消息的对象
      */
     public NotificationUtil sendNotification() {
@@ -153,7 +173,7 @@ public class NotificationUtil {
 
             // 跳转的activity意图
             if (mIntentActivity != null) {
-                pendingIntent = PendingIntent.getActivity(mContext, CODE_JUMP_REQUEST, mIntentActivity, PendingIntent.FLAG_ONE_SHOT);
+                pendingIntent = PendingIntent.getActivity(mContext, CODE_JUMP_REQUEST, mIntentActivity, PendingIntent.FLAG_UPDATE_CURRENT);
             }
 
             if (mIntentService != null) {
@@ -281,6 +301,23 @@ public class NotificationUtil {
                                 .build();
             }
 
+            // 通知栏的状态布局
+            if (mRemoteViewsLayout != 0) {
+                RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), mRemoteViewsLayout);
+                if (mIntentActivity != null) {
+                    pendingIntent = PendingIntent.getActivity(mContext, CODE_JUMP_REQUEST, mIntentActivity, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    //点击图片进入页面DemoActivity2
+                    remoteViews.setOnClickPendingIntent(remoteViews.getLayoutId(), pendingIntent);
+                }
+                mNotification.contentView = remoteViews;
+
+                // 把布局回调回去
+                if (remoteViews != null) {
+                    mViewCallBackListener.callBack(null, remoteViews);
+                }
+            }
+
             // 发送消息通知
             manager.notify((int) System.currentTimeMillis(), mNotification);
         }
@@ -303,19 +340,21 @@ public class NotificationUtil {
     }
 
     /**
+     * 开始轮询的发送服务的通知，避免间隔的时间长了，服务被误判，停止联网的操作
+     *
      * @param period  每次间隔的时间
      * @param service 指定的服务
-     * @return 轮询发送前台的消息
      */
     @SuppressLint("CheckResult")
-    public NotificationUtil startLoopForeground(long period, Service service) {
+    public void startLoopForeground(long period, Service service) {
         if (service != null) {
             mLoopSubscribe = Flowable
                     .interval(period, TimeUnit.MILLISECONDS)
+                    .compose(RxUtil.getScheduler())  // 转换线程
                     .subscribeWith(new BaseHttpSubscriber<Long>() {
                         @Override
                         public void onSuccess(Long aLong) {
-                            LogUtil.e("开始了服务消息的轮询！");
+                            LogUtil.e("开始了服务消息的轮询发送！");
                             service.startForeground((int) System.currentTimeMillis(), mNotification);
                         }
 
@@ -324,16 +363,17 @@ public class NotificationUtil {
                         }
                     });
         }
-        return util;
     }
 
-    public NotificationUtil stopLoopForeground() {
+    /**
+     * 停止轮询服务的发送
+     */
+    public void stopLoopForeground() {
         if (mLoopSubscribe != null) {
             if (!mLoopSubscribe.isDisposed()) {
                 mLoopSubscribe.dispose();
             }
         }
-        return util;
     }
 
 }
