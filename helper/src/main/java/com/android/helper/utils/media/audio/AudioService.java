@@ -13,6 +13,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
 
@@ -61,6 +62,7 @@ public class AudioService extends Service {
     private boolean initialized; // 是否已经完成了初始化
     private NotificationUtil notificationUtil;
     private AudioReceiver mAudioReceiver;
+    private RemoteViews mRemoteViews;
 
     public AudioService() {
 
@@ -104,6 +106,7 @@ public class AudioService extends Service {
                         .setSmallIcon(R.drawable.icon_left_right)
                         .setRemoteView(R.layout.notification_audio, (view, remoteViews) -> {
                             if (remoteViews != null) {
+                                this.mRemoteViews = remoteViews;
                                 // 图片的资源
                                 remoteViews.setImageViewResource(R.id.iv_launcher, R.drawable.icon_music_start);
                                 // 标题
@@ -120,11 +123,8 @@ public class AudioService extends Service {
 
                                 // 播放按钮点击事件的处理
                                 Intent intentStart = new Intent();
-                                if (isPlaying()) {
-                                    intentStart.setAction(ACTION_PAUSE);
-                                } else {
-                                    intentStart.setAction(ACTION_START);
-                                }
+                                intentStart.setAction(ACTION_PAUSE);
+                                intentStart.setAction(ACTION_START);
                                 PendingIntent btPendingIntentStart = PendingIntent.getBroadcast(context, CODE_SEND_BROADCAST_RECEIVER, intentStart, PendingIntent.FLAG_UPDATE_CURRENT);
                                 remoteViews.setOnClickPendingIntent(R.id.iv_start, btPendingIntentStart);
 
@@ -187,7 +187,7 @@ public class AudioService extends Service {
 
             // 发送间隔的轮询
             if (notificationUtil != null) {
-                notificationUtil.startLoopForeground(5000, this);
+//                notificationUtil.startLoopForeground(5000, this);
             }
         }
     }
@@ -764,16 +764,26 @@ public class AudioService extends Service {
         public void onReceive(Context context, Intent intent) {
             if (intent != null) {
                 String action = intent.getAction();
-                LogUtil.e("-------------------------------->AudioReceiver ---> onReceive:" + action);
+                boolean playing = isPlaying();
+                LogUtil.e("-------------------------------->AudioReceiver ---> onReceive:" + action + "   --->player:" + playing);
+
                 switch (action) {
                     case ACTION_START:
-
-                        pause();
-
-                        break;
-
                     case ACTION_PAUSE:
-                        start();
+                        if (playing) {
+                            pause();
+                            // 中间的按钮
+                            if (mRemoteViews != null) {
+                                mRemoteViews.setImageViewResource(R.id.iv_start, R.drawable.icon_music_pause);
+                            }
+
+                        } else {
+                            start();
+                            // 中间的按钮
+                            if (mRemoteViews != null) {
+                                mRemoteViews.setImageViewResource(R.id.iv_start, R.drawable.icon_music_start);
+                            }
+                        }
 
                         break;
 

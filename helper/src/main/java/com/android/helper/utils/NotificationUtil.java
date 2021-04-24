@@ -348,6 +348,9 @@ public class NotificationUtil {
     @SuppressLint("CheckResult")
     public void startLoopForeground(long period, Service service) {
         if (service != null) {
+            // 先停止掉之前的轮询，
+            stopLoopForeground();
+
             mLoopSubscribe = Flowable
                     .interval(period, TimeUnit.MILLISECONDS)
                     .compose(RxUtil.getScheduler())  // 转换线程
