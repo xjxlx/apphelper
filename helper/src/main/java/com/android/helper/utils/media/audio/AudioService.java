@@ -1,5 +1,6 @@
 package com.android.helper.utils.media.audio;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +12,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import com.android.helper.R;
 import com.android.helper.httpclient.RxUtil;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.NotificationUtil;
 import com.android.helper.utils.ToastUtil;
 
 import java.io.IOException;
@@ -67,6 +70,21 @@ public class AudioService extends Service {
 
         // 创建对象
         mediaPlayer = getMediaPlayer();
+
+        try {
+            NotificationUtil notificationUtil = NotificationUtil.getInstance(getBaseContext());
+            notificationUtil
+                    .setTickerText("首次出现在通知栏")
+                    .setContentTitle("消息通知栏")
+                    .setContentText("消息的内容")
+                    .setSmallIcon(R.drawable.icon_left_right)
+                    .sendNotification();
+
+            Notification notification = notificationUtil.getNotification();
+            startForeground(1, notification);
+        } catch (Exception e) {
+            LogUtil.e("------------->:" + e.getMessage());
+        }
     }
 
     @Nullable
