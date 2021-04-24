@@ -19,6 +19,12 @@ import androidx.annotation.DrawableRes;
 import androidx.core.app.NotificationCompat;
 
 import com.android.helper.R;
+import com.android.helper.httpclient.BaseException;
+import com.android.helper.httpclient.BaseHttpSubscriber;
+
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Flowable;
 
 public class NotificationUtil {
 
@@ -48,6 +54,7 @@ public class NotificationUtil {
     private String mChannelDescription;     // 渠道的描述
     private String mChannelName;            // 渠道的名字
     private NotificationManager manager;
+    private BaseHttpSubscriber<Long> mLoopSubscribe; // 轮询发送前台服务的计时器
 
     private NotificationUtil(Context context) {
         this.mContext = context;
@@ -282,6 +289,51 @@ public class NotificationUtil {
 
     public Notification getNotification() {
         return mNotification;
+    }
+
+    /**
+     * @param service 指定的服务类型
+     * @return 开启前台服务
+     */
+    public NotificationUtil startForeground(Service service) {
+        if (service != null) {
+            service.startForeground((int) System.currentTimeMillis(), mNotification);
+        }
+        return util;
+    }
+
+    /**
+     * @param period  每次间隔的时间
+     * @param service 指定的服务
+     * @return 轮询发送前台的消息
+     */
+    @SuppressLint("CheckResult")
+    public NotificationUtil startLoopForeground(long period, Service service) {
+        if (service != null) {
+            mLoopSubscribe = Flowable
+                    .interval(period, TimeUnit.MILLISECONDS)
+                    .subscribeWith(new BaseHttpSubscriber<Long>() {
+                        @Override
+                        public void onSuccess(Long aLong) {
+                            LogUtil.e("开始了服务消息的轮询！");
+                            service.startForeground((int) System.currentTimeMillis(), mNotification);
+                        }
+
+                        @Override
+                        public void onFailure(BaseException e) {
+                        }
+                    });
+        }
+        return util;
+    }
+
+    public NotificationUtil stopLoopForeground() {
+        if (mLoopSubscribe != null) {
+            if (!mLoopSubscribe.isDisposed()) {
+                mLoopSubscribe.dispose();
+            }
+        }
+        return util;
     }
 
 }
