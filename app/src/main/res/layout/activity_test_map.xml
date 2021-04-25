@@ -50,6 +50,11 @@
             style="@style/style_todo_item"
             android:text="测试长连接的" />
 
+        <TextView
+            android:id="@+id/tv_test_webview"
+            style="@style/style_todo_item"
+            android:text="测试webView" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>
