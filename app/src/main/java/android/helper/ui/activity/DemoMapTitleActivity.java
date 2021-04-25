@@ -1,5 +1,6 @@
 package android.helper.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.helper.R;
 import android.helper.databinding.ActivityDemoMapBinding;
 import android.helper.ui.activity.otherutils.AudioPlayerActivity;
@@ -31,6 +32,7 @@ public class DemoMapTitleActivity extends BaseTitleActivity {
         return R.layout.activity_demo_map;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         super.onClick(v);

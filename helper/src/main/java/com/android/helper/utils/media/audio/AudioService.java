@@ -19,11 +19,13 @@ import androidx.annotation.Nullable;
 
 import com.android.helper.R;
 import com.android.helper.httpclient.RxUtil;
+import com.android.helper.utils.BitmapUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
 import com.android.helper.utils.ToastUtil;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -63,6 +65,16 @@ public class AudioService extends Service {
     private NotificationUtil mNotificationUtil;
     private AudioReceiver mAudioReceiver;
     private RemoteViews mRemoteViews;
+
+    private int mNotificationStart;         // 消息通知栏开始的按钮
+    private int mNotificationPause;         // 消息通知栏暂停的按钮
+    private int mNotificationLeft;          // 消息通知栏左侧的按钮
+    private int mNotificationRight;         // 消息通知栏右侧的按钮
+
+    private String mNotificationImage;      // 消息通知栏左侧的图标
+    private String mNotificationTitle;      // 消息通知栏上方的标题
+    private List<AudioEntity> mAudioList;   // 消息通知栏使用到的数据列表
+    private int mAudioPosition = -1;             // 消息通知栏当前按播放音频的角标,默认的值是-1
 
     public AudioService() {
 
@@ -107,24 +119,23 @@ public class AudioService extends Service {
                         .setRemoteView(R.layout.notification_audio, (view, remoteViews) -> {
                             if (remoteViews != null) {
                                 this.mRemoteViews = remoteViews;
-                                // 图片的资源
-                                remoteViews.setImageViewResource(R.id.iv_launcher, R.drawable.icon_music_start);
-                                // 标题
-                                remoteViews.setTextViewText(R.id.tv_title, "123");
-                                remoteViews.setTextColor(R.id.tv_title, Color.BLACK);
-                                remoteViews.setTextViewTextSize(R.id.tv_title, TypedValue.COMPLEX_UNIT_SP, 16);
 
                                 // 左侧的按钮
-                                remoteViews.setImageViewResource(R.id.iv_to_left, R.drawable.icon_music_left);
-
-                                // 中间的按钮
-                                if (isPlaying()) {
-                                    mRemoteViews.setImageViewResource(R.id.iv_start, R.drawable.icon_music_pause);
-                                } else {
-                                    mRemoteViews.setImageViewResource(R.id.iv_start, R.drawable.icon_music_start);
+                                if (mNotificationLeft != 0) {
+                                    remoteViews.setImageViewResource(R.id.iv_to_left, mNotificationLeft);
                                 }
+
+//                                // 中间的按钮
+//                                if (isPlaying()) {
+//                                    mRemoteViews.setImageViewResource(R.id.iv_start, R.drawable.icon_music_pause);
+//                                } else {
+//                                    mRemoteViews.setImageViewResource(R.id.iv_start, R.drawable.icon_music_start);
+//                                }
+
                                 // 右侧的按钮
-                                remoteViews.setImageViewResource(R.id.iv_to_right, R.drawable.icon_music_right);
+                                if (mNotificationRight != 0) {
+                                    remoteViews.setImageViewResource(R.id.iv_to_right, mNotificationRight);
+                                }
 
                                 // 播放按钮点击事件的处理
                                 Intent intentStart = new Intent();
@@ -283,9 +294,26 @@ public class AudioService extends Service {
                         }
                         LogUtil.e(AudioConstant.TAG, "start--->initialized：正常进行了播放！");
 
-                        // todo 设置播放按钮为开始的状态
+                        // 获取当前view的角标
+                        getCurrentPositionForUrl();
+
+                        // 更改view的图标
                         if (mRemoteViews != null) {
-                            mRemoteViews.setImageViewResource(R.id.iv_start, R.drawable.icon_music_pause);
+                            mRemoteViews.setImageViewResource(R.id.iv_start, mNotificationPause);
+
+                            // 左侧图片的资源
+                            BitmapUtil.getBitmapForService(context, mNotificationImage, (successful, tag, bitmap) -> {
+                                if (tag != null && tag.equals(BitmapUtil.STATUS_SUCCESS)) {
+                                    mRemoteViews.setImageViewBitmap(R.id.iv_launcher, bitmap);
+                                }
+                            });
+
+                            // 中间的标题头
+                            if (!TextUtils.isEmpty(mNotificationTitle)) {
+                                mRemoteViews.setTextViewText(R.id.tv_title, mNotificationTitle);
+                                mRemoteViews.setTextColor(R.id.tv_title, Color.BLACK);
+                                mRemoteViews.setTextViewTextSize(R.id.tv_title, TypedValue.COMPLEX_UNIT_SP, 16);
+                            }
                         }
 
                         // 发送间隔的轮询
@@ -331,9 +359,10 @@ public class AudioService extends Service {
 
                 LogUtil.e(AudioConstant.TAG, "pause--->走入了暂停的方法中，成功暂停了！");
 
-                // todo 设置播放按钮为暂停的状态
                 if (mRemoteViews != null) {
-                    mRemoteViews.setImageViewResource(R.id.iv_start, R.drawable.icon_music_start);
+                    if (mNotificationStart != 0) {
+                        mRemoteViews.setImageViewResource(R.id.iv_start, mNotificationStart);
+                    }
                 }
 
                 // 发送间隔的轮询
@@ -474,6 +503,25 @@ public class AudioService extends Service {
         @Override
         public void setAudioCallBackListener(AudioPlayerCallBackListener callBackListener) {
             AudioService.this.setAudioCallBackListener(callBackListener);
+        }
+
+        @Override
+        public void setNotificationIcon(int notificationStart, int notificationPause, int notificationLeft, int notificationRight) {
+            AudioService.this.mNotificationStart = notificationStart;
+            AudioService.this.mNotificationPause = notificationPause;
+            AudioService.this.mNotificationLeft = notificationLeft;
+            AudioService.this.mNotificationRight = notificationRight;
+        }
+
+        @Override
+        public void setNotificationMessage(String notificationImage, String notificationTitle) {
+            AudioService.this.mNotificationImage = notificationImage;
+            AudioService.this.mNotificationTitle = notificationTitle;
+        }
+
+        @Override
+        public void setNotificationList(List<AudioEntity> list) {
+            AudioService.this.mAudioList = list;
         }
 
         @Override
@@ -786,6 +834,87 @@ public class AudioService extends Service {
                 });
     }
 
+    /**
+     * @return 获取当前音频播放对应的角标
+     */
+    public int getCurrentPositionForUrl() {
+        mAudioPosition = -1;
+        if ((mAudioList != null) && (mAudioList.size() > 0)) {
+            for (int i = 0; i < mAudioList.size(); i++) {
+                AudioEntity audioEntity = mAudioList.get(i);
+                if (audioEntity != null) {
+                    String ur = audioEntity.getUrl();
+                    if (TextUtils.equals(ur, mAudioPath)) {
+                        mAudioPosition = i;
+                        return mAudioPosition;
+                    }
+                }
+            }
+        }
+        LogUtil.e("当前的角标为：" + mAudioPosition);
+        return mAudioPosition;
+    }
+
+    /**
+     * 下一曲
+     */
+    public void nextPage() {
+        LogUtil.e("播放下一首的方法");
+        if ((mAudioList != null) && (mAudioList.size() > 0)) {
+            if (mAudioPosition != -1) {
+                if (mAudioPosition < mAudioList.size() - 1) {
+                    mAudioPosition += 1;
+                } else { //无限循环
+                    mAudioPosition = 0;
+                }
+
+                AudioEntity audioEntity = mAudioList.get(mAudioPosition);
+                if (audioEntity != null) {
+                    String url = audioEntity.getUrl();
+                    if (!TextUtils.isEmpty(url)) {
+                        mAudioPath = url;
+                        setResource(mAudioPath);
+                    }
+                }
+
+            } else {
+                LogUtil.e("nextPage--->角标异常,暂停播放！");
+            }
+        } else {
+            LogUtil.e("播放下一首的方法--->集合为空");
+        }
+    }
+
+    /**
+     * 上一曲
+     */
+    public void onPage() {
+        LogUtil.e("播放上一首的方法");
+        if ((mAudioList != null) && (mAudioList.size() > 0)) {
+            if (mAudioPosition != -1) {
+                if (mAudioPosition > 0) {
+                    mAudioPosition -= 1;
+                } else { //无限循环
+                    mAudioPosition = mAudioList.size() - 1;
+                }
+
+                AudioEntity audioEntity = mAudioList.get(mAudioPosition);
+                if (audioEntity != null) {
+                    String url = audioEntity.getUrl();
+                    if (!TextUtils.isEmpty(url)) {
+                        mAudioPath = url;
+                        setResource(mAudioPath);
+                    }
+                }
+
+            } else {
+                LogUtil.e("onPage--->角标异常,暂停播放！");
+            }
+        } else {
+            LogUtil.e("播放上一首的方法--->集合为空");
+        }
+    }
+
     public class AudioReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -798,20 +927,24 @@ public class AudioService extends Service {
                     case ACTION_START:
                     case ACTION_PAUSE:
 
-                        if (playing) {
-                            pause();
+                        if (initialized) {
+                            if (playing) {
+                                pause();
+                            } else {
+                                start();
+                            }
                         } else {
-                            start();
+                            setResource(mAudioPath);
                         }
 
                         break;
 
                     case ACTION_LEFT:
-
+                        onPage();
                         break;
 
                     case ACTION_RIGHT:
-
+                        nextPage();
                         break;
 
                 }

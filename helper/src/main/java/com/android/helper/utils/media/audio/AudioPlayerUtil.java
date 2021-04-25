@@ -12,10 +12,14 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+
 import com.android.helper.utils.DateUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.ServiceUtil;
 import com.android.helper.utils.TextViewUtil;
+
+import java.util.List;
 
 import static com.android.helper.utils.media.audio.AudioConstant.STATUS_ERROR;
 import static com.android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
@@ -38,6 +42,15 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     private AudioPlayerCallBackListener mCallBackListener;
     private String mAudioPath; // 播放的路径
     private boolean mAutoPlayer;// 是否自动播放
+
+    private int mNotificationStart;         // 消息通知栏开始的按钮
+    private int mNotificationPause;         // 消息通知栏暂停的按钮
+    private int mNotificationLeft;          // 消息通知栏左侧的按钮
+    private int mNotificationRight;         // 消息通知栏右侧的按钮
+
+    private String mNotificationImage;      // 消息通知栏左侧的图标
+    private String mNotificationTitle;      // 消息通知栏上方的标题
+    private List<AudioEntity> mAudioList;   // 消息通知栏使用到的数据列表
 
     public AudioPlayerUtil(Context context) {
         this.context = context;
@@ -154,6 +167,11 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
                     setSeekBar(mSeekBar);
                     setStartButton(mStartButton);
+
+                    // 设置notification的消息
+                    audioBinder.setNotificationIcon(mNotificationStart, mNotificationPause, mNotificationLeft, mNotificationRight);
+                    audioBinder.setNotificationMessage(mNotificationImage, mNotificationTitle);
+                    audioBinder.setNotificationList(mAudioList);
                 }
 
                 // 绑定成功后自动播放
@@ -390,4 +408,41 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             mCallBackListener.onComplete();
         }
     }
+
+    /**
+     * @param notificationStart notification开始的按钮
+     * @param notificationPause notification暂停的按钮
+     * @param notificationLeft  notification左侧的按钮
+     * @param notificationRight notification右侧的按钮
+     */
+    public void setNotificationIcon(@DrawableRes int notificationStart, @DrawableRes int notificationPause, @DrawableRes int notificationLeft, @DrawableRes int notificationRight) {
+        mNotificationStart = notificationStart;
+        mNotificationPause = notificationPause;
+        mNotificationLeft = notificationLeft;
+        mNotificationRight = notificationRight;
+
+        if (audioBinder != null) {
+            audioBinder.setNotificationIcon(notificationStart, notificationPause, notificationLeft, notificationRight);
+        }
+    }
+
+    /**
+     * @param notificationImage notification左侧的图标
+     * @param notificationTitle notification的标题
+     */
+    public void setNotificationMessage(String notificationImage, String notificationTitle) {
+        mNotificationImage = notificationImage;
+        mNotificationTitle = notificationTitle;
+        if (audioBinder != null) {
+            audioBinder.setNotificationMessage(notificationImage, notificationTitle);
+        }
+    }
+
+    public void setNotificationList(List<AudioEntity> list) {
+        mAudioList = list;
+        if (audioBinder != null) {
+            audioBinder.setNotificationList(list);
+        }
+    }
+
 }
