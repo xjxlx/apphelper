@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.android.helper.utils.DateUtil;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ServiceUtil;
 import com.android.helper.utils.TextViewUtil;
 
 import static com.android.helper.utils.media.audio.AudioConstant.STATUS_ERROR;
@@ -55,7 +56,11 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         }
 
         // 启动后台服务
-        context.startService(intent);
+        try {
+            ServiceUtil.startService(context, intent);
+        } catch (Exception e) {
+            LogUtil.e("开启服务失败:" + e.getMessage());
+        }
 
         // 绑定前台的服务,禁止冲洗请的绑定
         if (!bindService) {

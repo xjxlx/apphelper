@@ -1,17 +1,23 @@
 package android.helper;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.helper.ui.fragment.HomeFragment;
 import android.helper.ui.fragment.PersonalFragment;
 import android.helper.ui.fragment.TodoFragment;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.android.helper.base.BaseFragmentPagerAdapter;
 import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.interfaces.listener.AllPermissionsListener;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.RxPermissionsUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.tbruyelle.rxpermissions.Permission;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +42,25 @@ public class MainActivity extends BaseTitleActivity {
         return R.layout.activity_main;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void initData() {
         super.initData();
+
+        String[] strings = {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.FOREGROUND_SERVICE
+        };
+
+        RxPermissionsUtil permissionsUtil = new RxPermissionsUtil(mContext, strings);
+        permissionsUtil.setAllPermissionListener(new AllPermissionsListener() {
+            @Override
+            public void onRxPermissions(boolean havePermission, Permission permission) {
+                LogUtil.e("是否拥有读写权限：" + havePermission);
+            }
+        });
 
         mListFragments.add(new HomeFragment());
         mListFragments.add(new TodoFragment());

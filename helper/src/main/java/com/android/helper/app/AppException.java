@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.helper.utils.PreferenceHelper;
@@ -189,9 +190,10 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
                 logFilePath = savePath + errorLog;
             }
             //没有挂载SD卡，无法写文件
-            if (logFilePath == "") {
+            if (TextUtils.isEmpty(logFilePath)) {
                 return false;
             }
+
             File logFile = new File(logFilePath);
             if (!logFile.exists()) {
                 logFile.createNewFile();
@@ -212,6 +214,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             fw.close();
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e("AppException", "App崩溃信息异常，请检查是否给与了应用读写权限！ --->error:" + e.getMessage());
         } finally {
             if (pw != null) {
                 pw.close();
@@ -219,7 +222,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             if (fw != null) {
                 try {
                     fw.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -229,7 +232,6 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
     /**
      * 自定义异常处理:收集错误信息&发送错误报告
      *
-     * @param ex
      * @return true:处理了该异常信息;否则返回false
      */
     private boolean handleException(Throwable ex) {

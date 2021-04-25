@@ -10,16 +10,23 @@ import com.android.helper.interfaces.ICommonApplication;
 
 import okhttp3.Interceptor;
 
-public class AppApplication extends Application {
+public class App extends Application {
+
+    private static App mApp;
+
+    public static App getInstance() {
+        return mApp;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        mApp = this;
 
         BaseApplication.getInstance().setICommonApplication(new ICommonApplication() {
             @Override
             public Application getApplication() {
-                return AppApplication.this;
+                return App.this;
             }
 
             @Override
