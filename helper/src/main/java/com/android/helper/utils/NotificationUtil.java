@@ -54,6 +54,8 @@ public class NotificationUtil {
     private String mContentText;           // 消息内容
     private int mContentSmallIcon;         // 消息的图标
     private int mNotificationNumber;       // 消息的数量
+    private int mNotificationLevel;        // 消息的等级
+    private boolean isLockScreenVisibility = true; // 是否打开锁屏通知,默认是打开的
     private PendingIntent pendingIntent;
 
     /**
@@ -166,6 +168,22 @@ public class NotificationUtil {
     }
 
     /**
+     * @return 是否锁屏可见，true：可见，false：不可见，默认可见
+     */
+    public NotificationUtil setLockScreenVisibility(boolean lockScreenVisibility) {
+        this.isLockScreenVisibility = lockScreenVisibility;
+        return util;
+    }
+
+    /**
+     * @param level 消息通知的等级，8.0以下使用 {@link Notification#PRIORITY_HIGH } ，8.0以上使用 {@link NotificationManager#IMPORTANCE_HIGH }去设置
+     */
+    public NotificationUtil setNotificationLevel(int level) {
+        this.mNotificationLevel = level;
+        return util;
+    }
+
+    /**
      * @param layoutId 布局的资源
      * @return 设置消息的通知栏布局
      */
@@ -191,9 +209,12 @@ public class NotificationUtil {
                 pendingIntent = PendingIntent.getService(mContext, CODE_JUMP_REQUEST, mIntentService, PendingIntent.FLAG_UPDATE_CURRENT);
             }
 
+            // 使用用户的包名作为渠道的id，保证唯一性
+            String channelId = mContext.getPackageName();
+
             // 当SDK大于16且小于26的时候
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                Notification.Builder builder = new Notification.Builder(mContext);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, channelId);
 
                 // 首次出现的提示
                 if (!TextUtils.isEmpty(mTickerText)) {
@@ -230,17 +251,25 @@ public class NotificationUtil {
                     builder.setContentIntent(pendingIntent);
                 }
 
+                // 设置通知的等级
+                if (mNotificationLevel == 0) {
+                    mNotificationLevel = Notification.PRIORITY_HIGH;
+                }
+
+                // 锁屏可见
+                if (isLockScreenVisibility) {
+                    builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+                }
+
                 mNotification =
                         builder
                                 .setVibrate(vibrates) // 震动
                                 .setLights(Color.GREEN, 1000, 1000) // 灯光
-                                .setPriority(Notification.PRIORITY_HIGH)// 设置优先级
+                                .setPriority(mNotificationLevel)// 设置优先级
                                 .build();
 
             } else {    // 当SDK大于26的时候
 
-                // 使用用户的包名作为渠道的id，保证唯一性
-                String channelId = mContext.getPackageName();
                 CharSequence channelName = "";
 
                 // 渠道的名字，如果为空，则用app的名字
@@ -249,10 +278,12 @@ public class NotificationUtil {
                     channelName = mContext.getResources().getString(R.string.app_name);
                 }
 
-                // 优先级
-                int importance = NotificationManager.IMPORTANCE_HIGH;
+                // 设置通知的等级
+                if (mNotificationLevel == 0) {
+                    mNotificationLevel = NotificationManager.IMPORTANCE_HIGH;
+                }
                 // 渠道对象
-                NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
+                NotificationChannel mChannel = new NotificationChannel(channelId, channelName, mNotificationLevel);
 
                 if (TextUtils.isEmpty(mChannelDescription)) {
                     // 默认的渠道描述
@@ -271,7 +302,11 @@ public class NotificationUtil {
                 mChannel.setVibrationPattern(vibrates);
 
                 mChannel.setShowBadge(true);//显示logo
-                mChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC); //设置锁屏可见 VISIBILITY_PUBLIC=可见
+
+                // 锁屏可见
+                if (isLockScreenVisibility) {
+                    mChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC); //设置锁屏可见 VISIBILITY_PUBLIC=可见
+                }
 
                 // 通知Manager去创建渠道
                 manager.createNotificationChannel(mChannel);
@@ -334,9 +369,7 @@ public class NotificationUtil {
                 mNotification.contentView = remoteViews;
 
                 // 把布局回调回去
-                if (remoteViews != null) {
-                    mViewCallBackListener.callBack(null, remoteViews);
-                }
+                mViewCallBackListener.callBack(null, remoteViews);
             }
         }
         return util;

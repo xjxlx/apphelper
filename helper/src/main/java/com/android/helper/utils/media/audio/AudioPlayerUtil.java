@@ -30,11 +30,11 @@ import static com.android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
 public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     private AudioServiceConnection connection;
-    private boolean bindService;
+    private boolean mBindService;
     private final Context context;
     private Intent intent;
     @SuppressLint("StaticFieldLeak")
-    private static AudioService.AudioBinder audioBinder;
+    private static AudioService.AudioBinder mAudioBinder;
     private BindServiceListener mBindServiceListener;
     private SeekBar mSeekBar;
     private TextView mSeekBarProgressView, mSeekBarTotalView;
@@ -76,19 +76,19 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         }
 
         // 绑定前台的服务,禁止冲洗请的绑定
-        if (!bindService) {
-            bindService = context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        if (!mBindService) {
+            mBindService = context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
         }
-        LogUtil.e(AudioConstant.TAG, "bindService--->后台服务绑定成功：" + bindService);
+        LogUtil.e(AudioConstant.TAG, "bindService--->后台服务绑定成功：" + mBindService);
     }
 
     /**
      * 解绑服务
      */
     public void unBindService() {
-        if (bindService) {
+        if (mBindService) {
             context.unbindService(connection);
-            bindService = false;
+            mBindService = false;
         }
     }
 
@@ -97,8 +97,8 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
      */
     public void setResource(String audioPath) {
         this.mAudioPath = audioPath;
-        if (audioBinder != null) {
-            audioBinder.setAudioResource(audioPath);
+        if (mAudioBinder != null) {
+            mAudioBinder.setAudioResource(audioPath);
         }
     }
 
@@ -110,20 +110,20 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     }
 
     public void start() {
-        if (audioBinder != null) {
-            audioBinder.start();
+        if (mAudioBinder != null) {
+            mAudioBinder.start();
         }
     }
 
     public void pause() {
-        if (audioBinder != null) {
-            audioBinder.pause();
+        if (mAudioBinder != null) {
+            mAudioBinder.pause();
         }
     }
 
     public void stop() {
-        if (audioBinder != null) {
-            audioBinder.stop();
+        if (mAudioBinder != null) {
+            mAudioBinder.stop();
         }
     }
 
@@ -131,14 +131,14 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
      * 页面停止不可见时候的处理
      */
     public void destroy() {
-        if (bindService) {
+        if (mBindService) {
             unBindService();
         }
 
         // 停止后台的服务
         context.stopService(intent);
-        audioBinder = null;
-        bindService = false;
+        mAudioBinder = null;
+        mBindService = false;
         mBindServiceListener = null;
         mSeekBar = null;
         mSeekBarProgressView = null;
@@ -153,25 +153,24 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             if (service instanceof AudioService.AudioBinder) {
-                audioBinder = (AudioService.AudioBinder) service;
-                LogUtil.e(AudioConstant.TAG, "onServiceConnected--->服务回调成功：" + (audioBinder));
+                mAudioBinder = (AudioService.AudioBinder) service;
+                LogUtil.e(AudioConstant.TAG, "onServiceConnected--->服务回调成功：" + (mAudioBinder));
 
-                if (audioBinder != null) {
-
+                if (mAudioBinder != null) {
                     // 生命周期的回调
                     if (AudioPlayerUtil.this.mBindServiceListener != null) {
-                        AudioPlayerUtil.this.mBindServiceListener.bindResult(bindService);
+                        AudioPlayerUtil.this.mBindServiceListener.bindResult(mBindService);
                     }
 
-                    audioBinder.setAudioCallBackListener(AudioPlayerUtil.this);
+                    mAudioBinder.setAudioCallBackListener(AudioPlayerUtil.this);
 
                     setSeekBar(mSeekBar);
                     setStartButton(mStartButton);
 
                     // 设置notification的消息
-                    audioBinder.setNotificationIcon(mNotificationStart, mNotificationPause, mNotificationLeft, mNotificationRight);
-                    audioBinder.setNotificationMessage(mNotificationImage, mNotificationTitle);
-                    audioBinder.setNotificationList(mAudioList);
+                    mAudioBinder.setNotificationIcon(mNotificationStart, mNotificationPause, mNotificationLeft, mNotificationRight);
+                    mAudioBinder.setNotificationMessage(mNotificationImage, mNotificationTitle);
+                    mAudioBinder.setNotificationList(mAudioList);
                 }
 
                 // 绑定成功后自动播放
@@ -208,7 +207,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         // 设置默认的进度
         seekBar.setProgress(0);
 
-        if (audioBinder == null) {
+        if (mAudioBinder == null) {
             return;
         }
 
@@ -216,9 +215,9 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    MediaPlayer mediaPlayer = audioBinder.getMediaPlayer();
+                    MediaPlayer mediaPlayer = mAudioBinder.getMediaPlayer();
                     if (mediaPlayer != null) {
-                        int status = audioBinder.getStatus();
+                        int status = mAudioBinder.getStatus();
                         if ((status != STATUS_IDLE) && (status != STATUS_ERROR)) {
                             mediaPlayer.seekTo(progress);
                         }
@@ -228,12 +227,12 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                audioBinder.sendProgress(false);
+                mAudioBinder.sendProgress(false);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                audioBinder.sendProgress(true);
+                mAudioBinder.sendProgress(true);
             }
         });
     }
@@ -269,15 +268,15 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             return;
         }
         this.mStartButton = view;
-        if (audioBinder == null) {
+        if (mAudioBinder == null) {
             return;
         }
 
         // 播放按钮的点击事件
         view.setOnClickListener(v -> {
-            boolean initialized = audioBinder.initialized();
+            boolean initialized = mAudioBinder.initialized();
             if (initialized) {
-                if (audioBinder.isPlaying()) {
+                if (mAudioBinder.isPlaying()) {
                     pause();
                 } else {
                     start();
@@ -421,8 +420,8 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         mNotificationLeft = notificationLeft;
         mNotificationRight = notificationRight;
 
-        if (audioBinder != null) {
-            audioBinder.setNotificationIcon(notificationStart, notificationPause, notificationLeft, notificationRight);
+        if (mAudioBinder != null) {
+            mAudioBinder.setNotificationIcon(notificationStart, notificationPause, notificationLeft, notificationRight);
         }
     }
 
@@ -433,15 +432,15 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     public void setNotificationMessage(String notificationImage, String notificationTitle) {
         mNotificationImage = notificationImage;
         mNotificationTitle = notificationTitle;
-        if (audioBinder != null) {
-            audioBinder.setNotificationMessage(notificationImage, notificationTitle);
+        if (mAudioBinder != null) {
+            mAudioBinder.setNotificationMessage(notificationImage, notificationTitle);
         }
     }
 
     public void setNotificationList(List<AudioEntity> list) {
         mAudioList = list;
-        if (audioBinder != null) {
-            audioBinder.setNotificationList(list);
+        if (mAudioBinder != null) {
+            mAudioBinder.setNotificationList(list);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.android.helper.utils.media.audio;
 
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -116,6 +117,8 @@ public class AudioService extends Service {
                         .setContentTitle("消息通知栏")
                         .setContentText("消息的内容")
                         .setSmallIcon(R.drawable.icon_left_right)
+                        .setLockScreenVisibility(true)
+                        .setNotificationLevel(NotificationManager.IMPORTANCE_MAX)
                         .setRemoteView(R.layout.notification_audio, (view, remoteViews) -> {
                             if (remoteViews != null) {
                                 this.mRemoteViews = remoteViews;
@@ -125,12 +128,16 @@ public class AudioService extends Service {
                                     remoteViews.setImageViewResource(R.id.iv_to_left, mNotificationLeft);
                                 }
 
-//                                // 中间的按钮
-//                                if (isPlaying()) {
-//                                    mRemoteViews.setImageViewResource(R.id.iv_start, R.drawable.icon_music_pause);
-//                                } else {
-//                                    mRemoteViews.setImageViewResource(R.id.iv_start, R.drawable.icon_music_start);
-//                                }
+                                // 中间的按钮
+                                if (isPlaying()) {
+                                    if (mNotificationPause != 0) {
+                                        mRemoteViews.setImageViewResource(R.id.iv_start, mNotificationPause);
+                                    }
+                                } else {
+                                    if (mNotificationStart != 0) {
+                                        mRemoteViews.setImageViewResource(R.id.iv_start, mNotificationStart);
+                                    }
+                                }
 
                                 // 右侧的按钮
                                 if (mNotificationRight != 0) {
