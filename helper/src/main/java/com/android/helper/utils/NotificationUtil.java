@@ -91,11 +91,13 @@ public class NotificationUtil {
 
     public NotificationUtil setActivity(Class<? extends Activity> activityCls) {
         mIntentActivity = new Intent(mContext, activityCls);
+        mIntentActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return util;
     }
 
     public NotificationUtil setService(Class<? extends Service> serviceCls) {
         mIntentService = new Intent(mContext, serviceCls);
+        mIntentService.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return util;
     }
 
@@ -348,10 +350,17 @@ public class NotificationUtil {
                     builder.setContentIntent(pendingIntent);
                 }
 
+                //不设置此项不会悬挂,false 不会出现悬挂
+                Intent intent = new Intent();
+
+                if (pendingIntent != null) {
+                    builder.setFullScreenIntent(null, true);
+                }
+
                 mNotification =
                         builder
                                 .setVibrate(vibrates) // 震动
-                                .setPriority(NotificationCompat.PRIORITY_HIGH)// 设置优先级
+                                .setPriority(mNotificationLevel)// 设置优先级
                                 .setLights(Color.GREEN, 100, 100) // 灯光
                                 .setChannelId(channelId)// 设置渠道
                                 .build();
