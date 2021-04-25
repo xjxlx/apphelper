@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
@@ -20,14 +22,7 @@ import androidx.annotation.DrawableRes;
 import androidx.core.app.NotificationCompat;
 
 import com.android.helper.R;
-import com.android.helper.httpclient.BaseException;
-import com.android.helper.httpclient.BaseHttpSubscriber;
-import com.android.helper.httpclient.RxUtil;
 import com.android.helper.interfaces.listener.ViewCallBackListener;
-
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Flowable;
 
 public class NotificationUtil {
 
@@ -35,6 +30,15 @@ public class NotificationUtil {
      * 点击通知时候跳转的请求码
      */
     public static final int CODE_JUMP_REQUEST = 1000;
+
+    /**
+     * handler的单独发送
+     */
+    public static final int CODE_WHAT_SEND_START_FOREGROUND = CODE_JUMP_REQUEST + 1;
+    /**
+     * handler的轮询发送
+     */
+    public static final int CODE_WHAT_SEND_START_FOREGROUND_LOOP = CODE_WHAT_SEND_START_FOREGROUND + 1;
 
     private final Context mContext;
     @SuppressLint("StaticFieldLeak")
@@ -60,11 +64,12 @@ public class NotificationUtil {
      */
     private final long[] vibrates = {0, 1000, 1000, 1000};
 
-    private String mChannelDescription;     // 渠道的描述
-    private String mChannelName;            // 渠道的名字
+    private String mChannelDescription;                 // 渠道的描述
+    private String mChannelName;                        // 渠道的名字
     private NotificationManager manager;
-    private BaseHttpSubscriber<Long> mLoopSubscribe; // 轮询发送前台服务的计时器
-    private int mRemoteViewsLayout; // 状态栏布局
+    private int mRemoteViewsLayout;                     // 状态栏布局
+    private Service mService;                           // 服务类
+    private long mIntervalTime;                         // 轮询的间隔
     private ViewCallBackListener<RemoteViews> mViewCallBackListener;
 
     private NotificationUtil(Context context) {
@@ -173,7 +178,7 @@ public class NotificationUtil {
     /**
      * 创建消息的对象
      */
-    public NotificationUtil sendNotification() {
+    public NotificationUtil createNotification() {
 
         if (mContext != null) {
 
@@ -333,9 +338,18 @@ public class NotificationUtil {
                     mViewCallBackListener.callBack(null, remoteViews);
                 }
             }
+        }
+        return util;
+    }
 
-            // 发送消息通知
-            manager.notify((int) System.currentTimeMillis(), mNotification);
+    /**
+     * @param id 消息的id
+     * @return 发送一个消息
+     */
+    public NotificationUtil sendNotification(int id) {
+        // 发送消息通知
+        if ((manager != null) && (mNotification != null)) {
+            manager.notify(id, mNotification);
         }
         return util;
     }
@@ -348,9 +362,18 @@ public class NotificationUtil {
      * @param service 指定的服务类型
      * @return 开启前台服务
      */
-    public NotificationUtil startForeground(Service service) {
+    public NotificationUtil startForeground(int id, Service service) {
         if (service != null) {
-            service.startForeground((int) System.currentTimeMillis(), mNotification);
+            if (id > 0) {
+                this.mService = service;
+
+                Message message = mHandler.obtainMessage();
+                message.what = CODE_WHAT_SEND_START_FOREGROUND;
+                message.arg1 = id;
+                mHandler.sendMessage(message);
+            } else {
+                LogUtil.e("发送通知的id不能为0！");
+            }
         }
         return util;
     }
@@ -358,29 +381,23 @@ public class NotificationUtil {
     /**
      * 开始轮询的发送服务的通知，避免间隔的时间长了，服务被误判，停止联网的操作
      *
-     * @param period  每次间隔的时间
-     * @param service 指定的服务
+     * @param intervalTime 每次间隔的时间
+     * @param service      指定的服务
      */
     @SuppressLint("CheckResult")
-    public void startLoopForeground(long period, Service service) {
+    public void startLoopForeground(int id, long intervalTime, Service service) {
         if (service != null) {
-            // 先停止掉之前的轮询，
-            stopLoopForeground();
+            if (id > 0) {
+                this.mService = service;
+                this.mIntervalTime = intervalTime;
 
-            mLoopSubscribe = Flowable
-                    .interval(period, TimeUnit.MILLISECONDS)
-                    .compose(RxUtil.getScheduler())  // 转换线程
-                    .subscribeWith(new BaseHttpSubscriber<Long>() {
-                        @Override
-                        public void onSuccess(Long aLong) {
-                            LogUtil.e("开始了服务消息的轮询发送！");
-                            service.startForeground((int) System.currentTimeMillis(), mNotification);
-                        }
-
-                        @Override
-                        public void onFailure(BaseException e) {
-                        }
-                    });
+                Message message = mHandler.obtainMessage();
+                message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;
+                message.arg1 = id;
+                mHandler.sendMessage(message);
+            } else {
+                LogUtil.e("发送通知的id不能为0！");
+            }
         }
     }
 
@@ -388,11 +405,41 @@ public class NotificationUtil {
      * 停止轮询服务的发送
      */
     public void stopLoopForeground() {
-        if (mLoopSubscribe != null) {
-            if (!mLoopSubscribe.isDisposed()) {
-                mLoopSubscribe.dispose();
-            }
-        }
+        mHandler.removeCallbacksAndMessages(null);
     }
+
+    @SuppressLint("HandlerLeak")
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            // 先停止之前的消息发送，避免数据的快速轮询
+            stopLoopForeground();
+
+            if (mService != null) {
+                int id = msg.arg1;
+
+                switch (msg.what) {
+                    case CODE_WHAT_SEND_START_FOREGROUND:
+                        LogUtil.e("开始了服务消息的单独发送！");
+                        mService.startForeground(id, mNotification);
+
+                        break;
+
+                    case CODE_WHAT_SEND_START_FOREGROUND_LOOP:
+                        LogUtil.e("开始了服务消息的轮询发送！");
+                        mService.startForeground(id, mNotification);
+
+                        Message message = mHandler.obtainMessage();
+                        message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;
+                        message.arg1 = id;
+                        mHandler.sendMessageDelayed(message, mIntervalTime);
+                        break;
+                }
+            }
+
+        }
+    };
 
 }
