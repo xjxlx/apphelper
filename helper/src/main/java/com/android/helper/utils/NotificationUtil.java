@@ -49,6 +49,7 @@ public class NotificationUtil {
     private String mContentTitle;          // 消息标题头
     private String mContentText;           // 消息内容
     private int mContentSmallIcon;         // 消息的图标
+    private int mNotificationNumber;       // 消息的数量
     private PendingIntent pendingIntent;
 
     /**
@@ -154,6 +155,11 @@ public class NotificationUtil {
         return util;
     }
 
+    public NotificationUtil setNumber(int number) {
+        this.mNotificationNumber = number;
+        return util;
+    }
+
     /**
      * @param layoutId 布局的资源
      * @return 设置消息的通知栏布局
@@ -207,6 +213,11 @@ public class NotificationUtil {
                 // 消息的声音
                 if (mContentSound != null) {
                     builder.setSound(mContentSound);
+                }
+
+                // 设置消息的数量
+                if (mNotificationNumber > 0) {
+                    builder.setNumber(mNotificationNumber);
                 }
 
                 //点击之后的页面
@@ -285,6 +296,11 @@ public class NotificationUtil {
                 // 消息的声音
                 if (mContentSound != null) {
                     builder.setSound(mContentSound);
+                }
+
+                // 设置消息的数量
+                if (mNotificationNumber > 0) {
+                    builder.setNumber(mNotificationNumber);
                 }
 
                 //点击之后的页面
