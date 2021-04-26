@@ -41,6 +41,10 @@ public class NotificationUtil {
      * handler的轮询发送
      */
     public static final int CODE_WHAT_SEND_START_FOREGROUND_LOOP = CODE_WHAT_SEND_START_FOREGROUND + 1;
+    /**
+     * 跳转activity的请求码
+     */
+    public static final int CODE_REQUEST_ACTIVITY = CODE_WHAT_SEND_START_FOREGROUND_LOOP + 1;
 
     private final Context mContext;
     @SuppressLint("StaticFieldLeak")
@@ -308,7 +312,7 @@ public class NotificationUtil {
             } else {    // 当SDK大于26的时候
 
                 // 渠道对象
-                NotificationChannel mChannel = new NotificationChannel(channelId, mChannelName, mNotificationLevel);
+                NotificationChannel mChannel = new NotificationChannel(channelId, mChannelName, NotificationManager.IMPORTANCE_HIGH);
 
                 if (TextUtils.isEmpty(mChannelDescription)) {
                     // 默认的渠道描述
@@ -472,18 +476,19 @@ public class NotificationUtil {
     /**
      * 跳转通知的设置页面
      */
-    public void goToSetNotify(Context context) {
+    public void goToSetNotify(Activity context) {
         if (Build.VERSION.SDK_INT >= 26) {
             Intent intent = new Intent();
             intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
             context.startActivity(intent);
+            context.startActivityForResult(intent, CODE_REQUEST_ACTIVITY);
         } else {
             Intent intent = new Intent();
             intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
             intent.putExtra("app_package", context.getApplicationContext().getPackageName());
             intent.putExtra("app_uid", context.getApplicationInfo().uid);
-            context.startActivity(intent);
+            context.startActivityForResult(intent, CODE_REQUEST_ACTIVITY);
         }
     }
 

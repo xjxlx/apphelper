@@ -47,7 +47,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     private AudioServiceConnection connection;
     private boolean mBindService;
-    private final Context mContext;
+    private final Activity mContext;
     private Intent intent;
     @SuppressLint("StaticFieldLeak")
     private static AudioService.AudioBinder mAudioBinder;
@@ -75,7 +75,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     private RemoteViews mRemoteViews;
     private AudioService mAudioService;     // 音乐播放器的服务类
 
-    public AudioPlayerUtil(Context context) {
+    public AudioPlayerUtil(Activity context) {
         this.mContext = context;
     }
 
@@ -502,7 +502,6 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         if (mNotificationUtil != null) {
             mNotificationUtil.startLoopForeground(1, 5000, mAudioService);
         }
-
     }
 
     @Override
@@ -524,7 +523,6 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         if (mNotificationUtil != null) {
             mNotificationUtil.startForeground(1, mAudioService);
         }
-
     }
 
     @Override
@@ -709,4 +707,5 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         LogUtil.e("当前的角标为：" + mAudioPosition);
         return mAudioPosition;
     }
+
 }
