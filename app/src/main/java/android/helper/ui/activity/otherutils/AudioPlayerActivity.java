@@ -5,22 +5,27 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.helper.R;
 import android.helper.ui.activity.java.JavaMapActivity;
 import android.os.Build;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.android.helper.base.BaseTitleActivity;
+import com.android.helper.utils.AssetsUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
+import com.android.helper.utils.ToastUtil;
 import com.android.helper.utils.media.audio.AudioConstant;
+import com.android.helper.utils.media.audio.AudioEntity;
 import com.android.helper.utils.media.audio.AudioPlayerCallBackListener;
 import com.android.helper.utils.media.audio.AudioPlayerUtil;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.List;
 
 /**
  * 音频播放工具类
@@ -36,11 +41,17 @@ public class AudioPlayerActivity extends BaseTitleActivity {
     private android.widget.ImageView mIvStart;
 
     private AudioPlayerUtil playerUtil;
-    private String url = "http://dlfile.buddyeng.cn/sv/316606-177bd6adfb0/316606-177bd6adfb0.mp3";
+    private String url = "http://file.jollyeng.com/anims/201906/1560665673.mp3";
 
     private final AudioPlayerCallBackListener audioPlayerCallBackListener = new AudioPlayerCallBackListener() {
         public void onComplete() {
             playerUtil.setResource(url);
+        }
+
+        @Override
+        public void onNotificationCallInfo(int position, AudioEntity audioEntity) {
+            super.onNotificationCallInfo(position, audioEntity);
+            ToastUtil.show("当前返回的数据对象的角标为：" + position + "   数据对象为：" + audioEntity.toString());
         }
     };
     private NotificationManager manager;
@@ -72,6 +83,15 @@ public class AudioPlayerActivity extends BaseTitleActivity {
         super.initData();
         LogUtil.e(AudioConstant.TAG, "initData");
 
+        String json = AssetsUtil.getInstance().getJsonForAssets(mContext, "Audio.json");
+
+        Gson gson = new Gson();
+
+        List<AudioEntity> list = gson.fromJson(json, new TypeToken<List<AudioEntity>>() {
+        }.getType());
+
+        LogUtil.e("list:" + list);
+
         playerUtil = new AudioPlayerUtil(mContext);
         playerUtil.bindService(success -> {
             playerUtil.autoPlayer(false);
@@ -82,6 +102,7 @@ public class AudioPlayerActivity extends BaseTitleActivity {
             playerUtil.setNotificationSmallIcon(R.mipmap.ic_launcher);
             playerUtil.setPendingIntentActivity(JavaMapActivity.class);
             playerUtil.setNotificationIcon(R.drawable.icon_music_start, R.drawable.icon_music_pause, R.drawable.icon_music_left, R.drawable.icon_music_right);
+            playerUtil.setNotificationList(list);
             playerUtil.setAudioCallBackListener(audioPlayerCallBackListener);
         });
     }
@@ -102,14 +123,12 @@ public class AudioPlayerActivity extends BaseTitleActivity {
                 break;
 
             case R.id.btn_stop:
-//                playerUtil.stop();
                 NotificationUtil notificationUti = NotificationUtil.getInstance(mContext);
                 boolean openNotify = notificationUti.checkOpenNotify(mContext);
                 LogUtil.e("是否有悬浮通知的权限：" + openNotify);
                 if (openNotify) {
                     notificationUti.goToSetNotify(mContext);
                 }
-
                 break;
         }
     }
@@ -176,9 +195,4 @@ public class AudioPlayerActivity extends BaseTitleActivity {
         manager.notify(17, notification);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-    }
 }

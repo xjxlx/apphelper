@@ -66,4 +66,8 @@ public class AudioPlayerCallBackListener {
 
     }
 
+    public void onNotificationCallInfo(int position, AudioEntity audioEntity) {
+
+    }
+
 }

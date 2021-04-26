@@ -7,33 +7,33 @@ import com.android.helper.base.BaseEntity;
  */
 public class AudioEntity extends BaseEntity {
 
-    private String url;      // 音频的路径地址
-    private String image;   // 音频对用的图片
-    private String title;   // 音频对应的标题
+    private String audio;      // 音频的路径地址
+    private String cover;   // 音频对用的图片
+    private String name;   // 音频对应的标题
     private String id;      // 音频对应的id
 
-    public String getUrl() {
-        return url;
+    public String getAudio() {
+        return audio;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setAudio(String audio) {
+        this.audio = audio;
     }
 
-    public String getImage() {
-        return image;
+    public String getCover() {
+        return cover;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getId() {
@@ -47,9 +47,9 @@ public class AudioEntity extends BaseEntity {
     @Override
     public String toString() {
         return "AudioEntity{" +
-                "url='" + url + '\'' +
-                ", image='" + image + '\'' +
-                ", title='" + title + '\'' +
+                "audio='" + audio + '\'' +
+                ", cover='" + cover + '\'' +
+                ", name='" + name + '\'' +
                 ", id='" + id + '\'' +
                 '}';
     }

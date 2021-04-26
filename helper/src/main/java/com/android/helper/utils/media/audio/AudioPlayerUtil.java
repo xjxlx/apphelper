@@ -71,6 +71,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     private Class<? extends Activity> mPendingIntentActivity; // 点击【悬浮按钮通知】或者【锁屏通知】或者【状态栏】跳转的页面
     private NotificationUtil mNotificationUtil;
     private AudioReceiver mAudioReceiver;
+    private int mNotificationLoopInterVal = 10000;// 消息轮训的时间，默认间隔是10秒
     private int mAudioPosition = -1;             // 消息通知栏当前按播放音频的角标,默认的值是-1
     private RemoteViews mRemoteViews;
     private AudioService mAudioService;     // 音乐播放器的服务类
@@ -181,6 +182,13 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         mCallBackListener = null;
         mAudioPath = null;
         mAutoPlayer = false;
+    }
+
+    /**
+     * 轮询间隔的时间
+     */
+    public void setLoopInterval(int loopInterval) {
+        this.mNotificationLoopInterVal = loopInterval;
     }
 
     class AudioServiceConnection implements ServiceConnection {
@@ -474,8 +482,15 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             mCallBackListener.onStart();
         }
 
+        setNotificationInfo();
+    }
+
+    /**
+     * 设置消息通知的具体数据
+     */
+    private void setNotificationInfo() {
         // 获取当前view的角标
-        mAudioPosition = getCurrentPositionForUrl();
+        getCurrentInfo();
 
         // 更改view的图标
         if (mRemoteViews != null) {
@@ -486,6 +501,11 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                 BitmapUtil.getBitmapForService(mContext, mNotificationImage, (successful, tag, bitmap) -> {
                     if (tag != null && tag.equals(BitmapUtil.STATUS_SUCCESS)) {
                         mRemoteViews.setImageViewBitmap(R.id.iv_launcher, bitmap);
+
+                        // 发送间隔的轮询
+                        if (mNotificationUtil != null) {
+                            mNotificationUtil.startForeground(1, mAudioService);
+                        }
                     }
                 });
             }
@@ -500,7 +520,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
         // 发送间隔的轮询
         if (mNotificationUtil != null) {
-            mNotificationUtil.startLoopForeground(1, 5000, mAudioService);
+            mNotificationUtil.startLoopForeground(1, mNotificationLoopInterVal, mAudioService);
         }
     }
 
@@ -580,6 +600,8 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     public void setNotificationList(List<AudioEntity> list) {
         mAudioList = list;
+        // 首次拿到数据也是需要设置一下的
+        setNotificationInfo();
     }
 
     public void setNotificationSmallIcon(int smallIcon) {
@@ -642,7 +664,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
                 AudioEntity audioEntity = mAudioList.get(mAudioPosition);
                 if (audioEntity != null) {
-                    String url = audioEntity.getUrl();
+                    String url = audioEntity.getAudio();
                     if (!TextUtils.isEmpty(url)) {
                         mAudioPath = url;
                         setResource(mAudioPath);
@@ -672,7 +694,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
                 AudioEntity audioEntity = mAudioList.get(mAudioPosition);
                 if (audioEntity != null) {
-                    String url = audioEntity.getUrl();
+                    String url = audioEntity.getAudio();
                     if (!TextUtils.isEmpty(url)) {
                         mAudioPath = url;
                         setResource(mAudioPath);
@@ -688,24 +710,29 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     }
 
     /**
-     * @return 获取当前音频播放对应的角标
+     * 获取当前音频播放对应的角信息
      */
-    public int getCurrentPositionForUrl() {
+    public void getCurrentInfo() {
         mAudioPosition = -1;
         if ((mAudioList != null) && (mAudioList.size() > 0)) {
             for (int i = 0; i < mAudioList.size(); i++) {
                 AudioEntity audioEntity = mAudioList.get(i);
                 if (audioEntity != null) {
-                    String ur = audioEntity.getUrl();
+                    String ur = audioEntity.getAudio();
                     if (TextUtils.equals(ur, mAudioPath)) {
                         mAudioPosition = i;
-                        return mAudioPosition;
+                        this.mNotificationImage = audioEntity.getCover();
+                        this.mNotificationTitle = audioEntity.getName();
+
+                        // 把当前数据的对象返回出去
+                        if (mCallBackListener != null) {
+                            mCallBackListener.onNotificationCallInfo(i, audioEntity);
+                        }
+                        break;
                     }
                 }
             }
         }
-        LogUtil.e("当前的角标为：" + mAudioPosition);
-        return mAudioPosition;
+        LogUtil.e("当前的角标为：" + mAudioPosition + "  ---> mNotificationImage:" + mNotificationImage + "   mNotificationTitle:" + mNotificationTitle);
     }
-
 }
