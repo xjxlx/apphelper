@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,7 +10,7 @@
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:adjustViewBounds="true"
-        android:src="@drawable/abc" />
+        android:background="@color/white" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,8 +29,8 @@
             android:ellipsize="end"
             android:gravity="center"
             android:lines="1"
-            android:text="这个是标题"
-            android:textColor="#775588" />
+            android:textColor="#775588"
+            tools:text="默认的标题" />
 
         <RelativeLayout
             android:id="@+id/rl_control"
@@ -45,23 +46,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/icon_music_left" />
+                android:layout_centerVertical="true" />
+            <!--android:src="@drawable/icon_music_left"-->
 
             <ImageView
                 android:id="@+id/iv_start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:src="@drawable/icon_music_start" />
+                android:layout_centerInParent="true" />
+            <!--android:src="@drawable/icon_music_start"-->
 
             <ImageView
                 android:id="@+id/iv_to_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/icon_music_right" />
+                android:layout_centerVertical="true" />
+            <!--android:src="@drawable/icon_music_right"-->
 
         </RelativeLayout>
 

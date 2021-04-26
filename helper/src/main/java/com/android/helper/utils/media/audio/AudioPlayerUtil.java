@@ -66,6 +66,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     private String mNotificationImage;      // 消息通知栏左侧的图标
     private String mNotificationTitle;      // 消息通知栏上方的标题
+    private int mNotificationSmallIcon;     // 设置小标题
     private List<AudioEntity> mAudioList;   // 消息通知栏使用到的数据列表
     private Class<? extends Activity> mPendingIntentActivity; // 点击【悬浮按钮通知】或者【锁屏通知】或者【状态栏】跳转的页面
     private NotificationUtil mNotificationUtil;
@@ -229,10 +230,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                         if (mNotificationUtil == null) {
                             mNotificationUtil = NotificationUtil.getInstance(mContext);
                             mNotificationUtil
-                                    .setTickerText("首次出现在通知栏")
-                                    .setContentTitle("消息通知栏")
-                                    .setContentText("消息的内容")
-                                    .setSmallIcon(R.drawable.icon_left_right)
+                                    .setSmallIcon(mNotificationSmallIcon)
                                     .setLockScreenVisibility(true)
                                     .setNotificationLevel(Notification.PRIORITY_DEFAULT)
                                     .setActivity(mPendingIntentActivity)
@@ -584,6 +582,10 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     public void setNotificationList(List<AudioEntity> list) {
         mAudioList = list;
+    }
+
+    public void setNotificationSmallIcon(int smallIcon) {
+        this.mNotificationSmallIcon = smallIcon;
     }
 
     public void setPendingIntentActivity(Class<? extends Activity> cls) {

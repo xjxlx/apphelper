@@ -77,6 +77,7 @@ public class AudioPlayerActivity extends BaseTitleActivity {
             playerUtil.setSeekBarProgressTime(mTvLeft);
             playerUtil.setSeekBarTotalTime(mTvRight);
             playerUtil.setStartButton(mIvStart);
+            playerUtil.setNotificationSmallIcon(R.mipmap.ic_launcher);
             playerUtil.setPendingIntentActivity(JavaMapActivity.class);
             playerUtil.setNotificationIcon(R.drawable.icon_music_start, R.drawable.icon_music_pause, R.drawable.icon_music_left, R.drawable.icon_music_right);
             playerUtil.setAudioCallBackListener(audioPlayerCallBackListener);
