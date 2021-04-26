@@ -2,6 +2,7 @@ package android.helper.ui.activity.otherutils;
 
 import android.annotation.SuppressLint;
 import android.helper.R;
+import android.helper.ui.activity.java.JavaMapActivity;
 import android.view.View;
 
 import com.android.helper.base.BaseTitleActivity;
@@ -66,6 +67,7 @@ public class AudioPlayerActivity extends BaseTitleActivity {
             playerUtil.setSeekBarProgressTime(mTvLeft);
             playerUtil.setSeekBarTotalTime(mTvRight);
             playerUtil.setStartButton(mIvStart);
+            playerUtil.setPendingIntentActivity(JavaMapActivity.class);
             playerUtil.setNotificationIcon(R.drawable.icon_music_start, R.drawable.icon_music_pause, R.drawable.icon_music_left, R.drawable.icon_music_right);
             playerUtil.setAudioCallBackListener(audioPlayerCallBackListener);
         });

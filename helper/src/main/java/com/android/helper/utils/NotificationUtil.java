@@ -178,7 +178,8 @@ public class NotificationUtil {
     }
 
     /**
-     * @param level 消息通知的等级，8.0以下使用 {@link Notification#PRIORITY_HIGH } ，8.0以上使用 {@link NotificationManager#IMPORTANCE_HIGH }去设置
+     * @param level 消息通知的等级，7.0以下使用 {@link Notification#PRIORITY_HIGH } ，7.0以上使用 {@link NotificationManager#IMPORTANCE_HIGH }去设置
+     * @RequiresApi(api = Build.VERSION_CODES.N)  7.0 以上使用
      */
     public NotificationUtil setNotificationLevel(int level) {
         this.mNotificationLevel = level;
@@ -350,11 +351,9 @@ public class NotificationUtil {
                     builder.setContentIntent(pendingIntent);
                 }
 
-                //不设置此项不会悬挂,false 不会出现悬挂
-                Intent intent = new Intent();
-
+                // 悬浮通知
                 if (pendingIntent != null) {
-                    builder.setFullScreenIntent(null, true);
+                    builder.setFullScreenIntent(pendingIntent, true);
                 }
 
                 mNotification =
@@ -448,6 +447,7 @@ public class NotificationUtil {
      */
     public void stopLoopForeground() {
         mHandler.removeCallbacksAndMessages(null);
+        LogUtil.e("停止了轮训消息的发送！");
     }
 
     @SuppressLint("HandlerLeak")

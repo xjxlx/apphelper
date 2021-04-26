@@ -1,26 +1,42 @@
 package com.android.helper.utils.media.audio;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.View;
+import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 
+import com.android.helper.R;
+import com.android.helper.utils.BitmapUtil;
 import com.android.helper.utils.DateUtil;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.NotificationUtil;
 import com.android.helper.utils.ServiceUtil;
 import com.android.helper.utils.TextViewUtil;
 
 import java.util.List;
 
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_LEFT;
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_PAUSE;
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_RIGHT;
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_START;
+import static com.android.helper.utils.media.audio.AudioConstant.CODE_SEND_BROADCAST_RECEIVER;
 import static com.android.helper.utils.media.audio.AudioConstant.STATUS_ERROR;
 import static com.android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
 
@@ -31,7 +47,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     private AudioServiceConnection connection;
     private boolean mBindService;
-    private final Context context;
+    private final Context mContext;
     private Intent intent;
     @SuppressLint("StaticFieldLeak")
     private static AudioService.AudioBinder mAudioBinder;
@@ -51,9 +67,15 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     private String mNotificationImage;      // 消息通知栏左侧的图标
     private String mNotificationTitle;      // 消息通知栏上方的标题
     private List<AudioEntity> mAudioList;   // 消息通知栏使用到的数据列表
+    private Class<? extends Activity> mPendingIntentActivity; // 点击【悬浮按钮通知】或者【锁屏通知】或者【状态栏】跳转的页面
+    private NotificationUtil mNotificationUtil;
+    private AudioReceiver mAudioReceiver;
+    private int mAudioPosition = -1;             // 消息通知栏当前按播放音频的角标,默认的值是-1
+    private RemoteViews mRemoteViews;
+    private AudioService mAudioService;     // 音乐播放器的服务类
 
     public AudioPlayerUtil(Context context) {
-        this.context = context;
+        this.mContext = context;
     }
 
     /**
@@ -63,21 +85,21 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         this.mBindServiceListener = bindServiceListener;
         LogUtil.e(AudioConstant.TAG, "bindService--->开始绑定服务！");
 
-        intent = new Intent(context, AudioService.class);
+        intent = new Intent(mContext, AudioService.class);
         if (connection == null) {
             connection = new AudioServiceConnection();
         }
 
         // 启动后台服务
         try {
-            ServiceUtil.startService(context, intent);
+            ServiceUtil.startService(mContext, intent);
         } catch (Exception e) {
             LogUtil.e("开启服务失败:" + e.getMessage());
         }
 
         // 绑定前台的服务,禁止冲洗请的绑定
         if (!mBindService) {
-            mBindService = context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
+            mBindService = mContext.bindService(intent, connection, Context.BIND_AUTO_CREATE);
         }
         LogUtil.e(AudioConstant.TAG, "bindService--->后台服务绑定成功：" + mBindService);
     }
@@ -87,7 +109,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
      */
     public void unBindService() {
         if (mBindService) {
-            context.unbindService(connection);
+            mContext.unbindService(connection);
             mBindService = false;
         }
     }
@@ -123,7 +145,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     public void stop() {
         if (mAudioBinder != null) {
-            mAudioBinder.stop();
+            boolean stop = mAudioBinder.stop();
         }
     }
 
@@ -135,8 +157,19 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             unBindService();
         }
 
+        // 解除注册广播接收者
+        if (mAudioReceiver != null) {
+            mContext.unregisterReceiver(mAudioReceiver);
+            LogUtil.e("解除了动态广播的注册！");
+        }
+
+        // 停止间隔的轮询
+        if (mNotificationUtil != null) {
+            mNotificationUtil.stopLoopForeground();
+        }
+
         // 停止后台的服务
-        context.stopService(intent);
+        mContext.stopService(intent);
         mAudioBinder = null;
         mBindService = false;
         mBindServiceListener = null;
@@ -152,32 +185,108 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     class AudioServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            LogUtil.e("-----@@@@@@----> onServiceConnected!");
+
             if (service instanceof AudioService.AudioBinder) {
                 mAudioBinder = (AudioService.AudioBinder) service;
                 LogUtil.e(AudioConstant.TAG, "onServiceConnected--->服务回调成功：" + (mAudioBinder));
 
+                // 生命周期的回调
+                if (AudioPlayerUtil.this.mBindServiceListener != null) {
+                    AudioPlayerUtil.this.mBindServiceListener.bindResult(mBindService);
+                }
+
                 if (mAudioBinder != null) {
-                    // 生命周期的回调
-                    if (AudioPlayerUtil.this.mBindServiceListener != null) {
-                        AudioPlayerUtil.this.mBindServiceListener.bindResult(mBindService);
-                    }
+                    mAudioService = mAudioBinder.getService();
 
                     mAudioBinder.setAudioCallBackListener(AudioPlayerUtil.this);
 
                     setSeekBar(mSeekBar);
                     setStartButton(mStartButton);
 
-                    // 设置notification的消息
-                    mAudioBinder.setNotificationIcon(mNotificationStart, mNotificationPause, mNotificationLeft, mNotificationRight);
-                    mAudioBinder.setNotificationMessage(mNotificationImage, mNotificationTitle);
-                    mAudioBinder.setNotificationList(mAudioList);
-                }
+                    // 绑定成功后自动播放
+                    if (mAutoPlayer) {
+                        LogUtil.e(AudioConstant.TAG, "onServiceConnected--->服务回调成功,开始自动播放！");
+                        if (!TextUtils.isEmpty(mAudioPath)) {
+                            setResource(mAudioPath);
+                        }
+                    }
 
-                // 绑定成功后自动播放
-                if (mAutoPlayer) {
-                    LogUtil.e(AudioConstant.TAG, "onServiceConnected--->服务回调成功,开始自动播放！");
-                    if (!TextUtils.isEmpty(mAudioPath)) {
-                        setResource(mAudioPath);
+                    // 动态注册广播接收者
+                    if (mAudioReceiver == null) {
+                        mAudioReceiver = new AudioReceiver();
+                        IntentFilter intentFilter = new IntentFilter();
+                        intentFilter.addAction(AudioConstant.ACTION_START);
+                        intentFilter.addAction(AudioConstant.ACTION_PAUSE);
+                        intentFilter.addAction(AudioConstant.ACTION_LEFT);
+                        intentFilter.addAction(AudioConstant.ACTION_RIGHT);
+                        // 注册
+                        mContext.registerReceiver(mAudioReceiver, intentFilter);
+                    }
+
+                    // 在数据回调成功的时候去创建消息通知工具
+                    try {
+                        if (mNotificationUtil == null) {
+                            mNotificationUtil = NotificationUtil.getInstance(mContext);
+                            mNotificationUtil
+                                    .setTickerText("首次出现在通知栏")
+                                    .setContentTitle("消息通知栏")
+                                    .setContentText("消息的内容")
+                                    .setSmallIcon(R.drawable.icon_left_right)
+                                    .setLockScreenVisibility(true)
+                                    .setActivity(mPendingIntentActivity)
+                                    .setNotificationLevel(NotificationManager.IMPORTANCE_MAX)
+                                    .setRemoteView(R.layout.notification_audio, (view, remoteViews) -> {
+                                        if (remoteViews != null) {
+                                            AudioPlayerUtil.this.mRemoteViews = remoteViews;
+
+                                            // 左侧的按钮
+                                            if (mNotificationLeft != 0) {
+                                                remoteViews.setImageViewResource(R.id.iv_to_left, mNotificationLeft);
+                                            }
+
+                                            // 中间的按钮
+                                            if (mAudioBinder.isPlaying()) {
+                                                if (mNotificationPause != 0) {
+                                                    remoteViews.setImageViewResource(R.id.iv_start, mNotificationPause);
+                                                }
+                                            } else {
+                                                if (mNotificationStart != 0) {
+                                                    remoteViews.setImageViewResource(R.id.iv_start, mNotificationStart);
+                                                }
+                                            }
+
+                                            // 右侧的按钮
+                                            if (mNotificationRight != 0) {
+                                                remoteViews.setImageViewResource(R.id.iv_to_right, mNotificationRight);
+                                            }
+
+                                            // 播放按钮点击事件的处理
+                                            Intent intentStart = new Intent();
+                                            intentStart.setAction(ACTION_PAUSE);
+                                            intentStart.setAction(ACTION_START);
+                                            PendingIntent btPendingIntentStart = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentStart, PendingIntent.FLAG_UPDATE_CURRENT);
+                                            remoteViews.setOnClickPendingIntent(R.id.iv_start, btPendingIntentStart);
+
+                                            // 左侧按钮点击事件的处理
+                                            Intent intentLeft = new Intent();
+                                            intentLeft.setAction(ACTION_LEFT);
+                                            PendingIntent btPendingIntentLeft = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentLeft, PendingIntent.FLAG_UPDATE_CURRENT);
+                                            remoteViews.setOnClickPendingIntent(R.id.iv_to_left, btPendingIntentLeft);
+
+                                            // 左侧按钮点击事件的处理
+                                            Intent intentRight = new Intent();
+                                            intentRight.setAction(ACTION_RIGHT);
+                                            PendingIntent btPendingIntentRight = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentRight, PendingIntent.FLAG_UPDATE_CURRENT);
+                                            remoteViews.setOnClickPendingIntent(R.id.iv_to_right, btPendingIntentRight);
+                                        }
+                                    })
+                                    .createNotification()
+                                    .sendNotification(1)
+                                    .startForeground(1, mAudioService);
+                        }
+                    } catch (Exception e) {
+                        LogUtil.e("------------->:" + e.getMessage());
                     }
                 }
             }
@@ -185,7 +294,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-
+            LogUtil.e("-----@@@@@@----> onServiceDisconnected!");
         }
     }
 
@@ -361,10 +470,41 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     public void onStart() {
         super.onStart();
         LogUtil.e("onStart");
+
         switchStartButton(true);
         if (mCallBackListener != null) {
             mCallBackListener.onStart();
         }
+
+        // 获取当前view的角标
+        mAudioPosition = getCurrentPositionForUrl();
+
+        // 更改view的图标
+        if (mRemoteViews != null) {
+            mRemoteViews.setImageViewResource(R.id.iv_start, mNotificationPause);
+
+            if (!TextUtils.isEmpty(mNotificationImage)) {
+                // 左侧图片的资源
+                BitmapUtil.getBitmapForService(mContext, mNotificationImage, (successful, tag, bitmap) -> {
+                    if (tag != null && tag.equals(BitmapUtil.STATUS_SUCCESS)) {
+                        mRemoteViews.setImageViewBitmap(R.id.iv_launcher, bitmap);
+                    }
+                });
+            }
+
+            // 中间的标题头
+            if (!TextUtils.isEmpty(mNotificationTitle)) {
+                mRemoteViews.setTextViewText(R.id.tv_title, mNotificationTitle);
+                mRemoteViews.setTextColor(R.id.tv_title, Color.BLACK);
+                mRemoteViews.setTextViewTextSize(R.id.tv_title, TypedValue.COMPLEX_UNIT_SP, 16);
+            }
+        }
+
+        // 发送间隔的轮询
+        if (mNotificationUtil != null) {
+            mNotificationUtil.startLoopForeground(1, 5000, mAudioService);
+        }
+
     }
 
     @Override
@@ -375,6 +515,18 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         if (mCallBackListener != null) {
             mCallBackListener.onPause();
         }
+
+        if (mRemoteViews != null) {
+            if (mNotificationStart != 0) {
+                mRemoteViews.setImageViewResource(R.id.iv_start, mNotificationStart);
+            }
+        }
+
+        // 发送间隔的轮询
+        if (mNotificationUtil != null) {
+            mNotificationUtil.startForeground(1, mAudioService);
+        }
+
     }
 
     @Override
@@ -419,10 +571,6 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         mNotificationPause = notificationPause;
         mNotificationLeft = notificationLeft;
         mNotificationRight = notificationRight;
-
-        if (mAudioBinder != null) {
-            mAudioBinder.setNotificationIcon(notificationStart, notificationPause, notificationLeft, notificationRight);
-        }
     }
 
     /**
@@ -432,16 +580,131 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     public void setNotificationMessage(String notificationImage, String notificationTitle) {
         mNotificationImage = notificationImage;
         mNotificationTitle = notificationTitle;
-        if (mAudioBinder != null) {
-            mAudioBinder.setNotificationMessage(notificationImage, notificationTitle);
-        }
     }
 
     public void setNotificationList(List<AudioEntity> list) {
         mAudioList = list;
-        if (mAudioBinder != null) {
-            mAudioBinder.setNotificationList(list);
+    }
+
+    public void setPendingIntentActivity(Class<? extends Activity> cls) {
+        this.mPendingIntentActivity = cls;
+    }
+
+    public class AudioReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if ((intent != null) && (mAudioBinder != null)) {
+                String action = intent.getAction();
+                boolean playing = mAudioBinder.isPlaying();
+                LogUtil.e("-------------------------------->AudioReceiver ---> onReceive:" + action + "   --->player:" + playing);
+
+                switch (action) {
+                    case ACTION_START:
+                    case ACTION_PAUSE:
+
+                        if (mAudioBinder.initialized()) {
+                            if (playing) {
+                                pause();
+                            } else {
+                                start();
+                            }
+                        } else {
+                            setResource(mAudioPath);
+                        }
+
+                        break;
+
+                    case ACTION_LEFT:
+                        onPage();
+                        break;
+
+                    case ACTION_RIGHT:
+                        nextPage();
+                        break;
+
+                }
+            }
         }
     }
 
+    /**
+     * 下一曲
+     */
+    public void nextPage() {
+        LogUtil.e("播放下一首的方法");
+        if ((mAudioList != null) && (mAudioList.size() > 0)) {
+            if (mAudioPosition != -1) {
+                if (mAudioPosition < mAudioList.size() - 1) {
+                    mAudioPosition += 1;
+                } else { //无限循环
+                    mAudioPosition = 0;
+                }
+
+                AudioEntity audioEntity = mAudioList.get(mAudioPosition);
+                if (audioEntity != null) {
+                    String url = audioEntity.getUrl();
+                    if (!TextUtils.isEmpty(url)) {
+                        mAudioPath = url;
+                        setResource(mAudioPath);
+                    }
+                }
+
+            } else {
+                LogUtil.e("nextPage--->角标异常,暂停播放！");
+            }
+        } else {
+            LogUtil.e("播放下一首的方法--->集合为空");
+        }
+    }
+
+    /**
+     * 上一曲
+     */
+    public void onPage() {
+        LogUtil.e("播放上一首的方法");
+        if ((mAudioList != null) && (mAudioList.size() > 0)) {
+            if (mAudioPosition != -1) {
+                if (mAudioPosition > 0) {
+                    mAudioPosition -= 1;
+                } else { //无限循环
+                    mAudioPosition = mAudioList.size() - 1;
+                }
+
+                AudioEntity audioEntity = mAudioList.get(mAudioPosition);
+                if (audioEntity != null) {
+                    String url = audioEntity.getUrl();
+                    if (!TextUtils.isEmpty(url)) {
+                        mAudioPath = url;
+                        setResource(mAudioPath);
+                    }
+                }
+
+            } else {
+                LogUtil.e("onPage--->角标异常,暂停播放！");
+            }
+        } else {
+            LogUtil.e("播放上一首的方法--->集合为空");
+        }
+    }
+
+    /**
+     * @return 获取当前音频播放对应的角标
+     */
+    public int getCurrentPositionForUrl() {
+        mAudioPosition = -1;
+        if ((mAudioList != null) && (mAudioList.size() > 0)) {
+            for (int i = 0; i < mAudioList.size(); i++) {
+                AudioEntity audioEntity = mAudioList.get(i);
+                if (audioEntity != null) {
+                    String ur = audioEntity.getUrl();
+                    if (TextUtils.equals(ur, mAudioPath)) {
+                        mAudioPosition = i;
+                        return mAudioPosition;
+                    }
+                }
+            }
+        }
+        LogUtil.e("当前的角标为：" + mAudioPosition);
+        return mAudioPosition;
+    }
 }
