@@ -254,6 +254,11 @@ public class NotificationUtil {
                     builder.setContentIntent(pendingIntent);
                 }
 
+                // 悬浮通知
+                if (pendingIntent != null) {
+                    builder.setFullScreenIntent(pendingIntent, true);
+                }
+
                 // 设置通知的等级
                 if (mNotificationLevel == 0) {
                     mNotificationLevel = Notification.PRIORITY_HIGH;
