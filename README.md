@@ -26,6 +26,13 @@
             android:enabled="true"
             android:exported="false" />
 
+5：加入权限
+<!-- 电池优化权限 -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!--通知栏权限-->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+
+
 #### 区分平台
 
 1.  github 的地址为：{ 'https://github.com/xjxlx/appHelper' }   

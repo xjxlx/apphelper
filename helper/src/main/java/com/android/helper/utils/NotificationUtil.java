@@ -15,11 +15,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
 import androidx.annotation.DrawableRes;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.android.helper.R;
 import com.android.helper.interfaces.listener.ViewCallBackListener;
@@ -54,7 +56,7 @@ public class NotificationUtil {
     private String mContentText;           // 消息内容
     private int mContentSmallIcon;         // 消息的图标
     private int mNotificationNumber;       // 消息的数量
-    private int mNotificationLevel;        // 消息的等级
+    private int mNotificationLevel = -100;        // 消息的等级
     private boolean isLockScreenVisibility = true; // 是否打开锁屏通知,默认是打开的
     private PendingIntent pendingIntent;
 
@@ -64,15 +66,16 @@ public class NotificationUtil {
      * vibrate属性是一个长整型的数组，用于设置手机静止和振动的时长，以毫秒为单位。
      * 参数中下标为0的值表示手机静止的时长，下标为1的值表示手机振动的时长， 下标为2的值又表示手机静止的时长，以此类推。
      */
-    private final long[] vibrates = {0, 1000, 1000, 1000};
+    private final long[] vibrates = {0, 1000};
 
     private String mChannelDescription;                 // 渠道的描述
     private String mChannelName;                        // 渠道的名字
     private NotificationManager manager;
     private int mRemoteViewsLayout;                     // 状态栏布局
     private Service mService;                           // 服务类
-    private long mIntervalTime;                         // 轮询的间隔
     private ViewCallBackListener<RemoteViews> mViewCallBackListener;
+    private long mIntervalTime;                         // 轮询的间隔
+    private boolean mVibrate;                           // 震动
 
     private NotificationUtil(Context context) {
         this.mContext = context;
@@ -187,6 +190,14 @@ public class NotificationUtil {
     }
 
     /**
+     * @return 设置是否震动
+     */
+    public NotificationUtil setVibrate(boolean vibrate) {
+        this.mVibrate = vibrate;
+        return util;
+    }
+
+    /**
      * @param layoutId 布局的资源
      * @return 设置消息的通知栏布局
      */
@@ -200,14 +211,13 @@ public class NotificationUtil {
      * 创建消息的对象
      */
     public NotificationUtil createNotification() {
-
         if (mContext != null) {
-
             // 跳转的activity意图
             if (mIntentActivity != null) {
                 pendingIntent = PendingIntent.getActivity(mContext, CODE_JUMP_REQUEST, mIntentActivity, PendingIntent.FLAG_UPDATE_CURRENT);
             }
 
+            // 跳转的服务类
             if (mIntentService != null) {
                 pendingIntent = PendingIntent.getService(mContext, CODE_JUMP_REQUEST, mIntentService, PendingIntent.FLAG_UPDATE_CURRENT);
             }
@@ -215,87 +225,94 @@ public class NotificationUtil {
             // 使用用户的包名作为渠道的id，保证唯一性
             String channelId = mContext.getPackageName();
 
+            // 渠道名字
+            if (TextUtils.isEmpty(mChannelName)) {
+                // 使用app的名字作为渠道的名字，用户可以看到的通知渠道的名字.
+                mChannelName = mContext.getResources().getString(R.string.app_name);
+            }
+
+            // 构建消息通知的对象
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, channelId);
+
+            // 首次出现的提示
+            if (!TextUtils.isEmpty(mTickerText)) {
+                builder.setTicker(mTickerText);
+            }
+
+            // 消息的标题
+            if (!TextUtils.isEmpty(mContentTitle)) {
+                builder.setContentTitle(mContentTitle);
+            }
+
+            // 消息的内容
+            if (!TextUtils.isEmpty(mContentText)) {
+                builder.setContentText(mContentText);
+            }
+
+            // 消息的图标
+            if (mContentSmallIcon != 0) {
+                builder.setSmallIcon(mContentSmallIcon);
+            }
+
+            // 消息的声音
+            if (mContentSound != null) {
+                builder.setSound(mContentSound);
+            }
+
+            // 设置消息的数量
+            if (mNotificationNumber > 0) {
+                builder.setNumber(mNotificationNumber);
+            }
+
+            //点击之后的页面
+            if (pendingIntent != null) {
+                builder.setContentIntent(pendingIntent);
+            }
+
+            // 横幅通知
+            if (pendingIntent != null) {
+                builder.setFullScreenIntent(pendingIntent, true);
+            }
+
+            // 震动
+            if (mVibrate) {
+                builder.setVibrate(vibrates);
+            }
+
+            // 灯光
+            builder.setLights(Color.GREEN, 100, 100);
+
+            // 设置通知的等级
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (mNotificationLevel == -100) {
+                    mNotificationLevel = NotificationManager.IMPORTANCE_DEFAULT;
+                }
+            } else {
+                // 设置通知的等级
+                if (mNotificationLevel == -100) {
+                    mNotificationLevel = Notification.PRIORITY_DEFAULT;
+                }
+            }
+
             // 当SDK大于16且小于26的时候
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, channelId);
-
-                // 首次出现的提示
-                if (!TextUtils.isEmpty(mTickerText)) {
-                    builder.setTicker(mTickerText);
-                }
-
-                // 消息的标题
-                if (!TextUtils.isEmpty(mContentTitle)) {
-                    builder.setContentTitle(mContentTitle);
-                }
-
-                // 消息的内容
-                if (!TextUtils.isEmpty(mContentText)) {
-                    builder.setContentText(mContentText);
-                }
-
-                // 消息的图标
-                if (mContentSmallIcon != 0) {
-                    builder.setSmallIcon(mContentSmallIcon);
-                }
-
-                // 消息的声音
-                if (mContentSound != null) {
-                    builder.setSound(mContentSound);
-                }
-
-                // 设置消息的数量
-                if (mNotificationNumber > 0) {
-                    builder.setNumber(mNotificationNumber);
-                }
-
-                //点击之后的页面
-                if (pendingIntent != null) {
-                    builder.setContentIntent(pendingIntent);
-                }
-
-                // 悬浮通知
-                if (pendingIntent != null) {
-                    builder.setFullScreenIntent(pendingIntent, true);
-                }
-
-                // 设置通知的等级
-                if (mNotificationLevel == 0) {
-                    mNotificationLevel = Notification.PRIORITY_HIGH;
-                }
-
                 // 锁屏可见
                 if (isLockScreenVisibility) {
                     builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
                 }
 
-                mNotification =
-                        builder
-                                .setVibrate(vibrates) // 震动
-                                .setLights(Color.GREEN, 1000, 1000) // 灯光
-                                .setPriority(mNotificationLevel)// 设置优先级
-                                .build();
+                mNotification = builder
+                        .setPriority(mNotificationLevel)// 设置优先级
+                        .build();
 
             } else {    // 当SDK大于26的时候
 
-                CharSequence channelName = "";
-
-                // 渠道的名字，如果为空，则用app的名字
-                if (TextUtils.isEmpty(mChannelName)) {
-                    // 使用app的名字作为渠道的名字，用户可以看到的通知渠道的名字.
-                    channelName = mContext.getResources().getString(R.string.app_name);
-                }
-
-                // 设置通知的等级
-                if (mNotificationLevel == 0) {
-                    mNotificationLevel = NotificationManager.IMPORTANCE_HIGH;
-                }
                 // 渠道对象
-                NotificationChannel mChannel = new NotificationChannel(channelId, channelName, mNotificationLevel);
+                NotificationChannel mChannel = new NotificationChannel(channelId, mChannelName, mNotificationLevel);
 
                 if (TextUtils.isEmpty(mChannelDescription)) {
                     // 默认的渠道描述
-                    mChannelDescription = channelName + "的渠道描述";
+                    mChannelDescription = mChannelName + "的渠道描述";
                 }
 
                 // 消息通知的描述 , 用户可以看到的通知渠道的描述
@@ -306,10 +323,11 @@ public class NotificationUtil {
                 mChannel.setLightColor(Color.RED);
 
                 // 设置通知出现时的震动（如果 android 设备支持的话）
-                mChannel.enableVibration(true);
-                mChannel.setVibrationPattern(vibrates);
-
-                mChannel.setShowBadge(true);//显示logo
+                if (mVibrate) {
+                    mChannel.enableVibration(true);
+                    mChannel.setShowBadge(true);//显示logo
+                    mChannel.setVibrationPattern(vibrates);
+                }
 
                 // 锁屏可见
                 if (isLockScreenVisibility) {
@@ -319,68 +337,16 @@ public class NotificationUtil {
                 // 通知Manager去创建渠道
                 manager.createNotificationChannel(mChannel);
 
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, channelId);
-
-                // 首次出现的提示
-                if (!TextUtils.isEmpty(mTickerText)) {
-                    builder.setTicker(mTickerText);
-                }
-
-                // 消息的标题
-                if (!TextUtils.isEmpty(mContentTitle)) {
-                    builder.setContentTitle(mContentTitle);
-                }
-
-                // 消息的内容
-                if (!TextUtils.isEmpty(mContentText)) {
-                    builder.setContentText(mContentText);
-                }
-
-                // 消息的图标
-                if (mContentSmallIcon != 0) {
-                    builder.setSmallIcon(mContentSmallIcon);
-                }
-
-                // 消息的声音
-                if (mContentSound != null) {
-                    builder.setSound(mContentSound);
-                }
-
-                // 设置消息的数量
-                if (mNotificationNumber > 0) {
-                    builder.setNumber(mNotificationNumber);
-                }
-
-                //点击之后的页面
-                if (pendingIntent != null) {
-                    builder.setContentIntent(pendingIntent);
-                }
-
-                // 悬浮通知
-                if (pendingIntent != null) {
-                    builder.setFullScreenIntent(pendingIntent, true);
-                }
-
-                mNotification =
-                        builder
-                                .setVibrate(vibrates) // 震动
-                                .setPriority(mNotificationLevel)// 设置优先级
-                                .setLights(Color.GREEN, 100, 100) // 灯光
-                                .setChannelId(channelId)// 设置渠道
-                                .build();
+                mNotification = builder
+                        .setPriority(mNotificationLevel)// 设置优先级
+                        .setChannelId(channelId)// 设置渠道
+                        .build();
             }
 
             // 通知栏的状态布局
             if (mRemoteViewsLayout != 0) {
                 RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), mRemoteViewsLayout);
-                if (mIntentActivity != null) {
-                    pendingIntent = PendingIntent.getActivity(mContext, CODE_JUMP_REQUEST, mIntentActivity, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                    //点击图片进入页面DemoActivity2
-                    remoteViews.setOnClickPendingIntent(remoteViews.getLayoutId(), pendingIntent);
-                }
                 mNotification.contentView = remoteViews;
-
                 // 把布局回调回去
                 mViewCallBackListener.callBack(null, remoteViews);
             }
@@ -464,7 +430,7 @@ public class NotificationUtil {
             // 先停止之前的消息发送，避免数据的快速轮询
             stopLoopForeground();
 
-            if (mService != null) {
+            if ((mService != null) && (mNotification != null)) {
                 int id = msg.arg1;
 
                 switch (msg.what) {
@@ -488,5 +454,37 @@ public class NotificationUtil {
 
         }
     };
+
+    /**
+     * @return 检测是否已经打开了通知的权限
+     */
+    public boolean checkOpenNotify(Context context) {
+        boolean isOpened = false;
+        try {
+            NotificationManagerCompat from = NotificationManagerCompat.from(context);
+            isOpened = from.areNotificationsEnabled();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isOpened;
+    }
+
+    /**
+     * 跳转通知的设置页面
+     */
+    public void goToSetNotify(Context context) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            Intent intent = new Intent();
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+            context.startActivity(intent);
+        } else {
+            Intent intent = new Intent();
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", context.getApplicationContext().getPackageName());
+            intent.putExtra("app_uid", context.getApplicationInfo().uid);
+            context.startActivity(intent);
+        }
+    }
 
 }

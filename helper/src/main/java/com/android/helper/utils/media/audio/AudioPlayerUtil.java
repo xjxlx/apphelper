@@ -2,6 +2,7 @@ package com.android.helper.utils.media.audio;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -233,8 +234,8 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                                     .setContentText("消息的内容")
                                     .setSmallIcon(R.drawable.icon_left_right)
                                     .setLockScreenVisibility(true)
+                                    .setNotificationLevel(Notification.PRIORITY_DEFAULT)
                                     .setActivity(mPendingIntentActivity)
-//                                    .setNotificationLevel(NotificationManager.IMPORTANCE_MAX)
                                     .setRemoteView(R.layout.notification_audio, (view, remoteViews) -> {
                                         if (remoteViews != null) {
                                             AudioPlayerUtil.this.mRemoteViews = remoteViews;
