@@ -241,6 +241,9 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                         if (mNotificationUtil == null) {
                             mNotificationUtil = NotificationUtil.getInstance(mContext);
 
+                            // 此处无论如何都要初始化一次的，否则会nar异常
+                            initNotification();
+
                             boolean openNotify = mNotificationUtil.checkOpenNotify(mContext);
                             if (!openNotify) {
                                 DialogUtil instance = DialogUtil.getInstance();
@@ -250,11 +253,9 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                                 instance.setOnClickListener(R.id.tv_qx, v -> instance.dismiss());
                                 instance.setOnClickListener(R.id.tv_qd, v -> {
                                     instance.dismiss();
-                                    initNotification();
+                                    mNotificationUtil.goToSetNotify(mContext);
                                 });
                                 instance.show();
-                            } else {
-                                mNotificationUtil.goToSetNotify(mContext);
                             }
 
                         }
