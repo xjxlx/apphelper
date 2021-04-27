@@ -21,6 +21,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 
 import com.android.helper.R;
 import com.android.helper.utils.BitmapUtil;
@@ -29,6 +30,7 @@ import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
 import com.android.helper.utils.ServiceUtil;
 import com.android.helper.utils.TextViewUtil;
+import com.android.helper.utils.dialog.DialogUtil;
 
 import java.util.List;
 
@@ -238,60 +240,23 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                     try {
                         if (mNotificationUtil == null) {
                             mNotificationUtil = NotificationUtil.getInstance(mContext);
-                            mNotificationUtil
-                                    .setSmallIcon(mNotificationSmallIcon)
-                                    .setNotificationLevel(Notification.PRIORITY_DEFAULT)
-                                    .setActivity(mPendingIntentActivity)
-                                    .setVibrate(true)
-                                    .setChannelImportance(IMPORTANCE_LOW)
-                                    .setRemoteView(R.layout.notification_audio, (view, remoteViews) -> {
-                                        if (remoteViews != null) {
-                                            AudioPlayerUtil.this.mRemoteViews = remoteViews;
 
-                                            // 左侧的按钮
-                                            if (mNotificationLeft != 0) {
-                                                remoteViews.setImageViewResource(R.id.iv_to_left, mNotificationLeft);
-                                            }
+                            boolean openNotify = mNotificationUtil.checkOpenNotify(mContext);
+                            if (openNotify) {
+                                DialogUtil instance = DialogUtil.getInstance();
+                                instance.setContentView(mContext, R.layout.base_default_dialog);
+                                instance.setText(R.id.tv_title, "是否打开通知权限？");
+                                instance.setText(R.id.tv_msg, "如果不打开通知权限，则可能后台播放的时候会断开连接！");
+                                instance.setOnClickListener(R.id.tv_qx, v -> instance.dismiss());
+                                instance.setOnClickListener(R.id.tv_qd, v -> {
+                                    instance.dismiss();
+                                    initNotification();
+                                });
+                                instance.show();
+                            } else {
+                                mNotificationUtil.goToSetNotify(mContext);
+                            }
 
-                                            // 中间的按钮
-                                            if (mAudioBinder.isPlaying()) {
-                                                if (mNotificationPause != 0) {
-                                                    remoteViews.setImageViewResource(R.id.iv_start, mNotificationPause);
-                                                }
-                                            } else {
-                                                if (mNotificationStart != 0) {
-                                                    remoteViews.setImageViewResource(R.id.iv_start, mNotificationStart);
-                                                }
-                                            }
-
-                                            // 右侧的按钮
-                                            if (mNotificationRight != 0) {
-                                                remoteViews.setImageViewResource(R.id.iv_to_right, mNotificationRight);
-                                            }
-
-                                            // 播放按钮点击事件的处理
-                                            Intent intentStart = new Intent();
-                                            intentStart.setAction(ACTION_PAUSE);
-                                            intentStart.setAction(ACTION_START);
-                                            PendingIntent btPendingIntentStart = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentStart, PendingIntent.FLAG_UPDATE_CURRENT);
-                                            remoteViews.setOnClickPendingIntent(R.id.iv_start, btPendingIntentStart);
-
-                                            // 左侧按钮点击事件的处理
-                                            Intent intentLeft = new Intent();
-                                            intentLeft.setAction(ACTION_LEFT);
-                                            PendingIntent btPendingIntentLeft = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentLeft, PendingIntent.FLAG_UPDATE_CURRENT);
-                                            remoteViews.setOnClickPendingIntent(R.id.iv_to_left, btPendingIntentLeft);
-
-                                            // 左侧按钮点击事件的处理
-                                            Intent intentRight = new Intent();
-                                            intentRight.setAction(ACTION_RIGHT);
-                                            PendingIntent btPendingIntentRight = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentRight, PendingIntent.FLAG_UPDATE_CURRENT);
-                                            remoteViews.setOnClickPendingIntent(R.id.iv_to_right, btPendingIntentRight);
-                                        }
-                                    })
-                                    .createNotification()
-                                    .sendNotification(1)
-                                    .startForeground(1, mAudioService);
                         }
                     } catch (Exception e) {
                         LogUtil.e("------------->:" + e.getMessage());
@@ -303,6 +268,73 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             LogUtil.e("-----@@@@@@----> onServiceDisconnected!");
+        }
+    }
+
+    private void initNotification() {
+        if (mNotificationUtil != null) {
+            mNotificationUtil
+                    .setSmallIcon(mNotificationSmallIcon)
+                    .setNotificationLevel(Notification.PRIORITY_DEFAULT)
+                    .setActivity(mPendingIntentActivity)
+                    .setVibrate(true)
+                    .setChannelImportance(IMPORTANCE_LOW)
+                    .setRemoteView(R.layout.notification_audio, (view, remoteViews) -> {
+                        if (remoteViews != null) {
+                            AudioPlayerUtil.this.mRemoteViews = remoteViews;
+
+                            // 左侧的按钮
+                            if (mNotificationLeft != 0) {
+                                remoteViews.setImageViewResource(R.id.iv_to_left, mNotificationLeft);
+                            }
+
+                            // 中间的按钮
+                            if (mAudioBinder.isPlaying()) {
+                                if (mNotificationPause != 0) {
+                                    remoteViews.setImageViewResource(R.id.iv_start, mNotificationPause);
+                                }
+                            } else {
+                                if (mNotificationStart != 0) {
+                                    remoteViews.setImageViewResource(R.id.iv_start, mNotificationStart);
+                                }
+                            }
+
+                            // 右侧的按钮
+                            if (mNotificationRight != 0) {
+                                remoteViews.setImageViewResource(R.id.iv_to_right, mNotificationRight);
+                            }
+
+                            // 播放按钮点击事件的处理
+                            Intent intentStart = new Intent();
+                            intentStart.setAction(ACTION_PAUSE);
+                            intentStart.setAction(ACTION_START);
+                            PendingIntent btPendingIntentStart = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentStart, PendingIntent.FLAG_UPDATE_CURRENT);
+                            remoteViews.setOnClickPendingIntent(R.id.iv_start, btPendingIntentStart);
+
+                            // 左侧按钮点击事件的处理
+                            Intent intentLeft = new Intent();
+                            intentLeft.setAction(ACTION_LEFT);
+                            PendingIntent btPendingIntentLeft = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentLeft, PendingIntent.FLAG_UPDATE_CURRENT);
+                            remoteViews.setOnClickPendingIntent(R.id.iv_to_left, btPendingIntentLeft);
+
+                            // 左侧按钮点击事件的处理
+                            Intent intentRight = new Intent();
+                            intentRight.setAction(ACTION_RIGHT);
+                            PendingIntent btPendingIntentRight = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentRight, PendingIntent.FLAG_UPDATE_CURRENT);
+                            remoteViews.setOnClickPendingIntent(R.id.iv_to_right, btPendingIntentRight);
+                        }
+                    })
+                    .createNotification()
+                    .sendNotification(1)
+                    .startForeground(1, mAudioService);
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == NotificationUtil.CODE_REQUEST_ACTIVITY) {
+            if (mNotificationUtil.checkOpenNotify(mContext)) {
+                initNotification();
+            }
         }
     }
 

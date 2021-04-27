@@ -5,12 +5,14 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.helper.R;
 import android.helper.ui.activity.java.JavaMapActivity;
 import android.os.Build;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.android.helper.base.BaseTitleActivity;
@@ -195,4 +197,11 @@ public class AudioPlayerActivity extends BaseTitleActivity {
         manager.notify(17, notification);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (playerUtil != null) {
+            playerUtil.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 }
