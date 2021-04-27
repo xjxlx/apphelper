@@ -11,6 +11,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -55,13 +56,11 @@ public class NotificationUtil {
     // 消息对象
     private Notification mNotification;
     private String mTickerText;     //  消息设置首次出现的名字
-    private Uri mContentSound;             // 消息声音的uri
     private String mContentTitle;          // 消息标题头
     private String mContentText;           // 消息内容
     private int mContentSmallIcon;         // 消息的图标
     private int mNotificationNumber;       // 消息的数量
     private int mNotificationLevel = -100;        // 消息的等级
-    private boolean isLockScreenVisibility = true; // 是否打开锁屏通知,默认是打开的
     private PendingIntent pendingIntent;
 
     /**
@@ -74,6 +73,8 @@ public class NotificationUtil {
 
     private String mChannelDescription;                 // 渠道的描述
     private String mChannelName;                        // 渠道的名字
+    private int mChannelImportance;                     // 渠道的等级,默认是等级3，会提示声音
+
     private NotificationManager manager;
     private int mRemoteViewsLayout;                     // 状态栏布局
     private Service mService;                           // 服务类
@@ -156,16 +157,29 @@ public class NotificationUtil {
     }
 
     /**
+     * @param importance * IMPORTANCE_NONE 关闭通知
+     *                   * IMPORTANCE_MIN 开启通知，不会弹出，但没有提示音，状态栏中无显示
+     *                   * IMPORTANCE_LOW 开启通知，不会弹出，不发出提示音，状态栏中显示
+     *                   * IMPORTANCE_DEFAULT 开启通知，不会弹出，发出提示音，状态栏中显示
+     *                   * IMPORTANCE_HIGH 开启通知，会弹出，发出提示音，状态栏中显示
+     * @return 设置渠道的等级，
+     */
+    public NotificationUtil setChannelImportance(int importance) {
+        this.mChannelImportance = importance;
+        return util;
+    }
+
+    /**
      * 设置声音，使用这个方法的话，必须在资源目录下设置一个raw的目录，资源设置的话，也需要R.raw.xx,例如： R.raw.tougong
      *
      * @param sound 声音的路径，使用
      */
-    public NotificationUtil setSound(@DrawableRes int sound) {
+    private NotificationUtil setSound(@DrawableRes int sound) {
         if (mContext != null) {
             // 自定义声音
             Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + mContext.getPackageName() + "/" + sound);
             if (uri != null) {
-                this.mContentSound = uri;
+
             }
         }
         return util;
@@ -173,14 +187,6 @@ public class NotificationUtil {
 
     public NotificationUtil setNumber(int number) {
         this.mNotificationNumber = number;
-        return util;
-    }
-
-    /**
-     * @return 是否锁屏可见，true：可见，false：不可见，默认可见
-     */
-    public NotificationUtil setLockScreenVisibility(boolean lockScreenVisibility) {
-        this.isLockScreenVisibility = lockScreenVisibility;
         return util;
     }
 
@@ -258,10 +264,8 @@ public class NotificationUtil {
                 builder.setSmallIcon(mContentSmallIcon);
             }
 
-            // 消息的声音
-            if (mContentSound != null) {
-                builder.setSound(mContentSound);
-            }
+            // 消息的声音、灯光、震动
+            builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE);
 
             // 设置消息的数量
             if (mNotificationNumber > 0) {
@@ -278,14 +282,6 @@ public class NotificationUtil {
                 builder.setFullScreenIntent(pendingIntent, true);
             }
 
-            // 震动
-            if (mVibrate) {
-                builder.setVibrate(vibrates);
-            }
-
-            // 灯光
-            builder.setLights(Color.GREEN, 100, 100);
-
             // 设置通知的等级
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 if (mNotificationLevel == -100) {
@@ -301,9 +297,7 @@ public class NotificationUtil {
             // 当SDK大于16且小于26的时候
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 // 锁屏可见
-                if (isLockScreenVisibility) {
-                    builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-                }
+                builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
                 mNotification = builder
                         .setPriority(mNotificationLevel)// 设置优先级
@@ -311,8 +305,13 @@ public class NotificationUtil {
 
             } else {    // 当SDK大于26的时候
 
+                // 渠道的等级
+                if (mChannelImportance == 0) {
+                    mChannelImportance = NotificationManager.IMPORTANCE_MAX;
+                }
+
                 // 渠道对象
-                NotificationChannel mChannel = new NotificationChannel(channelId, mChannelName, NotificationManager.IMPORTANCE_HIGH);
+                NotificationChannel mChannel = new NotificationChannel(channelId, mChannelName, mChannelImportance);
 
                 if (TextUtils.isEmpty(mChannelDescription)) {
                     // 默认的渠道描述
@@ -334,9 +333,10 @@ public class NotificationUtil {
                 }
 
                 // 锁屏可见
-                if (isLockScreenVisibility) {
-                    mChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC); //设置锁屏可见 VISIBILITY_PUBLIC=可见
-                }
+                mChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC); //设置锁屏可见 VISIBILITY_PUBLIC=可见
+
+                // 设置声音
+                mChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), Notification.AUDIO_ATTRIBUTES_DEFAULT);
 
                 // 通知Manager去创建渠道
                 manager.createNotificationChannel(mChannel);
