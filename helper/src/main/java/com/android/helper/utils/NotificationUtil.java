@@ -477,19 +477,17 @@ public class NotificationUtil {
      * 跳转通知的设置页面
      */
     public void goToSetNotify(Activity context) {
+        Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (Build.VERSION.SDK_INT >= 26) {
-            Intent intent = new Intent();
             intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
-            context.startActivity(intent);
-            context.startActivityForResult(intent, CODE_REQUEST_ACTIVITY);
         } else {
-            Intent intent = new Intent();
             intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
             intent.putExtra("app_package", context.getApplicationContext().getPackageName());
             intent.putExtra("app_uid", context.getApplicationInfo().uid);
-            context.startActivityForResult(intent, CODE_REQUEST_ACTIVITY);
         }
+        context.startActivityForResult(intent, CODE_REQUEST_ACTIVITY);
     }
 
 }
