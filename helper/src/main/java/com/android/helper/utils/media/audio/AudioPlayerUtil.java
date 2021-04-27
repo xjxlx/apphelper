@@ -32,6 +32,7 @@ import com.android.helper.utils.TextViewUtil;
 
 import java.util.List;
 
+import static android.app.NotificationManager.IMPORTANCE_LOW;
 import static com.android.helper.utils.media.audio.AudioConstant.ACTION_LEFT;
 import static com.android.helper.utils.media.audio.AudioConstant.ACTION_PAUSE;
 import static com.android.helper.utils.media.audio.AudioConstant.ACTION_RIGHT;
@@ -239,9 +240,10 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                             mNotificationUtil = NotificationUtil.getInstance(mContext);
                             mNotificationUtil
                                     .setSmallIcon(mNotificationSmallIcon)
-                                    .setLockScreenVisibility(true)
                                     .setNotificationLevel(Notification.PRIORITY_DEFAULT)
                                     .setActivity(mPendingIntentActivity)
+                                    .setVibrate(true)
+                                    .setChannelImportance(IMPORTANCE_LOW)
                                     .setRemoteView(R.layout.notification_audio, (view, remoteViews) -> {
                                         if (remoteViews != null) {
                                             AudioPlayerUtil.this.mRemoteViews = remoteViews;
