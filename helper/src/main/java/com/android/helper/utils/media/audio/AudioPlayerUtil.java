@@ -242,7 +242,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                             mNotificationUtil = NotificationUtil.getInstance(mContext);
 
                             boolean openNotify = mNotificationUtil.checkOpenNotify(mContext);
-                            if (openNotify) {
+                            if (!openNotify) {
                                 DialogUtil instance = DialogUtil.getInstance();
                                 instance.setContentView(mContext, R.layout.base_default_dialog);
                                 instance.setText(R.id.tv_title, "是否打开通知权限？");
