@@ -134,7 +134,6 @@ public class AudioService extends Service {
 
         if (!TextUtils.equals(mAudioPath, mOldAudioPath)) {
             LogUtil.e(AudioConstant.TAG, "player--->播放地址不相同，执行后续的逻辑！");
-
             initResource();
         } else {
             // 如果路径相同的时候，才去判读当前的状态
@@ -146,6 +145,9 @@ public class AudioService extends Service {
         if (!TextUtils.isEmpty(mAudioPath)) {
             try {
                 reset();
+
+                // 清空对象
+                initialized = false;
 
                 // 初始化监听
                 initListener();
@@ -589,7 +591,6 @@ public class AudioService extends Service {
         } catch (Exception e) {
             LogUtil.e(AudioConstant.TAG, "getDuration--->异常了--->" + e.getMessage());
         }
-
         return result;
     }
 
