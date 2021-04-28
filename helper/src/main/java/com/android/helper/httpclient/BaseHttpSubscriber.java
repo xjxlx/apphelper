@@ -3,7 +3,7 @@ package com.android.helper.httpclient;
 import android.text.TextUtils;
 
 import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.NetWorkUtil;
+import com.android.helper.utils.NetworkUtil;
 
 import java.io.IOException;
 
@@ -22,9 +22,8 @@ public abstract class BaseHttpSubscriber<T> extends DisposableSubscriber<T> {
     protected void onStart() {
         super.onStart();
         // 可以在这里做一些初始化的工作，例如dialog的显示
-        boolean network = NetWorkUtil.checkNetwork();
+        boolean network = NetworkUtil.getInstance().isNetworkConnected();
         if (!network) {
-
             onError(new Exception("网络连接异常，请检查网络连接是否正常"));
 
             // 如果网络是断开的，那么久停止后续的网络请求操作

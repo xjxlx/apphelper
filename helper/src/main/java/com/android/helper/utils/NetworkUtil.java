@@ -1,4 +1,4 @@
-package com.android.helper.widget;
+package com.android.helper.utils;
 
 import android.app.Application;
 import android.content.Context;
@@ -37,7 +37,7 @@ public class NetworkUtil {
     /**
      * @return 当前网络是否连接中
      */
-    public static boolean isNetworkConnected() {
+    public boolean isNetworkConnected() {
         if (connectivityManager != null) {
             NetworkInfo wifiInfo = connectivityManager.getActiveNetworkInfo();
             if (wifiInfo != null) {
