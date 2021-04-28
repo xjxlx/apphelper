@@ -177,7 +177,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         String logFilePath = "";
         FileWriter fw = null;
         PrintWriter pw = null;
-        Context context = BaseApplication.getContext();
+        Context context = BaseApplication.getApplication();
         try {
             //判断是否挂载了SD卡
             String storageState = Environment.getExternalStorageState();
@@ -289,7 +289,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
     public PackageInfo getPackageInfo() {
         PackageInfo info = null;
         try {
-            info = BaseApplication.getContext().getPackageManager().getPackageInfo(BaseApplication.getContext().getPackageName(), 0);
+            info = BaseApplication.getApplication().getPackageManager().getPackageInfo(BaseApplication.getApplication().getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace(System.err);
         }

@@ -1,5 +1,6 @@
 package com.android.helper.app;
 
+import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
@@ -67,7 +68,7 @@ public class BaseApplication {
             Log.e("捕获系统异常信息：", e.getMessage());
         }
 
-        ScreenUtil.getScreenHeight(getContext());
+        ScreenUtil.getScreenHeight(getApplication());
         initLogger();
     }
 
@@ -86,7 +87,7 @@ public class BaseApplication {
         });
     }
 
-    public static Context getContext() {
+    public static Application getApplication() {
         if (mICommonApplication != null) {
             return mICommonApplication.getApplication();
         } else {

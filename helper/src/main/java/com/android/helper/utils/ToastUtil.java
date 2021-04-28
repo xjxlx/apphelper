@@ -34,7 +34,7 @@ public class ToastUtil {
      */
     public static void show(String text) {
         if (context == null) {
-            context = BaseApplication.getContext();
+            context = BaseApplication.getApplication();
         }
         
         if (yOffset <= 0) {
@@ -55,7 +55,7 @@ public class ToastUtil {
     public static void show(String text, int duration, int gravity, int xOffset, int yOffset) {
         
         if (context == null) {
-            context = BaseApplication.getContext();
+            context = BaseApplication.getApplication();
         }
         
         if (context == null) {

@@ -19,7 +19,7 @@ public class NetWorkUtil {
     public static boolean checkNetwork() {
         boolean isConnected = false;
 
-        Context context = BaseApplication.getContext();
+        Context context = BaseApplication.getApplication();
         if (context == null) {
             return false;
         }

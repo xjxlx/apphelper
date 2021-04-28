@@ -19,18 +19,41 @@
             exclude group: 'com.scwang.smart:refresh-layout-kernel'     
       }
 
-4.
-<!-- 音乐播放器的服务 -->
+使用步骤：
+
+1：如果使用音乐播放器的时候，必须要加入服务的配置，否则不会播放
+        <!-- 音乐播放器的服务 -->
         <service
             android:name="com.android.helper.utils.media.audio.AudioService"
             android:enabled="true"
             android:exported="false" />
 
-5：加入权限
-<!-- 电池优化权限 -->
+2：如果要收集App的异常信息的话，必须要给与应用读写的权限，否则就会导致无法正常的存入日志
+        String[] strings = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        RxPermissionsUtil permissionsUtil = new RxPermissionsUtil(mContext, strings);
+        permissionsUtil.setAllPermissionListener(new AllPermissionsListener() {
+            @Override
+            public void onRxPermissions(boolean havePermission, Permission permission) {
+                LogUtil.e("是否拥有读写权限：" + havePermission);
+            }
+        });
+
+
+3：加入对应的权限
+
+    <!-- SDK卡权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- 网络状态权限 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 电池优化权限 -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <!--通知栏权限-->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <!--设置振动， 需要添加权限-->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
 
 
 #### 区分平台

@@ -16,7 +16,7 @@ import com.android.helper.app.BaseApplication;
 public class ResourceUtil {
 
     @SuppressLint("StaticFieldLeak")
-    public static Context mContext = BaseApplication.getContext();
+    public static Context mContext = BaseApplication.getApplication();
 
     public static int getColor(@ColorRes int id) {
         int color = 0;

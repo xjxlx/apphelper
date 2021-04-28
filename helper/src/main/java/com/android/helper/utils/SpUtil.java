@@ -27,7 +27,7 @@ public class SpUtil {
     // 获取SP 对象
     private static synchronized SharedPreferences getSp() {
         if (sp == null) {
-            sp = BaseApplication.getContext().getSharedPreferences(SP_FILE_NAME, Context.MODE_PRIVATE);
+            sp = BaseApplication.getApplication().getSharedPreferences(SP_FILE_NAME, Context.MODE_PRIVATE);
         }
         return sp;
     }

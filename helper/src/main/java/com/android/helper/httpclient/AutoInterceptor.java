@@ -34,7 +34,7 @@ public class AutoInterceptor implements Interceptor {
         Request request = chain.request();
 
         if (TextUtils.isEmpty(encode)) {
-            AppUtil appUtil = new AppUtil(BaseApplication.getContext());
+            AppUtil appUtil = new AppUtil(BaseApplication.getApplication());
             String appInfo = appUtil.getAppInfo();
             encode = URLEncoder.encode(appInfo, "UTF-8");
         }

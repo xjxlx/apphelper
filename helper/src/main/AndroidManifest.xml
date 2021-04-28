@@ -2,11 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.helper">
 
+    <!-- 网络状态权限 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 电池优化权限 -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <!--通知栏权限-->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-
     <!--设置振动， 需要添加权限-->
     <uses-permission android:name="android.permission.VIBRATE" />
 
