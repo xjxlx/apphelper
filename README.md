@@ -45,6 +45,8 @@
     <!-- SDK卡权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!--前台服务的权限-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- 网络状态权限 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 电池优化权限 -->
