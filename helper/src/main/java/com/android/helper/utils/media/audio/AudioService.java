@@ -606,33 +606,14 @@ public class AudioService extends Service {
     }
 
     /**
-     * 清空资源
-     */
-    public void clear() {
-        LogUtil.e(AudioConstant.TAG, "clear--->走入了clear的方法中！");
-
-        if (mediaPlayer != null) {
-            if (initialized) {
-                if (disposableSubscriber != null) {
-                    disposableSubscriber.dispose();
-                }
-
-                stop();
-                mediaPlayer.release();
-                LogUtil.e(AudioConstant.TAG, "clear--->正常清空了mediaPlayer！");
-                mSendProgress = false;
-                STATUS_TYPE = STATUS_IDLE;
-                initialized = false;
-                mediaPlayer = null;
-            }
-        }
-
-    }
-
-    /**
      * 每隔1秒轮询一次当前的进度
      */
     public void getProgress() {
+
+        if (disposableSubscriber != null) {
+            disposableSubscriber.dispose();
+        }
+
         disposableSubscriber = Flowable.interval(1000, TimeUnit.MILLISECONDS)
                 .filter(new Predicate<Long>() {
                     @Override
@@ -680,6 +661,30 @@ public class AudioService extends Service {
 
                     }
                 });
+    }
+
+    /**
+     * 清空资源
+     */
+    public void clear() {
+        LogUtil.e(AudioConstant.TAG, "clear--->走入了clear的方法中！");
+
+        if (mediaPlayer != null) {
+            if (initialized) {
+                if (disposableSubscriber != null) {
+                    disposableSubscriber.dispose();
+                }
+
+                stop();
+                mediaPlayer.release();
+                LogUtil.e(AudioConstant.TAG, "clear--->正常清空了mediaPlayer！");
+                mSendProgress = false;
+                STATUS_TYPE = STATUS_IDLE;
+                initialized = false;
+                mediaPlayer = null;
+            }
+        }
+
     }
 
 }
