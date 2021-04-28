@@ -66,7 +66,6 @@ public class AudioPlayerActivity extends BaseTitleActivity {
     @Override
     protected void initView() {
         super.initView();
-
         setTitleContent("音乐播放器");
 
         mBtnPlayer = findViewById(R.id.btn_player);

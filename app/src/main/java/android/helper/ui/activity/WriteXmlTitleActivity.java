@@ -30,12 +30,11 @@ public class WriteXmlTitleActivity extends BaseTitleActivity {
         super.initData();
         XmlUtil xmlUtil = new XmlUtil();
         List<Float> integers = new ArrayList<>();
-        for (float i = 0; i < 500; ) {
-            i += 0.5;
+        for (float i = 0; i < 720; ) {
+            i += 1;
             integers.add(i);
         }
-
-        binding.start.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FileUtil fileUtil = new FileUtil();
@@ -48,7 +47,7 @@ public class WriteXmlTitleActivity extends BaseTitleActivity {
                 RxPermissionsUtil util = new RxPermissionsUtil(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
                 util.setSinglePermissionListener(havePermission -> {
                     if (havePermission) {
-                        xmlUtil.writeDat(file1.getAbsolutePath(), "<dimen name=\"dp_", "\">", "dp</dimen>\n", integers);
+                        xmlUtil.writeDat(file1.getAbsolutePath(), "<dimen name=\"sp_", "\">", "sp</dimen>\n", integers);
                     }
                 });
             }
