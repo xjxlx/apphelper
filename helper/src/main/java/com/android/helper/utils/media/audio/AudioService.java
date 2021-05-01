@@ -145,6 +145,7 @@ public class AudioService extends Service {
     }
 
     private void initResource() {
+        LogUtil.e(AudioConstant.TAG, "走入了initResource方法中！");
         if (!TextUtils.isEmpty(mAudioPath)) {
             try {
                 reset();
