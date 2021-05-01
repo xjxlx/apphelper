@@ -111,6 +111,7 @@ public class AudioService extends Service {
      * @param audioPath 设置播放资源
      */
     public void setResource(String audioPath) {
+        LogUtil.e(AudioConstant.TAG, "走入到setResource方法中！");
 
         if (TextUtils.isEmpty(audioPath)) {
             ToastUtil.show("播放地址不能为空！");
@@ -129,6 +130,7 @@ public class AudioService extends Service {
      */
     public void player() {
         // 清空数据
+        LogUtil.e(AudioConstant.TAG, "走入到player方法中！");
 
         mediaPlayer = getMediaPlayer();
 
@@ -137,6 +139,7 @@ public class AudioService extends Service {
             initResource();
         } else {
             // 如果路径相同的时候，才去判读当前的状态
+            LogUtil.e(AudioConstant.TAG, "play--->播放地址相同，开始去判定开始还是暂停的操作！");
             start();
         }
     }
@@ -175,6 +178,7 @@ public class AudioService extends Service {
      * 开始播放
      */
     public boolean start() {
+        LogUtil.e(AudioConstant.TAG, "走入到了start的方法中！");
         try {
             mediaPlayer = getMediaPlayer();
             if (mediaPlayer != null) {
@@ -185,6 +189,8 @@ public class AudioService extends Service {
                         // 暂停播放
                         pause();
                     } else {
+                        LogUtil.e(AudioConstant.TAG, "start--->开始播放！");
+
                         // 暂停状态或者其他状态下，直接开始
                         mediaPlayer.start();
                         STATUS_TYPE = STATUS_PLAYING;

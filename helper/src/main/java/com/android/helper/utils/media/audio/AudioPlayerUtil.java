@@ -690,6 +690,8 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     public void nextPage() {
         LogUtil.e("播放下一首的方法");
         if ((mAudioList != null) && (mAudioList.size() > 0)) {
+            LogUtil.e("播放下一首的方法--->对象不为空，数据不为空，当前的position为：" + mAudioPosition + " --->当前的url：" + mAudioPath);
+
             if (mAudioPosition != -1) {
                 if (mAudioPosition < mAudioList.size() - 1) {
                     mAudioPosition += 1;
@@ -706,6 +708,8 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                     }
                 }
 
+                LogUtil.e("播放下一首的方法--->next--->" + mAudioPosition + " --->当前的url：" + mAudioPath);
+
             } else {
                 LogUtil.e("nextPage--->角标异常,暂停播放！");
             }
@@ -720,6 +724,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     public void onPage() {
         LogUtil.e("播放上一首的方法");
         if ((mAudioList != null) && (mAudioList.size() > 0)) {
+            LogUtil.e("播放上一首的方法--->对象不为空，数据不为空，当前的position为：" + mAudioPosition + " --->当前的url：" + mAudioPath);
             if (mAudioPosition != -1) {
                 if (mAudioPosition > 0) {
                     mAudioPosition -= 1;
@@ -735,7 +740,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                         setResource(mAudioPath);
                     }
                 }
-
+                LogUtil.e("播放上一首的方法--->next--->" + mAudioPosition + " --->当前的url：" + mAudioPath);
             } else {
                 LogUtil.e("onPage--->角标异常,暂停播放！");
             }
