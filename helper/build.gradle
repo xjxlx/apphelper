@@ -79,6 +79,4 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     api 'com.github.LuckSiege.PictureSelector:picture_library:v2.6.0' // 图片选择库
     api 'com.contrarywind:Android-PickerView:4.1.9' // 日历选择器
-    implementation 'com.github.xjxlx:dimens:1.0.0.0.1'
-
 }
