@@ -21,15 +21,8 @@
         android:theme="@style/Theme.AppThem"
         tools:targetApi="n">
 
-        <activity android:name=".ui.activity.otherutils.AudioPlayerActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".test.TestWebViewActivity"></activity>
+        <activity android:name=".ui.activity.otherutils.AudioPlayerActivity" />
+        <activity android:name=".test.TestWebViewActivity" />
         <activity android:name=".test.TestWebSocketActivity" />
         <activity android:name=".test.SlidingMenuActivity">
             <intent-filter>
