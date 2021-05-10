@@ -3,28 +3,21 @@ package android.helper.widget.hm;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.helper.base.BaseView;
 import com.android.helper.utils.LogUtil;
 
-/**
- * 目标：打造一个能左右滑动的布局
- * 思路：
- * 1：因为是一层压着一层的左右滑动，所以布局继承frameLayout最合适，不用去再继承viewGroup
- * 2：因为要滑动，首先拿到上下两层布局的对象，
- */
-public class SlidingMenuLayout extends FrameLayout {
+public class TestView extends BaseView {
 
-    private final String tag = "------>:SlidingMenu";
+    private final String tag = "------>:childView";
 
-    public SlidingMenuLayout(@NonNull Context context) {
+    public TestView(Context context) {
         super(context);
     }
 
-    public SlidingMenuLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public TestView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 

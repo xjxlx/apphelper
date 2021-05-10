@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/yellow_1"
     tools:context=".test.SlidingMenuActivity">
 
     <LinearLayout
@@ -59,5 +60,9 @@
             android:background="@color/blue_1" />
 
     </RelativeLayout>
+
+    <android.helper.widget.hm.TestView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </android.helper.widget.hm.SlidingMenuLayout>
