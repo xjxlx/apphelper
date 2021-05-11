@@ -26,6 +26,7 @@ import com.android.helper.utils.LogUtil;
  * 5：限制底部的view 不滑动，限制顶部的view滑动的距离
  * 6：兼容消耗滑动事件的冲突，
  * 7：手指松开的时候，如果滑动到了一半的距离，就滑动到最后，反之就滑动到最左侧
+ * 8：滑动menuView的时候，让右侧的contLayout布局也跟着滑动
  */
 public class SlidingMenuLayout extends FrameLayout {
 
@@ -42,6 +43,8 @@ public class SlidingMenuLayout extends FrameLayout {
     private ViewDragHelper mViewDragHelper;
     private float mLeftInterval;
     private float mCanScrOllHalfPosition;
+    private float mStartX;
+    private float mDX;
 
     private final ViewDragHelper.Callback mCallback = new ViewDragHelper.Callback() {
         /*
@@ -78,6 +81,24 @@ public class SlidingMenuLayout extends FrameLayout {
             // 5.1：固定住底部的view，不让底部的view滑动
             if (changedView == mMenuLayout) {
                 changedView.layout(0, 0, changedView.getRight(), changedView.getBottom());
+
+                LogUtil.e("dx:" + dx + "   dy:" + dy);
+
+                // 8:让右侧的view也跟着滑动
+                int l = (int) (mContentLayout.getLeft() + mDX);
+                if (l <= 0) {
+                    l = 0;
+                }
+
+                // todo  此处有bug
+                int t = mContentLayout.getTop() + dy;
+                int r = (int) (mContentLayout.getMeasuredWidth() + mDX);
+
+                int b = mContentLayout.getBottom() + dy;
+
+                LogUtil.e("l:" + l + "   t:" + t + "  r:" + r + "  b:" + b);
+
+                mContentLayout.layout(l, t, r, b);
             }
         }
 
@@ -191,6 +212,20 @@ public class SlidingMenuLayout extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mViewDragHelper.processTouchEvent(event);
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mStartX = event.getX();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float eventX = event.getX();
+                // 获取偏移量
+                mDX = eventX - mStartX;
+                // 把后获取的dx值赋值给前面的dx值
+                mStartX = eventX;
+                break;
+        }
+
         return true;
     }
 
