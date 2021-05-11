@@ -3,6 +3,7 @@ package android.helper.widget.hm;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -25,18 +26,22 @@ import com.android.helper.utils.LogUtil;
 public class SlidingMenuLayout extends FrameLayout {
 
     private final String tag = "------>:SlidingMenu";
+
     private LinearLayout mMenu;
     private RelativeLayout mContent;
+
     private int mMenuMeasuredWidth;
     private int mMenuMeasuredHeight;
     private int mContentMeasuredWidth;
     private int mContentMeasuredHeight;
 
     private ViewDragHelper mViewDragHelper;
+
     private final ViewDragHelper.Callback mCallback = new ViewDragHelper.Callback() {
+        // 可以滑动的view
         @Override
         public boolean tryCaptureView(@NonNull View child, int pointerId) {
-            return false;
+            return child == mMenu || child == mContent;
         }
     };
 
@@ -60,6 +65,7 @@ public class SlidingMenuLayout extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
         LogUtil.e(tag, "onMeasure");
     }
 
@@ -68,8 +74,8 @@ public class SlidingMenuLayout extends FrameLayout {
         super.onLayout(changed, left, top, right, bottom);
         LogUtil.e(tag, "onLayout");
 
-        int width = mMenu.getWidth();
-        LogUtil.e("onLayout--->mMenu的width：" + width);
+        // int width = mMenu.getWidth();
+        // LogUtil.e("onLayout--->mMenu的width：" + width);
     }
 
     @Override
@@ -92,8 +98,8 @@ public class SlidingMenuLayout extends FrameLayout {
         LogUtil.e("menu的宽：" + mMenuMeasuredWidth + " menu的高：" + mMenuMeasuredHeight);
         LogUtil.e("content的宽：" + mContentMeasuredWidth + " content的高：" + mContentMeasuredHeight);
 
-        int width = mMenu.getWidth();
-        LogUtil.e("onSizeChanged--->mMenu的width：" + width);
+        // int width = mMenu.getWidth();
+        // LogUtil.e("onSizeChanged--->mMenu的width：" + width);
     }
 
     /**
@@ -107,4 +113,14 @@ public class SlidingMenuLayout extends FrameLayout {
         mContent = findViewWithTag("content");
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return mViewDragHelper.shouldInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        mViewDragHelper.processTouchEvent(event);
+        return true;
+    }
 }

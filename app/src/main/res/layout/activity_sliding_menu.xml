@@ -7,6 +7,12 @@
     android:background="@color/yellow_1"
     tools:context=".test.SlidingMenuActivity">
 
+    <android.helper.widget.hm.TestView
+        android:id="@+id/tv_test"
+        android:layout_width="@dimen/dp_300"
+        android:layout_height="@dimen/dp_300"
+        android:background="@color/green_1" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -60,11 +66,5 @@
             android:background="@color/blue_1" />
 
     </RelativeLayout>
-
-    <android.helper.widget.hm.TestView
-        android:id="@+id/tv_test"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/green_1" />
 
 </android.helper.widget.hm.SlidingMenuLayout>
