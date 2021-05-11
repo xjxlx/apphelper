@@ -1,5 +1,6 @@
 package android.helper.widget.hm;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
@@ -22,6 +23,7 @@ import com.android.helper.utils.LogUtil;
  * 2：因为要滑动，首先拿到上下两层布局的对象，在onFinishInflate和onSizeChanged方法里面都可以，这在onFinishInflate方法中去获取
  * 3：onSizeChange方法是在最后一次测量完onMeasure方法之后走入，在这里去获取view的宽高最合适
  * 4：创建滑动对象的辅助类对象，并设置返回接口的对象
+ * 5：限制底部的view 不滑动，限制顶部的view滑动的距离
  */
 public class SlidingMenuLayout extends FrameLayout {
 
@@ -38,12 +40,44 @@ public class SlidingMenuLayout extends FrameLayout {
     private ViewDragHelper mViewDragHelper;
 
     private final ViewDragHelper.Callback mCallback = new ViewDragHelper.Callback() {
-        // 可以滑动的view
+        /*
+         * 这是一个抽象类，必须去实现，也只有在这个方法返回true的时候下面的方法才会生效
+         */
         @Override
         public boolean tryCaptureView(@NonNull View child, int pointerId) {
-            return child == mMenu || child == mContent;
+            return true;
+        }
+
+        /*
+         * 水平拖拽的时候回调的方法
+         */
+        @Override
+        public int clampViewPositionHorizontal(@NonNull View child, int left, int dx) {
+            // 5.1 --->限制Content右侧滑动的距离
+            if (left > mLeftInterval) {
+                left = (int) mLeftInterval;
+            }
+            // 5.1 --->限制Content布局左侧滑动的限制
+            if (left <= 0) {
+                left = 0;
+            }
+            return left;
+        }
+
+        /*
+         * view滑动的改变
+         */
+        @Override
+        public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
+            super.onViewPositionChanged(changedView, left, top, dx, dy);
+
+            // 5.1：固定住底部的view，不让底部的view滑动
+            if (changedView == mMenu) {
+                changedView.layout(0, 0, changedView.getRight(), changedView.getBottom());
+            }
         }
     };
+    private float mLeftInterval;
 
     public SlidingMenuLayout(@NonNull Context context) {
         super(context);
@@ -57,15 +91,13 @@ public class SlidingMenuLayout extends FrameLayout {
 
     private void initView(Context context, AttributeSet attrs) {
         LogUtil.e(tag, "SlidingMenuLayout");
-
         // 创建滑动的对象
-        mViewDragHelper = ViewDragHelper.create(this, mCallback);
+        mViewDragHelper = ViewDragHelper.create(SlidingMenuLayout.this, mCallback);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
         LogUtil.e(tag, "onMeasure");
     }
 
@@ -73,9 +105,6 @@ public class SlidingMenuLayout extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         LogUtil.e(tag, "onLayout");
-
-        // int width = mMenu.getWidth();
-        // LogUtil.e("onLayout--->mMenu的width：" + width);
     }
 
     @Override
@@ -98,8 +127,8 @@ public class SlidingMenuLayout extends FrameLayout {
         LogUtil.e("menu的宽：" + mMenuMeasuredWidth + " menu的高：" + mMenuMeasuredHeight);
         LogUtil.e("content的宽：" + mContentMeasuredWidth + " content的高：" + mContentMeasuredHeight);
 
-        // int width = mMenu.getWidth();
-        // LogUtil.e("onSizeChanged--->mMenu的width：" + width);
+        // 左侧最大的距离
+        mLeftInterval = mContentMeasuredWidth * 0.6f;
     }
 
     /**
@@ -114,10 +143,11 @@ public class SlidingMenuLayout extends FrameLayout {
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
         return mViewDragHelper.shouldInterceptTouchEvent(ev);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mViewDragHelper.processTouchEvent(event);
