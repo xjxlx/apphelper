@@ -38,6 +38,11 @@
             android:layout_marginRight="@dimen/dp_20"
             android:background="@color/yellow_1" />
 
+        <Button
+            android:id="@+id/btn_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
     <RelativeLayout
@@ -58,13 +63,22 @@
             android:textSize="@dimen/sp_30" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/tv_title"
             android:layout_marginLeft="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginRight="@dimen/dp_20"
             android:background="@color/blue_1" />
+
+        <Button
+            android:id="@+id/btn_test1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rv_list"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dp_30" />
 
     </RelativeLayout>
 

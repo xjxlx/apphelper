@@ -24,13 +24,15 @@ import com.android.helper.utils.LogUtil;
  * 3：onSizeChange方法是在最后一次测量完onMeasure方法之后走入，在这里去获取view的宽高最合适
  * 4：创建滑动对象的辅助类对象，并设置返回接口的对象
  * 5：限制底部的view 不滑动，限制顶部的view滑动的距离
+ * 6：兼容消耗滑动事件的冲突，
+ * 7：手指松开的时候，如果滑动到了一半的距离，就滑动到最后，反之就滑动到最左侧
  */
 public class SlidingMenuLayout extends FrameLayout {
 
     private final String tag = "------>:SlidingMenu";
 
-    private LinearLayout mMenu;
-    private RelativeLayout mContent;
+    private LinearLayout mMenuLayout;
+    private RelativeLayout mContentLayout;
 
     private int mMenuMeasuredWidth;
     private int mMenuMeasuredHeight;
@@ -38,6 +40,8 @@ public class SlidingMenuLayout extends FrameLayout {
     private int mContentMeasuredHeight;
 
     private ViewDragHelper mViewDragHelper;
+    private float mLeftInterval;
+    private float mCanScrOllHalfPosition;
 
     private final ViewDragHelper.Callback mCallback = new ViewDragHelper.Callback() {
         /*
@@ -72,12 +76,44 @@ public class SlidingMenuLayout extends FrameLayout {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
 
             // 5.1：固定住底部的view，不让底部的view滑动
-            if (changedView == mMenu) {
+            if (changedView == mMenuLayout) {
                 changedView.layout(0, 0, changedView.getRight(), changedView.getBottom());
             }
         }
+
+        /*
+         *只要view返回的数据大于0，就会滑动
+         */
+        @Override
+        public int getViewHorizontalDragRange(@NonNull View child) {
+            return child.getMeasuredWidth();//只要返回大于0的值就行
+        }
+
+        /**
+         *
+         * 7：手指松开时候的处理
+         */
+        @Override
+        public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
+            super.onViewReleased(releasedChild, xvel, yvel);
+
+            // 获取内容布局的左侧间距
+            int left = mContentLayout.getLeft();
+
+            LogUtil.e("left:" + left + "  mCanScrOllHalfPosition:" + mCanScrOllHalfPosition);
+            if (left >= mCanScrOllHalfPosition) {
+                // 直接滑动到最后面
+                LogUtil.e("直接滑动到最后面");
+                mViewDragHelper.settleCapturedViewAt((int) mLeftInterval, mContentLayout.getTop());
+                invalidate();
+            } else {
+                // 直接滑动到最左侧
+                mViewDragHelper.settleCapturedViewAt(0, mContentLayout.getTop());
+                invalidate();
+                LogUtil.e("直接滑动到最左侧");
+            }
+        }
     };
-    private float mLeftInterval;
 
     public SlidingMenuLayout(@NonNull Context context) {
         super(context);
@@ -120,15 +156,19 @@ public class SlidingMenuLayout extends FrameLayout {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         LogUtil.e(tag, "onSizeChanged");
-        mMenuMeasuredWidth = mMenu.getMeasuredWidth();
-        mMenuMeasuredHeight = mMenu.getMeasuredHeight();
-        mContentMeasuredWidth = mContent.getMeasuredWidth();
-        mContentMeasuredHeight = mContent.getMeasuredHeight();
+        mMenuMeasuredWidth = mMenuLayout.getMeasuredWidth();
+        mMenuMeasuredHeight = mMenuLayout.getMeasuredHeight();
+        mContentMeasuredWidth = mContentLayout.getMeasuredWidth();
+        mContentMeasuredHeight = mContentLayout.getMeasuredHeight();
         LogUtil.e("menu的宽：" + mMenuMeasuredWidth + " menu的高：" + mMenuMeasuredHeight);
         LogUtil.e("content的宽：" + mContentMeasuredWidth + " content的高：" + mContentMeasuredHeight);
 
         // 左侧最大的距离
         mLeftInterval = mContentMeasuredWidth * 0.6f;
+        // 可滑动的间距的一半的位置
+        mCanScrOllHalfPosition = mLeftInterval / 2;
+
+        LogUtil.e("mLeftInterval:" + mLeftInterval + "  mCanScrOllHalfPosition:" + mCanScrOllHalfPosition);
     }
 
     /**
@@ -138,8 +178,8 @@ public class SlidingMenuLayout extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         LogUtil.e(tag, "onFinishInflate");
-        mMenu = findViewWithTag("menu");
-        mContent = findViewWithTag("content");
+        mMenuLayout = findViewWithTag("menu");
+        mContentLayout = findViewWithTag("content");
     }
 
     @Override
@@ -152,5 +192,14 @@ public class SlidingMenuLayout extends FrameLayout {
     public boolean onTouchEvent(MotionEvent event) {
         mViewDragHelper.processTouchEvent(event);
         return true;
+    }
+
+    @Override
+    public void computeScroll() {
+        super.computeScroll();
+        // 如果动画正在进行中，就进行view的绘制
+        if ((mViewDragHelper != null) && (mViewDragHelper.continueSettling(true))) {
+            invalidate();
+        }
     }
 }
