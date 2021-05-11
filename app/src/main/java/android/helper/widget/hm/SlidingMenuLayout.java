@@ -22,10 +22,16 @@ public class SlidingMenuLayout extends FrameLayout {
 
     public SlidingMenuLayout(@NonNull Context context) {
         super(context);
+        initView(context,null);
     }
 
     public SlidingMenuLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        initView(context,attrs);
+    }
+
+    private void initView(Context context, AttributeSet attrs) {
+        LogUtil.e(tag, "SlidingMenuLayout");
     }
 
     @Override

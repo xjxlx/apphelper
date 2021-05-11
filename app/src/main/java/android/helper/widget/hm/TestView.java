@@ -28,6 +28,12 @@ public class TestView extends BaseView {
     }
 
     @Override
+    public void initView(Context context, AttributeSet attrs) {
+        super.initView(context, attrs);
+        LogUtil.e(tag, "TestView");
+    }
+
+    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         LogUtil.e(tag, "onLayout");
