@@ -204,6 +204,57 @@ public class BitmapUtil {
     }
 
     /**
+     * @param bitmap      原来的bitmap
+     * @param targetWidth 指定bitmap的宽度
+     * @return 根据一个原有的bitmap，缩放其宽度，让高度也跟着宽度的缩放而缩放，生成一个新的高度，这种情况是为了避免输入随意的数字，导致图片缩放的时候回变形
+     */
+    public static Bitmap getBitmapForMatrixScaleWidth(Bitmap bitmap, float targetWidth) {
+        Bitmap resultBitmap;
+        if (bitmap != null && targetWidth > 0) {
+            try {
+                int bitmapWidth = bitmap.getWidth();
+                int bitmapHeight = bitmap.getHeight();
+
+                // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
+                float scaleWidth = targetWidth / bitmapWidth;
+                Matrix matrix = new Matrix();
+                matrix.postScale(scaleWidth, scaleWidth);
+
+                resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
+                return resultBitmap;
+            } catch (Exception ignored) {
+                LogUtil.e("图像缩放失败！");
+            }
+        }
+        return bitmap;
+    }
+    /**
+     * @param bitmap      原来的bitmap
+     * @param targetHeight 指定bitmap的宽度
+     * @return 根据一个原有的bitmap，缩放其高度，让宽度也跟着高度的缩放而缩放，生成一个新的宽度，这种情况是为了避免输入随意的数字，导致图片缩放的时候回变形
+     */
+    public static Bitmap getBitmapForMatrixScaleHeight(Bitmap bitmap, float targetHeight) {
+        Bitmap resultBitmap;
+        if (bitmap != null && targetHeight > 0) {
+            try {
+                int bitmapWidth = bitmap.getWidth();
+                int bitmapHeight = bitmap.getHeight();
+
+                // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
+                float scaleWidth = targetHeight / bitmapHeight;
+                Matrix matrix = new Matrix();
+                matrix.postScale(scaleWidth, scaleWidth);
+
+                resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
+                return resultBitmap;
+            } catch (Exception ignored) {
+                LogUtil.e("图像缩放失败！");
+            }
+        }
+        return bitmap;
+    }
+
+    /**
      * @param context          上下文
      * @param path             图片路径
      * @param callBackListener 返回接口，msg: 开始：start，成功： success，失败：error:

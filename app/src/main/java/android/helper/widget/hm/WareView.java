@@ -38,8 +38,7 @@ public class WareView extends BaseView {
     }
 
     @Override
-    public void initView(Context context, AttributeSet attrs) {
-        super.initView(context, attrs);
+    protected void initView(Context context, AttributeSet attrs) {
 
     }
 

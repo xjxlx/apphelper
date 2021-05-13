@@ -4,9 +4,11 @@ import android.animation.FloatEvaluator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.helper.R;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.CycleInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -17,6 +19,7 @@ import androidx.customview.widget.ViewDragHelper;
 
 import com.android.helper.utils.LogUtil;
 import com.nineoldandroids.view.ViewHelper;
+import com.nineoldandroids.view.ViewPropertyAnimator;
 
 /**
  * 目标：打造一个能左右滑动的布局
@@ -125,6 +128,8 @@ public class SlidingMenuLayout extends FrameLayout {
                     LogUtil.e("直接滑动到最后面");
                     mViewDragHelper.settleCapturedViewAt((int) mLeftInterval, mContentLayout.getTop());
                     invalidate();
+
+                    executeHead();
                 } else {
                     // 直接滑动到最左侧
                     mViewDragHelper.settleCapturedViewAt(0, mContentLayout.getTop());
@@ -136,13 +141,37 @@ public class SlidingMenuLayout extends FrameLayout {
                 if (left >= mCanScrOllHalfPosition) {
                     mViewDragHelper.smoothSlideViewTo(mContentLayout, (int) mLeftInterval, mContentLayout.getTop());
                     invalidate();
+
+                    executeHead();
+
                 } else {
                     mViewDragHelper.smoothSlideViewTo(mContentLayout, 0, mContentLayout.getTop());
                     invalidate();
                 }
             }
         }
+
+        private void executeHead() {
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    ViewPropertyAnimator
+                            .animate(mHead)
+                            // 移动的距离
+                            .translationX(55f)
+                            // 设置回弹的差值器，回弹的次数是3
+                            .setInterpolator(new CycleInterpolator(3))
+                            // 持续的试驾
+                            .setDuration(2000)
+                            .start();
+
+                }
+            }, 500);
+
+        }
     };
+    private View mHead;
 
     public SlidingMenuLayout(@NonNull Context context) {
         super(context);
@@ -232,6 +261,7 @@ public class SlidingMenuLayout extends FrameLayout {
         LogUtil.e(tag, "onFinishInflate");
         mMenuLayout = findViewWithTag("menu");
         mContentLayout = findViewWithTag("content");
+        mHead = findViewById(R.id.rv_head);
     }
 
     @Override

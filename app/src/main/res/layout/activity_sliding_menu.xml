@@ -53,10 +53,19 @@
         android:tag="content"
         android:visibility="visible">
 
+        <com.android.helper.widget.RoundView
+            android:id="@+id/rv_head"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20"
+            android:layout_margin="@dimen/dp_30"
+            android:src="@drawable/abc"
+            app:rv_roundType="Circle" />
+
         <Button
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/rv_head"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/dp_20"
             android:text="我是中间的内容"
@@ -72,14 +81,6 @@
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginRight="@dimen/dp_20"
             android:background="@color/blue_1" />
-
-        <Button
-            android:id="@+id/btn_test1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/rv_list"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/dp_30" />
 
     </RelativeLayout>
 

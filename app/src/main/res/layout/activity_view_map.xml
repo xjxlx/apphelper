@@ -70,6 +70,16 @@
             style="@style/style_item_selector"
             android:text="自定义滑动按钮和水波纹效果" />
 
+        <TextView
+            android:id="@+id/tv_custom_menu"
+            style="@style/style_item_selector"
+            android:text="自定义侧滑的布局" />
+
+        <TextView
+            android:id="@+id/tv_custom_name_list"
+            style="@style/style_item_selector"
+            android:text="自定义名字的首字母列表" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

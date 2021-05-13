@@ -2,6 +2,8 @@ package com.android.helper.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorRes;
@@ -33,6 +35,17 @@ public class ResourceUtil {
             drawable = ContextCompat.getDrawable(mContext, id);
         }
         return drawable;
+    }
+
+    public static Bitmap getBitmap(@DrawableRes int id) {
+        Bitmap bitmap = null;
+        if (id != 0 && mContext != null) {
+            bitmap = BitmapFactory.decodeResource(mContext.getResources(), id);
+            if (bitmap != null) {
+                return bitmap;
+            }
+        }
+        return bitmap;
     }
 
 }
