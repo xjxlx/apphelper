@@ -68,8 +68,7 @@ public class SelectorNameList extends BaseView {
         mPaint = new Paint();
         mPaint.setColor(Color.WHITE);
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(43);
-        mPaint.setTextAlign(Paint.Align.CENTER);
+        mPaint.setTextSize(40);
 
         // 获取bitmap
         Bitmap bitmap = ResourceUtil.getBitmap(R.mipmap.icon_rad_xin);
@@ -83,7 +82,7 @@ public class SelectorNameList extends BaseView {
             float[] textSize = CustomViewUtil.getTextSize(mPaint, value);
 
             // 获取当前view发的高度
-            mTotalHeight += (textSize[1] + mPaddingTop + mPaddingBottom);
+            mTotalHeight += (textSize[1] + mPaddingTop);
 
             // 对比出最大的宽度
             int width = (int) textSize[0];
@@ -94,8 +93,8 @@ public class SelectorNameList extends BaseView {
 
         // 计算出bitmap的高度
         int bitmapHeight = mBitmap.getHeight();
-        // 获取所有的高度
-        mTotalHeight += (bitmapHeight + mPaddingTop + mPaddingBottom);
+        // 获取所有的高度  = 字的所有高度 + bitmap的高度 + bitmap上方的高度 + 字最后的底部高度
+        mTotalHeight += (bitmapHeight + mPaddingBottom + mPaddingTop);
 
         // 计算所有的宽度
         mTotalWidth += (mBitmap.getWidth() + mPaddingLeft + mPaddingRight);
@@ -127,24 +126,27 @@ public class SelectorNameList extends BaseView {
 
         float height = 0;
 
+        height += mPaddingTop;
+
         // 绘制红心
-        canvas.drawBitmap(mBitmap, mBitmapLeft, mPaddingTop, mPaint);
+        canvas.drawBitmap(mBitmap, mBitmapLeft, height, mPaint);
 
-        height += mBitmap.getHeight() + mPaddingBottom;
+        // 高度增加 bitmap的高度，和 一个paddingBottom
+        height += (mBitmap.getHeight() + mPaddingBottom);
 
-        /*
-         * 绘制文字
-         * 高度 = bitmap 的高度 + top + bottom +  每个view的高度 + top + bottom
-         */
+        height += CustomViewUtil.getBaseLine(mPaint, mIndexArr[0]);
 
-        for (String value : mIndexArr) {
+        // 绘制文字
+        for (int i = 0; i < mIndexArr.length; i++) {
+            String value = mIndexArr[i];
 
-            float textHeight = CustomViewUtil.getTextHeight(mPaint, value);
+            float[] textSize = CustomViewUtil.getTextSize(mPaint, value);
 
-            height += (textHeight + mPaddingTop);
+            // 绘制文字
+            canvas.drawText(value, (mMeasuredWidth - textSize[0]) / 2, height, mPaint);
 
-            canvas.drawText(value, mMeasuredWidth / 2, height, mPaint);
-            height += mPaddingBottom;
+            height += (mPaddingBottom + textSize[1]);
         }
+
     }
 }
