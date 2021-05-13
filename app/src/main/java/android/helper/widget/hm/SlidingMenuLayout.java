@@ -48,6 +48,7 @@ public class SlidingMenuLayout extends FrameLayout {
     private float mCanScrOllHalfPosition;
     private float mStartX;
     private float mDX;
+    private FloatEvaluator mEvaluator; //差值器
 
     private final ViewDragHelper.Callback mCallback = new ViewDragHelper.Callback() {
         /*
@@ -142,7 +143,6 @@ public class SlidingMenuLayout extends FrameLayout {
             }
         }
     };
-    private FloatEvaluator mEvaluator;
 
     public SlidingMenuLayout(@NonNull Context context) {
         super(context);
