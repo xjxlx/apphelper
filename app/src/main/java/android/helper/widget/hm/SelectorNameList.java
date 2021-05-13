@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.helper.R;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
 
@@ -147,6 +148,25 @@ public class SelectorNameList extends BaseView {
 
             height += (mPaddingBottom + textSize[1]);
         }
+    }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+
+                break;
+
+            case MotionEvent.ACTION_UP:
+
+                break;
+
+        }
+
+        return super.onTouchEvent(event);
     }
 }
