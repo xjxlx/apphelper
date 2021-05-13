@@ -112,20 +112,30 @@ public class SlidingMenuLayout extends FrameLayout {
 
             LogUtil.e("onViewReleased --->");
 
-            // 获取内容布局的左侧间距
-            int left = mContentLayout.getLeft();
-
-            LogUtil.e("left:" + left + "  mCanScrOllHalfPosition:" + mCanScrOllHalfPosition);
-            if (left >= mCanScrOllHalfPosition) {
-                // 直接滑动到最后面
-                LogUtil.e("直接滑动到最后面");
-                mViewDragHelper.settleCapturedViewAt((int) mLeftInterval, mContentLayout.getTop());
-                invalidate();
-            } else {
-                // 直接滑动到最左侧
-                mViewDragHelper.settleCapturedViewAt(0, mContentLayout.getTop());
-                invalidate();
-                LogUtil.e("直接滑动到最左侧");
+            if (releasedChild == mContentLayout) {  // 内容view的滑动
+                // 获取内容布局的左侧间距
+                int left = mContentLayout.getLeft();
+                LogUtil.e("left:" + left + "  mCanScrOllHalfPosition:" + mCanScrOllHalfPosition);
+                if (left >= mCanScrOllHalfPosition) {
+                    // 直接滑动到最后面
+                    LogUtil.e("直接滑动到最后面");
+                    mViewDragHelper.settleCapturedViewAt((int) mLeftInterval, mContentLayout.getTop());
+                    invalidate();
+                } else {
+                    // 直接滑动到最左侧
+                    mViewDragHelper.settleCapturedViewAt(0, mContentLayout.getTop());
+                    invalidate();
+                    LogUtil.e("直接滑动到最左侧");
+                }
+            } else if (releasedChild == mMenuLayout) { // menu布局的滑动
+                int left = mContentLayout.getLeft();
+                if (left >= mCanScrOllHalfPosition) {
+                    mViewDragHelper.smoothSlideViewTo(mContentLayout, (int) mLeftInterval, mContentLayout.getTop());
+                    invalidate();
+                } else {
+                    mViewDragHelper.smoothSlideViewTo(mContentLayout, 0, mContentLayout.getTop());
+                    invalidate();
+                }
             }
         }
     };
