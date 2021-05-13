@@ -1,0 +1,786 @@
+Index: app/src/main/res/layout/activity_view_map.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_view_map.xml	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ app/src/main/res/layout/activity_view_map.xml	(date 1620893080000)
+@@ -70,6 +70,16 @@
+             style="@style/style_item_selector"
+             android:text="自定义滑动按钮和水波纹效果" />
+ 
++        <TextView
++            android:id="@+id/tv_custom_menu"
++            style="@style/style_item_selector"
++            android:text="自定义侧滑的布局" />
++
++        <TextView
++            android:id="@+id/tv_custom_name_list"
++            style="@style/style_item_selector"
++            android:text="自定义名字的首字母列表" />
++
+     </LinearLayout>
+ 
+ </androidx.core.widget.NestedScrollView>
+\ No newline at end of file
+Index: helper/src/main/java/com/android/helper/utils/ResourceUtil.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- helper/src/main/java/com/android/helper/utils/ResourceUtil.java	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ helper/src/main/java/com/android/helper/utils/ResourceUtil.java	(date 1620894866000)
+@@ -2,6 +2,8 @@
+ 
+ import android.annotation.SuppressLint;
+ import android.content.Context;
++import android.graphics.Bitmap;
++import android.graphics.BitmapFactory;
+ import android.graphics.drawable.Drawable;
+ 
+ import androidx.annotation.ColorRes;
+@@ -35,4 +37,15 @@
+         return drawable;
+     }
+ 
++    public static Bitmap getBitmap(@DrawableRes int id) {
++        Bitmap bitmap = null;
++        if (id != 0 && mContext != null) {
++            bitmap = BitmapFactory.decodeResource(mContext.getResources(), id);
++            if (bitmap != null) {
++                return bitmap;
++            }
++        }
++        return bitmap;
++    }
++
+ }
+Index: app/src/main/res/layout/activity_sliding_menu.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_sliding_menu.xml	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ app/src/main/res/layout/activity_sliding_menu.xml	(date 1620890805000)
+@@ -53,10 +53,19 @@
+         android:tag="content"
+         android:visibility="visible">
+ 
++        <com.android.helper.widget.RoundView
++            android:id="@+id/rv_head"
++            android:layout_width="@dimen/dp_20"
++            android:layout_height="@dimen/dp_20"
++            android:layout_margin="@dimen/dp_30"
++            android:src="@drawable/abc"
++            app:rv_roundType="Circle" />
++
+         <Button
+             android:id="@+id/tv_title"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
++            android:layout_below="@+id/rv_head"
+             android:layout_centerHorizontal="true"
+             android:layout_marginTop="@dimen/dp_20"
+             android:text="我是中间的内容"
+@@ -73,14 +82,6 @@
+             android:layout_marginRight="@dimen/dp_20"
+             android:background="@color/blue_1" />
+ 
+-        <Button
+-            android:id="@+id/btn_test1"
+-            android:layout_width="wrap_content"
+-            android:layout_height="wrap_content"
+-            android:layout_below="@+id/rv_list"
+-            android:layout_centerHorizontal="true"
+-            android:layout_marginTop="@dimen/dp_30" />
+-
+     </RelativeLayout>
+ 
+ </android.helper.widget.hm.SlidingMenuLayout>
+\ No newline at end of file
+Index: helper/src/main/java/com/android/helper/utils/CustomViewUtil.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- helper/src/main/java/com/android/helper/utils/CustomViewUtil.java	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ helper/src/main/java/com/android/helper/utils/CustomViewUtil.java	(date 1620895711000)
+@@ -5,7 +5,7 @@
+ import android.text.TextUtils;
+ 
+ public class CustomViewUtil {
+-    
++
+     /**
+      * @param paint   画笔
+      * @param content 内容
+@@ -19,7 +19,7 @@
+         paint.getTextBounds(content, 0, content.length(), rect);
+         return (float) Math.abs(rect.top);
+     }
+-    
++
+     /**
+      * @param paint   画笔
+      * @param content 文字内容
+@@ -29,13 +29,41 @@
+         if (paint == null || (TextUtils.isEmpty(content))) {
+             return null;
+         }
+-    
+-        float [] ints = new float[2];
++
++        float[] ints = new float[2];
+         Rect rect = new Rect();
+         paint.getTextBounds(content, 0, content.length(), rect);
+         ints[0] = rect.width();
+         ints[1] = rect.height();
+         return ints;
+     }
+-    
++
++    /**
++     * @param paint   画笔
++     * @param content 内容
++     * @return 获取文字的高度
++     */
++    public static float getTextHeight(Paint paint, String content) {
++        if ((paint != null) && (!TextUtils.isEmpty(content))) {
++            Rect rect = new Rect();
++            paint.getTextBounds(content, 0, content.length(), rect);
++            return rect.height();
++        }
++        return 0;
++    }
++
++    /**
++     * @param paint   画笔
++     * @param content 内容
++     * @return 获取文字的宽度
++     */
++    public static float getTextWidth(Paint paint, String content) {
++        if ((paint != null) && (!TextUtils.isEmpty(content))) {
++            Rect rect = new Rect();
++            paint.getTextBounds(content, 0, content.length(), rect);
++            return rect.width();
++        }
++        return 0;
++    }
++
+ }
+Index: app/src/main/java/android/helper/widget/hm/SelectorNameList.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/android/helper/widget/hm/SelectorNameList.java	(date 1620902671000)
++++ app/src/main/java/android/helper/widget/hm/SelectorNameList.java	(date 1620902671000)
+@@ -0,0 +1,148 @@
++package android.helper.widget.hm;
++
++import android.annotation.SuppressLint;
++import android.content.Context;
++import android.graphics.Bitmap;
++import android.graphics.Canvas;
++import android.graphics.Color;
++import android.graphics.Paint;
++import android.helper.R;
++import android.util.AttributeSet;
++
++import androidx.annotation.Nullable;
++
++import com.android.helper.base.BaseView;
++import com.android.helper.utils.BitmapUtil;
++import com.android.helper.utils.ConvertUtil;
++import com.android.helper.utils.CustomViewUtil;
++import com.android.helper.utils.LogUtil;
++import com.android.helper.utils.ResourceUtil;
++
++/**
++ * 检索通讯录名字的列表数据
++ * 目标：
++ * 写一个列表 从 A  - z ,最上方在设置一个红心
++ * <p>
++ * 实现逻辑：
++ * 1：获取红心的bitmap,并绘制
++ * 2：设置总的高度，高度等于：红心的高度 + 列表中每个view的高度 + paddingTop + paddingBottom
++ *
++ * <p>
++ * 1:顶部位置绘制一个红心，作为收藏的标记
++ * 2：计算出所有的高度 =  所有的字的高度 + paddingTop + paddingBottom + 红心的高度 + paddingTop + paddingBottom
++ * 3：计算出所有的宽度 =  便利所有子的宽度 ，获取到最大的那个宽度  + paddingLeft + paddingRight
++ * 4：内容设置居中，红心：布局宽度 - bitmap宽 /2 ,字，paint设置
++ */
++public class SelectorNameList extends BaseView {
++
++    private final String[] mIndexArr = {"A", "B", "C", "D", "E", "F", "G", "H",
++            "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
++            "V", "W", "X", "Y", "Z"};
++
++    private float mPaddingLeft = 40;
++    private float mPaddingRight = 40;
++    private float mPaddingTop = 20;
++    private float mPaddingBottom = 20;
++    private Paint mPaint;
++    private int mTotalHeight;
++    private int mTotalWidth;
++    private final float mBitmapTargetWidth = ConvertUtil.toDp(40);// bitmap的目标宽度
++    private Bitmap mBitmap;
++    private int mMeasuredWidth;
++    private int mMeasuredHeight;
++    private int mBitmapLeft;
++
++    public SelectorNameList(Context context) {
++        super(context);
++        initView(context, null);
++    }
++
++    public SelectorNameList(Context context, @Nullable AttributeSet attrs) {
++        super(context, attrs);
++        initView(context, attrs);
++    }
++
++    @Override
++    protected void initView(Context context, AttributeSet attrs) {
++
++        mPaint = new Paint();
++        mPaint.setColor(Color.WHITE);
++        mPaint.setAntiAlias(true);
++        mPaint.setTextSize(45);
++
++        // 获取bitmap
++        Bitmap bitmap = ResourceUtil.getBitmap(R.mipmap.icon_rad_xin);
++        // 生成一个新的bitmap
++        mBitmap = BitmapUtil.getBitmapForMatrixScaleWidth(bitmap, mBitmapTargetWidth);
++
++        int tempWidth = 0;
++        // 统计出所有字的高度
++        for (String value : mIndexArr) {
++            // 获取字的宽高
++            float[] textSize = CustomViewUtil.getTextSize(mPaint, value);
++
++            // 获取当前view发的高度
++            mTotalHeight += (textSize[1] + mPaddingTop + mPaddingBottom);
++
++            // 对比出最大的宽度
++            int width = (int) textSize[0];
++            mTotalWidth = Math.max(tempWidth, width);
++            // 变量的赋值
++            tempWidth = width;
++        }
++
++        // 计算出bitmap的高度
++        int bitmapHeight = mBitmap.getHeight();
++        // 获取所有的高度
++        mTotalHeight += (bitmapHeight + mPaddingTop + mPaddingBottom);
++
++        // 计算所有的宽度
++        mTotalWidth += (mBitmap.getWidth() + mPaddingLeft + mPaddingRight);
++        LogUtil.e("view的总高度为：" + mTotalHeight + "   view的宽度：" + mTotalWidth);
++    }
++
++    @Override
++    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
++        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
++
++        // 重新设置宽高
++        setMeasuredDimension(mTotalWidth, mTotalHeight);
++    }
++
++    @Override
++    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
++        super.onSizeChanged(w, h, oldw, oldh);
++        mMeasuredWidth = getMeasuredWidth();
++        mMeasuredHeight = getMeasuredHeight();
++
++        // 获取bitmap的left值
++        mBitmapLeft = (mMeasuredWidth - mBitmap.getWidth()) / 2;
++    }
++
++    @SuppressLint("DrawAllocation")
++    @Override
++    protected void onDraw(Canvas canvas) {
++        super.onDraw(canvas);
++
++        // 绘制红心
++//        canvas.drawBitmap(mBitmap, mBitmapLeft, 0, mPaint);
++//
++//        /*
++//         * 绘制文字
++//         * 高度 = bitmap 的高度 + top + bottom +  每个view的高度 + top + bottom
++//         */
++//        float height = mBitmap.getHeight() + mPaddingTop + mPaddingBottom;
++//        for (String value : mIndexArr) {
++//
++//            float textHeight = CustomViewUtil.getTextHeight(mPaint, value);
++//            height += (textHeight + mPaddingTop + mPaddingBottom);
++//
++//            canvas.drawText(value, mPaddingLeft, height, mPaint);
++//        }
++
++        float width = CustomViewUtil.getTextWidth(mPaint, "A");
++        float v = (mMeasuredWidth - width) / 2;
++
++        canvas.drawText("A", v, mPaddingTop, mPaint);
++    }
++}
+Index: app/src/main/java/android/helper/test/SlidingMenuActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/android/helper/test/SlidingMenuActivity.java	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ app/src/main/java/android/helper/test/SlidingMenuActivity.java	(date 1620892724000)
+@@ -4,6 +4,9 @@
+ 
+ import com.android.helper.base.BaseTitleActivity;
+ 
++/**
++ * 侧滑的view布局
++ */
+ public class SlidingMenuActivity extends BaseTitleActivity {
+ 
+     @Override
+Index: helper/src/main/java/com/android/helper/utils/BitmapUtil.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- helper/src/main/java/com/android/helper/utils/BitmapUtil.java	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ helper/src/main/java/com/android/helper/utils/BitmapUtil.java	(date 1620898820000)
+@@ -203,6 +203,57 @@
+         return bitmapResult;
+     }
+ 
++    /**
++     * @param bitmap      原来的bitmap
++     * @param targetWidth 指定bitmap的宽度
++     * @return 根据一个原有的bitmap，缩放其宽度，让高度也跟着宽度的缩放而缩放，生成一个新的高度，这种情况是为了避免输入随意的数字，导致图片缩放的时候回变形
++     */
++    public static Bitmap getBitmapForMatrixScaleWidth(Bitmap bitmap, float targetWidth) {
++        Bitmap resultBitmap;
++        if (bitmap != null && targetWidth > 0) {
++            try {
++                int bitmapWidth = bitmap.getWidth();
++                int bitmapHeight = bitmap.getHeight();
++
++                // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
++                float scaleWidth = targetWidth / bitmapWidth;
++                Matrix matrix = new Matrix();
++                matrix.postScale(scaleWidth, scaleWidth);
++
++                resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
++                return resultBitmap;
++            } catch (Exception ignored) {
++                LogUtil.e("图像缩放失败！");
++            }
++        }
++        return bitmap;
++    }
++    /**
++     * @param bitmap      原来的bitmap
++     * @param targetHeight 指定bitmap的宽度
++     * @return 根据一个原有的bitmap，缩放其高度，让宽度也跟着高度的缩放而缩放，生成一个新的宽度，这种情况是为了避免输入随意的数字，导致图片缩放的时候回变形
++     */
++    public static Bitmap getBitmapForMatrixScaleHeight(Bitmap bitmap, float targetHeight) {
++        Bitmap resultBitmap;
++        if (bitmap != null && targetHeight > 0) {
++            try {
++                int bitmapWidth = bitmap.getWidth();
++                int bitmapHeight = bitmap.getHeight();
++
++                // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
++                float scaleWidth = targetHeight / bitmapHeight;
++                Matrix matrix = new Matrix();
++                matrix.postScale(scaleWidth, scaleWidth);
++
++                resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
++                return resultBitmap;
++            } catch (Exception ignored) {
++                LogUtil.e("图像缩放失败！");
++            }
++        }
++        return bitmap;
++    }
++
+     /**
+      * @param context          上下文
+      * @param path             图片路径
+Index: app/src/main/java/android/helper/ui/activity/widget/ViewMapTitleActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/android/helper/ui/activity/widget/ViewMapTitleActivity.java	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ app/src/main/java/android/helper/ui/activity/widget/ViewMapTitleActivity.java	(date 1620893138000)
+@@ -3,6 +3,7 @@
+ import android.annotation.SuppressLint;
+ import android.helper.R;
+ import android.helper.databinding.ActivityViewMapBinding;
++import android.helper.test.SlidingMenuActivity;
+ import android.helper.ui.activity.hmview.HmCustomViewActivity;
+ import android.view.View;
+ 
+@@ -32,7 +33,7 @@
+                 R.id.tv_multiple_list_view, R.id.tv_custom_text, R.id.tv_custom_round,
+                 R.id.tv_custom_random, R.id.tv_custom_left_and_right, R.id.tv_custom_progress,
+                 R.id.tv_custom_touch, R.id.tv_custom_input_password, R.id.tv_scroll_view,
+-                R.id.tv_page_view, R.id.tv_test_hm
++                R.id.tv_page_view, R.id.tv_test_hm, R.id.tv_custom_menu, R.id.tv_custom_name_list
+         );
+     }
+ 
+@@ -79,6 +80,12 @@
+             case R.id.tv_test_hm:  // 自定义黑马的view
+                 startActivity(HmCustomViewActivity.class);
+                 break;
++            case R.id.tv_custom_menu:
++                startActivity(SlidingMenuActivity.class);
++                break;
++            case R.id.tv_custom_name_list:
++                startActivity(NameListActivity.class);
++                break;
+         }
+     }
+ 
+Index: helper/src/main/java/com/android/helper/base/BaseView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- helper/src/main/java/com/android/helper/base/BaseView.java	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ helper/src/main/java/com/android/helper/base/BaseView.java	(date 1620896647000)
+@@ -9,16 +9,14 @@
+ /**
+  * 基类的View,以后所有的view都集成他，避免重写很多的袋面
+  */
+-public class BaseView extends View {
++public abstract class BaseView extends View {
+ 
+     public BaseView(Context context) {
+         super(context);
+-        initView(context, null);
+     }
+ 
+     public BaseView(Context context, @Nullable AttributeSet attrs) {
+         super(context, attrs);
+-        initView(context, attrs);
+     }
+ 
+     /**
+@@ -27,7 +25,7 @@
+      * @param context 上下文
+      * @param attrs   xml的属性
+      */
+-    public void initView(Context context, AttributeSet attrs) {
++    public void initAttributeSet(Context context, AttributeSet attrs) {
+         //        if (attrs != null) {
+         //            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RoundView);
+         //            // 圆角的类型  1:圆形  2：圆角
+@@ -42,4 +40,7 @@
+         //            typedArray.recycle();
+         //        }
+     }
++
++    protected abstract void initView(Context context, AttributeSet attrs);
++
+ }
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ app/src/main/AndroidManifest.xml	(date 1620894956000)
+@@ -21,18 +21,18 @@
+         android:theme="@style/Theme.AppThem"
+         tools:targetApi="n">
+ 
+-        <activity android:name=".ui.activity.otherutils.AudioPlayerActivity" />
+-        <activity android:name=".test.TestWebViewActivity" />
+-        <activity android:name=".test.TestWebSocketActivity" />
+-        <activity android:name=".test.SlidingMenuActivity">
++        <activity android:name=".ui.activity.widget.NameListActivity">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+-
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
+         </activity>
++
++        <activity android:name=".ui.activity.otherutils.AudioPlayerActivity" />
++        <activity android:name=".test.TestWebViewActivity" />
++        <activity android:name=".test.TestWebSocketActivity" />
++        <activity android:name=".test.SlidingMenuActivity" />
+         <activity android:name=".test.MoreAdapterActivity" />
+-
+         <activity android:name=".test.TestScrollHelperActivity" />
+         <activity android:name=".test.AndroidJSActivity" />
+         <activity android:name=".ui.activity.hmview.HmCustomViewActivity" />
+Index: app/src/main/java/android/helper/ui/activity/widget/NameListActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/android/helper/ui/activity/widget/NameListActivity.java	(date 1620893228000)
++++ app/src/main/java/android/helper/ui/activity/widget/NameListActivity.java	(date 1620893228000)
+@@ -0,0 +1,19 @@
++package android.helper.ui.activity.widget;
++
++import android.helper.R;
++
++import com.android.helper.base.BaseTitleActivity;
++
++public class NameListActivity extends BaseTitleActivity {
++
++    @Override
++    protected int getTitleLayout() {
++        return R.layout.activity_name_list;
++    }
++
++    @Override
++    protected void initView() {
++        super.initView();
++        setTitleContent("自定义名字检测的列表");
++    }
++}
+\ No newline at end of file
+Index: app/src/main/res/layout/activity_name_list.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_name_list.xml	(date 1620901478000)
++++ app/src/main/res/layout/activity_name_list.xml	(date 1620901478000)
+@@ -0,0 +1,14 @@
++<?xml version="1.0" encoding="utf-8"?>
++<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    tools:context=".ui.activity.widget.NameListActivity">
++
++    <android.helper.widget.hm.SelectorNameList
++        android:layout_width="wrap_content"
++        android:layout_height="match_parent"
++        android:layout_centerHorizontal="true"
++        android:background="@color/blue_1" />
++
++</RelativeLayout>
+\ No newline at end of file
+Index: app/src/main/java/android/helper/widget/hm/WareView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/android/helper/widget/hm/WareView.java	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ app/src/main/java/android/helper/widget/hm/WareView.java	(date 1620896479000)
+@@ -38,8 +38,7 @@
+     }
+ 
+     @Override
+-    public void initView(Context context, AttributeSet attrs) {
+-        super.initView(context, attrs);
++    protected void initView(Context context, AttributeSet attrs) {
+ 
+     }
+ 
+Index: app/src/main/java/android/helper/widget/hm/TestView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/android/helper/widget/hm/TestView.java	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ app/src/main/java/android/helper/widget/hm/TestView.java	(date 1620896479000)
+@@ -29,7 +29,6 @@
+ 
+     @Override
+     public void initView(Context context, AttributeSet attrs) {
+-        super.initView(context, attrs);
+         LogUtil.e(tag, "TestView");
+     }
+ 
+Index: app/src/main/java/android/helper/widget/hm/SlidingMenuLayout.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/android/helper/widget/hm/SlidingMenuLayout.java	(revision 9b578bb09c4002161d950f7e357d85d41e2e00ef)
++++ app/src/main/java/android/helper/widget/hm/SlidingMenuLayout.java	(date 1620891251000)
+@@ -4,9 +4,11 @@
+ import android.annotation.SuppressLint;
+ import android.content.Context;
+ import android.graphics.Canvas;
++import android.helper.R;
+ import android.util.AttributeSet;
+ import android.view.MotionEvent;
+ import android.view.View;
++import android.view.animation.CycleInterpolator;
+ import android.widget.FrameLayout;
+ import android.widget.LinearLayout;
+ import android.widget.RelativeLayout;
+@@ -17,6 +19,7 @@
+ 
+ import com.android.helper.utils.LogUtil;
+ import com.nineoldandroids.view.ViewHelper;
++import com.nineoldandroids.view.ViewPropertyAnimator;
+ 
+ /**
+  * 目标：打造一个能左右滑动的布局
+@@ -125,6 +128,8 @@
+                     LogUtil.e("直接滑动到最后面");
+                     mViewDragHelper.settleCapturedViewAt((int) mLeftInterval, mContentLayout.getTop());
+                     invalidate();
++
++                    executeHead();
+                 } else {
+                     // 直接滑动到最左侧
+                     mViewDragHelper.settleCapturedViewAt(0, mContentLayout.getTop());
+@@ -136,13 +141,37 @@
+                 if (left >= mCanScrOllHalfPosition) {
+                     mViewDragHelper.smoothSlideViewTo(mContentLayout, (int) mLeftInterval, mContentLayout.getTop());
+                     invalidate();
++
++                    executeHead();
++
+                 } else {
+                     mViewDragHelper.smoothSlideViewTo(mContentLayout, 0, mContentLayout.getTop());
+                     invalidate();
+                 }
+             }
+         }
++
++        private void executeHead() {
++            postDelayed(new Runnable() {
++                @Override
++                public void run() {
++
++                    ViewPropertyAnimator
++                            .animate(mHead)
++                            // 移动的距离
++                            .translationX(55f)
++                            // 设置回弹的差值器，回弹的次数是3
++                            .setInterpolator(new CycleInterpolator(3))
++                            // 持续的试驾
++                            .setDuration(2000)
++                            .start();
++
++                }
++            }, 500);
++
++        }
+     };
++    private View mHead;
+ 
+     public SlidingMenuLayout(@NonNull Context context) {
+         super(context);
+@@ -232,6 +261,7 @@
+         LogUtil.e(tag, "onFinishInflate");
+         mMenuLayout = findViewWithTag("menu");
+         mContentLayout = findViewWithTag("content");
++        mHead = findViewById(R.id.rv_head);
+     }
+ 
+     @Override
+diff --git app/src/main/res/mipmap-xxhdpi/icon_rad_xin.png app/src/main/res/mipmap-xxhdpi/icon_rad_xin.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..6f6502734fbb7856088eaf60ee5cbc8f606507ac
+GIT binary patch
+literal 5095
+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
+D?YwTo
+
