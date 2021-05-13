@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/yellow_1"
+    android:background="@mipmap/bg"
     tools:context=".test.SlidingMenuActivity">
 
     <android.helper.widget.hm.TestView
@@ -17,7 +17,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/blue_1"
+        android:background="@color/transparent_30"
         android:orientation="vertical"
         android:tag="menu">
 
@@ -31,6 +31,7 @@
             app:rv_roundType="Circle" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rl_menu"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dp_20"

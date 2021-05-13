@@ -1,5 +1,6 @@
 package android.helper.widget.hm;
 
+import android.animation.FloatEvaluator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.customview.widget.ViewDragHelper;
 
 import com.android.helper.utils.LogUtil;
+import com.nineoldandroids.view.ViewHelper;
 
 /**
  * 目标：打造一个能左右滑动的布局
@@ -27,6 +29,7 @@ import com.android.helper.utils.LogUtil;
  * 6：兼容消耗滑动事件的冲突，
  * 7：手指松开的时候，如果滑动到了一半的距离，就滑动到最后，反之就滑动到最左侧
  * 8：滑动menuView的时候，让右侧的contLayout布局也跟着滑动
+ * 9：两个view滑动的时候，让对应的view也跟着进行缩放和移动
  */
 public class SlidingMenuLayout extends FrameLayout {
 
@@ -80,18 +83,18 @@ public class SlidingMenuLayout extends FrameLayout {
 
                 // 8:让右侧的view也跟着滑动
                 int l = (int) (mContentLayout.getLeft() + mDX);
+                // 限制滑动的距离
                 l = getLeftInterval(l);
-
-                // todo  此处有bug
                 int t = mContentLayout.getTop() + dy;
                 int r = mContentLayout.getMeasuredWidth() + l;
-
                 int b = mContentLayout.getBottom() + dy;
 
                 LogUtil.e("l:" + l + "   t:" + t + "  r:" + r + "  b:" + b);
-
                 mContentLayout.layout(l, t, r, b);
             }
+
+            // 执行缩放动画，就算出移动的百分比
+            executeAnimation(mContentLayout.getLeft() / mLeftInterval);
         }
 
         /*
@@ -139,6 +142,7 @@ public class SlidingMenuLayout extends FrameLayout {
             }
         }
     };
+    private FloatEvaluator mEvaluator;
 
     public SlidingMenuLayout(@NonNull Context context) {
         super(context);
@@ -154,6 +158,9 @@ public class SlidingMenuLayout extends FrameLayout {
         LogUtil.e(tag, "SlidingMenuLayout");
         // 创建滑动的对象
         mViewDragHelper = ViewDragHelper.create(SlidingMenuLayout.this, mCallback);
+
+        // 动画的差值器
+        mEvaluator = new FloatEvaluator();
     }
 
     @Override
@@ -194,6 +201,26 @@ public class SlidingMenuLayout extends FrameLayout {
         mCanScrOllHalfPosition = mLeftInterval / 2;
 
         LogUtil.e("mLeftInterval:" + mLeftInterval + "  mCanScrOllHalfPosition:" + mCanScrOllHalfPosition);
+    }
+
+    private void executeAnimation(float percentage) {
+        LogUtil.e("percentage:" + percentage);
+        /*
+         * 缩放内容的布局
+         */
+        ViewHelper.setScaleX(mContentLayout, mEvaluator.evaluate(percentage, 1, 0.8f));
+        ViewHelper.setScaleY(mContentLayout, mEvaluator.evaluate(percentage, 1, 0.8f));
+
+        /*
+         * 移动menu布局
+         */
+        // 移动动画
+        ViewHelper.setTranslationX(mMenuLayout, mEvaluator.evaluate(percentage, -mMenuLayout.getMeasuredWidth() / 2, 0));
+        // 缩放动画
+        ViewHelper.setScaleX(mMenuLayout, mEvaluator.evaluate(percentage, 0.8f, 1));
+        ViewHelper.setScaleY(mMenuLayout, mEvaluator.evaluate(percentage, 0.8f, 1));
+        // 透明动画
+        ViewHelper.setAlpha(mMenuLayout, mEvaluator.evaluate(percentage, 0f, 1));
     }
 
     /**
