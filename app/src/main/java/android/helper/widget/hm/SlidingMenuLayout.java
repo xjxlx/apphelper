@@ -61,14 +61,8 @@ public class SlidingMenuLayout extends FrameLayout {
         @Override
         public int clampViewPositionHorizontal(@NonNull View child, int left, int dx) {
             // 5.1 --->限制Content右侧滑动的距离
-            if (left > mLeftInterval) {
-                left = (int) mLeftInterval;
-            }
             // 5.1 --->限制Content布局左侧滑动的限制
-            if (left <= 0) {
-                left = 0;
-            }
-            return left;
+            return getLeftInterval(left);
         }
 
         /*
@@ -86,13 +80,11 @@ public class SlidingMenuLayout extends FrameLayout {
 
                 // 8:让右侧的view也跟着滑动
                 int l = (int) (mContentLayout.getLeft() + mDX);
-                if (l <= 0) {
-                    l = 0;
-                }
+                l = getLeftInterval(l);
 
                 // todo  此处有bug
                 int t = mContentLayout.getTop() + dy;
-                int r = (int) (mContentLayout.getMeasuredWidth() + mDX);
+                int r = mContentLayout.getMeasuredWidth() + l;
 
                 int b = mContentLayout.getBottom() + dy;
 
@@ -117,6 +109,8 @@ public class SlidingMenuLayout extends FrameLayout {
         @Override
         public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
+
+            LogUtil.e("onViewReleased --->");
 
             // 获取内容布局的左侧间距
             int left = mContentLayout.getLeft();
@@ -236,5 +230,18 @@ public class SlidingMenuLayout extends FrameLayout {
         if ((mViewDragHelper != null) && (mViewDragHelper.continueSettling(true))) {
             invalidate();
         }
+    }
+
+    private int getLeftInterval(int left) {
+        // 限制右侧的边距
+        if (left > mLeftInterval) {
+            left = (int) mLeftInterval;
+        }
+        // 5.1 --->限制Content布局左侧滑动的限制
+        if (left <= 0) {
+            left = 0;
+        }
+
+        return left;
     }
 }
