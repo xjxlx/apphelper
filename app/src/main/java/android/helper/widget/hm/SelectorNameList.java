@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.RectF;
 import android.helper.R;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -38,7 +38,7 @@ public class SelectorNameList extends BaseView {
             "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
             "V", "W", "X", "Y", "Z"};
 
-    private final float mTextTotalHeight = 350;// 每个字的高度
+    private final float mTextTotalHeight = 30;// 每个字的高度
     private final float mPaddingLeft = 20;
     private final float mPaddingRight = 20;
     private final float mInterval = 20;
@@ -46,7 +46,7 @@ public class SelectorNameList extends BaseView {
     private Paint mPaint;
     private float mTotalHeight;
     private float mTotalWidth;
-    private final float mBitmapTargetWidth = ConvertUtil.toDp(40);// bitmap的目标宽度
+    private final float mBitmapTargetWidth = ConvertUtil.toDp(20);// bitmap的目标宽度
     private Bitmap mBitmap;
     private int mMeasuredWidth;
     private int mMeasuredHeight;
@@ -77,6 +77,11 @@ public class SelectorNameList extends BaseView {
         // 生成一个新的bitmap
         mBitmap = BitmapUtil.getBitmapForMatrixScaleWidth(bitmap, mBitmapTargetWidth);
 
+        // 计算出bitmap的高度
+        int bitmapHeight = mBitmap.getHeight();
+        // 获取所有的高度  = bitmap的高度 + 顶部间距的高度 + （ 固定rect的高度 + 间距） * 集合的长度 + 底部的间距
+        mTotalHeight += (mInterval + bitmapHeight + ((mTextTotalHeight + mInterval) * mIndexArr.length));
+
         float tempWidth = 0;
         // 统计出所有字的高度
         for (String value : mIndexArr) {
@@ -89,11 +94,6 @@ public class SelectorNameList extends BaseView {
             tempWidth = width;
         }
 
-        // 计算出bitmap的高度
-        int bitmapHeight = mBitmap.getHeight();
-        // 获取所有的高度  = 字的所有高度 + bitmap的高度 + bitmap上方的高度 + 字最后的底部高度
-        mTotalHeight += (mInterval + bitmapHeight + ((mTextTotalHeight + mInterval) * mIndexArr.length));
-
         // 计算所有的宽度
         mTotalWidth += (mBitmap.getWidth() + mPaddingLeft + mPaddingRight);
         LogUtil.e("view的总高度为：" + mTotalHeight + "   view的宽度：" + mTotalWidth);
@@ -104,8 +104,7 @@ public class SelectorNameList extends BaseView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         // 重新设置宽高
-//        setMeasuredDimension((int) mTotalWidth, (int) mTotalHeight);
-//        setMeasuredDimension(500, 70);
+        setMeasuredDimension((int) mTotalWidth, (int) mTotalHeight);
     }
 
     @Override
@@ -128,47 +127,27 @@ public class SelectorNameList extends BaseView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // 绘制一个顶边文字的毕竟
-        Rect rect1 = new Rect(50, 50, 600, 300);
-        mPaint.setColor(Color.BLACK);
-        canvas.drawRect(rect1, mPaint);
+        float height = 0;
 
-        // 绘制一个顶边的文字
-        String content1 = "我是顶边的文字";
-        mPaint.setColor(Color.WHITE);
-        // 计算出文字距离顶部的距离
-        int top = Math.abs(rect1.top);
-        float baseLine = CustomViewUtil.getBaseLine(mPaint, content1);
-        canvas.drawText(content1, rect1.centerX(), top + baseLine, mPaint);
+        height += mInterval;
+        // 绘制一个红心
+        canvas.drawBitmap(mBitmap, mBitmapLeft, height, mPaint);
 
-        // 绘制一个盒子中心的文字
-        Rect rect2 = new Rect(50, 500, 600, 700);
-        String content2 = "我是居中的文字";
-        mPaint.setColor(Color.BLACK);
-        canvas.drawRect(rect2, mPaint);
+        height += mBitmap.getHeight() + mInterval;
 
-        float textHeight = CustomViewUtil.getTextHeight(mPaint, content2);
-        float basline = rect2.centerY() + textHeight / 2;
-        mPaint.setColor(Color.WHITE);
-        canvas.drawText(content2, rect2.centerX(), basline, mPaint);
+        // 绘制列表
+        for (int i = 0; i < mIndexArr.length; i++) {
+            String value = mIndexArr[i];
 
-        mPaint.setColor(Color.BLUE);
-        mPaint.setStrokeWidth(2);
-        canvas.drawLine(50, rect2.centerY(), 600, rect2.centerY(), mPaint);
+            height += (mTextTotalHeight + mInterval) * i;
 
+            RectF rect = new RectF(0, height, mMeasuredWidth, height + mTextTotalHeight);
 
-        String content3 = "matt's blog";
-        Rect rect3 = new Rect(50, 800, 600, 1000);
-        mPaint.setColor(Color.BLACK);
-        canvas.drawRect(rect3, mPaint);
+            Paint.FontMetrics fm = mPaint.getFontMetrics();
+            float v = rect.centerY() + (fm.descent - fm.ascent) / 2 - fm.descent;
 
-
-        mPaint.setColor(Color.parseColor("#887766"));
-        canvas.drawLine(50,rect3.centerY(),600,rect3.centerY(),mPaint);
-
-        canvas.drawText(content3,rect3.centerX(), ,mPaint);
-
-
+            canvas.drawText(value, mTextCenter, v, mPaint);
+        }
     }
 
     @Override
