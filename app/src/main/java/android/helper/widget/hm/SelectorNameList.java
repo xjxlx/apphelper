@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.helper.R;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -26,13 +27,10 @@ import com.android.helper.utils.ResourceUtil;
  * <p>
  * 实现逻辑：
  * 1：获取红心的bitmap,并绘制
- * 2：设置总的高度，高度等于：红心的高度 + 列表中每个view的高度 + paddingTop + paddingBottom
+ * 2：设置总的高度，高度等于：红心的高度 + 每个固定大小的高度 * 集合的长度
  *
  * <p>
  * 1:顶部位置绘制一个红心，作为收藏的标记
- * 2：计算出所有的高度 =  所有的字的高度 + paddingTop + paddingBottom + 红心的高度 + paddingTop + paddingBottom
- * 3：计算出所有的宽度 =  便利所有子的宽度 ，获取到最大的那个宽度  + paddingLeft + paddingRight
- * 4：内容设置居中，红心：布局宽度 - bitmap宽 /2 ,字，paint设置
  */
 public class SelectorNameList extends BaseView {
 
@@ -40,18 +38,20 @@ public class SelectorNameList extends BaseView {
             "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
             "V", "W", "X", "Y", "Z"};
 
-    private float mPaddingLeft = 20;
-    private float mPaddingRight = 20;
-    private float mPaddingTop = 20;
-    private float mPaddingBottom = 20;
+    private final float mTextTotalHeight = 350;// 每个字的高度
+    private final float mPaddingLeft = 20;
+    private final float mPaddingRight = 20;
+    private final float mInterval = 20;
+
     private Paint mPaint;
-    private int mTotalHeight;
-    private int mTotalWidth;
+    private float mTotalHeight;
+    private float mTotalWidth;
     private final float mBitmapTargetWidth = ConvertUtil.toDp(40);// bitmap的目标宽度
     private Bitmap mBitmap;
     private int mMeasuredWidth;
     private int mMeasuredHeight;
     private int mBitmapLeft;
+    private float mTextCenter;
 
     public SelectorNameList(Context context) {
         super(context);
@@ -69,24 +69,21 @@ public class SelectorNameList extends BaseView {
         mPaint = new Paint();
         mPaint.setColor(Color.WHITE);
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(40);
+        mPaint.setTextSize(60);
+        mPaint.setTextAlign(Paint.Align.CENTER);
 
         // 获取bitmap
         Bitmap bitmap = ResourceUtil.getBitmap(R.mipmap.icon_rad_xin);
         // 生成一个新的bitmap
         mBitmap = BitmapUtil.getBitmapForMatrixScaleWidth(bitmap, mBitmapTargetWidth);
 
-        int tempWidth = 0;
+        float tempWidth = 0;
         // 统计出所有字的高度
         for (String value : mIndexArr) {
             // 获取字的宽高
-            float[] textSize = CustomViewUtil.getTextSize(mPaint, value);
-
-            // 获取当前view发的高度
-            mTotalHeight += (textSize[1] + mPaddingTop);
+            float width = CustomViewUtil.getTextWidth(mPaint, value);
 
             // 对比出最大的宽度
-            int width = (int) textSize[0];
             mTotalWidth = Math.max(tempWidth, width);
             // 变量的赋值
             tempWidth = width;
@@ -95,7 +92,7 @@ public class SelectorNameList extends BaseView {
         // 计算出bitmap的高度
         int bitmapHeight = mBitmap.getHeight();
         // 获取所有的高度  = 字的所有高度 + bitmap的高度 + bitmap上方的高度 + 字最后的底部高度
-        mTotalHeight += (bitmapHeight + mPaddingBottom + mPaddingTop);
+        mTotalHeight += (mInterval + bitmapHeight + ((mTextTotalHeight + mInterval) * mIndexArr.length));
 
         // 计算所有的宽度
         mTotalWidth += (mBitmap.getWidth() + mPaddingLeft + mPaddingRight);
@@ -107,7 +104,8 @@ public class SelectorNameList extends BaseView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         // 重新设置宽高
-        setMeasuredDimension(mTotalWidth, mTotalHeight);
+//        setMeasuredDimension((int) mTotalWidth, (int) mTotalHeight);
+//        setMeasuredDimension(500, 70);
     }
 
     @Override
@@ -118,6 +116,11 @@ public class SelectorNameList extends BaseView {
 
         // 获取bitmap的left值
         mBitmapLeft = (mMeasuredWidth - mBitmap.getWidth()) / 2;
+
+        // 获取文字的间距
+        if (mMeasuredWidth > 0) {
+            mTextCenter = mMeasuredWidth / 2;
+        }
     }
 
     @SuppressLint("DrawAllocation")
@@ -125,39 +128,60 @@ public class SelectorNameList extends BaseView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        float height = 0;
+        // 绘制一个顶边文字的毕竟
+        Rect rect1 = new Rect(50, 50, 600, 300);
+        mPaint.setColor(Color.BLACK);
+        canvas.drawRect(rect1, mPaint);
 
-        height += mPaddingTop;
+        // 绘制一个顶边的文字
+        String content1 = "我是顶边的文字";
+        mPaint.setColor(Color.WHITE);
+        // 计算出文字距离顶部的距离
+        int top = Math.abs(rect1.top);
+        float baseLine = CustomViewUtil.getBaseLine(mPaint, content1);
+        canvas.drawText(content1, rect1.centerX(), top + baseLine, mPaint);
 
-        // 绘制红心
-        canvas.drawBitmap(mBitmap, mBitmapLeft, height, mPaint);
+        // 绘制一个盒子中心的文字
+        Rect rect2 = new Rect(50, 500, 600, 700);
+        String content2 = "我是居中的文字";
+        mPaint.setColor(Color.BLACK);
+        canvas.drawRect(rect2, mPaint);
 
-        // 高度增加 bitmap的高度，和 一个paddingBottom
-        height += (mBitmap.getHeight() + mPaddingBottom);
+        float textHeight = CustomViewUtil.getTextHeight(mPaint, content2);
+        float basline = rect2.centerY() + textHeight / 2;
+        mPaint.setColor(Color.WHITE);
+        canvas.drawText(content2, rect2.centerX(), basline, mPaint);
 
-        height += CustomViewUtil.getBaseLine(mPaint, mIndexArr[0]);
+        mPaint.setColor(Color.BLUE);
+        mPaint.setStrokeWidth(2);
+        canvas.drawLine(50, rect2.centerY(), 600, rect2.centerY(), mPaint);
 
-        // 绘制文字
-        for (int i = 0; i < mIndexArr.length; i++) {
-            String value = mIndexArr[i];
 
-            float[] textSize = CustomViewUtil.getTextSize(mPaint, value);
+        String content3 = "matt's blog";
+        Rect rect3 = new Rect(50, 800, 600, 1000);
+        mPaint.setColor(Color.BLACK);
+        canvas.drawRect(rect3, mPaint);
 
-            // 绘制文字
-            canvas.drawText(value, (mMeasuredWidth - textSize[0]) / 2, height, mPaint);
 
-            height += (mPaddingBottom + textSize[1]);
-        }
+        mPaint.setColor(Color.parseColor("#887766"));
+        canvas.drawLine(50,rect3.centerY(),600,rect3.centerY(),mPaint);
+
+        canvas.drawText(content3,rect3.centerX(), ,mPaint);
+
+
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-
-                break;
-
             case MotionEvent.ACTION_MOVE:
+
+                float position = event.getY();
+                if ((position >= 0) && (position <= mMeasuredHeight)) {
+
+                    LogUtil.e("position:" + position);
+                }
 
                 break;
 
@@ -167,6 +191,6 @@ public class SelectorNameList extends BaseView {
 
         }
 
-        return super.onTouchEvent(event);
+        return true;
     }
 }

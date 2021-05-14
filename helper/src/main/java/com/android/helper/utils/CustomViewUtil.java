@@ -9,7 +9,7 @@ public class CustomViewUtil {
     /**
      * @param paint   画笔
      * @param content 内容
-     * @return 根据画笔和内容返回baseLine的基线
+     * @return 根据画笔和内容返回baseLine的基线, 适用于view写在开始的位置
      */
     public static float getBaseLine(Paint paint, String content) {
         if (paint == null || (TextUtils.isEmpty(content))) {
@@ -64,6 +64,37 @@ public class CustomViewUtil {
             return rect.width();
         }
         return 0;
+    }
+
+    /**
+     * @param paint   画笔
+     * @param rect    写入位置的大小
+     * @param content 内容
+     * @return 返回一个居中显示的baseLine ,适用于在一个区域中显示在最中心的情况
+     */
+    public static float getBaseLienCenter(Paint paint, Rect rect, String content) {
+        if ((paint != null) && (!TextUtils.isEmpty(content)) && rect != null) {
+            //计算baseline
+            Paint.FontMetrics fontMetrics = paint.getFontMetrics();
+            float distance = (fontMetrics.bottom - fontMetrics.top) / 2 - fontMetrics.bottom;
+            return rect.centerY() + distance;
+        }
+        return 0;
+    }
+
+    /***
+     *
+     * @param paint 画笔
+     * @return 返回drawText 的基线位置
+     */
+    public static float getBaseLine2(Paint paint, Rect rect) {
+        /*
+         * 距离 = 文字高度的一半 - 基线到文字底部的距离（也就是bottom）
+         */
+        Paint.FontMetrics fontMetrics = paint.getFontMetrics();
+        float baseLine = (fontMetrics.bottom - fontMetrics.top) / 2 - fontMetrics.bottom;
+
+        return baseLine + rect.centerY();
     }
 
 }
