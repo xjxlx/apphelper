@@ -1,5 +1,6 @@
 package com.android.helper.utils.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -22,23 +23,26 @@ import com.android.helper.utils.TextViewUtil;
  */
 public class PopupWindowUtil {
 
+    @SuppressLint("StaticFieldLeak")
     private static PopupWindowUtil windowUtil;
     private PopupWindow mPopupWindow;
-    private Activity activity;
+    private Activity mActivity;
     private DialogChangeListener mDialogChangeListener;
     private View mLayout;
 
     private int mWidth = WindowManager.LayoutParams.WRAP_CONTENT;
     private int mHeight = WindowManager.LayoutParams.WRAP_CONTENT;
 
-    public static PopupWindowUtil getInstance() {
+    public static PopupWindowUtil getInstance(Activity activity) {
         if (windowUtil == null) {
-            windowUtil = new PopupWindowUtil();
+            windowUtil = new PopupWindowUtil(activity);
         }
         return windowUtil;
     }
 
-    private PopupWindowUtil() {
+    private PopupWindowUtil(Activity activity) {
+        mActivity = activity;
+
         // 释放掉原来的pop
         if (mPopupWindow != null) {
             if (mPopupWindow.isShowing()) {
@@ -72,18 +76,26 @@ public class PopupWindowUtil {
         });
     }
 
-    public PopupWindowUtil setContentView(int layout) {
-        mLayout = LayoutInflater.from(activity).inflate(layout, null);
-        if (mLayout != null) {
-            mPopupWindow.setContentView(mLayout);
+    public PopupWindowUtil setContentView(int layout, View.OnClickListener listener) {
+        if (mActivity != null) {
+            mLayout = LayoutInflater.from(mActivity).inflate(layout, null);
+            if (mLayout != null) {
+                mPopupWindow.setContentView(mLayout);
+                if (listener != null) {
+                    listener.onClick(mLayout);
+                }
+            }
         }
         return windowUtil;
     }
 
-    public PopupWindowUtil setContentView(View layout) {
+    public PopupWindowUtil setContentView(View layout, View.OnClickListener listener) {
         if (layout != null) {
             mLayout = layout;
             mPopupWindow.setContentView(mLayout);
+            if (listener != null) {
+                listener.onClick(mLayout);
+            }
         }
         return windowUtil;
     }
@@ -105,7 +117,8 @@ public class PopupWindowUtil {
     }
 
     public void showAtLocation(View view) {
-        if ((!activity.isFinishing()) && (!mPopupWindow.isShowing())) {
+        boolean destroy = ActivityUtil.isDestroy(mActivity);
+        if ((!destroy) && (!mPopupWindow.isShowing())) {
             mPopupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
             if (mDialogChangeListener != null) {
                 mDialogChangeListener.onShow(mLayout);
@@ -115,7 +128,7 @@ public class PopupWindowUtil {
 
     public void showAsDropDown(View anchor, int xoff, int yoff) {
         if (mPopupWindow != null) {
-            boolean destroy = ActivityUtil.isDestroy(activity);
+            boolean destroy = ActivityUtil.isDestroy(mActivity);
             if (destroy) {
                 mPopupWindow.showAsDropDown(anchor, xoff, yoff);
             }
@@ -155,6 +168,12 @@ public class PopupWindowUtil {
      */
     public void setPopupWindowChangeListener(DialogChangeListener dialogChangeListener) {
         this.mDialogChangeListener = dialogChangeListener;
+    }
+
+    public void dismiss() {
+        if (mPopupWindow != null) {
+            mPopupWindow.dismiss();
+        }
     }
 
 }
