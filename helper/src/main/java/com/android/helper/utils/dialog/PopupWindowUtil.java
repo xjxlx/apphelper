@@ -3,6 +3,7 @@ package com.android.helper.utils.dialog;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +57,13 @@ public class PopupWindowUtil {
         mPopupWindow.setFocusable(true);
         //: 设置点击pop以外的区域会消失
         mPopupWindow.setTouchable(true);
+
+        //解决android 9.0水滴屏/刘海屏有黑边的问题
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            activity.getWindow().setAttributes(lp);
+        }
 
         mPopupWindow.setOnDismissListener(() -> {
             if (mDialogChangeListener != null) {
