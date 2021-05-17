@@ -21,7 +21,9 @@
         android:theme="@style/Theme.AppThem"
         tools:targetApi="n">
 
-        <activity android:name=".ui.activity.widget.NameListActivity">
+        <activity
+            android:name=".ui.activity.widget.NameListActivity"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

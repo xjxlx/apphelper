@@ -35,6 +35,7 @@ public class PopupWindowUtil {
     private int mWidth = ViewGroup.LayoutParams.WRAP_CONTENT;   // 默认的宽高
     private int mHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
     private boolean mTouchable = true; // 触摸是否可以取消，默认可以
+    private boolean mClippingEnabled = true; // 是否可以超出屏幕显示，模式不可以
 
     public static PopupWindowUtil getInstance(Activity activity) {
         if (windowUtil == null) {
@@ -71,8 +72,8 @@ public class PopupWindowUtil {
         //: 设置PopupWindow可触摸
         mPopupWindow.setTouchable(mTouchable);
 
-        //: 设置全屏显示
-        mPopupWindow.setClippingEnabled(true);
+        //: 设置超出屏幕显示
+        mPopupWindow.setClippingEnabled(mClippingEnabled);
 
         //解决android 9.0水滴屏/刘海屏有黑边的问题
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -195,6 +196,21 @@ public class PopupWindowUtil {
     public PopupWindowUtil setOutsideTouchable(boolean touchable) {
         this.mTouchable = touchable;
         return this;
+    }
+
+    /**
+     * @return 是否可以超出屏幕显示，false :可以，true:不可以，默认不可以
+     */
+    public PopupWindowUtil setClippingEnabled(boolean clippingEnabled) {
+        this.mClippingEnabled = clippingEnabled;
+        return this;
+    }
+
+    /**
+     * @return 获取当前的popupWindow
+     */
+    public PopupWindow getPopupWindow() {
+        return mPopupWindow;
     }
 
     /**

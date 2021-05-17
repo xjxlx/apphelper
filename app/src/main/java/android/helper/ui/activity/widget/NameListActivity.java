@@ -7,12 +7,15 @@ import android.view.ViewGroup;
 import com.android.helper.base.BaseTitleActivity;
 import com.android.helper.interfaces.listener.DialogChangeListener;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ScreenUtil;
 import com.android.helper.utils.dialog.PopupWindowUtil;
+import com.android.helper.utils.statusBar.StatusBarUtil;
 
 public class NameListActivity extends BaseTitleActivity {
 
     private View viewById;
     private PopupWindowUtil instance;
+    private ScreenUtil screenUtil;
 
     @Override
     protected int getTitleLayout() {
@@ -23,6 +26,9 @@ public class NameListActivity extends BaseTitleActivity {
     protected void initView() {
         super.initView();
         setTitleContent("自定义名字检测的列表");
+
+        StatusBarUtil.getInstance(mContext).setStatusTranslucent();
+        screenUtil = new ScreenUtil();
 
         viewById = findViewById(R.id.rl_root);
         View ssss = findViewById(R.id.tv_sss);
@@ -35,8 +41,7 @@ public class NameListActivity extends BaseTitleActivity {
         instance = PopupWindowUtil.getInstance(mContext)
                 .setWidth(ViewGroup.LayoutParams.MATCH_PARENT)
                 .setHeight(ViewGroup.LayoutParams.MATCH_PARENT)
-                .setOutsideTouchable(true)
-                .setContentView(R.layout.pickerview_options, new View.OnClickListener() {
+                .setContentView(R.layout.pop_test, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
@@ -54,22 +59,12 @@ public class NameListActivity extends BaseTitleActivity {
                     }
                 })
                 .show(mContext, this.viewById);
-
-        this.viewById.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-//                View inflate = LayoutInflater.from(mContext).inflate(R.layout.pickerview_options, null);
-//                PopupWindow popupWindow = new PopupWindow(inflate, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
-////                popupWindow.setContentView(inflate);
-//                popupWindow.showAsDropDown(viewById);
-            }
-        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        screenUtil.adapterFullScreen(mContext);
 
         if (instance != null) {
             if (instance.isShowing()) {
