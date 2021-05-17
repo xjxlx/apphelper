@@ -134,7 +134,7 @@ public class PopupWindowUtil {
         return windowUtil;
     }
 
-    public void show(View view) {
+    public PopupWindowUtil show(View view) {
         boolean destroy = ActivityUtil.isDestroy(mActivity);
         if ((!destroy) && (!mPopupWindow.isShowing())) {
             mPopupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
@@ -142,6 +142,7 @@ public class PopupWindowUtil {
                 mDialogChangeListener.onShow(mLayout);
             }
         }
+        return windowUtil;
     }
 
     public boolean isShowing() {
@@ -151,7 +152,7 @@ public class PopupWindowUtil {
         return false;
     }
 
-    public void show(View anchor, int xoff, int yoff) {
+    public PopupWindowUtil show(View anchor, int xoff, int yoff) {
         if (mPopupWindow != null) {
             boolean destroy = ActivityUtil.isDestroy(mActivity);
             if (destroy) {
@@ -161,6 +162,7 @@ public class PopupWindowUtil {
                 }
             }
         }
+        return windowUtil;
     }
 
     /**
