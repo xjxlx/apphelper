@@ -134,10 +134,10 @@ public class PopupWindowUtil {
         return windowUtil;
     }
 
-    public PopupWindowUtil show(View view) {
+    public PopupWindowUtil show(Activity activity, View view) {
         if (view != null) {
             view.post(() -> {
-                boolean destroy = ActivityUtil.isDestroy(mActivity);
+                boolean destroy = ActivityUtil.isDestroy(activity);
                 if ((!destroy) && (!mPopupWindow.isShowing())) {
                     mPopupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
                     if (mDialogChangeListener != null) {
@@ -156,11 +156,11 @@ public class PopupWindowUtil {
         return false;
     }
 
-    public PopupWindowUtil show(View anchor, int xoff, int yoff) {
+    public PopupWindowUtil show(Activity activity, View anchor, int xoff, int yoff) {
         if (anchor != null) {
             anchor.post(() -> {
                 if (mPopupWindow != null) {
-                    boolean destroy = ActivityUtil.isDestroy(mActivity);
+                    boolean destroy = ActivityUtil.isDestroy(activity);
                     if (destroy) {
                         mPopupWindow.showAsDropDown(anchor, xoff, yoff);
                         if (mDialogChangeListener != null) {

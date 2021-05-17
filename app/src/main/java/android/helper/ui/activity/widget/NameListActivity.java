@@ -25,6 +25,13 @@ public class NameListActivity extends BaseTitleActivity {
         setTitleContent("自定义名字检测的列表");
 
         viewById = findViewById(R.id.rl_root);
+        View ssss = findViewById(R.id.tv_sss);
+        ssss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                instance.show(mContext, ssss);
+            }
+        });
         instance = PopupWindowUtil.getInstance(mContext)
                 .setWidth(ViewGroup.LayoutParams.MATCH_PARENT)
                 .setHeight(ViewGroup.LayoutParams.MATCH_PARENT)
@@ -46,9 +53,9 @@ public class NameListActivity extends BaseTitleActivity {
                         LogUtil.e("v:onDismiss");
                     }
                 })
-                .show(viewById);
+                .show(mContext, this.viewById);
 
-        viewById.setOnClickListener(new View.OnClickListener() {
+        this.viewById.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
