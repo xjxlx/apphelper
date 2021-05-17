@@ -135,12 +135,16 @@ public class PopupWindowUtil {
     }
 
     public PopupWindowUtil show(View view) {
-        boolean destroy = ActivityUtil.isDestroy(mActivity);
-        if ((!destroy) && (!mPopupWindow.isShowing())) {
-            mPopupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-            if (mDialogChangeListener != null) {
-                mDialogChangeListener.onShow(mLayout);
-            }
+        if (view != null) {
+            view.post(() -> {
+                boolean destroy = ActivityUtil.isDestroy(mActivity);
+                if ((!destroy) && (!mPopupWindow.isShowing())) {
+                    mPopupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+                    if (mDialogChangeListener != null) {
+                        mDialogChangeListener.onShow(mLayout);
+                    }
+                }
+            });
         }
         return windowUtil;
     }
@@ -153,14 +157,18 @@ public class PopupWindowUtil {
     }
 
     public PopupWindowUtil show(View anchor, int xoff, int yoff) {
-        if (mPopupWindow != null) {
-            boolean destroy = ActivityUtil.isDestroy(mActivity);
-            if (destroy) {
-                mPopupWindow.showAsDropDown(anchor, xoff, yoff);
-                if (mDialogChangeListener != null) {
-                    mDialogChangeListener.onShow(mLayout);
+        if (anchor != null) {
+            anchor.post(() -> {
+                if (mPopupWindow != null) {
+                    boolean destroy = ActivityUtil.isDestroy(mActivity);
+                    if (destroy) {
+                        mPopupWindow.showAsDropDown(anchor, xoff, yoff);
+                        if (mDialogChangeListener != null) {
+                            mDialogChangeListener.onShow(mLayout);
+                        }
+                    }
                 }
-            }
+            });
         }
         return windowUtil;
     }

@@ -28,7 +28,7 @@ public class NameListActivity extends BaseTitleActivity {
         instance = PopupWindowUtil.getInstance(mContext)
                 .setWidth(ViewGroup.LayoutParams.MATCH_PARENT)
                 .setHeight(ViewGroup.LayoutParams.MATCH_PARENT)
-                .setOutsideTouchable(false)
+                .setOutsideTouchable(true)
                 .setContentView(R.layout.pickerview_options, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -45,14 +45,8 @@ public class NameListActivity extends BaseTitleActivity {
                     public void onDismiss() {
                         LogUtil.e("v:onDismiss");
                     }
-                });
-
-        viewById.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                instance.show(viewById);
-            }
-        }, 2000);
+                })
+                .show(viewById);
 
         viewById.setOnClickListener(new View.OnClickListener() {
             @Override
