@@ -20,14 +20,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppThem"
         tools:targetApi="n">
-
-        <activity android:name=".ui.activity.widget.NameListActivity">
+        <activity android:name=".ui.activity.jetpack.LifecycleActivity"></activity>
+        <activity android:name=".ui.activity.jetpack.JetPackMapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".ui.activity.widget.NameListActivity" />
         <activity android:name=".ui.activity.otherutils.AudioPlayerActivity" />
         <activity android:name=".test.TestWebViewActivity" />
         <activity android:name=".test.TestWebSocketActivity" />

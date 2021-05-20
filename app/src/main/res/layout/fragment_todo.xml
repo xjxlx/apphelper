@@ -31,6 +31,10 @@
             android:id="@+id/tv_other"
             style="@style/style_todo_item"
             android:text="其他工具" />
+        <TextView
+            android:id="@+id/tv_jetpack"
+            style="@style/style_todo_item"
+            android:text="Android JetPack" />
 
     </LinearLayout>
 
