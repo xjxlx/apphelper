@@ -27,20 +27,38 @@ public class ViewTouch extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         setMeasuredDimension(200, 200);
     }
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                LogUtil.e(Tag, "dispatchTouchEvent--->down");
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                LogUtil.e(Tag, "dispatchTouchEvent--->move");
+                break;
+
+            case MotionEvent.ACTION_UP:
+                LogUtil.e(Tag, "dispatchTouchEvent--->up");
+                break;
+        }
+
+        return super.dispatchTouchEvent(ev);
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                LogUtil.e(Tag, "down");
+                LogUtil.e(Tag, "onTouchEvent--->down");
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                LogUtil.e(Tag, "move");
+                LogUtil.e(Tag, "onTouchEvent--->move");
                 break;
 
             case MotionEvent.ACTION_UP:
-                LogUtil.e(Tag, "up");
+                LogUtil.e(Tag, "onTouchEvent--->up");
                 break;
         }
         return super.onTouchEvent(event);
