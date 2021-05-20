@@ -3,6 +3,7 @@ package com.android.helper.utils.dialog;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -144,6 +145,11 @@ public class DialogUtil {
                     attributes.height = mHeight;
                     if (mAnimation != 0) {
                         attributes.windowAnimations = mAnimation;
+                    }
+
+                    //解决android 9.0水滴屏/刘海屏有黑边的问题
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
                     }
                 }
             }

@@ -1,11 +1,15 @@
 package com.android.helper.utils.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -21,23 +25,31 @@ import com.android.helper.utils.TextViewUtil;
  */
 public class PopupWindowUtil {
 
+    @SuppressLint("StaticFieldLeak")
     private static PopupWindowUtil windowUtil;
     private PopupWindow mPopupWindow;
-    private Activity activity;
+    private final Activity mActivity;
     private DialogChangeListener mDialogChangeListener;
     private View mLayout;
 
-    private int mWidth = WindowManager.LayoutParams.WRAP_CONTENT;
-    private int mHeight = WindowManager.LayoutParams.WRAP_CONTENT;
+    private int mWidth = ViewGroup.LayoutParams.WRAP_CONTENT;   // 默认的宽高
+    private int mHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+    private boolean mTouchable = true; // 触摸是否可以取消，默认可以
+    private boolean mClippingEnabled = true; // 是否可以超出屏幕显示，模式不可以
 
-    public static PopupWindowUtil getInstance() {
+    public static PopupWindowUtil getInstance(Activity activity) {
         if (windowUtil == null) {
-            windowUtil = new PopupWindowUtil();
+            windowUtil = new PopupWindowUtil(activity);
         }
         return windowUtil;
     }
 
-    private PopupWindowUtil() {
+    private PopupWindowUtil(Activity activity) {
+        mActivity = activity;
+    }
+
+    private void initPopupWindow() {
+
         // 释放掉原来的pop
         if (mPopupWindow != null) {
             if (mPopupWindow.isShowing()) {
@@ -46,36 +58,63 @@ public class PopupWindowUtil {
             mPopupWindow = null;
         }
 
-        mPopupWindow = new PopupWindow();
+        mPopupWindow = new PopupWindow(mWidth, mHeight);
 
-        //:pop背景（如果不设置就不会点击消失）
+        //: pop背景（如果不设置就不会点击消失）
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        //: 设置可以点击pop以外的区域
+        mPopupWindow.setOutsideTouchable(mTouchable);
+
+        //: 设置PopupWindow可获得焦点
+        mPopupWindow.setFocusable(mTouchable);
+
         //: 设置PopupWindow可触摸
-        mPopupWindow.setOutsideTouchable(true);
-        //:设置PopupWindow可获得焦点
-        mPopupWindow.setFocusable(true);
-        //: 设置点击pop以外的区域会消失
-        mPopupWindow.setTouchable(true);
+        mPopupWindow.setTouchable(mTouchable);
+
+        //: 设置超出屏幕显示
+        mPopupWindow.setClippingEnabled(mClippingEnabled);
+
+        //解决android 9.0水滴屏/刘海屏有黑边的问题
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            Window window = mActivity.getWindow();
+            WindowManager.LayoutParams attributes = window.getAttributes();
+            attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            window.setAttributes(attributes);
+        }
 
         mPopupWindow.setOnDismissListener(() -> {
             if (mDialogChangeListener != null) {
                 mDialogChangeListener.onDismiss();
             }
         });
+
     }
 
-    public PopupWindowUtil setContentView(int layout) {
-        mLayout = LayoutInflater.from(activity).inflate(layout, null);
-        if (mLayout != null) {
-            mPopupWindow.setContentView(mLayout);
+    public PopupWindowUtil setContentView(int layout, View.OnClickListener listener) {
+        if (mActivity != null) {
+            initPopupWindow();
+            mLayout = LayoutInflater.from(mActivity).inflate(layout, null);
+            if (mLayout != null) {
+                mPopupWindow.setContentView(mLayout);
+                if (listener != null) {
+                    listener.onClick(mLayout);
+                }
+            }
         }
         return windowUtil;
     }
 
-    public PopupWindowUtil setContentView(View layout) {
-        if (layout != null) {
-            mLayout = layout;
-            mPopupWindow.setContentView(mLayout);
+    public PopupWindowUtil setContentView(View layout, View.OnClickListener listener) {
+        if (mActivity != null) {
+            if (layout != null) {
+                initPopupWindow();
+                mLayout = layout;
+                mPopupWindow.setContentView(mLayout);
+                if (listener != null) {
+                    listener.onClick(mLayout);
+                }
+            }
         }
         return windowUtil;
     }
@@ -83,7 +122,7 @@ public class PopupWindowUtil {
     public PopupWindowUtil setWidth(int width) {
         mWidth = width;
         if (mPopupWindow != null) {
-            mPopupWindow.setWidth(mWidth);
+            mPopupWindow.setWidth(width);
         }
         return windowUtil;
     }
@@ -91,27 +130,48 @@ public class PopupWindowUtil {
     public PopupWindowUtil setHeight(int height) {
         mHeight = height;
         if (mPopupWindow != null) {
-            mPopupWindow.setHeight(mHeight);
+            mPopupWindow.setHeight(height);
         }
         return windowUtil;
     }
 
-    public void showAtLocation(View view) {
-        if ((!activity.isFinishing()) && (!mPopupWindow.isShowing())) {
-            mPopupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-            if (mDialogChangeListener != null) {
-                mDialogChangeListener.onShow(mLayout);
-            }
+    public PopupWindowUtil show(Activity activity, View view) {
+        if (view != null) {
+            view.post(() -> {
+                boolean destroy = ActivityUtil.isDestroy(activity);
+                if ((!destroy) && (!mPopupWindow.isShowing())) {
+                    mPopupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+                    if (mDialogChangeListener != null) {
+                        mDialogChangeListener.onShow(mLayout);
+                    }
+                }
+            });
         }
+        return windowUtil;
     }
 
-    public void showAsDropDown(View anchor, int xoff, int yoff) {
+    public boolean isShowing() {
         if (mPopupWindow != null) {
-            boolean destroy = ActivityUtil.isDestroy(activity);
-            if (destroy) {
-                mPopupWindow.showAsDropDown(anchor, xoff, yoff);
-            }
+            return mPopupWindow.isShowing();
         }
+        return false;
+    }
+
+    public PopupWindowUtil show(Activity activity, View anchor, int xoff, int yoff) {
+        if (anchor != null) {
+            anchor.post(() -> {
+                if (mPopupWindow != null) {
+                    boolean destroy = ActivityUtil.isDestroy(activity);
+                    if (destroy) {
+                        mPopupWindow.showAsDropDown(anchor, xoff, yoff);
+                        if (mDialogChangeListener != null) {
+                            mDialogChangeListener.onShow(mLayout);
+                        }
+                    }
+                }
+            });
+        }
+        return windowUtil;
     }
 
     /**
@@ -130,6 +190,30 @@ public class PopupWindowUtil {
     }
 
     /**
+     * @param touchable 是否消失
+     * @return 点击popupWindow 外部的区域是否消失
+     */
+    public PopupWindowUtil setOutsideTouchable(boolean touchable) {
+        this.mTouchable = touchable;
+        return this;
+    }
+
+    /**
+     * @return 是否可以超出屏幕显示，false :可以，true:不可以，默认不可以
+     */
+    public PopupWindowUtil setClippingEnabled(boolean clippingEnabled) {
+        this.mClippingEnabled = clippingEnabled;
+        return this;
+    }
+
+    /**
+     * @return 获取当前的popupWindow
+     */
+    public PopupWindow getPopupWindow() {
+        return mPopupWindow;
+    }
+
+    /**
      * @return 设置view的点击事件
      */
     public PopupWindowUtil setViewClickListener(int id, View.OnClickListener listener) {
@@ -145,8 +229,15 @@ public class PopupWindowUtil {
     /**
      * 窗口打开和关闭的监听
      */
-    public void setPopupWindowChangeListener(DialogChangeListener dialogChangeListener) {
+    public PopupWindowUtil setPopupWindowChangeListener(DialogChangeListener dialogChangeListener) {
         this.mDialogChangeListener = dialogChangeListener;
+        return this;
+    }
+
+    public void dismiss() {
+        if (mPopupWindow != null) {
+            mPopupWindow.dismiss();
+        }
     }
 
 }

@@ -185,4 +185,17 @@ public class ScreenUtil {
         LogUtil.e("screenWidth:" + screenWidth + "  screenHeight:" + screenHeight);
     }
 
+    /**
+     * 适配全面屏，针对全面屏有黑边的问题
+     *
+     * @param activity 适配的页面
+     */
+    public void adapterFullScreen(Activity activity) {
+        //解决android 9.0水滴屏/刘海屏有黑边的问题
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            activity.getWindow().setAttributes(lp);
+        }
+    }
 }
