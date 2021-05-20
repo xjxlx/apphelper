@@ -46,6 +46,25 @@ public class ViewGroupTouch extends RelativeLayout {
     }
 
     @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                LogUtil.e(Tag, "onInterceptTouchEvent--->down");
+                return true;
+
+            case MotionEvent.ACTION_MOVE:
+                LogUtil.e(Tag, "onInterceptTouchEvent--->move");
+                break;
+
+            case MotionEvent.ACTION_UP:
+                LogUtil.e(Tag, "onInterceptTouchEvent--->up");
+                break;
+        }
+
+        return super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
