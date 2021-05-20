@@ -55,6 +55,11 @@
             style="@style/style_todo_item"
             android:text="测试webView" />
 
+        <TextView
+            android:id="@+id/tv_test_touch"
+            style="@style/style_todo_item"
+            android:text="测试事件分发" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

@@ -11,12 +11,16 @@ import androidx.annotation.Nullable;
  */
 public abstract class BaseView extends View {
 
+    public String Tag;
+
     public BaseView(Context context) {
         super(context);
+        Tag = getClass().getSimpleName();
     }
 
     public BaseView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        Tag = getClass().getSimpleName();
     }
 
     /**
