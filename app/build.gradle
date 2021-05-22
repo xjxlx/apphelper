@@ -110,8 +110,13 @@ android {
         def buildType = variant.buildType.name
         variant.outputs.all {
             if (buildType == "release") {
-                variant.getPackageApplicationProvider().get().outputDirectory = new File(project.rootDir.absolutePath + File.separator + "outputs")
-                outputFileName = "AppHelper-v${variant.versionName}${productFlavors.name}-${releaseTime()}.apk"
+                // 获取渠道名字
+                def productFlavors = productFlavors.name
+                // 设置文件夹名字 = 项目目录 + outputs + release + 渠道名字
+                def file = new File(project.rootDir.absolutePath + File.separator + "outputs" + File.separator + "release" + File.separator + productFlavors)
+                variant.getPackageApplicationProvider().get().outputDirectory = file
+                // 文件名字 =  AppHelper-v + 版本名字 + 渠道名字 + 当前时间
+                outputFileName = "AppHelper-v${variant.versionName}${productFlavors}-${releaseTime()}.apk"
             }
         }
     }

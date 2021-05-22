@@ -92,4 +92,4 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
-/outputs/output-metadata.json
+/outputs/
