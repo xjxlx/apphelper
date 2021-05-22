@@ -42,7 +42,7 @@ android {
 
             buildConfigField("String", "APP_ID", project.APP_ID)
             buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
-//            buildConfigField("boolean", "APP_DEBUG", "false")
+            //  buildConfigField("boolean", "APP_DEBUG", "false")
             project.extensions.findByName('android')?.defaultConfig?.buildConfigField("boolean", "APP_DEBUG", "false")
         }
 
@@ -57,7 +57,7 @@ android {
 
             buildConfigField("String", "APP_ID", project.APP_ID_DEBUG)
             buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
-//            buildConfigField("boolean", "APP_DEBUG", "true")
+            //  buildConfigField("boolean", "APP_DEBUG", "true")
             project.extensions.findByName('android')?.defaultConfig?.buildConfigField("boolean", "APP_DEBUG", "true")
 
         }
@@ -67,14 +67,21 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    sourceSets {
+
+    sourceSets {//目录指向配置
         main {
-            jniLibs.srcDirs = ['libs']  /**在libs文件夹下找so文件*/
+            jniLibs.srcDirs = ['libs']//指定lib库目录
         }
-        main.jniLibs.srcDirs = ['libs']
     }
+
     buildFeatures {
         viewBinding = true
+    }
+
+    //程序在编译的时候会检查lint，有任何错误提示会停止build，我们可以关闭这个开关
+    lintOptions {
+        abortOnError false //即使报错也不会停止打包
+        checkReleaseBuilds false  //打包release版本的时候进行检测
     }
 }
 
@@ -93,7 +100,7 @@ dependencies {
     implementation 'com.google.android:flexbox:1.1.1' // 流式布局
 
     implementation project(path: ':helper')
-//    implementation'com.gitee.xjxlx:apphelper:1.0.0.2.8'
+    // implementation'com.gitee.xjxlx:apphelper:1.0.0.2.8'
 
     // implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
     implementation 'com.squareup.okhttp3:mockwebserver:4.7.2'

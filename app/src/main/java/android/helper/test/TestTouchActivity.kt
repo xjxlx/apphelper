@@ -1,10 +1,14 @@
 package android.helper.test
 
 import android.helper.R
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.MotionEvent
 import android.view.View
 import com.android.helper.base.BaseTitleActivity
 import com.android.helper.utils.LogUtil
+import com.android.helper.utils.ResourceUtil
 import kotlinx.android.synthetic.main.activity_test_touch.*
 
 class TestTouchActivity : BaseTitleActivity() {
@@ -36,6 +40,26 @@ class TestTouchActivity : BaseTitleActivity() {
                 return false;
             }
         })
+
+        val thread = object : Thread() {
+            override fun run() {
+                super.run()
+                Looper.prepare()
+                Looper.loop()
+
+                val mHandler = object : Handler() {
+                    override fun handleMessage(msg: Message?) {
+                        super.handleMessage(msg)
+                        tv_text.setBackgroundColor(ResourceUtil.getColor(R.color.blue_1))
+                    }
+                };
+
+                mHandler.sendEmptyMessage(111)
+
+            }
+        }
+        thread.start()
+
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
