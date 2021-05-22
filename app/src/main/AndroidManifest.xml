@@ -20,6 +20,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppThem"
         tools:targetApi="n">
+
+        <!--多渠道打包的key-->
+        <meta-data
+            android:name="CHANNEL_VALUE"
+            android:value="${channel_value}" />
+
         <activity android:name=".test.TestTouchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

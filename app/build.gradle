@@ -39,7 +39,6 @@ android {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
             buildConfigField("String", "APP_ID", project.APP_ID)
             buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
             //  buildConfigField("boolean", "APP_DEBUG", "false")
@@ -49,17 +48,14 @@ android {
         debug {
             //给applicationId添加后缀“.debug”
             applicationIdSuffix ".debug"
-
             signingConfig signingConfigs.debug
             shrinkResources false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-
             buildConfigField("String", "APP_ID", project.APP_ID_DEBUG)
             buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
             //  buildConfigField("boolean", "APP_DEBUG", "true")
             project.extensions.findByName('android')?.defaultConfig?.buildConfigField("boolean", "APP_DEBUG", "true")
-
         }
     }
 
@@ -83,6 +79,47 @@ android {
         abortOnError false //即使报错也不会停止打包
         checkReleaseBuilds false  //打包release版本的时候进行检测
     }
+
+    // 定义不同的维度,多渠道打包必须有一个维度
+    flavorDimensions "default"
+    productFlavors {
+        //不同渠道
+//        _360 {
+//            dimension "default"
+//            //替换AndroidManifest中的值
+//            manifestPlaceholders = [channel_value: "360"]
+//            buildConfigField "boolean", "SUPPORT_AUTO_UPDATE_FEATURE", "true"
+//        }
+//        _qq {
+//            dimension "default"
+//            //替换AndroidManifest中的值
+//            manifestPlaceholders = [channel_value: "qq"]
+//            buildConfigField "boolean", "SUPPORT_AUTO_UPDATE_FEATURE", "false"
+//        }
+        _360 {}
+        _qq {}
+    }
+
+    productFlavors.all {
+        flavor -> flavor.manifestPlaceholders = [channel_value: name]
+    }
+
+    //这里修改apk文件名
+    android.applicationVariants.all { variant ->
+        //判断是release还是debug版本
+        def buildType = variant.buildType.name
+        variant.outputs.all {
+            if (buildType == "release") {
+                variant.getPackageApplicationProvider().get().outputDirectory = new File(project.rootDir.absolutePath + File.separator + "outputs")
+                outputFileName = "AppHelper-v${variant.versionName}${productFlavors.name}-${releaseTime()}.apk"
+            }
+        }
+    }
+}
+
+// 显示的时间格式，形如20171110
+static def releaseTime() {
+    return new Date().format("yyyy-MM-dd HH-mm", TimeZone.getDefault());
 }
 
 dependencies {
@@ -106,3 +143,5 @@ dependencies {
     implementation 'com.squareup.okhttp3:mockwebserver:4.7.2'
     implementation 'com.github.xjxlx:dimens:1.0.0.0.1'
 }
+
+
