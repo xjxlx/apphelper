@@ -125,10 +125,8 @@ public class MainActivity extends BaseTitleActivity {
         });
 
         // 设置默认数据
-        navigation.getMenu().getItem(0).setChecked(true);
-        vpContent.setCurrentItem(0);
-        setTitleContent("首页");
-        LogUtil.e("");
+        navigation.getMenu().getItem(1).setChecked(true);
+        vpContent.setCurrentItem(1);
+        setTitleContent("代办");
     }
-
 }

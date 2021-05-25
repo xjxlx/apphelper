@@ -14,7 +14,7 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:minHeight">@dimen/dp_40</item>
         <item name="android:gravity">center</item>
-        <item name="android:textSize">35sp</item>
+        <item name="android:textSize">@dimen/sp_35</item>
     </style>
 
     <style name="ProgressBar_Mini" parent="@android:style/Widget.ProgressBar.Horizontal">
@@ -38,15 +38,14 @@
     </style>
 
     <style name="style_todo_item">
-        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginTop">@dimen/dp_10</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">40dp</item>
-        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_height">@dimen/dp_40</item>
+        <item name="android:layout_marginBottom">@dimen/dp_5</item>
         <item name="android:background">@color/blue_6</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/black_1</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">@dimen/sp_18</item>
     </style>
-
 
 </resources>
