@@ -20,12 +20,12 @@
 
     <TextView
         android:id="@+id/tv_test"
-        android:text="sssssss"
-        android:textSize="40sp"
-        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tv_text"
-        android:layout_marginTop="30dp" />
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:text="sssssss"
+        android:textSize="40sp" />
 
 </android.helper.widget.hm.ViewGroupTouch>
