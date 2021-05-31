@@ -95,8 +95,12 @@ android {
 //            manifestPlaceholders = [channel_value: "qq"]
 //            buildConfigField "boolean", "SUPPORT_AUTO_UPDATE_FEATURE", "false"
 //        }
-        _360 {}
-        _qq {}
+        _360 {
+            dimension 'default'
+        }
+        _qq {
+            dimension 'default'
+        }
     }
 
     productFlavors.all {
