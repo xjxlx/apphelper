@@ -1,5 +1,6 @@
 package android.helper.test
 
+import android.annotation.SuppressLint
 import android.helper.R
 import android.os.Handler
 import android.os.Looper
@@ -11,6 +12,8 @@ import com.android.helper.utils.ResourceUtil
 import kotlinx.android.synthetic.main.activity_test_touch.*
 
 class TestTouchActivity : BaseTitleActivity() {
+
+    val tag = " Window"
 
     override fun getTitleLayout(): Int {
         return R.layout.activity_test_touch
@@ -30,7 +33,8 @@ class TestTouchActivity : BaseTitleActivity() {
                 Looper.prepare()
                 Looper.loop()
 
-                val mHandler = object : Handler() {
+                val mHandler = @SuppressLint("HandlerLeak")
+                object : Handler() {
                     override fun handleMessage(msg: Message?) {
                         super.handleMessage(msg)
                         tv_text.setBackgroundColor(ResourceUtil.getColor(R.color.blue_1))
@@ -46,18 +50,36 @@ class TestTouchActivity : BaseTitleActivity() {
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         when (ev.action) {
-            MotionEvent.ACTION_DOWN -> LogUtil.e(TAG, "dispatchTouchEvent--->down")
-            MotionEvent.ACTION_MOVE -> LogUtil.e(TAG, "dispatchTouchEvent--->move")
-            MotionEvent.ACTION_UP -> LogUtil.e(TAG, "dispatchTouchEvent--->up")
+            MotionEvent.ACTION_DOWN -> {
+                LogUtil.e(tag, "dispatchTouchEvent--->down")
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                LogUtil.e(tag, "dispatchTouchEvent--->move")
+            }
+
+            MotionEvent.ACTION_UP -> {
+
+                LogUtil.e(tag, "dispatchTouchEvent--->up")
+            }
         }
         return super.dispatchTouchEvent(ev)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> LogUtil.e(TAG, "onTouchEvent--->down")
-            MotionEvent.ACTION_MOVE -> LogUtil.e(TAG, "onTouchEvent--->move")
-            MotionEvent.ACTION_UP -> LogUtil.e(TAG, "onTouchEvent--->up")
+            MotionEvent.ACTION_DOWN -> {
+                LogUtil.e(tag, "onTouchEvent--->down")
+
+            }
+            MotionEvent.ACTION_MOVE -> {
+                LogUtil.e(tag, "onTouchEvent--->move")
+            }
+
+            MotionEvent.ACTION_UP -> {
+
+                LogUtil.e(tag, "onTouchEvent--->up")
+            }
         }
         return super.onTouchEvent(event)
     }
