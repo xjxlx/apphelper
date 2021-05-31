@@ -11,7 +11,7 @@ import com.android.helper.utils.LogUtil;
 
 public class ViewTouch extends View {
 
-    public final String Tag = getClass().getSimpleName();
+    public final String Tag = "View";
 
     public ViewTouch(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -27,6 +27,7 @@ public class ViewTouch extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         setMeasuredDimension(200, 200);
     }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         switch (ev.getAction()) {
@@ -42,7 +43,6 @@ public class ViewTouch extends View {
                 LogUtil.e(Tag, "dispatchTouchEvent--->up");
                 break;
         }
-
         return super.dispatchTouchEvent(ev);
     }
 
@@ -62,5 +62,6 @@ public class ViewTouch extends View {
                 break;
         }
         return super.onTouchEvent(event);
+
     }
 }
