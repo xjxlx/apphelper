@@ -48,4 +48,13 @@
         <item name="android:textSize">@dimen/sp_18</item>
     </style>
 
+    <style name="default_text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/black_9</item>
+        <item name="android:textSize">@dimen/sp_18</item>
+        <item name="android:hint">默认的文字</item>
+        <item name="android:textColorHint">@color/black_9</item>
+    </style>
+
 </resources>

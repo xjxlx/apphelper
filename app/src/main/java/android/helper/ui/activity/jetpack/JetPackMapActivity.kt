@@ -1,13 +1,17 @@
 package android.helper.ui.activity.jetpack
 
 import android.helper.R
+import android.helper.ui.activity.jetpack.lifecycle.LifecycleActivity
 import android.view.View
 import com.android.helper.base.BaseTitleActivity
+import com.android.helper.interfaces.TagListener
+import com.android.helper.utils.ClassUtil
+import com.android.helper.utils.LogUtil
 
 /**
  * JetPack的集合
  */
-class JetPackMapActivity : BaseTitleActivity() {
+class JetPackMapActivity : BaseTitleActivity(), TagListener {
 
     override fun getTitleLayout(): Int {
         return R.layout.activity_jet_pack_map
@@ -20,7 +24,6 @@ class JetPackMapActivity : BaseTitleActivity() {
 
     override fun initListener() {
         super.initListener()
-
         setonClickListener(R.id.tv_lifecycle)
     }
 
@@ -31,5 +34,9 @@ class JetPackMapActivity : BaseTitleActivity() {
                 startActivity(LifecycleActivity::class.java)
             }
         }
+    }
+
+    override fun getTag(): String {
+        return ClassUtil.getClassName(this)
     }
 }

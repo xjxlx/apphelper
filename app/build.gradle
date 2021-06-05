@@ -83,23 +83,15 @@ android {
 
     productFlavors {
         //不同渠道
-//        _360 {
-//            dimension "default"
-//            //替换AndroidManifest中的值
-//            manifestPlaceholders = [channel_value: "360"]
-//            buildConfigField "boolean", "SUPPORT_AUTO_UPDATE_FEATURE", "true"
-//        }
-//        _qq {
-//            dimension "default"
-//            //替换AndroidManifest中的值
-//            manifestPlaceholders = [channel_value: "qq"]
-//            buildConfigField "boolean", "SUPPORT_AUTO_UPDATE_FEATURE", "false"
-//        }
         _360 {
-            dimension 'default'
+            dimension "default"
+            //替换AndroidManifest中的值
+            manifestPlaceholders = [channel_value: "360"]
         }
         _qq {
-            dimension 'default'
+            dimension "default"
+            //替换AndroidManifest中的值
+            manifestPlaceholders = [channel_value: "qq"]
         }
     }
 
