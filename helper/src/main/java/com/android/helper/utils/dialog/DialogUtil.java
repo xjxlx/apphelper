@@ -20,13 +20,20 @@ import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.common.EventMessage;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.jetpack.lifecycle.BaseLifecycleObserver;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class DialogUtil {
+/**
+ * Dialog的工具类
+ * 使用的时候，要在activity 或者 fragment 中调用 getLifecycle.addObserver() 把自身
+ * 绑定页面的生命周期，在页面关闭的时候，就会自动关闭弹窗，避免出现找不到window的崩溃
+ * 错误了
+ */
+public class DialogUtil implements BaseLifecycleObserver {
 
     @SuppressLint("StaticFieldLeak")
     private static DialogUtil dialogUtil;
@@ -38,6 +45,37 @@ public class DialogUtil {
     private int mAnimation = R.style.base_dialog_animation;// 动画
     private View mRootView; // 布局的veiw
     private int mDialogType = DialogType.DEFAULT_DIALOG;
+
+    @Override
+    public void onCreate() {
+
+    }
+
+    @Override
+    public void onStart() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        // 在页面不可见的时候，自动关闭dialog
+        release();
+    }
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({DialogType.DEFAULT_DIALOG, DialogType.HINT_DIALOG})

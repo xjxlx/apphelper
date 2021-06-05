@@ -27,7 +27,7 @@ class ViewPagerActivity : BaseTitleActivity() {
         banner_view.setAutoLoop(true, 0)
         banner_view.setBannerChangeListener(object : BannerChangeListener {
             override fun onSelector(position: Int) {
-                Log.e(TAG, "onSelector: $position")
+                Log.e(tag, "onSelector: $position")
             }
         })
 

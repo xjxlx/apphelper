@@ -12,7 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.helper.R;
 import com.android.helper.httpclient.BaseHttpSubscriber;
 import com.android.helper.httpclient.RxUtil;
+import com.android.helper.interfaces.TagListener;
 import com.android.helper.interfaces.listener.HttpManagerListener;
+import com.android.helper.utils.ClassUtil;
 import com.android.helper.utils.ClickUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.statusBar.StatusBarUtil;
@@ -25,10 +27,9 @@ import io.reactivex.disposables.Disposable;
 /**
  * 最基层的Activity
  */
-public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, HttpManagerListener {
+public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, HttpManagerListener, TagListener {
 
     public BaseActivity mContext;
-    protected String TAG;
 
     /*
      *此处不能写成静态的，否则就会和使用RxManager一样了
@@ -39,8 +40,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        // 使用本类的名字作为tag
-        TAG = getClass().getSimpleName();
 
         LogUtil.e("当前的页面：Activity：--->  " + getClass().getName());
 
@@ -195,6 +194,11 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         if (!mCompositeDisposable.isDisposed()) {
             mCompositeDisposable.clear();
         }
+    }
+
+    @Override
+    public String getTag() {
+        return ClassUtil.getClassName(this);
     }
 
 }

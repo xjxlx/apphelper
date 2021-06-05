@@ -19,11 +19,17 @@ import androidx.annotation.IdRes;
 import com.android.helper.interfaces.listener.DialogChangeListener;
 import com.android.helper.utils.ActivityUtil;
 import com.android.helper.utils.TextViewUtil;
+import com.android.helper.utils.jetpack.lifecycle.BaseLifecycleObserver;
 
 /**
  * PopupWidow 的工具类
+ * <p>
+ * 使用的时候，要在activity 或者 fragment 中调用 getLifecycle.addObserver() 把自身
+ * 绑定页面的生命周期，在页面关闭的时候，就会自动关闭弹窗，避免出现找不到window的崩溃
+ * 错误了
  */
-public class PopupWindowUtil {
+
+public class PopupWindowUtil implements BaseLifecycleObserver {
 
     @SuppressLint("StaticFieldLeak")
     private static PopupWindowUtil windowUtil;
@@ -240,4 +246,34 @@ public class PopupWindowUtil {
         }
     }
 
+    @Override
+    public void onCreate() {
+
+    }
+
+    @Override
+    public void onStart() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        // 手动关闭弹窗，避免崩溃
+        dismiss();
+    }
 }

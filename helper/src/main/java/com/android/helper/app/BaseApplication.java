@@ -12,7 +12,6 @@ import com.android.helper.base.refresh.BaseRefreshFooter;
 import com.android.helper.base.refresh.BaseRefreshHeader;
 import com.android.helper.interfaces.ICommonApplication;
 import com.android.helper.utils.ScreenUtil;
-import com.android.helper.utils.dialog.DialogUtil;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
@@ -213,10 +212,4 @@ public class BaseApplication {
         });
     }
 
-    /**
-     * 释放掉所有不用的数据
-     */
-    public static void releaseAll() {
-        DialogUtil.getInstance().release();
-    }
 }

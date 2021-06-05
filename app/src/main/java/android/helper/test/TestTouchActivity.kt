@@ -13,8 +13,6 @@ import kotlinx.android.synthetic.main.activity_test_touch.*
 
 class TestTouchActivity : BaseTitleActivity() {
 
-    val tag = " Window"
-
     override fun getTitleLayout(): Int {
         return R.layout.activity_test_touch
     }
