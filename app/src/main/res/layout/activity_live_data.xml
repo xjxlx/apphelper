@@ -1,70 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.LiveDataTitleActivity">
+    android:padding="@dimen/dp_20"
+    tools:context=".ui.activity.jetpack.livedata.LiveDataActivity">
 
-    <TextView
-        android:id="@+id/tv_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="测试数据"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/bt_ui"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="UI线程"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/bt_thread"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8" />
+        <TextView
+            android:id="@+id/tv_hint"
+            style="@style/default_text"
+            app:layout_constraintBottom_toTopOf="@+id/tv_live_date_content"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.2"
+            app:layout_constraintVertical_chainStyle="packed" />
 
-    <Button
-        android:id="@+id/bt_thread"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Thread线程"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintLeft_toRightOf="@+id/bt_ui"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8" />
+        <TextView
+            android:id="@+id/tv_live_date_content"
+            style="@style/default_text"
+            app:layout_constraintBottom_toTopOf="@+id/tv_mutable_live_date_content"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_hint"
+            app:layout_constraintVertical_bias="0.2" />
 
-    <Button
-        android:id="@+id/btn_stop_server1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="断掉线程1"
+        <TextView
+            android:id="@+id/tv_mutable_live_date_content"
+            style="@style/default_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_live_date_content"
+            app:layout_constraintVertical_bias="0.2" />
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/btn_stop_server2"
-        app:layout_constraintTop_toBottomOf="@+id/bt_ui"
-        app:layout_constraintVertical_bias="0.3" />
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/line1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="tv_mutable_live_date_content" />
 
-    <Button
-        android:id="@+id/btn_stop_server2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="断掉线程2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintLeft_toRightOf="@+id/btn_stop_server1"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bt_ui"
-        app:layout_constraintVertical_bias="0.3" />
+        <Button
+            android:id="@+id/bt_live_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试LiveData"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/bt_mutable_live_data"
+            app:layout_constraintTop_toBottomOf="@+id/line1"
+            app:layout_constraintVertical_bias="0.05" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/bt_mutable_live_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试MutableLiveData"
+            app:layout_constraintBottom_toBottomOf="@+id/bt_live_data"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toRightOf="@+id/bt_live_data"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/bt_live_data"
+            app:layout_constraintVertical_bias="0.5" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="bt_live_data" />
+
+        <FrameLayout
+            android:id="@+id/fl_live_data_1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_200"
+            android:background="@color/blue_1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/fl_live_data_2"
+            app:layout_constraintTop_toBottomOf="@+id/barrier_2"
+            app:layout_constraintVertical_bias="0.1" />
+
+        <FrameLayout
+            android:id="@+id/fl_live_data_2"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_200"
+            android:background="@color/yellow_1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toRightOf="@+id/fl_live_data_1"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/barrier_2"
+            app:layout_constraintVertical_bias="0.1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

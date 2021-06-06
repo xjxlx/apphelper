@@ -22,9 +22,9 @@ public class DemoMapTitleActivity extends BaseTitleActivity {
     protected void initListener() {
         super.initListener();
 
-        setonClickListener(R.id.tv_live_data, R.id.tv_open_qywx, R.id.tv_receive_map_result,
+        setonClickListener(R.id.tv_open_qywx, R.id.tv_receive_map_result,
                 R.id.tv_xml_write_data, R.id.tv_rxjava2, R.id.tv_download, R.id.tv_uploading,
-                R.id.tv_selector_image, R.id.tv_send_sms,R.id.tv_audio_player);
+                R.id.tv_selector_image, R.id.tv_send_sms, R.id.tv_audio_player);
     }
 
     @Override
@@ -37,9 +37,6 @@ public class DemoMapTitleActivity extends BaseTitleActivity {
     public void onClick(View v) {
         super.onClick(v);
         switch (v.getId()) {
-            case R.id.tv_live_data:
-                startActivity(LiveDataTitleActivity.class);
-                break;
 
             case R.id.tv_open_qywx:
                 startActivity(WorkWxTitleActivity.class);

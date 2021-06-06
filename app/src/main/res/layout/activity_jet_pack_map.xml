@@ -20,6 +20,11 @@
             style="@style/style_todo_item"
             android:text="ViewModel" />
 
+        <TextView
+            android:id="@+id/tv_live_date"
+            style="@style/style_todo_item"
+            android:text="LiveData" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

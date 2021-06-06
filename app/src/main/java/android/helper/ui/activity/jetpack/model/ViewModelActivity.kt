@@ -1,7 +1,6 @@
 package android.helper.ui.activity.jetpack.model
 
 import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
 import android.helper.R
 import androidx.lifecycle.ViewModelProviders
 import com.android.helper.base.BaseTitleActivity
@@ -23,6 +22,10 @@ import kotlinx.android.synthetic.main.activity_view_model.*
  */
 class ViewModelActivity : BaseTitleActivity() {
 
+    private val viewModel by lazy {
+        return@lazy ViewModelProviders.of(this).get(TestViewModel::class.java)
+    }
+
     override fun getTitleLayout(): Int {
         return R.layout.activity_view_model
     }
@@ -34,11 +37,13 @@ class ViewModelActivity : BaseTitleActivity() {
 
     override fun initListener() {
         super.initListener()
+
         btn_hp.setOnClickListener {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;//横屏
+            viewModel.name = "张淑兰"
         }
+
         btn_sp.setOnClickListener {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;//竖屏
+            viewModel.name = "李芳华"
         }
     }
 
@@ -52,8 +57,6 @@ class ViewModelActivity : BaseTitleActivity() {
         lifecycle.addObserver(object : AndroidLifecycle(this) {})
         // 自定横竖屏
         // lifecycle.addObserver(object : OrientationListener(mContext, this) {})
-
-        val viewModel = ViewModelProviders.of(this).get(TestViewModel::class.java)
 
         viewModel.name = "张三"
 

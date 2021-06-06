@@ -125,7 +125,7 @@
             android:process=":server1" />
 
         <activity android:name=".ui.activity.DemoMapTitleActivity" />
-        <activity android:name=".ui.activity.LiveDataTitleActivity" />
+        <activity android:name=".ui.activity.jetpack.livedata.LiveDataActivity" />
         <activity android:name=".ui.activity.H5StartNativeTitleActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
