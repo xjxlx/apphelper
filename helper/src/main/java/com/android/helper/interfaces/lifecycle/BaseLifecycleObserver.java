@@ -1,4 +1,4 @@
-package com.android.helper.utils.jetpack.lifecycle;
+package com.android.helper.interfaces.lifecycle;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;

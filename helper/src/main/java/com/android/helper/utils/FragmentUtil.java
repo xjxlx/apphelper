@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -12,194 +11,145 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.android.helper.interfaces.listener.CallBackListener;
 
+import java.util.List;
+
 /**
- * Fragment的工具类
+ * fragment的工具类
  */
 public class FragmentUtil {
 
-    private static final String TAG = "FragmentUtil";
+    private boolean isHide;// 是否自动隐藏
+    private FragmentManager mManager;
 
-    private static FragmentUtil fragmentUtil;
-    private Fragment mBeforeFragment;// 上一个fragment
-    private final FragmentManager manager;
-
-    private FragmentUtil(@NonNull FragmentActivity fragmentActivity) {
-        manager = fragmentActivity.getSupportFragmentManager();
-    }
-
-    public static FragmentUtil getInstance(FragmentActivity fragmentActivity) {
-        if (fragmentActivity != null) {
-            if (fragmentUtil == null) {
-                fragmentUtil = new FragmentUtil(fragmentActivity);
-            }
+    public FragmentUtil(@NonNull FragmentActivity activity) {
+        if (activity != null) {
+            mManager = activity.getSupportFragmentManager();
         }
-        return fragmentUtil;
     }
 
     /**
-     * @param containerViewId 父类的容器id
-     * @param fragment        目标的fragment，用于展示
-     * @param tag             目标fragment的tag
+     * @param hide 是否要隐藏掉其他的fragment，true:隐藏，false:不隐藏，默认是fragment
+     * @return 是否要隐藏掉其他的fragment，适用于show 和 hide 的类型
      */
-    public void add(@IdRes int containerViewId, Fragment fragment, @Nullable String tag, CallBackListener<Object> listener) {
-        boolean isSuccess = false;
+    public FragmentUtil autoHide(boolean hide) {
+        this.isHide = hide;
+        return this;
+    }
+
+    /**
+     * @param id       指定替换位置的id
+     * @param fragment 需要添加的fragment
+     * @param tag      添加时候的tag
+     * @param listener 添加fragment的回调
+     * @return 添加一个fragment到指定的布局上，并返回添加的结果
+     */
+    public FragmentUtil add(@IdRes int id, @NonNull Fragment fragment, @NonNull String tag, CallBackListener<Object> listener) {
+        boolean success = false;
         try {
             // 如果fragment为空，则停止后续的所有操作
             if (fragment == null) {
                 throw new NullPointerException("fragment 不能为空");
             }
 
-            if (manager != null) {
-                FragmentTransaction transaction = manager.beginTransaction();
+            if (mManager != null) {
+                FragmentTransaction ft = mManager.beginTransaction();
 
-                if (mBeforeFragment != null) {
-                    if (mBeforeFragment != fragment) {
-                        if (mBeforeFragment.isVisible()) {
-                            transaction.hide(mBeforeFragment); // fragment如果不相同，则隐藏上一个的fragment
+                // 添加到管理器中
+                if (!fragment.isAdded()) {
+                    ft.add(id, fragment, tag);
+                }
+
+                // 隐藏之前所有的fragment
+                if (isHide) {
+                    List<Fragment> fragments = mManager.getFragments();
+                    if (fragment != null && fragments.size() > 0) {
+                        for (Fragment fr : fragments) {
+                            if (fr != fragment) {
+                                ft.hide(fr);
+                            }
                         }
                     }
                 }
 
-                if (fragment.isAdded()) { // 如果fragment已经添加过了
-                    // 展示目标的fragment
-                    if (!fragment.isVisible()) {
-                        transaction.show(fragment);
-                    }
-                } else { // fragment没有添加过
-                    // 判断是否使用tag
-                    if (TextUtils.isEmpty(tag)) {
-                        // 使用tag的情况
-                        transaction.add(containerViewId, fragment);
-                    } else {
-                        // 不使用tag的情况
-                        transaction.add(containerViewId, fragment, tag);
-                    }
+                // 展示当前的view
+                if (fragment.isHidden()) {
+                    ft.show(fragment);
                 }
 
-                transaction.commitAllowingStateLoss();
-
-                mBeforeFragment = fragment;
-                LogUtil.e(TAG, "fragment添加成功：" + fragment.toString());
-                isSuccess = true;
+                ft.commitAllowingStateLoss();
+                success = true;
             }
+
         } catch (Exception e) {
-            isSuccess = false;
-            LogUtil.e(TAG, "fragment添加失败 --->Error:" + e.getMessage());
+            success = false;
         }
-
         if (listener != null) {
-            listener.onBack(isSuccess, tag, "");
+            listener.onBack(success, tag, null);
         }
+        return this;
     }
 
     /**
-     * @param containerViewId fragment的容器
-     * @param fragment        目标的fragment，用于展示
+     * @param id       指定替换位置的id
+     * @param fragment 需要添加的fragment
+     * @param tag      添加时候的tag
+     * @param listener 添加fragment的回调
+     * @return 添加一个fragment到指定的布局上，并返回添加的结果
      */
-    public void add(@IdRes int containerViewId, @NonNull Fragment fragment, CallBackListener<Object> listener) {
-        add(containerViewId, fragment, "", listener);
-    }
-
-    /**
-     * @param fragment 隐藏一个fragment
-     */
-    public void hide(@NonNull Fragment fragment, CallBackListener<Object> listener) {
-        boolean isSuccess = false;
-        try {
-            if (fragment.isVisible()) {
-                if (manager != null) {
-                    FragmentTransaction transaction =
-                            manager
-                                    .beginTransaction()
-                                    .hide(fragment);
-
-                    transaction.commitAllowingStateLoss();
-                    isSuccess = true;
+    public FragmentUtil replace(@IdRes int id, @NonNull Fragment fragment, @NonNull String tag, CallBackListener<Object> listener) {
+        boolean success = false;
+        if (mManager != null) {
+            try {
+                // 如果fragment为空，则停止后续的所有操作
+                if (fragment == null) {
+                    throw new NullPointerException("fragment 不能为空");
                 }
-            }
-        } catch (Exception e) {
-            isSuccess = false;
-        }
 
-        if (listener != null) {
-            listener.onBack(isSuccess, "", "");
+                mManager.beginTransaction()
+                        .replace(id, fragment, tag)
+                        .commitAllowingStateLoss();
+                success = true;
+            } catch (Exception e) {
+                success = false;
+            }
         }
+        if (listener != null) {
+            listener.onBack(success, tag, null);
+        }
+        return this;
     }
 
     /**
-     * @param containerViewId 父类的容器id
-     * @param fragment        目标的fragment，用于展示
-     * @param tag             目标fragment的tag
+     * @param tag 指定的tag
+     * @return 根据tag，获取添加的fragment
      */
-    public void replace(@IdRes int containerViewId, Fragment fragment, @Nullable String tag, CallBackListener<Object> listener) {
-        boolean isSuccess = false;
-        try {
-            // 如果fragment为空，则停止后续的所有操作
-            if (fragment == null) {
-                throw new NullPointerException("fragment 不能为空");
-            }
-
-            if (manager != null) {
-                FragmentTransaction transaction = manager.beginTransaction();
-                transaction.replace(containerViewId, fragment, tag);
-                transaction.commitAllowingStateLoss();
-
-                mBeforeFragment = fragment;
-                LogUtil.e(TAG, "fragment添加成功：" + fragment.toString());
-                isSuccess = true;
-            }
-        } catch (Exception e) {
-            isSuccess = false;
-            LogUtil.e(TAG, "fragment添加失败 --->Error:" + e.getMessage());
-        }
-
-        if (listener != null) {
-            listener.onBack(isSuccess, tag, "");
-        }
-    }
-
-    /**
-     * @param containerViewId 父类的容器id
-     * @param fragment        目标的fragment，用于展示
-     */
-    public void replace(@IdRes int containerViewId, Fragment fragment, CallBackListener<Object> listener) {
-        boolean isSuccess = false;
-        try {
-            // 如果fragment为空，则停止后续的所有操作
-            if (fragment == null) {
-                throw new NullPointerException("fragment 不能为空");
-            }
-
-            if (manager != null) {
-                FragmentTransaction transaction = manager.beginTransaction();
-                transaction.replace(containerViewId, fragment);
-                transaction.commitAllowingStateLoss();
-
-                mBeforeFragment = fragment;
-                LogUtil.e(TAG, "fragment添加成功：" + fragment.toString());
-                isSuccess = true;
-            }
-        } catch (Exception e) {
-            isSuccess = false;
-            LogUtil.e(TAG, "fragment添加失败 --->Error:" + e.getMessage());
-        }
-
-        if (listener != null) {
-            listener.onBack(isSuccess, "", "");
-        }
-    }
-
-    /**
-     * @param tag tag
-     * @return 根据tag查找fragment
-     */
-    public Fragment getFragmentForTag(String tag) {
-        if (!TextUtils.isEmpty(tag)) {
-            if (manager != null) {
-                return manager.findFragmentByTag(tag);
+    public Fragment getFragmentForTag(@NonNull String tag) {
+        if (mManager != null) {
+            if (!TextUtils.isEmpty(tag)) {
+                return mManager.findFragmentByTag(tag);
             }
         }
         return null;
+    }
+
+    /**
+     * @param fragment 指定的fragment
+     * @return 隐藏指定的fragment
+     */
+    public FragmentUtil hide(@NonNull Fragment fragment) {
+        try {
+            // 如果fragment为空，则停止后续的所有操作
+            if (fragment == null) {
+                throw new NullPointerException("fragment 不能为空");
+            }
+            if (mManager != null) {
+                mManager.beginTransaction()
+                        .hide(fragment)
+                        .commitAllowingStateLoss();
+            }
+        } catch (Exception ignored) {
+        }
+        return this;
     }
 
 }

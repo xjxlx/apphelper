@@ -19,7 +19,7 @@ import androidx.annotation.IdRes;
 import com.android.helper.interfaces.listener.DialogChangeListener;
 import com.android.helper.utils.ActivityUtil;
 import com.android.helper.utils.TextViewUtil;
-import com.android.helper.utils.jetpack.lifecycle.BaseLifecycleObserver;
+import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 
 /**
  * PopupWidow 的工具类

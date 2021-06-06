@@ -6,7 +6,7 @@ import android.media.MediaPlayer;
 import com.android.helper.interfaces.TagListener;
 import com.android.helper.utils.ClassUtil;
 import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.jetpack.lifecycle.BaseLifecycleObserver;
+import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 
 import java.io.IOException;
 

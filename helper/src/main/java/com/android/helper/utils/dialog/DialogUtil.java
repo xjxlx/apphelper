@@ -20,7 +20,7 @@ import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.common.EventMessage;
 import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.jetpack.lifecycle.BaseLifecycleObserver;
+import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 
 import org.greenrobot.eventbus.EventBus;
 

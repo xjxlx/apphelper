@@ -15,6 +15,11 @@
             style="@style/style_todo_item"
             android:text="Lifecycle" />
 
+        <TextView
+            android:id="@+id/tv_view_model"
+            style="@style/style_todo_item"
+            android:text="ViewModel" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

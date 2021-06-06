@@ -75,4 +75,9 @@ class LifecycleActivity : BaseTitleActivity() {
         })
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        LogUtil.e(tag,"onDestroy")
+    }
+
 }
