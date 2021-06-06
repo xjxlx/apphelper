@@ -17,11 +17,9 @@ class Model2Fragment : BaseFragment() {
     }
 
     override fun initData() {
-        val get = ViewModelProviders.of(mContext).get(TestViewModel::class.java)
-        tv_content_fr_2.text = get.name
 
         btn_f2_change.setOnClickListener {
-            get.name = "王五"
+            val get = ViewModelProviders.of(mContext).get(TestViewModel::class.java)
             tv_content_fr_2.text = get.name
         }
     }
