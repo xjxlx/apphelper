@@ -2,6 +2,8 @@ package android.helper.ui.activity.jetpack.livedata;
 
 import android.annotation.SuppressLint;
 import android.helper.R;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.TextView;
 
@@ -11,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.android.helper.base.BaseTitleActivity;
 import com.android.helper.utils.FragmentUtil;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ToastUtil;
 
 /**
  * Mutable: /ˈmjuːtəbl/  缪特保
@@ -31,6 +34,7 @@ public class LiveDataActivity extends BaseTitleActivity {
     private TextView mMTvHint;
     private MutableLiveModel mMutableLiveModel;
     private TextView mTvMutableLiveDateContent;
+    private Observer<TestMutableLiveData> mObserver;
 
     @Override
     protected int getTitleLayout() {
@@ -50,7 +54,8 @@ public class LiveDataActivity extends BaseTitleActivity {
     @Override
     protected void initListener() {
         super.initListener();
-        setonClickListener(R.id.bt_live_data, R.id.bt_mutable_live_data);
+        setonClickListener(R.id.bt_live_data, R.id.bt_mutable_live_data,
+                R.id.btn_test_start_for_rever, R.id.btn_test_stop_for_rever);
     }
 
     @Override
@@ -85,17 +90,32 @@ public class LiveDataActivity extends BaseTitleActivity {
                 mTvLiveDateContent.setText(name);
             }
         });
+
+        // 添加永远发送的请求
+        mLiveDataModel.getLiveData().observeForever(new Observer<TestLiveData>() {
+            @Override
+            public void onChanged(TestLiveData testLiveData) {
+                String name = testLiveData.getName();
+                int age = testLiveData.getAge();
+
+                ToastUtil.show("Name:" + name);
+                LogUtil.e("------->name:" + name + "  age:" + age);
+            }
+        });
     }
 
     private void testMutableLiveData() {
         mMutableLiveModel = ViewModelProviders.of(this).get(MutableLiveModel.class);
-        mMutableLiveModel.getData().observe(this, new Observer<TestMutableLiveData>() {
+
+        mObserver = new Observer<TestMutableLiveData>() {
             @Override
             public void onChanged(TestMutableLiveData testMutableLiveData) {
                 LogUtil.e(getTag(), testMutableLiveData.toString());
                 mTvMutableLiveDateContent.setText(testMutableLiveData.getName());
             }
-        });
+        };
+
+        mMutableLiveModel.getData().observe(this, mObserver);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -119,7 +139,32 @@ public class LiveDataActivity extends BaseTitleActivity {
                 thread.start();
 
                 break;
+            case R.id.btn_test_start_for_rever:
+                mHandler.sendEmptyMessageDelayed(123, 3000);
+                break;
+
+            case R.id.btn_test_stop_for_rever:
+                mHandler.removeCallbacksAndMessages(null);
+                mMutableLiveModel.getData().removeObserver(mObserver);
+
+                break;
         }
     }
 
+    @SuppressLint("HandlerLeak")
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            mLiveDataModel.getLiveData().setName("2222");
+
+            mHandler.sendEmptyMessageDelayed(123, 3000);
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
 }
