@@ -25,6 +25,11 @@
             style="@style/style_todo_item"
             android:text="LiveData" />
 
+        <TextView
+            android:id="@+id/tv_room"
+            style="@style/style_todo_item"
+            android:text="Room数据库" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>
