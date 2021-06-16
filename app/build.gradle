@@ -80,14 +80,11 @@ android {
         checkReleaseBuilds false  //打包release版本的时候进行检测
     }
 
+    flavorDimensions 'default' // 默认的维度
+
     productFlavors {
         //不同渠道
-        _360 {
-            dimension "default"
-            //替换AndroidManifest中的值
-            manifestPlaceholders = [channel_value: "360"]
-        }
-        _qq {
+        _ {
             dimension "default"
             //替换AndroidManifest中的值
             manifestPlaceholders = [channel_value: "qq"]
