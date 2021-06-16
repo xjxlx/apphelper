@@ -4,6 +4,59 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="@dimen/dp_16"
     tools:context=".ui.activity.jetpack.room.RoomActivity">
+
+    <TextView
+        android:id="@+id/tv_room_content"
+        style="@style/default_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="测试的内容"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <Button
+        android:id="@+id/btn_room_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="增加"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_room_delete"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_room_content"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <Button
+        android:id="@+id/btn_room_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="删除"
+        app:layout_constraintEnd_toStartOf="@+id/btn_room_update"
+        app:layout_constraintStart_toEndOf="@+id/btn_room_add"
+        app:layout_constraintTop_toTopOf="@+id/btn_room_add" />
+
+    <Button
+        android:id="@+id/btn_room_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="修改"
+        app:layout_constraintEnd_toStartOf="@+id/btn_room_query"
+        app:layout_constraintStart_toEndOf="@+id/btn_room_delete"
+        app:layout_constraintTop_toTopOf="@+id/btn_room_add" />
+
+    <Button
+        android:id="@+id/btn_room_query"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查询"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_room_update"
+        app:layout_constraintTop_toTopOf="@+id/btn_room_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

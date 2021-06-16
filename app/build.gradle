@@ -5,15 +5,17 @@ plugins {
 }
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "28.0.3"
+    def version = rootProject.ext.version
+
+    compileSdkVersion version.compileSdkVersion
+    buildToolsVersion version.buildToolsVersion
 
     defaultConfig {
         applicationId "com.android.apphelper"
-        minSdkVersion 21
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion version.minSdkVersion
+        targetSdkVersion version.targetSdkVersion
+        versionCode version.versionCode
+        versionName version.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,10 +41,10 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField("String", "APP_ID", project.APP_ID)
-            buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
+            // buildConfigField("String", "APP_ID", project.APP_ID)
+            // buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
             //  buildConfigField("boolean", "APP_DEBUG", "false")
-            project.extensions.findByName('android')?.defaultConfig?.buildConfigField("boolean", "APP_DEBUG", "false")
+            // project.extensions.findByName('android')?.defaultConfig?.buildConfigField("boolean", "APP_DEBUG", "false")
         }
 
         debug {
@@ -52,10 +54,10 @@ android {
             shrinkResources false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-            buildConfigField("String", "APP_ID", project.APP_ID_DEBUG)
-            buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
+            // buildConfigField("String", "APP_ID", project.APP_ID_DEBUG)
+            // buildConfigField("int", "SQLite_Version_Code", project.SQLiteVersionCode)
             //  buildConfigField("boolean", "APP_DEBUG", "true")
-            project.extensions.findByName('android')?.defaultConfig?.buildConfigField("boolean", "APP_DEBUG", "true")
+            // project.extensions.findByName('android')?.defaultConfig?.buildConfigField("boolean", "APP_DEBUG", "true")
         }
     }
 
@@ -140,6 +142,15 @@ dependencies {
     // implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
     implementation 'com.squareup.okhttp3:mockwebserver:4.7.2'
     implementation 'com.github.xjxlx:dimens:1.0.0.0.1'
+
+//    implementation "androidx.room:room-runtime:$room_version"
+//    annotationProcessor "androidx.room:room-compiler:$room_version" // use kapt for Kotlin
+//    // optional - RxJava support for Room
+//    implementation "androidx.room:room-rxjava2:$room_version"
+//    // optional - Guava support for Room, including Optional and ListenableFuture
+//    implementation "androidx.room:room-guava:$room_version"
+//    // Test helpers
+//    testImplementation "androidx.room:room-testing:$room_version"
 }
 
 

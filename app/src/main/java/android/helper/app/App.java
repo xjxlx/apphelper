@@ -31,7 +31,7 @@ public class App extends Application {
 
             @Override
             public boolean isDebug() {
-                return BuildConfig.APP_DEBUG;
+                return BuildConfig.DEBUG;
             }
 
             @Override

@@ -1,0 +1,22 @@
+ext {
+    // 全局版本配置
+    version = [
+            compileSdkVersion: 28,
+            buildToolsVersion: "28.0.3",
+            minSdkVersion    : 21,
+            targetSdkVersion : 28,
+            versionCode      : 1,
+            versionName      : "1.0"
+    ]
+
+//    appId = ["app"    : "com.dongnao.dnrouter",
+//             "module1": "com.dongnao.module1",
+//             "module2": "com.dongnao.module2"]
+
+    supportLibrary = "26.1.0"
+    dependencies = [
+            // "appcompat-v7": "com.android.support:appcompat-v7:${supportLibrary}",
+    ]
+
+
+}
