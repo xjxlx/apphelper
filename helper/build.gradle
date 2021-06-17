@@ -4,16 +4,16 @@ plugins {
 }
 
 android {
-    def version = rootProject.ext.version
+    def compile = rootProject.ext.android
 
-    compileSdkVersion version.compileSdkVersion
-    buildToolsVersion version.buildToolsVersion
+    compileSdkVersion compile.compileSdkVersion
+    buildToolsVersion compile.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion version.minSdkVersion
-        targetSdkVersion version.targetSdkVersion
-        versionCode version.versionCode
-        versionName version.versionName
+        minSdkVersion compile.minSdkVersion
+        targetSdkVersion compile.targetSdkVersion
+        versionCode compile.versionCode
+        versionName compile.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

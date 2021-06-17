@@ -1,6 +1,6 @@
 ext {
     // 全局版本配置
-    version = [
+    android = [
             compileSdkVersion: 28,
             buildToolsVersion: "28.0.3",
             minSdkVersion    : 21,
@@ -9,14 +9,14 @@ ext {
             versionName      : "1.0"
     ]
 
-//    appId = ["app"    : "com.dongnao.dnrouter",
-//             "module1": "com.dongnao.module1",
-//             "module2": "com.dongnao.module2"]
-
-    supportLibrary = "26.1.0"
-    dependencies = [
-            // "appcompat-v7": "com.android.support:appcompat-v7:${supportLibrary}",
+    version = [
+            room: "2.2.5"
     ]
 
-
+    dependencies = [
+            "room-runtime" : "androidx.room:room-runtime:${version["room"]}",
+            "room-common"  : "androidx.room:room-common:${version["room"]}",
+            "room-compiler": "androidx.room:room-compiler:${version["room"]}",
+            "constraintlayout": "androidx.constraintlayout:constraintlayout:1.1.3",
+    ]
 }

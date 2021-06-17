@@ -16,22 +16,22 @@ public interface RoomDao {
 
     // 创建查询方法，可以插入多个参数
     @Insert
-    public boolean roomInsert(RoomEntity... roomEntity);
+    void roomInsert(RoomEntity... roomEntity);
 
     // 删除方法
     @Delete
-    public boolean roomDelete();
+    void roomDelete(RoomEntity entity);
 
     // 修改方法
     @Update
-    public boolean roomUpdate();
+    void roomUpdate(RoomEntity entity);
 
     // 查询方法
-    @Query("")
-    public RoomEntity roomQuery();
+    @Query("SELECT * FROM TABLE_TEST WHERE id in (:userId)")
+    RoomEntity roomQuery(String userId);
 
     // 查询所有
-    @Query("")
-    public List<RoomEntity> roomQueryList();
+    @Query("SELECT * FROM table_test")
+    List<RoomEntity> roomQueryList();
 
 }
