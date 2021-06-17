@@ -1,12 +1,15 @@
 package com.android.helper.utils;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.core.content.ContextCompat;
 
@@ -46,6 +49,23 @@ public class ResourceUtil {
             }
         }
         return bitmap;
+    }
+
+    /**
+     * @param id dimens的id
+     * @return 获取dimens的值
+     */
+    public static float getDimension(@DimenRes int id) {
+        float dimension = 0.0f;
+        Application application = BaseApplication.getApplication();
+        if (application != null) {
+            Resources resources = application.getResources();
+            if (resources != null) {
+                dimension = resources.getDimension(id);
+                return dimension;
+            }
+        }
+        return dimension;
     }
 
 }

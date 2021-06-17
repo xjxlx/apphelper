@@ -5,10 +5,11 @@ import android.view.Gravity
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.android.helper.base.BaseTitleActivity
+import com.android.helper.utils.ConvertUtil
+import com.android.helper.utils.LogUtil
 import com.android.helper.utils.TextViewUtil
 import com.android.helper.utils.ToastUtil
 import kotlinx.android.synthetic.main.activity_random.*
-import kotlinx.android.synthetic.main.activity_test_handler.view.*
 
 /**
  * 随机布局的activity
@@ -33,14 +34,11 @@ class RandomActivity : BaseTitleActivity() {
         listData.add("Many")
         listData.add("gnimals")
 
-        val textView = TextView(mContext)
-        textView.textSize = 12f
-        textView.setTextColor(ContextCompat.getColor(mContext, R.color.blue_10))
-        textView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.green_1))
-        textView.gravity = Gravity.BOTTOM
-        TextViewUtil.setTextFont(mContext, textView, "DINCondensedBold.ttf")
+        val inflate = layoutInflater.inflate(R.layout.item_random, null)
+        val randomContent = inflate.findViewById<TextView>(R.id.tv_random_content)
+        TextViewUtil.setTextFont(mContext, randomContent, "DINCondensedBold.ttf")
 
-        rl_layout.textView = textView
+        rl_layout.textView = randomContent
         rl_layout.setRandomRotatingView(true)
 
 

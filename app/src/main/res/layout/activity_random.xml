@@ -14,11 +14,11 @@
     <com.android.helper.widget.RandomLayout
         android:id="@+id/rl_layout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_80"
+        android:layout_height="@dimen/dp_130"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="@dimen/dp_50"
-        android:layout_marginTop="@dimen/dp_70"
-        android:layout_marginRight="@dimen/dp_50"
+        android:layout_marginLeft="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginRight="@dimen/dp_20"
         android:background="@color/red_2"
         android:padding="@dimen/dp_10" />
 
