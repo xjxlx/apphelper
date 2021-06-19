@@ -101,7 +101,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected abstract int getBaseLayout();
 
     protected void startActivity(Class<? extends Activity> cls) {
-        Intent intent = getIntent();
+        Intent intent = new Intent();
         intent.setClass(mContext, cls);
         startActivity(intent);
     }
