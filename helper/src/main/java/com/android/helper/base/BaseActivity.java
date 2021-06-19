@@ -30,6 +30,7 @@ import io.reactivex.disposables.Disposable;
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, HttpManagerListener, TagListener {
 
     public BaseActivity mContext;
+    private int mClickInterval = 500;// view的点击事件间隔
 
     /*
      *此处不能写成静态的，否则就会和使用RxManager一样了
@@ -100,12 +101,21 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     protected abstract int getBaseLayout();
 
+    /**
+     * 新建一个Intent，然后跳转到指定的界面
+     *
+     * @param cls 指定跳转的界面
+     */
     protected void startActivity(Class<? extends Activity> cls) {
         Intent intent = new Intent();
         intent.setClass(mContext, cls);
         startActivity(intent);
     }
 
+    /**
+     * @param intent 指定的intent
+     * @param cls    指定的界面
+     */
     protected void startActivity(Intent intent, Class<? extends Activity> cls) {
         if (intent != null && cls != null) {
             startActivity(intent, cls);
@@ -128,6 +138,11 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         }
     }
 
+    /**
+     * 设置view的点击事件,检测点击的时间间隔
+     *
+     * @param array view的数组
+     */
     protected void setonClickListener(View... array) {
         if (array != null && array.length > 0) {
             for (View view : array) {
@@ -144,7 +159,8 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @param v 点击的view
      */
     private void onViewClick(View v) {
-        boolean doubleClick = ClickUtil.isDoubleClick(1000);
+        // 在指定的间隔时间内是否做了双击
+        boolean doubleClick = ClickUtil.isDoubleClick(mClickInterval);
         if (doubleClick) {
             LogUtil.e("点击速度过快了！");
         } else {
@@ -186,6 +202,20 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
                 LogUtil.e("移除一个指定的请求对象！");
             }
         }
+    }
+
+    /**
+     * @return 获取点击事件的间隔
+     */
+    public int getClickInterval() {
+        return mClickInterval;
+    }
+
+    /**
+     * @param mClickInterval view点击的时间间隔
+     */
+    public void setClickInterval(int mClickInterval) {
+        this.mClickInterval = mClickInterval;
     }
 
     @Override
