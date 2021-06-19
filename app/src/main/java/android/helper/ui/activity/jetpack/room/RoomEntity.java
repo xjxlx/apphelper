@@ -6,71 +6,63 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.android.helper.base.BaseEntity;
-
-import org.jetbrains.annotations.NotNull;
-
 /**
+ * 一:room的表结构
+ *
  * <p>
- * 1：创建一个数据库的表，供数据库使用,使用@Entity（）标记这各类是一个数据库的表
- * 1.1：表名如果不手动写的话，就会用本类的名字作为表名
+ * 1：@primaryKey构造一个主键，autoGenerate = true ,主键自动增长，默认为false
+ * 2：columnInfo：修改列名
+ * 3：@Ignore：忽略列名
+ * 4:tableName:修改表名，否则就是奔类的对象
  * </p>
+ *
  * <p>
- * 2：创建数据库的主键 PrimaryKey
- * <p>
- * <p>
- * 3:创建数据库的字段
+ * 注意：
+ * * 1：每个对象，都必须不能为null
+ * * 2：每个表中，都必须要有一个主键
  * </p>
  */
-@Entity(tableName = "table_test")
-public class RoomEntity extends BaseEntity {
 
-    // 每个数据库表里面的类上面必须要有一个主键，默认是不会自动生成的，autoGenerate 主键的值是否由Room自动生成,默认false
-    @PrimaryKey
+@Entity(tableName = "room_entity")
+public class RoomEntity {
+
+    // 主键
+    @PrimaryKey(autoGenerate = true)
+    private long id;
+
+    // 修改列名
     @NonNull
-    private String id = "";
-
-    // 数据库中的字段，如果说希望字段名字和数据库中存储的字段名字不一样，则可以使用@columnInfo去指定名字
     @ColumnInfo(name = "test_name")
-    @NonNull
-    private String name = "";
+    private String name;
 
-    // 不使用指定名字作为表名
-    @NonNull
-    private String realName = "";
-
-    // 忽略的字段，不会在数据库中生成对应的列
-    @Ignore()
+    // 不去生成
+    @Ignore
     private int six;
 
+    // 不修改列名
+    private boolean isMater;
+
+    private long time;
+
     public RoomEntity() {
+        name = "";
     }
 
-    @NotNull
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(@NotNull String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    @NotNull
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(@NotNull String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
-    }
-
-    @NotNull
-    public String getRealName() {
-        return realName;
-    }
-
-    public void setRealName(@NotNull String realName) {
-        this.realName = realName;
     }
 
     public int getSix() {
@@ -81,14 +73,30 @@ public class RoomEntity extends BaseEntity {
         this.six = six;
     }
 
-    @NotNull
+    public boolean isMater() {
+        return isMater;
+    }
+
+    public void setMater(boolean mater) {
+        isMater = mater;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
     @Override
     public String toString() {
         return "RoomEntity{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
-                ", realName='" + realName + '\'' +
                 ", six=" + six +
+                ", isMater=" + isMater +
+                ", time=" + time +
                 '}';
     }
 }

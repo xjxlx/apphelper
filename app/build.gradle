@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
 }
 
 def configCompile = rootProject.ext.android
@@ -19,6 +20,14 @@ android {
         versionName configCompile.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        //指定room.schemaLocation生成的文件路径
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation":
+                                     "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     signingConfigs {
@@ -130,8 +139,9 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation configDependencies["room-runtime"]
-    implementation configDependencies["room-common"]
-    annotationProcessor configDependencies["room-compiler"]
+    implementation configDependencies["room-ktx"]
+    // 如果使用kotlin："kapt"  如果不使用kotlin:"annotationProcessor"
+    kapt configDependencies["room-compiler"]
     implementation configDependencies["constraintlayout"]
 
     testImplementation 'junit:junit:4.13.2'
