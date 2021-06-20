@@ -1,0 +1,44 @@
+package android.helper.ui.activity.jetpack.room;
+
+import android.helper.app.App;
+
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+
+/**
+ * room 数据库的管理类
+ * 1:必须使用@Database 去注解
+ * 2：必须是抽象类，且继承RoomDatabase
+ * 3:version: 版本号，entities:对应的实体类
+ */
+@Database(version = 1, entities = {RoomEntity1.class, RoomEntity2.class})
+public abstract class RoomDataHelper extends RoomDatabase {
+
+    private static final String mDdName = "room_table.db";
+    private static volatile RoomDataHelper helper;
+
+    abstract RoomDao1 getDao1();
+
+    abstract RoomDao2 getDao2();
+
+    /**
+     * @return 获取room数据库的实例，这个对象应该是单利的一个对象，不应该多次去重复获取
+     */
+    public static RoomDataHelper getInstance() {
+        if (helper == null) {
+            synchronized (RoomDataHelper.class) {
+                helper = Room
+                        .databaseBuilder(
+                                App.getInstance().getApplicationContext(), // 上下文
+                                RoomDataHelper.class, // 继承了RoomDatabase的类
+                                mDdName // 数据库db的名字
+                        )
+                        .allowMainThreadQueries()// 在UI线程中运行
+                        .build();
+            }
+        }
+        return helper;
+    }
+
+}

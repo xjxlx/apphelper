@@ -2,7 +2,6 @@ package android.helper.ui.activity.jetpack.room
 
 import android.helper.R
 import android.view.View
-import androidx.room.Room
 import com.android.helper.base.BaseTitleActivity
 import com.android.helper.utils.ToastUtil
 import kotlinx.android.synthetic.main.activity_room.*
@@ -11,7 +10,7 @@ import kotlinx.android.synthetic.main.activity_room.*
  * room数据库的使用
  * 使用逻辑：
  *      一：Entity注解类： entity： [ˈentəti] 嗯特忒
- *         1：创建一个文件，使用entity去注解，标记为一个数据库为实体类
+ *         1：创建一个文件，使用entity去注解，标记为一个数据库为实体类,所有的字段都在表中存储着
  *
  *      二：创建数据库的操作方法，使用@Dao去注解
  *
@@ -21,13 +20,7 @@ import kotlinx.android.synthetic.main.activity_room.*
 
 class RoomActivity : BaseTitleActivity() {
 
-    private val mRoomDb: RoomDao by lazy {
-        return@lazy Room
-                .databaseBuilder(mContext, RoomDataManager::class.java, RoomDataManager.DATA_BASE_FILE_NAME)
-                .allowMainThreadQueries()//允许在主线程中查询
-                .build()
-                .dao
-    }
+    private val roomManager = RoomDataHelper.getInstance()
 
     override fun getTitleLayout(): Int {
         return R.layout.activity_room
@@ -48,87 +41,54 @@ class RoomActivity : BaseTitleActivity() {
                 btn_update_id, btn_update_entity,
                 btn_query_single, btn_query_all
         )
+
     }
 
     override fun onClick(v: View?) {
         super.onClick(v)
         when (v?.id) {
             R.id.btn_add_single -> {
-                val room = RoomEntity()
+                val room = RoomEntity1()
+                room.id = System.currentTimeMillis()
                 room.name = "张三"
-                room.time = System.currentTimeMillis()
-
-                mRoomDb.roomInsert(room)
-
-                ToastUtil.show("添加单个完成!")
+                val roomInsert = roomManager.dao1.roomInsert(room)
+                ToastUtil.show("添加单个完成：$roomInsert")
             }
 
             R.id.btn_add_list -> {
-                val room = RoomEntity()
-                room.name = "李四"
-                room.time = System.currentTimeMillis()
 
-                val list = arrayListOf<RoomEntity>()
-                list.add(room)
-                list.add(room)
-                list.add(room)
-                list.add(room)
-                val roomInsert = mRoomDb.roomInsert(list)
-
-                ToastUtil.show("添加列表完成:${roomInsert.distinct()}")
             }
 
             R.id.btn_delete_single -> {
-                val room = RoomEntity()
-                room.id = 3;
-                mRoomDb.roomDelete(room)
-                ToastUtil.show("删除单个对象成功！")
+                val room = RoomEntity1()
+                room.id = 1624189538223
+                roomManager.dao1.roomDelete(room)
+                ToastUtil.show("删除单个对象成功：!")
             }
 
             R.id.btn_delete_list -> {
-                val list = arrayListOf<RoomEntity>()
-                val room1 = RoomEntity()
-                room1.id = 3;
-                list.add(room1)
 
-                val room2 = RoomEntity()
-                room2.id = 4;
-                list.add(room2)
-
-                val room3 = RoomEntity()
-                room3.id = 5;
-                list.add(room3)
-
-                mRoomDb.roomDelete(list)
-                ToastUtil.show("删除列表成功！")
             }
 
             R.id.btn_update_id -> {
-
-                val room = RoomEntity()
-                room.id = 6
+                val room = RoomEntity1()
+                room.id = 1624189513406
                 room.name = "小飞飞"
-
-                mRoomDb.roomUpdate(room)
+                roomManager.dao1.roomUpdate(room)
+                ToastUtil.show("更新单个对象成功：!")
             }
 
             R.id.btn_update_entity -> {
-                val list = arrayListOf<RoomEntity>()
-                val room = RoomEntity()
-                room.id = 7
-                room.name = "王语嫣"
 
-                list.add(room)
-                mRoomDb.roomUpdate(list)
             }
 
             R.id.btn_query_single -> {
-                val querySingle = mRoomDb.querySingle(7)
+                val querySingle =  roomManager.dao1.roomQuery(1624189513406)
                 ToastUtil.show("查询单个成功：$querySingle")
             }
 
             R.id.btn_query_all -> {
-                val list = mRoomDb.queryList()
+                val list = roomManager.dao1.roomQuery()
                 ToastUtil.show("查询列表成功：$list")
             }
         }
