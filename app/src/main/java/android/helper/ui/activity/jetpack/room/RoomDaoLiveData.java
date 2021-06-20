@@ -1,0 +1,25 @@
+package android.helper.ui.activity.jetpack.room;
+
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.Query;
+import androidx.room.Update;
+
+@Dao
+public interface RoomDaoLiveData {
+
+    @Insert(entity = RoomEntityLiveData.class)
+    long roomInsert(RoomEntityLiveData data);
+
+    @Delete
+    void roomDelete(RoomEntityLiveData data);
+
+    @Update
+    void roomUpdate(RoomEntityLiveData data);
+
+    @Query("select * from room_table_live_data where id = :id")
+    LiveData<RoomEntityLiveData> roomQuery(long id);
+
+}

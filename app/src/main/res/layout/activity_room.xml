@@ -113,4 +113,99 @@
         app:layout_constraintTop_toTopOf="@+id/btn_query_single"
         app:layout_constraintVertical_bias="0.5" />
 
+    <Button
+        android:id="@+id/btn_install1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="增加2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/btn_delete2"
+        app:layout_constraintTop_toBottomOf="@+id/btn_query_single"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <Button
+        android:id="@+id/btn_delete2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="删除2"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_install1"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintLeft_toRightOf="@+id/btn_install1"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_install1"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <Button
+        android:id="@+id/btn_update2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="修改2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/btn_query2"
+        app:layout_constraintTop_toBottomOf="@+id/btn_install1"
+        app:layout_constraintVertical_bias="0.01" />
+
+    <Button
+        android:id="@+id/btn_query2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查询2"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_update2"
+        app:layout_constraintLeft_toRightOf="@+id/btn_update2"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_update2"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <Button
+        android:id="@+id/btn_live_data_install"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="liveData - 插入"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/btn_live_data_delete"
+        app:layout_constraintTop_toBottomOf="@+id/btn_update2"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <Button
+        android:id="@+id/btn_live_data_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="liveData - 删除"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_live_data_install"
+        app:layout_constraintLeft_toRightOf="@+id/btn_live_data_install"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_live_data_install"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <Button
+        android:id="@+id/btn_live_data_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="liveData - 更新"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/btn_live_data_query"
+        app:layout_constraintTop_toBottomOf="@+id/btn_live_data_install"
+        app:layout_constraintVertical_bias="0.05" />
+
+    <Button
+        android:id="@+id/btn_live_data_query"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="liveData - 查询"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_live_data_update"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintLeft_toRightOf="@+id/btn_live_data_update"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_live_data_update"
+        app:layout_constraintVertical_bias="0.5" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
