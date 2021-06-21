@@ -14,12 +14,15 @@ public interface RoomDaoLiveData {
     long roomInsert(RoomEntityLiveData data);
 
     @Delete
-    void roomDelete(RoomEntityLiveData data);
+    int roomDelete(RoomEntityLiveData data);
 
     @Update
     void roomUpdate(RoomEntityLiveData data);
 
     @Query("select * from room_table_live_data where id = :id")
-    LiveData<RoomEntityLiveData> roomQuery(long id);
+    RoomEntityLiveData roomQuery(long id);
+
+    @Query("SELECT * FROM ROOM_TABLE_LIVE_DATA")
+    LiveData<RoomEntityLiveData> roomQueryRxjava();
 
 }

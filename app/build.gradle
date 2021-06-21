@@ -139,6 +139,7 @@ dependencies {
 
     implementation configDependencies["room-runtime"]
     implementation configDependencies["room-ktx"]
+    implementation configDependencies["room-rxjava2"]
     // 如果使用kotlin："kapt"  如果不使用kotlin:"annotationProcessor"
     kapt configDependencies["room-compiler"]
     implementation configDependencies["constraintlayout"]

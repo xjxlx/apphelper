@@ -9,14 +9,16 @@ ext {
             versionName      : "1.0"
     ]
 
-    version = [
+    library = [
             room: "2.2.5"
     ]
 
     dependencies = [
-            "room-runtime"    : "androidx.room:room-runtime:${version["room"]}",
-            "room-compiler"   : "androidx.room:room-compiler:${version["room"]}",
-            'room-ktx'        : "androidx.room:room-ktx:${version.room}",
+            "room-runtime"    : "androidx.room:room-runtime:${library.room}",
+            "room-compiler"   : "androidx.room:room-compiler:${library.room}",
+            'room-ktx'        : "androidx.room:room-ktx:${library.room}",
+            'room-rxjava2'    : "androidx.room:room-rxjava2:${library.room}",
+
             "constraintlayout": "androidx.constraintlayout:constraintlayout:1.1.3"
     ]
 }

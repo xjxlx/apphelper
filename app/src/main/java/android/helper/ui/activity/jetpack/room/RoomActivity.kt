@@ -4,6 +4,8 @@ import android.helper.R
 import android.view.View
 import androidx.lifecycle.Observer
 import com.android.helper.base.BaseTitleActivity
+import com.android.helper.interfaces.room.RoomInsertListener
+import com.android.helper.utils.LogUtil
 import com.android.helper.utils.ToastUtil
 import kotlinx.android.synthetic.main.activity_room.*
 
@@ -18,10 +20,8 @@ import kotlinx.android.synthetic.main.activity_room.*
  * 使用的好处：
  *
  */
-
 class RoomActivity : BaseTitleActivity() {
-
-    private val roomManager = RoomDataHelper.getInstance()
+    private val roomManager = RoomDataBaseHelper.getInstance()
 
     private val observer = object : Observer<RoomEntityLiveData> {
         override fun onChanged(t: RoomEntityLiveData?) {
@@ -47,12 +47,10 @@ class RoomActivity : BaseTitleActivity() {
                 btn_delete_single, btn_delete_list,
                 btn_update_id, btn_update_entity,
                 btn_query_single, btn_query_all,
-
                 btn_install1, btn_delete2, btn_update2, btn_query2,
-
-                btn_live_data_install, btn_live_data_delete, btn_live_data_update, btn_live_data_query
+                btn_live_data_install, btn_live_data_delete, btn_live_data_update, btn_live_data_query,
+                btn_rxjava
         )
-
     }
 
     override fun onClick(v: View?) {
@@ -65,22 +63,16 @@ class RoomActivity : BaseTitleActivity() {
                 val roomInsert = roomManager.dao1.roomInsert(room)
                 ToastUtil.show("添加单个完成：$roomInsert")
             }
-
             R.id.btn_add_list -> {
-
             }
-
             R.id.btn_delete_single -> {
                 val room = RoomEntity1()
                 room.id = 1624189538223
                 roomManager.dao1.roomDelete(room)
                 ToastUtil.show("删除单个对象成功：!")
             }
-
             R.id.btn_delete_list -> {
-
             }
-
             R.id.btn_update_id -> {
                 val room = RoomEntity1()
                 room.id = 1624189513406
@@ -88,21 +80,16 @@ class RoomActivity : BaseTitleActivity() {
                 roomManager.dao1.roomUpdate(room)
                 ToastUtil.show("更新单个对象成功：!")
             }
-
             R.id.btn_update_entity -> {
-
             }
-
             R.id.btn_query_single -> {
                 val querySingle = roomManager.dao1.roomQuery(1624189513406)
                 ToastUtil.show("查询单个成功：$querySingle")
             }
-
             R.id.btn_query_all -> {
                 val list = roomManager.dao1.roomQuery()
                 ToastUtil.show("查询列表成功：$list")
             }
-
             // 增加
             R.id.btn_install1 -> {
                 val room = RoomEntity2()
@@ -111,7 +98,6 @@ class RoomActivity : BaseTitleActivity() {
                 room.name = "王语嫣"
                 ToastUtil.show("添加成功：$roomInsert")
             }
-
             // 删除
             R.id.btn_delete2 -> {
                 val room = RoomEntity2()
@@ -120,7 +106,6 @@ class RoomActivity : BaseTitleActivity() {
 
                 ToastUtil.show("删除成功：$")
             }
-
             // 更新
             R.id.btn_update2 -> {
                 val room = RoomEntity2()
@@ -130,13 +115,11 @@ class RoomActivity : BaseTitleActivity() {
                 roomManager.dao2.roomUpdate(room)
                 ToastUtil.show("修改成功：$")
             }
-
             // 查询
             R.id.btn_query2 -> {
                 val roomQuery = roomManager.dao2.roomQuery(1624195185217)
                 ToastUtil.show("查询成功：$roomQuery")
             }
-
             /****************************** LiveData ***************************/
             // 增加
             R.id.btn_live_data_install -> {
@@ -146,16 +129,14 @@ class RoomActivity : BaseTitleActivity() {
                 val roomInsert = roomManager.liveData.roomInsert(room)
                 ToastUtil.show("添加成功：$roomInsert")
             }
-
             // 删除
             R.id.btn_live_data_delete -> {
                 val room = RoomEntityLiveData()
-                room.id = 1624197808653
-                roomManager.liveData.roomDelete(room)
-
-                ToastUtil.show("删除成功：$")
+                room.id = 1624268033284
+                val roomDelete = roomManager.liveData.roomDelete(room)
+                LogUtil.e("roomDelete:" + roomDelete)
+                ToastUtil.show("删除成功：$" + roomDelete)
             }
-
             // 更新
             R.id.btn_live_data_update -> {
                 val room = RoomEntityLiveData()
@@ -165,17 +146,39 @@ class RoomActivity : BaseTitleActivity() {
                 roomManager.liveData.roomUpdate(room)
                 ToastUtil.show("修改成功：$")
             }
-
             // 查询
             R.id.btn_live_data_query -> {
                 val roomQuery = roomManager.liveData.roomQuery(1624199401956)
                 ToastUtil.show("查询成功：${roomQuery}")
-                window.decorView.postDelayed(Runnable {
+//                window.decorView.postDelayed(Runnable {
+//                    // 发送给
+//                    roomQuery.observe(this, observer)
+//                }, 2000)
+            }
 
-                    // 发送给
-                    roomQuery.observe(this, observer)
+            R.id.btn_rxjava -> {
+                // rxjava 的查询
+//                val roomQueryRxjava = roomManager.liveData.roomQueryRxjava()
+//
+//                window.decorView.postDelayed(Runnable {
+//                    // 发送给
+//                    roomQueryRxjava?.observe(mContext, observer)
+//                }, 2000)
 
-                }, 2000)
+                com.android.helper.utils.RoomUtil.executeInsert(object : RoomInsertListener {
+                    override fun insert(): Long {
+
+                        val room = RoomEntityLiveData()
+                        room.id = System.currentTimeMillis()
+                        room.name = "王语嫣"
+
+                        return roomManager.liveData.roomInsert(room)
+                    }
+
+                    override fun onResult(success: Boolean, id: Long) {
+                        ToastUtil.show("返回的结果为：" + success + "   id：" + id)
+                    }
+                })
             }
         }
     }

@@ -8,6 +8,9 @@ import com.android.helper.app.BaseApplication;
 import com.android.helper.httpclient.AutoInterceptor;
 import com.android.helper.interfaces.ICommonApplication;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import okhttp3.Interceptor;
 
 public class App extends Application {
@@ -17,6 +20,8 @@ public class App extends Application {
     public static App getInstance() {
         return mApp;
     }
+
+    public static final List<Class> mClassList = new ArrayList<>();
 
     @Override
     public void onCreate() {
