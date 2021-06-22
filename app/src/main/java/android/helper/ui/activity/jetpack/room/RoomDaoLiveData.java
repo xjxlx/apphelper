@@ -17,7 +17,7 @@ public interface RoomDaoLiveData {
     int roomDelete(RoomEntityLiveData data);
 
     @Update
-    void roomUpdate(RoomEntityLiveData data);
+    int roomUpdate(RoomEntityLiveData data);
 
     @Query("select * from room_table_live_data where id = :id")
     RoomEntityLiveData roomQuery(long id);

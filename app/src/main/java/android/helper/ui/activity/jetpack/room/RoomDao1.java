@@ -21,10 +21,10 @@ public interface RoomDao1 {
     long roomInsert(RoomEntity1 roomEntity1);
 
     @Delete
-    void roomDelete(RoomEntity1 roomEntity1);
+    int roomDelete(RoomEntity1 roomEntity1);
 
     @Update()
-    void roomUpdate(RoomEntity1 roomEntity1);
+    int roomUpdate(RoomEntity1 roomEntity1);
 
     @Query("select * from room_table_1 where id =:id")
     RoomEntity1 roomQuery(long id);
