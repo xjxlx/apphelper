@@ -7,5 +7,5 @@ public interface RoomQueryListener<T> {
     /**
      * @param t room数据库查询的结果，如果更新失败，则返回null
      */
-    void onResult(boolean success, T t);
+    void onResult(boolean success, T t,String errorMsg);
 }

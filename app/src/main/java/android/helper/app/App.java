@@ -41,7 +41,7 @@ public class App extends Application {
 
             @Override
             public String logTag() {
-                return "App";
+                return "AppHelper";
             }
 
             @Override

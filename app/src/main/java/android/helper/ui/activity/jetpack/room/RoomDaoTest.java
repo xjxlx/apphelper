@@ -7,7 +7,7 @@ import androidx.room.Insert;
 @Dao
 public interface RoomDaoTest {
 
-    @Insert
+    @Insert(entity = RoomEntityTest.class)
     long insert(RoomEntityTest entity3);
 
     @Delete

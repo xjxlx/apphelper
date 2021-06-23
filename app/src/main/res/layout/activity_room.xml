@@ -218,9 +218,9 @@
             android:layout_height="wrap_content"
             android:text="RxJava - 查询"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_bias="0.1"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/btn_database_update"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_live_data_update"
             app:layout_constraintVertical_bias="0.1" />
 
@@ -228,12 +228,24 @@
             android:id="@+id/btn_database_update"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="数据库更新"
-            app:layout_constraintBottom_toBottomOf="@+id/btn_rxjava"
+            android:text="数据库迁移"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintLeft_toRightOf="@+id/btn_rxjava"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/btn_database_update_insert"
+            app:layout_constraintTop_toBottomOf="@+id/btn_rxjava"
+            app:layout_constraintVertical_bias="0.1" />
+
+        <Button
+            android:id="@+id/btn_database_update_insert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="迁移后重新插入"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_database_update"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintLeft_toRightOf="@+id/btn_database_update"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btn_rxjava"
+            app:layout_constraintTop_toTopOf="@+id/btn_database_update"
             app:layout_constraintVertical_bias="0.5" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

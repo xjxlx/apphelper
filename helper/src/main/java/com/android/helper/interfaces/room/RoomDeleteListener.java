@@ -7,6 +7,6 @@ public interface RoomDeleteListener {
     /**
      * @param deleteRow room删除成功后返回的行数，表示删除了几条数据，如果删除失败，则返回0
      */
-    void onResult(boolean success, int deleteRow);
+    void onResult(boolean success, int deleteRow,String errorMsg);
 
 }

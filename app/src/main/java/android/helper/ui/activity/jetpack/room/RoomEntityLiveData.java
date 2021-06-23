@@ -26,6 +26,7 @@ public class RoomEntityLiveData {
 
     @NonNull
     private String name;
+
     private int age;
 
     @ColumnInfo(name = "six")

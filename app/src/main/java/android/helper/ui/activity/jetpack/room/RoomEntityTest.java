@@ -16,13 +16,36 @@ public class RoomEntityTest {
     private String uid = "";
 
     @ColumnInfo
-    private int six;
+    private int six = 0;
 
     @ColumnInfo
-    private String name;
+    @NonNull
+    private String name = "";
 
     @ColumnInfo(name = "CURRENT_TIMESTAMP")
-    private String createTime;
+    @NonNull
+    private String createTime = "";
+
+    @ColumnInfo
+    @NonNull
+    private String time = "";
+
+    @NotNull
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(@NotNull String time) {
+        this.time = time;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
 
     @NotNull
     public String getUid() {
@@ -41,20 +64,24 @@ public class RoomEntityTest {
         this.six = six;
     }
 
+    @NotNull
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NotNull String name) {
         this.name = name;
     }
 
+    @NotNull
     @Override
     public String toString() {
-        return "RoomEntity3{" +
+        return "RoomEntityTest{" +
                 "uid='" + uid + '\'' +
                 ", six=" + six +
                 ", name='" + name + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", time='" + time + '\'' +
                 '}';
     }
 }

@@ -12,11 +12,11 @@ import androidx.room.RoomDatabase;
  * 2：必须是抽象类，且继承RoomDatabase
  * 3:version: 版本号，entities:对应的实体类
  */
-@Database(version = 2, entities = {RoomEntity1.class, RoomEntity2.class,
+@Database(version = 4, entities = {RoomEntity1.class, RoomEntity2.class,
         RoomEntityLiveData.class, RoomEntityTest.class})
 public abstract class RoomDataBaseHelper extends RoomDatabase {
 
-    private static final String mDdName = "room_table.db";
+    public static final String ROOM_DB_NAME = "room_table.db";
     private static volatile RoomDataBaseHelper INSTANCE;
 
     abstract RoomDao1 getDao1();
@@ -38,7 +38,7 @@ public abstract class RoomDataBaseHelper extends RoomDatabase {
                             .databaseBuilder(
                                     App.getInstance().getApplicationContext(), // 上下文
                                     RoomDataBaseHelper.class, // 继承了RoomDatabase的类
-                                    mDdName // 数据库db的名字
+                                    ROOM_DB_NAME // 数据库db的名字
                             )
                             // .allowMainThreadQueries()// 在UI线程中运行
                             .build();
