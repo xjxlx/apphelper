@@ -118,54 +118,6 @@
             app:layout_constraintVertical_bias="0.5" />
 
         <Button
-            android:id="@+id/btn_install1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="增加2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/btn_delete2"
-            app:layout_constraintTop_toBottomOf="@+id/btn_query_single"
-            app:layout_constraintVertical_bias="0.1" />
-
-        <Button
-            android:id="@+id/btn_delete2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="删除2"
-            app:layout_constraintBottom_toBottomOf="@+id/btn_install1"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintLeft_toRightOf="@+id/btn_install1"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btn_install1"
-            app:layout_constraintVertical_bias="0.5" />
-
-        <Button
-            android:id="@+id/btn_update2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="修改2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/btn_query2"
-            app:layout_constraintTop_toBottomOf="@+id/btn_install1"
-            app:layout_constraintVertical_bias="0.01" />
-
-        <Button
-            android:id="@+id/btn_query2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="查询2"
-            app:layout_constraintBottom_toBottomOf="@+id/btn_update2"
-            app:layout_constraintLeft_toRightOf="@+id/btn_update2"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btn_update2"
-            app:layout_constraintVertical_bias="0.5" />
-
-        <Button
             android:id="@+id/btn_live_data_install"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -174,7 +126,7 @@
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/btn_live_data_delete"
-            app:layout_constraintTop_toBottomOf="@+id/btn_update2"
+            app:layout_constraintTop_toBottomOf="@+id/btn_query_single"
             app:layout_constraintVertical_bias="0.1" />
 
         <Button
@@ -247,6 +199,31 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/btn_database_update"
             app:layout_constraintVertical_bias="0.5" />
+
+        <Button
+            android:id="@+id/btn_database_update_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加数据库表结构"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/btn_database_update_data_insert"
+            app:layout_constraintTop_toBottomOf="@+id/btn_database_update"
+            app:layout_constraintVertical_bias="0.2" />
+
+        <Button
+            android:id="@+id/btn_database_update_data_insert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加表结构--插入数据"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_database_update_data"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintLeft_toRightOf="@+id/btn_database_update_data"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btn_database_update_data"
+            app:layout_constraintVertical_bias="0.5" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

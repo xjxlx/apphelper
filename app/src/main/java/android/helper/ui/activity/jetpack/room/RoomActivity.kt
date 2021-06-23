@@ -14,6 +14,7 @@ import com.android.helper.interfaces.room.RoomUpdateListener
 import com.android.helper.utils.LogUtil
 import com.android.helper.utils.ToastUtil
 import com.android.helper.utils.room.RoomUtil
+import com.android.helper.utils.room.SqlEntity
 import kotlinx.android.synthetic.main.activity_room.*
 
 /**
@@ -32,7 +33,7 @@ class RoomActivity : BaseTitleActivity() {
 
     private val observer = Observer<RoomEntityLiveData> { t -> ToastUtil.show("返回的数据为：" + t) }
 
-    private lateinit var versionRoom: RoomDataBaseHelper
+    private var versionRoom: RoomDataBaseHelper? = null
 
     private val mRoomUtil by lazy {
         return@lazy RoomUtil.getInstance()
@@ -58,9 +59,9 @@ class RoomActivity : BaseTitleActivity() {
                 btn_delete_single, btn_delete_list,
                 btn_update_id, btn_update_entity,
                 btn_query_single, btn_query_all,
-                btn_install1, btn_delete2, btn_update2, btn_query2,
                 btn_live_data_install, btn_live_data_delete, btn_live_data_update, btn_live_data_query,
-                btn_rxjava, btn_database_update, btn_database_update_insert
+                btn_rxjava, btn_database_update, btn_database_update_insert,
+                btn_database_update_data, btn_database_update_data_insert
         )
     }
 
@@ -149,39 +150,11 @@ class RoomActivity : BaseTitleActivity() {
 
             }
             R.id.btn_query_all -> {
+
                 val list = roomManager.dao1.roomQuery()
                 ToastUtil.show("查询列表成功：$list")
             }
-            // 增加
-            R.id.btn_install1 -> {
-                val room = RoomEntity2()
-                room.id = System.currentTimeMillis()
-                val roomInsert = roomManager.dao2.roomInsert(room)
-                room.name = "王语嫣"
-                ToastUtil.show("添加成功：$roomInsert")
-            }
-            // 删除
-            R.id.btn_delete2 -> {
-                val room = RoomEntity2()
-                room.id = 1624194999032
-                roomManager.dao2.roomDelete(room)
 
-                ToastUtil.show("删除成功：$")
-            }
-            // 更新
-            R.id.btn_update2 -> {
-                val room = RoomEntity2()
-                room.id = 1624195185217
-                room.name = "李若彤"
-                room.age = 18
-                roomManager.dao2.roomUpdate(room)
-                ToastUtil.show("修改成功：$")
-            }
-            // 查询
-            R.id.btn_query2 -> {
-                val roomQuery = roomManager.dao2.roomQuery(1624195185217)
-                ToastUtil.show("查询成功：$roomQuery")
-            }
             /****************************** LiveData ***************************/
             // 增加
             R.id.btn_live_data_install -> {
@@ -279,7 +252,7 @@ class RoomActivity : BaseTitleActivity() {
 
                 mRoomUtil.insert(object : RoomInsertListener {
                     override fun insert(): Long {
-                        return versionRoom.daoTest.insert(room)
+                        return versionRoom?.daoTest!!.insert(room)
                     }
 
                     override fun onResult(success: Boolean, id: Long, errorMsg: String?) {
@@ -288,6 +261,57 @@ class RoomActivity : BaseTitleActivity() {
                     }
                 })
 
+            }
+
+            // 增加数据库表格
+            R.id.btn_database_update_data -> {
+                LogUtil.e("开始添加数据库表格 --->")
+
+                val map = hashMapOf<String, SqlEntity>()
+                map["id"] = SqlEntity(RoomUtil.UNIT.INTEGER)
+                map["name"] = SqlEntity(RoomUtil.UNIT.TEXT, "")
+                map["age"] = SqlEntity(RoomUtil.UNIT.INTEGER, "0")
+
+                val createTable = mRoomUtil.createTable("room_3", "id", RoomUtil.UNIT.INTEGER, false, map)
+
+                LogUtil.e("createTable:$createTable")
+
+                val migration5 = object : Migration(4, 5) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+
+                        val version = database.version
+
+                        LogUtil.e("version:$version")
+
+                        database.execSQL(createTable)
+                    }
+                }
+
+                // 数据库更新
+                versionRoom = Room
+                        .databaseBuilder(mContext, RoomDataBaseHelper::class.java, RoomDataBaseHelper.ROOM_DB_NAME)
+                        .addMigrations(migration5)
+                        .build()
+            }
+
+            // 增加数据库表格 --->  新增字段
+            R.id.btn_database_update_data_insert -> {
+                val entity3 = RoomEntity3()
+                entity3.id = System.currentTimeMillis()
+                entity3.name = "小橙子"
+                entity3.age = 6
+
+                mRoomUtil.insert(object : RoomInsertListener {
+                    override fun insert(): Long {
+                        return versionRoom?.dao3!!.insert(entity3)
+                    }
+
+                    override fun onResult(success: Boolean, id: Long, errorMsg: String?) {
+                        val result = "插入成功：$success  插入的对象：$id  错误的原因：$errorMsg"
+                        LogUtil.e(result)
+                        ToastUtil.show(result)
+                    }
+                })
             }
         }
     }

@@ -12,8 +12,8 @@ import androidx.room.RoomDatabase;
  * 2：必须是抽象类，且继承RoomDatabase
  * 3:version: 版本号，entities:对应的实体类
  */
-@Database(version = 4, entities = {RoomEntity1.class, RoomEntity2.class,
-        RoomEntityLiveData.class, RoomEntityTest.class})
+@Database(version = 5, entities = {RoomEntity1.class, RoomEntity2.class,
+        RoomEntityLiveData.class, RoomEntityTest.class, RoomEntity3.class})
 public abstract class RoomDataBaseHelper extends RoomDatabase {
 
     public static final String ROOM_DB_NAME = "room_table.db";
@@ -26,6 +26,8 @@ public abstract class RoomDataBaseHelper extends RoomDatabase {
     abstract RoomDaoLiveData getLiveData();
 
     abstract RoomDaoTest getDaoTest();
+
+    abstract RoomDao3 getDao3();
 
     /**
      * @return 获取room数据库的实例，这个对象应该是单利的一个对象，不应该多次去重复获取

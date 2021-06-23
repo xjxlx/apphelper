@@ -11,6 +11,7 @@ import com.android.helper.interfaces.room.RoomInsertListener;
 import com.android.helper.interfaces.room.RoomMigrationListener;
 import com.android.helper.interfaces.room.RoomQueryListener;
 import com.android.helper.interfaces.room.RoomUpdateListener;
+import com.android.helper.utils.LogUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,17 +40,7 @@ public class RoomUtil {
         /**
          * 数值类型
          */
-        String INTEGER = "TEXT";
-
-        /**
-         * 数值类型
-         */
-        String INT = "INT";
-
-        /**
-         * 长整型数值
-         */
-        String LONG = "LONG";
+        String INTEGER = "INTEGER";
 
         /**
          * 布尔类型
@@ -105,6 +96,7 @@ public class RoomUtil {
 
                         @Override
                         public void onError(Throwable t) {
+                            LogUtil.e("Room插入数据失败：" + t.getMessage());
                             insertListener.onResult(false, -1, t.getMessage());
                         }
 
@@ -146,6 +138,7 @@ public class RoomUtil {
 
                         @Override
                         public void onError(Throwable t) {
+                            LogUtil.e("Room删除数据失败：" + t.getMessage());
                             deleteListener.onResult(false, 0, t.getMessage());
                         }
 
@@ -188,6 +181,7 @@ public class RoomUtil {
 
                         @Override
                         public void onError(Throwable t) {
+                            LogUtil.e("Room更新数据失败：" + t.getMessage());
                             updateListener.onResult(false, 0, t.getMessage());
                         }
 
@@ -232,6 +226,7 @@ public class RoomUtil {
 
                         @Override
                         public void onError(Throwable t) {
+                            LogUtil.e("Room查询数据失败：" + t.getMessage());
                             queryListener.onResult(false, null, t.getMessage());
                         }
 
@@ -281,7 +276,7 @@ public class RoomUtil {
     /**
      * @param tableName      新创建的表名
      * @param primaryKey     主键的key
-     * @param primaryKeyUnit 主键的单位，建议使用 UNIT.TEXT 、UNIT.INTEGER 、UNIT.INT
+     * @param primaryKeyUnit 主键的单位，建议使用 UNIT.TEXT 、UNIT.INTEGER  ,不能使用int
      * @param autoincrement  在主键为 int 或者 long 类型的时候，是否允许自增长
      * @param column         具体的参数集合，集合中的key为字段名，value为key的单位类型，如果单位中需要加入not null 的话，可以在后面进行拼接
      * @return 返回一个创建 表的sql语句
@@ -291,26 +286,26 @@ public class RoomUtil {
 
         // 加入表名 和 指定主键
         if ((!TextUtils.isEmpty(tableName)) && (!TextUtils.isEmpty(primaryKey))) {
-            sql.append("CREATE TABLE IF NOT EXISTS ")
+            sql
+                    .append("CREATE TABLE IF NOT EXISTS ")
+                    .append("`")
                     .append(tableName)
-                    .append(" ( ")
+                    .append("`");
+        }
+
+//        E/AppHelper: │ 创建的SQL表格为：CREATE TABLE IF NOT EXISTS `room_3``id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, (`name` TEXT, `age` INTEGER NOT NULL, )
+//        _db.execSQL("CREATE TABLE IF NOT EXISTS `room_table_2` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `createTime` TEXT, `name` TEXT, `age` INTEGER NOT NULL, `six` INTEGER NOT NULL)");
+
+        // 加入左侧的括号
+        sql.append(" (");
+
+        // 如果主键是Integer类型，且设置了自增长模式
+        if ((TextUtils.equals(primaryKeyUnit, UNIT.INTEGER)) && (autoincrement)) {
+            sql
+                    .append("`")
                     .append(primaryKey)
-                    .append(" ")
-                    .append(primaryKeyUnit)
-                    .append(" PRIMARY KEY");
-
-            // 如果主键的类型是文本类型的，那么就给他设置不能为null
-            if (TextUtils.equals(primaryKeyUnit, UNIT.TEXT)) {
-                sql.append(" NOT NULL");
-            }
+                    .append(" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,");
         }
-
-        // 如果主键的类型不是文本类型，且允许自增长，那么就讲主键设置为自增长
-        if ((!TextUtils.equals(primaryKeyUnit, UNIT.TEXT)) && autoincrement) {
-            sql.append(" autoincrement");
-        }
-
-        sql.append(" ,");
 
         // 添加参数
         if ((column != null) && (column.size() > 0)) {
@@ -322,37 +317,48 @@ public class RoomUtil {
                 SqlEntity entity = entry.getValue();
                 // 单位名字
                 String unit = entity.getUnit();
-                // 是否允许为空
-                boolean notnull = entity.isCanNot();
+
+                // 如果是自增长的类型，且值和自增长的值相同，则跳过
+                if (autoincrement && (TextUtils.equals(key, primaryKey))) {
+                    continue;
+                }
 
                 // 加入字段名
                 sql
-                        .append(" ")
+                        .append("`")
                         .append(key)
-                        .append(" ")
-                        .append(entry.getValue())
-                ;
+                        .append("` ")
+                        .append(unit);
 
                 // 加入非空标记
-                if (!notnull) {
+                if (!TextUtils.equals(unit, UNIT.TEXT)) {
                     sql
                             .append(" ")
-                            .append(entity.notNULL)
-                            .append(" ");
+                            .append(entity.notNULL);
                 }
 
                 // 加入逗号
-                sql.append(",");
+                sql.append(", ");
             }
         }
 
-        // 删除最后的那个逗号
-        sql.delete(0, sql.length() - 1);
+        // 如果主键不是自增长类型
+        if (!autoincrement) {
+            sql.append("PRIMARY KEY")
+                    .append("(`")
+                    .append(primaryKey)
+                    .append("`)");
+        } else {
+            // 如果是自增长的类型，则去掉最后的右侧）
+            sql.delete(sql.length() - 2, sql.length());
+        }
 
         // 最后加入
         sql.append(")");
 
-        return sql.toString();
+        String result = sql.toString();
+        LogUtil.e("创建的SQL表格为：" + result);
+        return result;
     }
 
 }
