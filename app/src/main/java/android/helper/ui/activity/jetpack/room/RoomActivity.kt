@@ -276,7 +276,7 @@ class RoomActivity : BaseTitleActivity() {
 
                 LogUtil.e("createTable:$createTable")
 
-                val migration5 = object : Migration(4, 5) {
+                val migration5 = object : Migration(3, 4) {
                     override fun migrate(database: SupportSQLiteDatabase) {
 
                         val version = database.version

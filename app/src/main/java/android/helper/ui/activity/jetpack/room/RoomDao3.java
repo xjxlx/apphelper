@@ -6,6 +6,6 @@ import androidx.room.Insert;
 @Dao
 public interface RoomDao3 {
 
-    @Insert
+    @Insert(entity = RoomEntity3.class)
     long insert(RoomEntity3 entity3);
 }
