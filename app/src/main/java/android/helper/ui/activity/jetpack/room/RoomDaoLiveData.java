@@ -7,6 +7,8 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import java.util.List;
+
 @Dao
 public interface RoomDaoLiveData {
 
@@ -15,6 +17,9 @@ public interface RoomDaoLiveData {
 
     @Delete
     int roomDelete(RoomEntityLiveData data);
+
+    @Delete
+    int roomDelete(List<RoomEntityLiveData> data);
 
     @Update
     int roomUpdate(RoomEntityLiveData data);

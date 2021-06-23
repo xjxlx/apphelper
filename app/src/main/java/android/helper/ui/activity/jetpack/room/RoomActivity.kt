@@ -29,6 +29,10 @@ class RoomActivity : BaseTitleActivity() {
 
     private val observer = Observer<RoomEntityLiveData> { t -> ToastUtil.show("返回的数据为：" + t) }
 
+    private val mRoomUtil by lazy {
+        return@lazy RoomUtil.getInstance()
+    }
+
     override fun getTitleLayout(): Int {
         return R.layout.activity_room
     }
@@ -49,7 +53,7 @@ class RoomActivity : BaseTitleActivity() {
                 btn_query_single, btn_query_all,
                 btn_install1, btn_delete2, btn_update2, btn_query2,
                 btn_live_data_install, btn_live_data_delete, btn_live_data_update, btn_live_data_query,
-                btn_rxjava
+                btn_rxjava, btn_database_update
         )
     }
 
@@ -60,7 +64,8 @@ class RoomActivity : BaseTitleActivity() {
                 val room = RoomEntity1()
                 room.id = System.currentTimeMillis()
                 room.name = "张三"
-                RoomUtil.insert(object : RoomInsertListener {
+
+                mRoomUtil.insert(object : RoomInsertListener {
                     override fun insert(): Long {
                         return roomManager.dao1.roomInsert(room)
                     }
@@ -84,7 +89,7 @@ class RoomActivity : BaseTitleActivity() {
             R.id.btn_delete_single -> {
                 val room = RoomEntity1()
                 room.id = 1624340340101
-                RoomUtil.delete(object : RoomDeleteListener {
+                mRoomUtil.delete(object : RoomDeleteListener {
                     override fun delete(): Int {
                         return roomManager.dao1.roomDelete(room)
                     }
@@ -108,7 +113,7 @@ class RoomActivity : BaseTitleActivity() {
                 room.id = 1624340347931
                 room.name = "小飞飞"
 
-                RoomUtil.update(object : RoomUpdateListener {
+                mRoomUtil.update(object : RoomUpdateListener {
                     override fun update(): Int {
                         return roomManager.dao1.roomUpdate(room)
                     }
@@ -122,7 +127,7 @@ class RoomActivity : BaseTitleActivity() {
             R.id.btn_update_entity -> {
             }
             R.id.btn_query_single -> {
-                RoomUtil.query(object : RoomQueryListener<RoomEntity1> {
+                mRoomUtil.query(object : RoomQueryListener<RoomEntity1> {
                     override fun query(): RoomEntity1 {
                         return roomManager.dao1.roomQuery(1624340347931)
                     }
@@ -178,20 +183,33 @@ class RoomActivity : BaseTitleActivity() {
             }
             // 删除
             R.id.btn_live_data_delete -> {
-                val room = RoomEntityLiveData()
-                room.id = 1624268033284
-                val roomDelete = roomManager.liveData.roomDelete(room)
-                LogUtil.e("roomDelete:$roomDelete")
-                ToastUtil.show("删除成功：$" + roomDelete)
+                val room1 = RoomEntityLiveData()
+                room1.id = 1624364327773
+
+                val room2 = RoomEntityLiveData()
+                room2.id = 1624364328392
+
+                val list = ArrayList<RoomEntityLiveData>()
+                list.add(room1)
+                list.add(room2)
+
+                val roomDelete = roomManager.liveData.roomDelete(list)
+                LogUtil.e("delete:$roomDelete")
+
+
+                ToastUtil.show("删除成功：$$roomDelete")
             }
             // 更新
             R.id.btn_live_data_update -> {
                 val room = RoomEntityLiveData()
-                room.id = 1624197857729
+                room.id = 1624364331827
                 room.name = "李若彤"
                 room.age = 18
-                roomManager.liveData.roomUpdate(room)
-                ToastUtil.show("修改成功：$")
+                val roomUpdate = roomManager.liveData.roomUpdate(room)
+
+                LogUtil.e("roomUpdate:$roomUpdate")
+
+                ToastUtil.show("修改成功：$roomUpdate")
             }
             // 查询
             R.id.btn_live_data_query -> {
@@ -208,7 +226,7 @@ class RoomActivity : BaseTitleActivity() {
 //                    roomQueryRxjava?.observe(mContext, observer)
 //                }, 2000)
 
-                com.android.helper.utils.RoomUtil.insert(object : RoomInsertListener {
+                mRoomUtil.insert(object : RoomInsertListener {
                     override fun insert(): Long {
 
                         val room = RoomEntityLiveData()
@@ -219,9 +237,15 @@ class RoomActivity : BaseTitleActivity() {
                     }
 
                     override fun onResult(success: Boolean, id: Long) {
-                        ToastUtil.show("返回的结果为：" + success + "   id：" + id)
+                        ToastUtil.show("返回的结果为：$success   id：$id")
                     }
                 })
+            }
+
+            R.id.btn_database_update -> {
+                // 数据库更新
+
+
             }
         }
     }

@@ -3,6 +3,9 @@ plugins {
     id 'kotlin-android'
 }
 
+// config 依赖的版本
+def configDependencies = rootProject.ext.dependencies
+
 android {
     def compile = rootProject.ext.android
 
@@ -81,4 +84,7 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     api 'com.github.LuckSiege.PictureSelector:picture_library:v2.6.0' // 图片选择库
     api 'com.contrarywind:Android-PickerView:4.1.9' // 日历选择器
+
+    // room数据库的依赖
+    implementation configDependencies["room-runtime"]
 }

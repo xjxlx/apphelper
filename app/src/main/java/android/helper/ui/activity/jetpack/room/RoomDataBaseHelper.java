@@ -14,7 +14,6 @@ import androidx.room.RoomDatabase;
  */
 @Database(version = 2, entities = {RoomEntity1.class, RoomEntity2.class,
         RoomEntityLiveData.class, RoomEntityTest.class})
-
 public abstract class RoomDataBaseHelper extends RoomDatabase {
 
     private static final String mDdName = "room_table.db";
@@ -41,7 +40,7 @@ public abstract class RoomDataBaseHelper extends RoomDatabase {
                                     RoomDataBaseHelper.class, // 继承了RoomDatabase的类
                                     mDdName // 数据库db的名字
                             )
-                            .allowMainThreadQueries()// 在UI线程中运行
+                            // .allowMainThreadQueries()// 在UI线程中运行
                             .build();
                 }
             }

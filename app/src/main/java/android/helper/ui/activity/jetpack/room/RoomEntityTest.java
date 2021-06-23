@@ -21,6 +21,9 @@ public class RoomEntityTest {
     @ColumnInfo
     private String name;
 
+    @ColumnInfo(name = "CURRENT_TIMESTAMP")
+    private String createTime;
+
     @NotNull
     public String getUid() {
         return uid;

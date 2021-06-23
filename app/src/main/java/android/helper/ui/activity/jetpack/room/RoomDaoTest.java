@@ -11,6 +11,6 @@ public interface RoomDaoTest {
     long insert(RoomEntityTest entity3);
 
     @Delete
-    int  delete(RoomEntityTest test);
+    int delete(RoomEntityTest test);
 
 }
