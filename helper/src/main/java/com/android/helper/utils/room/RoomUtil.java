@@ -3,12 +3,10 @@ package com.android.helper.utils.room;
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
-import androidx.room.RoomDatabase;
-
 import com.android.helper.httpclient.RxUtil;
 import com.android.helper.interfaces.room.RoomDeleteListener;
+import com.android.helper.interfaces.room.RoomExecuteListener;
 import com.android.helper.interfaces.room.RoomInsertListener;
-import com.android.helper.interfaces.room.RoomMigrationListener;
 import com.android.helper.interfaces.room.RoomQueryListener;
 import com.android.helper.interfaces.room.RoomUpdateListener;
 import com.android.helper.utils.LogUtil;
@@ -41,11 +39,6 @@ public class RoomUtil {
          * 数值类型
          */
         String INTEGER = "INTEGER";
-
-        /**
-         * 布尔类型
-         */
-        String BOOLEAN = "BOOLEAN";
     }
 
     public RoomUtil() {
@@ -238,8 +231,41 @@ public class RoomUtil {
         }
     }
 
-    public <T extends RoomDatabase> void updateVersion(RoomMigrationListener<T> roomMigrationListener) {
+    public <T> void execute(RoomExecuteListener<T> executeListener) {
+        if (executeListener != null) {
+            Flowable
+                    .create((FlowableOnSubscribe<T>) emitter -> {
 
+                        try {
+                            T query = executeListener.execute();
+                            emitter.onNext(query);
+                        } catch (Exception e) {
+                            emitter.onError(e);
+                        }
+
+                        emitter.onComplete();
+
+                    }, BackpressureStrategy.LATEST)
+                    .compose(RxUtil.getScheduler())
+                    .subscribe(new DisposableSubscriber<T>() {
+                        @Override
+                        public void onNext(T t) {
+                            LogUtil.e("Room执行成功：" + t);
+                            executeListener.onResult(true, t, "");
+                        }
+
+                        @Override
+                        public void onError(Throwable t) {
+                            LogUtil.e("Room执行操作失败：" + t.getMessage());
+                            executeListener.onResult(false, null, t.getMessage());
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        }
     }
 
     /**
