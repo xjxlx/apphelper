@@ -314,7 +314,7 @@ public class RoomUtil {
      * @param column         具体的参数集合，集合中的key为字段名，value为key的单位类型，如果单位中需要加入not null 的话，可以在后面进行拼接
      * @return 返回一个创建 表的sql语句
      */
-    public String createTable(String tableName, String primaryKey, String primaryKeyUnit, boolean autoincrement, HashMap<String, SqlEntity> column) {
+    public String createTable(String tableName, String primaryKey, String primaryKeyUnit, boolean autoincrement, HashMap<String, SQLEntity> column) {
         StringBuilder sql = new StringBuilder();
 
         // 加入表名 和 指定主键
@@ -339,12 +339,12 @@ public class RoomUtil {
 
         // 添加参数
         if ((column != null) && (column.size() > 0)) {
-            Set<Map.Entry<String, SqlEntity>> entries = column.entrySet();
-            for (Map.Entry<String, SqlEntity> entry : entries) {
+            Set<Map.Entry<String, SQLEntity>> entries = column.entrySet();
+            for (Map.Entry<String, SQLEntity> entry : entries) {
                 // 获取字段名
                 String key = entry.getKey();
 
-                SqlEntity entity = entry.getValue();
+                SQLEntity entity = entry.getValue();
                 // 单位名字
                 String unit = entity.getUnit();
 

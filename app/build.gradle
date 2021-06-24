@@ -27,6 +27,9 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
+
+        buildConfigField("int", "ROOM_VERSION", "1")
+        buildConfigField("String", "ROOM_VERSION_FILE_NAME", "\"room_table.db\"")
     }
 
     signingConfigs {
@@ -45,6 +48,7 @@ android {
     }
 
     buildTypes {
+
         release {
             signingConfig signingConfigs.release
             minifyEnabled true

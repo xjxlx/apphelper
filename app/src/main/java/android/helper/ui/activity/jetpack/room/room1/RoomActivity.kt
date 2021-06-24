@@ -14,7 +14,7 @@ import com.android.helper.interfaces.room.RoomUpdateListener
 import com.android.helper.utils.LogUtil
 import com.android.helper.utils.ToastUtil
 import com.android.helper.utils.room.RoomUtil
-import com.android.helper.utils.room.SqlEntity
+import com.android.helper.utils.room.SQLEntity
 import kotlinx.android.synthetic.main.activity_room.*
 
 /**
@@ -267,10 +267,10 @@ class RoomActivity : BaseTitleActivity() {
             R.id.btn_database_update_data -> {
                 LogUtil.e("开始添加数据库表格 --->")
 
-                val map = hashMapOf<String, SqlEntity>()
-                map["id"] = SqlEntity(RoomUtil.UNIT.INTEGER)
-                map["name"] = SqlEntity(RoomUtil.UNIT.TEXT, "")
-                map["age"] = SqlEntity(RoomUtil.UNIT.INTEGER, "0")
+                val map = hashMapOf<String, SQLEntity>()
+                map["id"] = SQLEntity(RoomUtil.UNIT.INTEGER)
+                map["name"] = SQLEntity(RoomUtil.UNIT.TEXT, "")
+                map["age"] = SQLEntity(RoomUtil.UNIT.INTEGER, "0")
 
                 val createTable = mRoomUtil.createTable("room_3", "id", RoomUtil.UNIT.INTEGER, false, map)
 

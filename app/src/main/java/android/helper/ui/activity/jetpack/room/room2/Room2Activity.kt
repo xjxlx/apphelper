@@ -1,6 +1,7 @@
 package android.helper.ui.activity.jetpack.room.room2
 
 import android.helper.R
+import android.helper.ui.activity.jetpack.room.room2.RoomManager.VERSION
 import android.view.View
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -11,7 +12,7 @@ import com.android.helper.interfaces.room.RoomInsertListener
 import com.android.helper.utils.LogUtil
 import com.android.helper.utils.ToastUtil
 import com.android.helper.utils.room.RoomUtil
-import com.android.helper.utils.room.SqlEntity
+import com.android.helper.utils.room.SQLEntity
 import kotlinx.android.synthetic.main.activity_room2.*
 
 class Room2Activity : BaseTitleActivity() {
@@ -116,10 +117,10 @@ class Room2Activity : BaseTitleActivity() {
                         val migration1_2 = object : Migration(1, 2) {
                             override fun migrate(database: SupportSQLiteDatabase) {
 
-                                val map = hashMapOf<String, SqlEntity>()
-                                map["id"] = SqlEntity(RoomUtil.UNIT.INTEGER)
-                                map["name"] = SqlEntity(RoomUtil.UNIT.TEXT)
-                                map["isMaser"] = SqlEntity(RoomUtil.UNIT.INTEGER)
+                                val map = hashMapOf<String, SQLEntity>()
+                                map["id"] = SQLEntity(RoomUtil.UNIT.INTEGER)
+                                map["name"] = SQLEntity(RoomUtil.UNIT.TEXT)
+                                map["isMaser"] = SQLEntity(RoomUtil.UNIT.INTEGER)
 
                                 val createTable = RoomUtil.getInstance().createTable("room_table_22", "id", RoomUtil.UNIT.INTEGER, false, map)
 
@@ -150,7 +151,7 @@ class Room2Activity : BaseTitleActivity() {
             R.id.btn_table_2_insert -> {
                 RoomUtil.getInstance().execute(object : RoomExecuteListener<Long> {
                     override fun execute(): Long {
-                        val migration3_4 = object : Migration(RoomManager.ROOM_VERSION - 1, RoomManager.ROOM_VERSION) {
+                        val migration = object : Migration(VERSION - 1, VERSION) {
                             override fun migrate(database: SupportSQLiteDatabase) {
 
                                 val addColumn = RoomUtil.getInstance().addColumn("room_table_22", "name8", RoomUtil.UNIT.TEXT, true)
@@ -166,7 +167,7 @@ class Room2Activity : BaseTitleActivity() {
                         room.isMaser = true
                         room.age = 22
 
-                        return RoomManager.getInstance(migration3_4).dao2.insert(room)
+                        return RoomManager.getInstance(migration).dao2.insert(room)
                     }
 
                     override fun onResult(success: Boolean, t: Long?, errorMsg: String?) {
