@@ -14,7 +14,8 @@ import androidx.room.RoomDatabase;
 // @Database(version = RoomManager.ROOM_VERSION, entities = {RoomTable1.class, RoomTable2.class})
 public abstract class BaseRoomManager extends RoomDatabase {
 
-    /*
+
+    /* 一：创建一个对象
      * public static RoomManager getInstance() {
      *      if (INSTANCE == null) {
      *          synchronized (RoomManager.class) {
@@ -30,7 +31,13 @@ public abstract class BaseRoomManager extends RoomDatabase {
      *      return INSTANCE;
      * }
      *
-     * @return 获取一个实例的对象
+     *
+     * 二：返回一个操作表结构的对象
+     *
+     *      abstract DaoTable1 getDao();
+     *
+     *
+     * /
      */
 
 }

@@ -151,6 +151,7 @@ class Room2Activity : BaseTitleActivity() {
             R.id.btn_table_2_insert -> {
                 RoomUtil.getInstance().execute(object : RoomExecuteListener<Long> {
                     override fun execute(): Long {
+
                         val migration = object : Migration(VERSION - 1, VERSION) {
                             override fun migrate(database: SupportSQLiteDatabase) {
 
