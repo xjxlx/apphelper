@@ -30,6 +30,11 @@
             style="@style/style_todo_item"
             android:text="Room数据库" />
 
+        <TextView
+            android:id="@+id/tv_room2"
+            style="@style/style_todo_item"
+            android:text="Room数据库2" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

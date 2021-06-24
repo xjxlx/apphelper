@@ -1,9 +1,6 @@
-package android.helper.ui.activity.jetpack.room;
-
-import android.helper.app.App;
+package android.helper.ui.activity.jetpack.room.room1;
 
 import androidx.room.Database;
-import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 /**
@@ -37,22 +34,22 @@ public abstract class RoomDataBaseHelper extends RoomDatabase {
     /**
      * @return 获取room数据库的实例，这个对象应该是单利的一个对象，不应该多次去重复获取
      */
-    public static RoomDataBaseHelper getInstance() {
-        if (INSTANCE == null) {
-            synchronized (RoomDataBaseHelper.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = Room
-                            .databaseBuilder(
-                                    App.getInstance().getApplicationContext(), // 上下文
-                                    RoomDataBaseHelper.class, // 继承了RoomDatabase的类
-                                    ROOM_DB_NAME // 数据库db的名字
-                            )
-                            // .allowMainThreadQueries()// 在UI线程中运行
-                            .build();
-                }
-            }
-        }
-        return INSTANCE;
-    }
+//    public static RoomDataBaseHelper getInstance() {
+//        if (INSTANCE == null) {
+//            synchronized (RoomDataBaseHelper.class) {
+//                if (INSTANCE == null) {
+//                    INSTANCE = Room
+//                            .databaseBuilder(
+//                                    App.getInstance().getApplicationContext(), // 上下文
+//                                    RoomDataBaseHelper.class, // 继承了RoomDatabase的类
+//                                    ROOM_DB_NAME // 数据库db的名字
+//                            )
+//                            // .allowMainThreadQueries()// 在UI线程中运行
+//                            .build();
+//                }
+//            }
+//        }
+//        return INSTANCE;
+//    }
 
 }

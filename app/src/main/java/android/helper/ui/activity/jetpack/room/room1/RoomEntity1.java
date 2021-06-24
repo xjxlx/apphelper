@@ -1,12 +1,9 @@
-package android.helper.ui.activity.jetpack.room;
+package android.helper.ui.activity.jetpack.room.room1;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * room的表
@@ -15,18 +12,14 @@ import org.jetbrains.annotations.NotNull;
  * 3：columnInfo(name = "value") 修改列名
  * 4：@Ignore :忽略不写入表中
  */
-@Entity(tableName = "room_table_live_data")
-public class RoomEntityLiveData {
+@Entity(tableName = "room_table_1")
+public class RoomEntity1 {
 
     @PrimaryKey
     private long id;
-
-    @NonNull
     private String createTime;
 
-    @NonNull
     private String name;
-
     private int age;
 
     @ColumnInfo(name = "six")
@@ -34,11 +27,6 @@ public class RoomEntityLiveData {
 
     @Ignore
     private boolean isMaster;
-
-    public RoomEntityLiveData() {
-        name = "";
-        createTime = "";
-    }
 
     public long getId() {
         return id;
@@ -48,21 +36,19 @@ public class RoomEntityLiveData {
         this.id = id;
     }
 
-    @NotNull
     public String getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(@NotNull String createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 
-    @NotNull
     public String getName() {
         return name;
     }
 
-    public void setName(@NotNull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -90,10 +76,9 @@ public class RoomEntityLiveData {
         isMaster = master;
     }
 
-    @NotNull
     @Override
     public String toString() {
-        return "RoomEntity2{" +
+        return "RoomEntity1{" +
                 "id=" + id +
                 ", createTime='" + createTime + '\'' +
                 ", name='" + name + '\'' +

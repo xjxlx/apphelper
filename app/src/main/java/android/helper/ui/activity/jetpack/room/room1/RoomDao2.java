@@ -1,4 +1,4 @@
-package android.helper.ui.activity.jetpack.room;
+package android.helper.ui.activity.jetpack.room.room1;
 
 import androidx.room.Dao;
 import androidx.room.Delete;

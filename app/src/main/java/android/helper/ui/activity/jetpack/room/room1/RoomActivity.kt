@@ -1,4 +1,4 @@
-package android.helper.ui.activity.jetpack.room
+package android.helper.ui.activity.jetpack.room.room1
 
 import android.helper.R
 import android.view.View
@@ -48,7 +48,7 @@ class RoomActivity : BaseTitleActivity() {
 
         setTitleContent("Room数据库的使用")
 
-        // roomManager = RoomDataBaseHelper.getInstance()
+        //  roomManager = RoomDataBaseHelper.getInstance()
     }
 
     override fun initListener() {
@@ -223,43 +223,43 @@ class RoomActivity : BaseTitleActivity() {
 
                 LogUtil.e("重新构建了对象!")
 
-                val migration = object : Migration(3, 4) {
-                    override fun migrate(database: SupportSQLiteDatabase) {
-
-                        val version = database.version
-
-                        LogUtil.e("version:$version")
-
-                        val sql = mRoomUtil.addColumn("room_test", "time", RoomUtil.UNIT.TEXT)
-
-                        database.execSQL(sql)
-
-                    }
-                }
+//                val migration = object : Migration(3, 4) {
+//                    override fun migrate(database: SupportSQLiteDatabase) {
+//
+//                        val version = database.version
+//
+//                        LogUtil.e("version:$version")
+//
+//                        val sql = mRoomUtil.addColumn("room_test", "time", RoomUtil.UNIT.TEXT)
+//
+//                        database.execSQL(sql)
+//
+//                    }
+//                }
 
                 // 数据库更新
-                versionRoom = Room
-                        .databaseBuilder(mContext, RoomDataBaseHelper::class.java, RoomDataBaseHelper.ROOM_DB_NAME)
-//                        .addMigrations(migration)
-                        .build()
+//                versionRoom = Room
+//                        .databaseBuilder(mContext, RoomDataBaseHelper::class.java, RoomDataBaseHelper.ROOM_DB_NAME)
+////                        .addMigrations(migration)
+//                        .build()
             }
 
             R.id.btn_database_update_insert -> {
 
-                val room = RoomEntityTest()
-                room.uid = System.currentTimeMillis().toString()
-                room.name = "哈哈"
-
-                mRoomUtil.insert(object : RoomInsertListener {
-                    override fun insert(): Long {
-                        return versionRoom?.daoTest!!.insert(room)
-                    }
-
-                    override fun onResult(success: Boolean, id: Long, errorMsg: String?) {
-
-                        ToastUtil.show("插入成功：$success  插入的对象：$id  错误的原因：$errorMsg")
-                    }
-                })
+//                val room = RoomEntityTest()
+//                room.uid = System.currentTimeMillis().toString()
+//                room.name = "哈哈"
+//
+//                mRoomUtil.insert(object : RoomInsertListener {
+//                    override fun insert(): Long {
+//                        return versionRoom?.daoTest!!.insert(room)
+//                    }
+//
+//                    override fun onResult(success: Boolean, id: Long, errorMsg: String?) {
+//
+//                        ToastUtil.show("插入成功：$success  插入的对象：$id  错误的原因：$errorMsg")
+//                    }
+//                })
 
             }
 
@@ -274,16 +274,17 @@ class RoomActivity : BaseTitleActivity() {
 
                 val createTable = mRoomUtil.createTable("room_3", "id", RoomUtil.UNIT.INTEGER, false, map)
 
-                LogUtil.e("createTable:$createTable")
-
                 val migration5 = object : Migration(3, 4) {
                     override fun migrate(database: SupportSQLiteDatabase) {
-
                         val version = database.version
+                        LogUtil.e("version ----->:$version  ")
+//                        database.execSQL(createTable)
 
-                        LogUtil.e("version:$version")
+                        //  添加新的表
+//                        database.execSQL("CREATE TABLE IF NOT EXISTS Book (bookName TEXT, studentId TEXT, bookId PRIMARY KEY )");
 
-                        database.execSQL(createTable)
+                        database.execSQL("CREATE TABLE IF NOT EXISTS 'room_3'('id' INTEGER,'name' TEXT NOT NULL DEFAULT '','age'INTEGER  ) ")
+
                     }
                 }
 
@@ -296,6 +297,8 @@ class RoomActivity : BaseTitleActivity() {
 
             // 增加数据库表格 --->  新增字段
             R.id.btn_database_update_data_insert -> {
+                LogUtil.e("开始真正的添加数据 --->")
+
                 val entity3 = RoomEntity3()
                 entity3.id = System.currentTimeMillis()
                 entity3.name = "小橙子"
@@ -308,7 +311,6 @@ class RoomActivity : BaseTitleActivity() {
 
                     override fun onResult(success: Boolean, id: Long, errorMsg: String?) {
                         val result = "插入成功：$success  插入的对象：$id  错误的原因：$errorMsg"
-                        LogUtil.e(result)
                         ToastUtil.show(result)
                     }
                 })

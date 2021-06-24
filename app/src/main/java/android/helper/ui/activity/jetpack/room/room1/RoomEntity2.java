@@ -1,4 +1,4 @@
-package android.helper.ui.activity.jetpack.room;
+package android.helper.ui.activity.jetpack.room.room1;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -12,10 +12,10 @@ import androidx.room.PrimaryKey;
  * 3：columnInfo(name = "value") 修改列名
  * 4：@Ignore :忽略不写入表中
  */
-@Entity(tableName = "room_table_1")
-public class RoomEntity1 {
+@Entity(tableName = "room_table_2")
+public class RoomEntity2 {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private long id;
     private String createTime;
 
@@ -78,7 +78,7 @@ public class RoomEntity1 {
 
     @Override
     public String toString() {
-        return "RoomEntity1{" +
+        return "RoomEntity2{" +
                 "id=" + id +
                 ", createTime='" + createTime + '\'' +
                 ", name='" + name + '\'' +

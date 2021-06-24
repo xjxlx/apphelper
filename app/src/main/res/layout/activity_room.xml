@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/dp_16"
-    tools:context=".ui.activity.jetpack.room.RoomActivity">
+    tools:context=".ui.activity.jetpack.room.room1.RoomActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
