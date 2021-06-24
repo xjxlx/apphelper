@@ -275,27 +275,34 @@ public class RoomUtil {
      * @return 返回一个没有默认值的sql对象
      */
     public String addColumn(String tableName, String columnName, String unit) {
-        return addColumnNotNull(tableName, columnName, unit, null);
+        return addColumn(tableName, columnName, unit, false);
     }
 
     /**
-     * @param tableName    表名
-     * @param columnName   新增列的key
-     * @param unit         列的单位,TEXT、INTEGER、BOOLEAN ,建议使用枚举对象：UNIT去获取
-     * @param defaultValue 默认的值
+     * @param tableName  表名
+     * @param columnName 新增列的key
+     * @param unit       列的单位,TEXT、INTEGER、BOOLEAN ,建议使用枚举对象：UNIT去获取
+     * @param isNotNull  是否是非空的列,只适用于Text类型的数据
      * @return 返回一个有默认值且不为null的sql语句
      */
-    public String addColumnNotNull(String tableName, String columnName, String unit, String defaultValue) {
+    public String addColumn(String tableName, String columnName, String unit, boolean isNotNull) {
         String sql = "";
 
         if ((!TextUtils.isEmpty(tableName)) && (!TextUtils.isEmpty(columnName)) && (!TextUtils.isEmpty(unit))) {
             sql = "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + unit;
         }
 
-        if (defaultValue != null) {
-            sql += " NOT NULL DEFAULT " + defaultValue;
+        // 处理字符串类型
+        if (TextUtils.equals(unit, UNIT.TEXT)) {
+            if (isNotNull) {
+                sql += " NOT NULL  DEFAULT 'null'";
+            }
+        } else if (TextUtils.equals(unit, UNIT.INTEGER)) {
+            // 处理数值类型
+            sql += " NOT NULL  DEFAULT 0 ";
         }
 
+        LogUtil.e("添加SQL列的语法表：" + sql);
         return sql;
     }
 
@@ -318,9 +325,6 @@ public class RoomUtil {
                     .append(tableName)
                     .append("`");
         }
-
-//        E/AppHelper: │ 创建的SQL表格为：CREATE TABLE IF NOT EXISTS `room_3``id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, (`name` TEXT, `age` INTEGER NOT NULL, )
-//        _db.execSQL("CREATE TABLE IF NOT EXISTS `room_table_2` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `createTime` TEXT, `name` TEXT, `age` INTEGER NOT NULL, `six` INTEGER NOT NULL)");
 
         // 加入左侧的括号
         sql.append(" (");

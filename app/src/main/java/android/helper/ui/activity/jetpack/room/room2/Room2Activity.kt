@@ -132,6 +132,7 @@ class Room2Activity : BaseTitleActivity() {
                         room.id = System.currentTimeMillis()
                         room.name = "张三"
                         room.isMaser = true
+                        room.name3 = "李四"
 
                         return RoomManager.getInstance(migration1_2).dao2.insert(room)
                     }
@@ -147,7 +148,31 @@ class Room2Activity : BaseTitleActivity() {
             }
 
             R.id.btn_table_2_insert -> {
+                RoomUtil.getInstance().execute(object : RoomExecuteListener<Long> {
+                    override fun execute(): Long {
+                        val migration3_4 = object : Migration(RoomManager.ROOM_VERSION - 1, RoomManager.ROOM_VERSION) {
+                            override fun migrate(database: SupportSQLiteDatabase) {
 
+                                val addColumn = RoomUtil.getInstance().addColumn("room_table_22", "name8", RoomUtil.UNIT.TEXT, true)
+
+                                LogUtil.e("当前的版本是：" + database.version)
+                                database.execSQL(addColumn)
+                            }
+                        }
+
+                        val room = RoomTable2()
+                        room.id = System.currentTimeMillis()
+                        room.name = "李四"
+                        room.isMaser = true
+                        room.age = 22
+
+                        return RoomManager.getInstance(migration3_4).dao2.insert(room)
+                    }
+
+                    override fun onResult(success: Boolean, t: Long?, errorMsg: String?) {
+
+                    }
+                })
             }
         }
     }

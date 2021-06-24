@@ -7,8 +7,10 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 
-@Database(version = 2, entities = {RoomTable1.class, RoomTable2.class})
+@Database(version = RoomManager.ROOM_VERSION, entities = {RoomTable1.class, RoomTable2.class})
 public abstract class RoomManager extends RoomDatabase {
+
+    public static final int ROOM_VERSION = 13;
 
     private static volatile RoomManager INSTANCE;
     private static volatile RoomManager INSTANCE2;
@@ -17,7 +19,6 @@ public abstract class RoomManager extends RoomDatabase {
         if (INSTANCE == null) {
             synchronized (RoomManager.class) {
                 if (INSTANCE == null) {
-
                     INSTANCE = Room.databaseBuilder(
                             App.getInstance().getApplicationContext(),
                             RoomManager.class,
