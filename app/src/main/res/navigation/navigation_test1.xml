@@ -9,6 +9,7 @@
         android:id="@+id/fragment_navigation_1"
         android:name="android.helper.ui.activity.jetpack.navigation.Fragment1"
         tools:layout="@layout/fragment_1">
+    
         <action
             android:id="@+id/action_fragment1_to_fragment2"
             app:destination="@+id/fragment_navigation_2"
@@ -33,7 +34,9 @@
         
         <action
             android:id="@+id/action_fragment2_to_fragment3"
-            app:destination="@+id/fragment_navigation3" />
+            app:destination="@+id/fragment_navigation3"
+            app:enterAnim="@anim/activity_enter_animation"
+            app:exitAnim="@anim/activity_exit_animation" />
     
     </fragment>
     
@@ -44,16 +47,13 @@
         
         <action
             android:id="@+id/action_fragment3_to_fragment1"
-            app:destination="@+id/fragment_navigation_1" />
+            app:destination="@+id/fragment_navigation_1"
+            app:enterAnim="@anim/activity_enter_animation"
+            app:exitAnim="@anim/activity_exit_animation" />
+        
+        <!--        app:popEnterAnim="@anim/activity_enter_animation"-->
+        <!--        app:popExitAnim="@anim/activity_exit_animation"-->
     
     </fragment>
-    
-    <action
-        android:id="@+id/navigation_test"
-        app:destination="@id/fragment_navigation_1"
-        app:enterAnim="@anim/activity_enter_animation"
-        app:exitAnim="@anim/activity_exit_animation"
-        app:popEnterAnim="@anim/activity_enter_animation"
-        app:popExitAnim="@anim/activity_exit_animation" />
 
 </navigation>
