@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-android-extensions'
     id 'kotlin-kapt'
+    id "androidx.navigation.safeargs"
 }
 
 def configCompile = rootProject.ext.android
@@ -147,6 +148,11 @@ dependencies {
     // 如果使用kotlin："kapt"  如果不使用kotlin:"annotationProcessor"
     kapt configDependencies["room-compiler"]
     implementation configDependencies["constraintlayout"]
+
+    // navigation
+    implementation configDependencies["navigation_fragment"]
+    implementation configDependencies["navigation_ui"]
+
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
