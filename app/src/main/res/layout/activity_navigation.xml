@@ -6,19 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.jetpack.navigation.NavigationActivity">
     
-    <fragment
-        android:id="@+id/frg_content1"
-        android:name="android.helper.ui.activity.jetpack.navigation.Fragment1"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_100"
-        android:layout_marginTop="@dimen/dp_20"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0"
-        tools:layout="@layout/fragment_1" />
-    
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/frg_content2"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -29,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frg_content1"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0"
         app:navGraph="@navigation/navigation_test1" />
 
