@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/yellow_1"
-    tools:context=".ui.activity.jetpack.navigation.Fragment2">
+    tools:context=".ui.activity.jetpack.navigation.navigation1.Fragment2">
     
     <TextView
         android:id="@+id/tv_content2"

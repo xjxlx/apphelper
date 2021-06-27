@@ -7,7 +7,7 @@
     
     <fragment
         android:id="@+id/fragment_navigation_1"
-        android:name="android.helper.ui.activity.jetpack.navigation.Fragment1"
+        android:name="android.helper.ui.activity.jetpack.navigation.navigation1.Fragment1"
         android:label="fragment1"
         tools:layout="@layout/fragment_1">
         
@@ -35,7 +35,7 @@
     
     <fragment
         android:id="@+id/fragment_navigation_2"
-        android:name="android.helper.ui.activity.jetpack.navigation.Fragment2"
+        android:name="android.helper.ui.activity.jetpack.navigation.navigation1.Fragment2"
         android:label="fragment2"
         tools:layout="@layout/fragment_2">
         
@@ -53,7 +53,7 @@
     
     <fragment
         android:id="@+id/fragment_navigation3"
-        android:name="android.helper.ui.activity.jetpack.navigation.Fragment3"
+        android:name="android.helper.ui.activity.jetpack.navigation.navigation1.Fragment3"
         android:label="fragment3"
         tools:layout="@layout/fragment_3">
     

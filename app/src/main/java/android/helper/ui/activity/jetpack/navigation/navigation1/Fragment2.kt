@@ -1,4 +1,4 @@
-package android.helper.ui.activity.jetpack.navigation
+package android.helper.ui.activity.jetpack.navigation.navigation1
 
 import android.annotation.SuppressLint
 import android.helper.R
@@ -32,20 +32,19 @@ class Fragment2 : BaseFragment() {
             findNavController().navigate(R.id.action_fragment2_to_fragment3)
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LogUtil.e("oncreate ----> ${this.toString()}" )
+        LogUtil.e("oncreate ----> ${this.toString()}")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        LogUtil.e("onDestroyView ----> ${this.toString()}" )
-
+        LogUtil.e("onDestroyView ----> ${this.toString()}")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.e("onDestroy ----> ${this.toString()}" )
-
+        LogUtil.e("onDestroy ----> ${this.toString()}")
     }
 }
