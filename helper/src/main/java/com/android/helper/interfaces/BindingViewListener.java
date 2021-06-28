@@ -7,6 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 
-public interface IViewBinding<R extends ViewBinding> {
-    R getViewBinding(@NonNull LayoutInflater inflater, @Nullable ViewGroup container);
+public interface BindingViewListener<T extends ViewBinding> {
+    T getBinding(@NonNull LayoutInflater inflater, @Nullable ViewGroup container);
 }

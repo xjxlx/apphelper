@@ -1,28 +1,29 @@
 package android.helper.test
 
-import android.helper.R
 import android.helper.adapters.HighWordExpandableAdapter
 import android.helper.bean.ExpandableBean
+import android.helper.databinding.ActivityExpandableBinding
 import android.text.TextUtils
-import com.android.helper.base.BaseTitleActivity
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import com.android.helper.base.BaseBindingActivity
 import com.android.helper.utils.ExpandableUtil
 import com.android.helper.utils.StreamUtil
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_expandable.*
 
 /**
  * 测试拓展listView的加载顺序
  */
-class ExpandableActivity : BaseTitleActivity() {
+class ExpandableActivity : BaseBindingActivity<ActivityExpandableBinding>() {
 
-    override fun getTitleLayout(): Int {
-        return R.layout.activity_expandable
-    }
+//    override fun getTitleLayout(): Int {
+//        return R.layout.activity_expandable
+//    }
 
     override fun initData() {
         super.initData()
 
-        setTitleContent("测试ExpandableList的加载顺序")
+        // setTitleContent("测试ExpandableList的加载顺序")
 
         val assets = mContext.assets
         val inputStream = assets.open("expandable.json")
@@ -38,10 +39,10 @@ class ExpandableActivity : BaseTitleActivity() {
             val content = bean.data.content
             val adapter2 = HighWordExpandableAdapter(mContext, content)
 //            val adapter = TestExpandableAdapter(mContext, content)
-            evl_lists.setAdapter(adapter2)
+            mBinding.evlLists.setAdapter(adapter2)
 
-            ExpandableUtil.openSelfCloseOther(evl_lists)
-            ExpandableUtil.openCurrent(evl_lists, 0)
+            ExpandableUtil.openSelfCloseOther(mBinding.evlLists)
+            ExpandableUtil.openCurrent(mBinding.evlLists, 0)
 
 //            evl_lists.setOnGroupClickListener(OnGroupClickListener { parent, v, groupPosition, id ->
 //                if (parent.isGroupExpanded(groupPosition)) {
@@ -52,6 +53,14 @@ class ExpandableActivity : BaseTitleActivity() {
 //                }
 //            })
         }
+    }
+//
+//    override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?): ActivityExpandableBinding {
+//
+//    }
+
+    override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): ActivityExpandableBinding {
+        return ActivityExpandableBinding.inflate(inflater)
     }
 
 }
