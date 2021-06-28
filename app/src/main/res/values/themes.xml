@@ -17,6 +17,12 @@
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:fitsSystemWindows">true</item>
+
+        <item name="android:activityOpenEnterAnimation">@anim/navigation_enter_animation</item>
+        <item name="android:activityOpenExitAnimation">@anim/navigation_exit_animation</item>
+        <item name="android:activityCloseEnterAnimation">@anim/navigation_pop_enter_animation</item>
+        <item name="android:activityCloseExitAnimation">@anim/navigation_pop_exit_animation</item>
+
     </style>
 
 </resources>

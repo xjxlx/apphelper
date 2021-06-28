@@ -6,6 +6,7 @@ import android.helper.ui.activity.jetpack.livedata.LiveDataActivity
 import android.helper.ui.activity.jetpack.model.ViewModelActivity
 import android.helper.ui.activity.jetpack.navigation.NavigationActivity
 import android.helper.ui.activity.jetpack.navigation.navigation2.Navigation2Activity
+import android.helper.ui.activity.jetpack.paging.PagingActivity
 import android.helper.ui.activity.jetpack.room.room1.RoomActivity
 import android.helper.ui.activity.jetpack.room.room2.Room2Activity
 import android.view.View
@@ -35,7 +36,8 @@ class JetPackMapActivity : BaseTitleActivity() {
                 tv_room,
                 tv_room2,
                 tv_navigation,
-                tv_navigation2
+                tv_navigation2,
+                tv_paging
         )
     }
 
@@ -69,6 +71,10 @@ class JetPackMapActivity : BaseTitleActivity() {
 
             R.id.tv_navigation2 -> {
                 startActivity(Navigation2Activity::class.java)
+            }
+
+            R.id.tv_paging -> {
+                startActivity(PagingActivity::class.java)
             }
         }
     }
