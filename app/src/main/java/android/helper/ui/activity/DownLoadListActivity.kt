@@ -1,10 +1,10 @@
 package android.helper.ui.activity
 
 import android.Manifest
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.helper.R
 import android.helper.adapters.DownloadAdapter
 import android.helper.bean.DownLoadBean
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.helper.base.BaseTitleActivity
 import com.android.helper.utils.EncryptionUtil
 import com.android.helper.utils.FileUtil
@@ -28,7 +28,11 @@ class DownLoadListActivity : BaseTitleActivity() {
         super.initView()
         setTitleContent("带进度条的下载列表")
 
-        val permissionsUtil = RxPermissionsUtil(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+        val permissionsUtil = RxPermissionsUtil(
+            mContext,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
         permissionsUtil.setSinglePermissionListener { havePermission ->
             if (!havePermission) {
                 return@setSinglePermissionListener
@@ -37,7 +41,8 @@ class DownLoadListActivity : BaseTitleActivity() {
             var rootFile: File? = null
             for (index in 0..19) {
                 val downLoadBean = DownLoadBean()
-                downLoadBean.url = "http://cdn.smartservice.bjev.com.cn/dplus/xnyapp/3dacac8e71d6da7f"
+                downLoadBean.url =
+                    "http://cdn.smartservice.bjev.com.cn/dplus/xnyapp/3dacac8e71d6da7f"
                 if (rootFileForSd.exists()) {
                     rootFile = File(rootFileForSd, "a_pdf_list")
                     if (!rootFile.exists()) {
@@ -48,7 +53,8 @@ class DownLoadListActivity : BaseTitleActivity() {
 
 
                 downLoadBean.outputPath = file.absolutePath
-                val enCodeBase64 = EncryptionUtil.enCodeBase64(downLoadBean.url + downLoadBean.outputPath)
+                val enCodeBase64 =
+                    EncryptionUtil.enCodeBase64(downLoadBean.url + downLoadBean.outputPath)
                 downLoadBean.id = enCodeBase64
 
                 mList.add(downLoadBean)
@@ -60,7 +66,8 @@ class DownLoadListActivity : BaseTitleActivity() {
                 LogUtil.e("------------->")
             }
             rv_download_list.adapter = adapter
-            rv_download_list.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+            rv_download_list.layoutManager =
+                LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
 
 
 
