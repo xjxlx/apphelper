@@ -27,6 +27,13 @@ import androidx.core.app.NotificationManagerCompat;
 import com.android.helper.R;
 import com.android.helper.interfaces.listener.ViewCallBackListener;
 
+/**
+ * 消息的管理类，使用的时候，配合service一块使用
+ * 使用过方法：
+ *      1：先创建notification,调用方法：createNotification（）
+ *      2：发送消息，可以选择三种情况，sendNotification（）发送单个消息，startForeground（），发送一个前台的消息，
+ *          startLoopForeground（） 发送轮询的消息
+ */
 public class NotificationUtil {
 
     /**
@@ -283,15 +290,8 @@ public class NotificationUtil {
             }
 
             // 设置通知的等级
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                if (mNotificationLevel == -100) {
-                    mNotificationLevel = NotificationManager.IMPORTANCE_DEFAULT;
-                }
-            } else {
-                // 设置通知的等级
-                if (mNotificationLevel == -100) {
-                    mNotificationLevel = Notification.PRIORITY_DEFAULT;
-                }
+            if (mNotificationLevel == -100) {
+                mNotificationLevel = NotificationCompat.PRIORITY_DEFAULT;
             }
 
             // 当SDK大于16且小于26的时候
@@ -302,9 +302,7 @@ public class NotificationUtil {
                 mNotification = builder
                         .setPriority(mNotificationLevel)// 设置优先级
                         .build();
-
             } else {    // 当SDK大于26的时候
-
                 // 渠道的等级
                 if (mChannelImportance == 0) {
                     mChannelImportance = NotificationManager.IMPORTANCE_MAX;
