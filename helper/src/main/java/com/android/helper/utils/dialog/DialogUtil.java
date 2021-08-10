@@ -19,8 +19,8 @@ import androidx.annotation.LayoutRes;
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.common.EventMessage;
-import com.android.helper.utils.LogUtil;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
+import com.android.helper.utils.LogUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -229,7 +229,7 @@ public class DialogUtil implements BaseLifecycleObserver {
 
     /**
      * @param animation 设置动画
-     * @return 设置动画，需要在setContentView()方法之前设置，否则不生效
+     * @return 设置动画，需要在setContentView()方法之前设置，否则不生效，一般使用{R.style.base_dialog_animation}
      */
     public DialogUtil setAnimation(int animation) {
         this.mAnimation = animation;
