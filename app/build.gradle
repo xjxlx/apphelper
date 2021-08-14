@@ -35,16 +35,16 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('apphelper.jks')
+            storeFile file('apphelper2.jks')
             storePassword '123456'
-            keyAlias 'apphelper'
+            keyAlias 'apphelper2'
             keyPassword '123456'
         }
         debug {
-            storeFile file('apphelper.jks')
+            storeFile file('apphelper2.jks')
             storePassword '123456'
             keyPassword '123456'
-            keyAlias 'apphelper'
+            keyAlias 'apphelper2'
         }
     }
 
