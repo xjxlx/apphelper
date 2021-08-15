@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.util.TypedValue;
-import android.widget.ImageView;
+import android.view.View;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -40,17 +40,30 @@ public class ConvertUtil {
     }
 
     /**
-     * @param list
+     * @param list String类型的数据集合
      * @return 数组转换集合
      */
-    public static String[] ListToArray(List<String> list) {
-
-        String[] arr = new String[list.size()];
-
-        if (list != null && list.size() > 0) {
+    public static String[] ListToStringArray(List<String> list) {
+        String[] arr = new String[0];
+        if ((list != null) && (list.size() > 0)) {
+            arr = new String[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                String s = list.get(i);
-                arr[i] = s;
+                arr[i] = list.get(i);
+            }
+        }
+        return arr;
+    }
+
+    /**
+     * @param list String类型的数据集合
+     * @return 数组转换集合
+     */
+    public static <T> Object[] ListToArray(List<T> list) {
+        Object[] arr = new Object[0];
+        if ((list != null) && (list.size() > 0)) {
+            arr = new Object[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                arr[i] = list.get(i);
             }
         }
         return arr;
@@ -63,8 +76,7 @@ public class ConvertUtil {
      */
     public static <T> List<T> ArrayToList(T[] array) {
         List<T> list = new ArrayList<>();
-
-        if (array != null && array.length > 0) {
+        if ((array != null) && (array.length > 0)) {
             list = Arrays.asList(array);
         }
         return list;
@@ -73,26 +85,14 @@ public class ConvertUtil {
     /**
      * 动态设置shape的颜色
      *
-     * @param imageView
-     * @param color
+     * @param view  view的对象
+     * @param color 颜色的字符串，例如：“#ff99ff”
      */
-    public static void setShapeColor(ImageView imageView, String color) {
-
-        Drawable background = imageView.getBackground();
+    public static void setShapeColor(View view, String color) {
+        Drawable background = view.getBackground();
         if (background instanceof GradientDrawable) {
             GradientDrawable gradientDrawable = (GradientDrawable) background;
             gradientDrawable.setColor(Color.parseColor(color));
-        }
-    }
-
-    public static void setShapeColor(TextView imageView, int color) {
-
-        Drawable background = imageView.getBackground();
-        if (background instanceof GradientDrawable) {
-            GradientDrawable gradientDrawable = (GradientDrawable) background;
-            if (gradientDrawable != null) {
-                gradientDrawable.setColor(imageView.getContext().getResources().getColor(color));
-            }
         }
     }
 

@@ -312,8 +312,7 @@ public class SQLiteUtil {
             }
             try {
                 whereArgs.add(whereArgs.size(), whereValue);
-
-                String[] strings = ConvertUtil.ListToArray(whereArgs);
+                String[] strings = ConvertUtil.ListToStringArray(whereArgs);
                 getSqlDataBase().execSQL(sql, strings);
                 closeDb();
                 return true;
