@@ -10,8 +10,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Message;
 
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.ServiceUtil;
@@ -64,7 +62,7 @@ public class AppJobService extends JobService {
             intent.putExtra("sysac", "sysac222");
             ServiceUtil.startService(getBaseContext(), intent);
 
-            LogUtil.writeDe(FILE_NAME, "我是账号同步时候主动拉活的应用，就是这么的拽呀！");
+            LogUtil.writeDe(FILE_NAME, "我是Job时候主动拉活的应用，就是这么的拽呀！");
         }
 
         return false;
