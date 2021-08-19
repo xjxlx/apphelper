@@ -40,6 +40,8 @@ public class AppLifecycleService extends Service {
         String sysac = intent.getStringExtra("sysac");
         if (TextUtils.equals(sysac, "sysac")) {
             LogUtil.writeDe(FILE_NAME, "我是被账号拉活的哦！");
+        } else if (TextUtils.equals(sysac, "sysac222")) {
+            LogUtil.writeDe(FILE_NAME, "我是被JobService拉活的哦！");
         }
 
         LogUtil.e("onStartCommand --->");

@@ -55,11 +55,14 @@ public class SyncService extends Service {
             LogUtil.writeDe(FILE_NAME, "我是账号同步时候主动拉活的应用，就是这么的拽呀！");
 
             /*启动应用*/
-            Intent intent = new Intent(getContext(), AppLifecycleService.class);
-            intent.putExtra("sysac", "sysac");
-            ServiceUtil.startService(getContext(), intent);
+            boolean serviceRunning = ServiceUtil.isServiceRunning(getContext(), AppLifecycleService.class);
+            if (!serviceRunning) {
+                Intent intent = new Intent(getContext(), AppLifecycleService.class);
+                intent.putExtra("sysac", "sysac");
+                ServiceUtil.startService(getContext(), intent);
 
-            LogUtil.writeDe(FILE_NAME, "我是账号同步时候主动拉活的应用，就是这么的拽呀！");
+                LogUtil.writeDe(FILE_NAME, "我是账号同步时候主动拉活的应用，就是这么的拽呀！");
+            }
         }
     }
 }
