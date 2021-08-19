@@ -45,20 +45,7 @@
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".test.app.App2Service"
-            android:enabled="true"
-            android:exported="true" />
 
-        <activity
-            android:name=".test.app.MainActivity"
-            android:launchMode="singleTop">
-            <!--            <intent-filter>-->
-            <!--                <action android:name="android.intent.action.MAIN" />-->
-
-            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
-            <!--            </intent-filter>-->
-        </activity>
         <activity android:name=".ui.activity.jetpack.paging.PagingActivity" />
         <activity android:name=".ui.activity.jetpack.navigation.navigation2.Navigation2Activity" />
         <activity android:name=".ui.activity.jetpack.navigation.NavigationActivity" />

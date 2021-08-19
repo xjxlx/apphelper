@@ -17,12 +17,16 @@ import androidx.annotation.Nullable;
 import com.android.helper.base.BaseActivity;
 import com.android.helper.utils.ActivityUtil;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.LogWriteUtil;
 import com.android.helper.utils.NotificationUtil;
+import com.android.helper.utils.RecycleUtil;
 import com.android.helper.utils.RxPermissionsUtil;
 import com.android.helper.utils.ServiceUtil;
 import com.android.helper.utils.SystemUtil;
 import com.android.helper.utils.ToastUtil;
 import com.android.helper.utils.dialog.DialogUtil;
+
+import java.util.List;
 
 /**
  * App保活的一个实现方案
@@ -36,10 +40,29 @@ public class AppLifecycleActivity extends BaseActivity {
     private DialogUtil mDialogUtil;
     private final int CODE_REQUEST_DC = 1000;
     private NotificationUtil mNotificationUtil;
+    private android.widget.Button mBtStart;
+    private androidx.recyclerview.widget.RecyclerView mTvContent;
+    private AppLifecycleAdapter mAppLifecycleAdapter;
+    private LogWriteUtil mWriteUtil;
 
     @Override
     protected int getBaseLayout() {
         return R.layout.activity_app_lifecycle;
+    }
+
+    @Override
+    protected void initView() {
+        super.initView();
+
+        mBtStart = findViewById(R.id.bt_start);
+        mTvContent = findViewById(R.id.tv_content);
+
+        mAppLifecycleAdapter = new AppLifecycleAdapter(mContext);
+        RecycleUtil.getInstance(mContext, mTvContent)
+                .setVertical()
+                .setAdapter(mAppLifecycleAdapter);
+
+        mWriteUtil = new LogWriteUtil();
     }
 
     @Override
@@ -54,6 +77,13 @@ public class AppLifecycleActivity extends BaseActivity {
         jobWorks();
 
         initNotificationDialog();
+
+        mBtStart.setOnClickListener(v -> {
+            if (mWriteUtil != null) {
+                List<String> read = mWriteUtil.read(FILE_NAME);
+                mAppLifecycleAdapter.setList(read);
+            }
+        });
     }
 
     private void initNotificationDialog() {

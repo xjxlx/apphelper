@@ -6,7 +6,6 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.os.Handler;
 import android.os.Message;
-import android.widget.Toast;
 
 import com.android.helper.utils.LogUtil;
 
@@ -22,7 +21,6 @@ public class AppJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
         LogUtil.e("------>:onStartJob");
-        LogUtil.e("------>:jobParameters:" + jobParameters.toString());
         LogUtil.writeDe(FILE_NAME, "我是JobService的服务！");
         mJobHandler.sendMessage(Message.obtain(mJobHandler, 1, jobParameters));
         return true;
@@ -32,7 +30,6 @@ public class AppJobService extends JobService {
     public boolean onStopJob(JobParameters jobParameters) {
         LogUtil.e("------>:onStopJob");
         mJobHandler.removeMessages(1);
-
         return true;
     }
 
@@ -41,7 +38,6 @@ public class AppJobService extends JobService {
         // 在Handler中，需要实现handleMessage(Message msg)方法来处理任务逻辑。
         @Override
         public boolean handleMessage(Message msg) {
-            Toast.makeText(getApplicationContext(), "JobService task running", Toast.LENGTH_SHORT).show();
             // 调用jobFinished
             jobFinished((JobParameters) msg.obj, false);
             return true;
