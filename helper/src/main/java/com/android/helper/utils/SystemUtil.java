@@ -1,5 +1,6 @@
 package com.android.helper.utils;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
@@ -52,6 +53,23 @@ public class SystemUtil {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setData(Uri.parse("package:" + mApp.getPackageName()));
                 mApp.startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 申请白名单
+     */
+    public void requestIgnoreBatteryOptimizations(Activity activity, int requestCode) {
+        if (activity != null) {
+            try {
+                Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse("package:" + activity.getPackageName()));
+                activity.startActivity(intent);
+                activity.startActivityForResult(intent, requestCode);
             } catch (Exception e) {
                 e.printStackTrace();
             }

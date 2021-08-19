@@ -2,6 +2,8 @@ package android.helper.test.app;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -11,6 +13,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.view.View;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.android.helper.base.BaseActivity;
@@ -35,6 +38,33 @@ public class MainActivity extends BaseActivity {
     @Override
     protected int getBaseLayout() {
         return R.layout.activity_main2;
+    }
+
+    @Override
+    protected void initView() {
+        super.initView();
+        jobWorks();
+    }
+
+    private void jobWorks() {
+        // 创建JobService的类对象
+        ComponentName appJobComponentName = new ComponentName(this, AppJobService.class);
+        // 2：设置JobInfo 的参数信息
+        JobInfo.Builder builder = new JobInfo.Builder(AppJobService.AppJobId, appJobComponentName);
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // NETWORK_TYPE_ANY
+        int interval = 3000;
+
+        builder.setPeriodic(interval);
+        builder.setPersisted(true);  // 设置设备重启时，执行该任务
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+        builder.setRequiresCharging(true); // 当插入充电器，执行该任务
+        JobInfo jobInfo = builder.build();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // 3:获取JobScheduler的调度器，并调用
+            JobScheduler jobScheduler = getSystemService(JobScheduler.class);
+            jobScheduler.schedule(jobInfo);
+        }
     }
 
     @Override
@@ -85,6 +115,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initNotification() {
         if (mNotification == null) {
 
@@ -118,6 +149,7 @@ public class MainActivity extends BaseActivity {
 
     class NotificationServiceConnection implements ServiceConnection {
 
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             LogUtil.e("-----@@@@@@----> onServiceConnected!");

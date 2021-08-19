@@ -90,7 +90,7 @@ public class LogUtil {
     /**
      * 在debug模式下会把日志写入到sd卡中
      *
-     * @param fileName 文件的名字
+     * @param fileName 文件的名字,例如：电车数据 ，这里不用带格式名字，方法会自动拼写。
      * @param value    写入的内容
      */
     public static void writeDe(String fileName, String value) {

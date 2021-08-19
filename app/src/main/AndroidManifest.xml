@@ -8,7 +8,11 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" /> <!-- // 开机启动权限 -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!--    白名单的权限-->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
         android:name=".app.App"
@@ -16,23 +20,44 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppThem"
         tools:targetApi="n">
         <service
+            android:name=".test.app.AppLifecycleService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".test.app.AppLifecycleActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".test.app.AppJobService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
             android:name=".test.app.App2Service"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".test.app.MainActivity"
             android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
+            <!--            </intent-filter>-->
         </activity>
         <activity android:name=".ui.activity.jetpack.paging.PagingActivity" />
         <activity android:name=".ui.activity.jetpack.navigation.navigation2.Navigation2Activity" />
@@ -44,11 +69,7 @@
             android:name=".test.TestTouchActivity"
             android:label="手势事件" />
         <activity android:name=".ui.activity.jetpack.lifecycle.LifecycleActivity" /> <!-- <activity android:name=".ui.activity.jetpack.JetPackMapActivity"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.MAIN" /> -->
-        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
+
         <activity android:name=".ui.activity.widget.NameListActivity" />
         <activity android:name=".ui.activity.otherutils.AudioPlayerActivity" />
         <activity android:name=".test.TestWebViewActivity" />
@@ -93,27 +114,21 @@
             <!-- 处理文字的Intent 我们需要定义action,  category, 和文字对应的MIME -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="text/*" />
             </intent-filter>
 
             <!-- 处理单张图片的Intent -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="image/*" />
             </intent-filter>
 
             <!-- 处理多张图片的Intent -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
@@ -190,12 +205,14 @@
         <activity android:name=".ui.activity.FaceVideoPlayerTitleActivity" />
         <activity android:name=".ui.activity.FaceAuthenticationTitleActivity" />
         <activity android:name=".ui.activity.widget.ViewMapTitleActivity" />
-        <activity android:name=".ui.activity.widget.ProgressTitleActivity" /> <!-- <activity android:name=".MainActivity"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.MAIN" /> -->
-        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
+        <activity android:name=".ui.activity.widget.ProgressTitleActivity" />
+        <activity android:name=".MainActivity">
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.intent.action.MAIN" />-->
+            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
+            <!--            </intent-filter>-->
+        </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.FileProvider"

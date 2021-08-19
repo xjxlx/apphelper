@@ -30,9 +30,9 @@ import com.android.helper.interfaces.listener.ViewCallBackListener;
 /**
  * 消息的管理类，使用的时候，配合service一块使用
  * 使用过方法：
- *      1：先创建notification,调用方法：createNotification（）
- *      2：发送消息，可以选择三种情况，sendNotification（）发送单个消息，startForeground（），发送一个前台的消息，
- *          startLoopForeground（） 发送轮询的消息
+ * 1：先创建notification,调用方法：createNotification（）
+ * 2：发送消息，可以选择三种情况，sendNotification（）发送单个消息，startForeground（），发送一个前台的消息，
+ * startLoopForeground（） 发送轮询的消息
  */
 public class NotificationUtil {
 
@@ -88,6 +88,7 @@ public class NotificationUtil {
     private ViewCallBackListener<RemoteViews> mViewCallBackListener;
     private long mIntervalTime;                         // 轮询的间隔
     private boolean mVibrate;                           // 震动
+    private boolean mSound = true;                             // 是否发出声音，默认发出
 
     private NotificationUtil(Context context) {
         this.mContext = context;
@@ -181,14 +182,20 @@ public class NotificationUtil {
      *
      * @param sound 声音的路径，使用
      */
-    private NotificationUtil setSound(@DrawableRes int sound) {
+    public NotificationUtil setSound(@DrawableRes int sound) {
         if (mContext != null) {
             // 自定义声音
             Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + mContext.getPackageName() + "/" + sound);
-            if (uri != null) {
-
-            }
         }
+        return util;
+    }
+
+    /**
+     * @param sound true：发出声音提示，fasle:不发出声音提示
+     * @return 是否震动，默认发出声音提示
+     */
+    public NotificationUtil setSound(boolean sound) {
+        this.mSound = sound;
         return util;
     }
 
@@ -272,7 +279,9 @@ public class NotificationUtil {
             }
 
             // 消息的声音、灯光、震动
-            builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE);
+            if (mSound) {
+                builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE);
+            }
 
             // 设置消息的数量
             if (mNotificationNumber > 0) {
@@ -334,7 +343,9 @@ public class NotificationUtil {
                 mChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC); //设置锁屏可见 VISIBILITY_PUBLIC=可见
 
                 // 设置声音
-                mChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), Notification.AUDIO_ATTRIBUTES_DEFAULT);
+                if (mSound) {
+                    mChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), Notification.AUDIO_ATTRIBUTES_DEFAULT);
+                }
 
                 // 通知Manager去创建渠道
                 manager.createNotificationChannel(mChannel);
@@ -439,12 +450,13 @@ public class NotificationUtil {
                     case CODE_WHAT_SEND_START_FOREGROUND:
                         LogUtil.e("开始了服务消息的单独发送！");
                         mService.startForeground(id, mNotification);
-
+                        // sendNotification(id);
                         break;
 
                     case CODE_WHAT_SEND_START_FOREGROUND_LOOP:
                         LogUtil.e("开始了服务消息的轮询发送！");
                         mService.startForeground(id, mNotification);
+                        //  sendNotification(id);
 
                         Message message = mHandler.obtainMessage();
                         message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;

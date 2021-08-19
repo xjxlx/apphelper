@@ -47,9 +47,9 @@ public class LogWriteUtil {
      * 获取当前时间
      */
     @SuppressLint("SimpleDateFormat")
-    private static String getCurrentDateStr(String pattern) {
+    private static String getCurrentDateStr() {
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        SimpleDateFormat sdf = new SimpleDateFormat(LogWriteUtil.DATE_PATTERN_FULL);
         return sdf.format(date);
     }
 
@@ -96,7 +96,7 @@ public class LogWriteUtil {
                 printStream = new PrintStream(new FileOutputStream(file, true)); // 追加文件
 
                 // 获取当前的时间
-                String currentDateStr = getCurrentDateStr(DATE_PATTERN_FULL);
+                String currentDateStr = getCurrentDateStr();
                 if (!mIsFirstWrite) {
                     value = "-----------------   " + currentDateStr + " 重新开始   -----------------" + "\n";
                     mIsFirstWrite = true;
@@ -124,7 +124,10 @@ public class LogWriteUtil {
         File file = new File(WRITE_LOG_FILE_PARENT);
         boolean exists = file.exists();
         if (!exists) {
-            boolean mkdirs = file.mkdirs();
+            exists = file.mkdirs();
+        }
+        if (!exists) {
+            LogUtil.e("文件创建失败，请检查读写权限是否存在异常,或者编译的版本是否大于29！");
         }
         if (file.exists()) {
             // 获取当前天的路径
