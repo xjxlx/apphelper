@@ -9,6 +9,8 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.helper.R;
 import android.helper.app.App;
+import android.helper.test.app.account.AccountHelper;
+import android.helper.test.app.keep.KeepManager;
 import android.os.Build;
 import android.view.View;
 
@@ -67,6 +69,9 @@ public class AppLifecycleActivity extends BaseActivity {
         mWriteUtil = new LogWriteUtil();
 
         KeepManager.getInstance().registerKeep(mContext);
+
+        AccountHelper.addAccount(this);//添加账户
+        AccountHelper.autoSync(mContext);//调用告知系统自动同步
     }
 
     @Override

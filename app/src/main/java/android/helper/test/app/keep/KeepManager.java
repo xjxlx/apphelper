@@ -1,4 +1,4 @@
-package android.helper.test.app;
+package android.helper.test.app.keep;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,7 +9,7 @@ import java.lang.ref.WeakReference;
 
 public class KeepManager {
 
-    private android.helper.test.app.keepReceiver keepReceiver;
+    private android.helper.test.app.keep.keepReceiver keepReceiver;
     private WeakReference<Activity> weakReference;
     private static KeepManager keepManager;
 
