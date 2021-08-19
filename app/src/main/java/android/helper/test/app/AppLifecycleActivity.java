@@ -228,10 +228,11 @@ public class AppLifecycleActivity extends BaseActivity {
                     boolean openNotify = mNotificationUtil.checkOpenNotify(mContext);
                     if (!openNotify) {
                         ToastUtil.show("消息通知权限打开异常！");
+                    } else {
+                        // 去设置电池的优化信息
+                        initDcDialog();
                     }
                 }
-                // 去设置电池的优化信息
-                initDcDialog();
                 break;
             case CODE_REQUEST_DC:
                 LogUtil.e("电池优化的返回：" + resultCode);
