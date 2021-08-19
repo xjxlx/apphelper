@@ -1,7 +1,5 @@
 package android.helper.test.app;
 
-import static android.helper.test.app.AppLifecycleActivity.FILE_NAME;
-
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.Service;
@@ -10,6 +8,7 @@ import android.helper.R;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
@@ -19,6 +18,7 @@ import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
 
 public class AppLifecycleService extends Service {
+    public static final String FILE_NAME = "AppLifecycle";
 
     private static Notification mNotification;
     private static NotificationUtil mInstance;
@@ -36,6 +36,11 @@ public class AppLifecycleService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        String sysac = intent.getStringExtra("sysac");
+        if (TextUtils.equals(sysac, "sysac")) {
+            LogUtil.writeDe(FILE_NAME, "我是被账号拉活的哦！");
+        }
 
         LogUtil.e("onStartCommand --->");
         mNotification = getNotification();
@@ -89,7 +94,14 @@ public class AppLifecycleService extends Service {
 
                 // 写入本地的日志信息
                 String currentTimeToString = DateUtil.getCurrentTimeToString("yyyy-MM-dd HH:mm:ss");
-                LogUtil.writeDe(FILE_NAME, "当前的时间是：" + currentTimeToString + ",我还活着，我正在写入日志哦！");
+                LogUtil.writeDe(FILE_NAME, "当前的时间是：" + currentTimeToString + ",我是服务的轮询日志哦！");
+
+                mNotification = getNotification();
+
+                if (mNotification != null) {
+                    mNotification.when = System.currentTimeMillis();
+                    startForeground(CODE_NOTIFICATION, mNotification);
+                }
 
                 Message message = mHandler.obtainMessage();
                 message.what = CODE_SEND_NOTIFICATION;

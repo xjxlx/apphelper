@@ -28,6 +28,7 @@ import com.android.helper.utils.SystemUtil;
 import com.android.helper.utils.ToastUtil;
 import com.android.helper.utils.dialog.DialogUtil;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -90,9 +91,14 @@ public class AppLifecycleActivity extends BaseActivity {
         mBtStart.setOnClickListener(v -> {
             if (mWriteUtil != null) {
                 List<String> read = mWriteUtil.read(FILE_NAME);
+                Collections.reverse(read);
                 mAppLifecycleAdapter.setList(read);
             }
         });
+
+        List<String> read = mWriteUtil.read(FILE_NAME);
+        Collections.reverse(read);
+        mAppLifecycleAdapter.setList(read);
     }
 
     private void initNotificationDialog() {
