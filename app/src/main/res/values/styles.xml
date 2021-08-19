@@ -7,6 +7,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="KeepTheme">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
     <style name="style_face_authentication">
         <item name="android:layout_width">@dimen/dp_40</item>
         <item name="android:layout_height">wrap_content</item>

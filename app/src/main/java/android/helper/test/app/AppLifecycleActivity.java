@@ -34,6 +34,8 @@ import java.util.List;
  * 1：建立一个service，并把服务提升到前台服务，在服务中去不停的刷新notification去保持前台的一个活性
  * 2：打开后台的电池优化
  * 3：打开后台的允许运行功能
+ * <p>
+ * 4:在8.0以下，使用一个像素的activity去保活
  */
 public class AppLifecycleActivity extends BaseActivity {
     public static final String FILE_NAME = "AppLifecycle";
@@ -63,6 +65,8 @@ public class AppLifecycleActivity extends BaseActivity {
                 .setAdapter(mAppLifecycleAdapter);
 
         mWriteUtil = new LogWriteUtil();
+
+        KeepManager.getInstance().registerKeep(mContext);
     }
 
     @Override
@@ -249,5 +253,11 @@ public class AppLifecycleActivity extends BaseActivity {
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        KeepManager.getInstance().unregisterKeep(mContext);
     }
 }
