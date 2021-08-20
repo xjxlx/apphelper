@@ -89,13 +89,17 @@ public class AppLifecycleActivity extends BaseActivity {
         mBtStart.setOnClickListener(v -> {
             if (mWriteUtil != null) {
                 List<String> read = mWriteUtil.read(FILE_NAME);
-                Collections.reverse(read);
+                if (read != null && read.size() > 0) {
+                    Collections.reverse(read);
+                }
                 mAppLifecycleAdapter.setList(read);
             }
         });
 
         List<String> read = mWriteUtil.read(FILE_NAME);
-        Collections.reverse(read);
+        if (read != null && read.size() > 0) {
+            Collections.reverse(read);
+        }
         mAppLifecycleAdapter.setList(read);
     }
 
