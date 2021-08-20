@@ -36,7 +36,7 @@ import java.util.List;
  * 3：打开后台的允许运行功能
  * <p>
  * 4:在8.0以下，使用一个像素的activity去保活
- * 5:Jobservice 轮询拉活
+ * 5:JobService 轮询拉活
  * 6：账号拉活
  */
 public class AppLifecycleActivity extends BaseActivity {
