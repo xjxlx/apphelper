@@ -1,9 +1,8 @@
 package android.helper.test.app.account;
 
 import static android.helper.test.app.AppLifecycleActivity.FILE_NAME;
-import static android.helper.test.app.AppLifecycleService.KEY_LIFECYCLE_JOB;
-import static android.helper.test.app.AppLifecycleService.KEY_LIFECYCLE_TYPE;
 import static android.helper.test.app.AppLifecycleService.KEY_LIFECYCLE_ACCOUNT;
+import static android.helper.test.app.AppLifecycleService.KEY_LIFECYCLE_TYPE;
 
 import android.accounts.Account;
 import android.app.Service;
@@ -56,7 +55,7 @@ public class SyncService extends Service {
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
             //与互联网 或者 本地数据库同步账户
             LogUtil.e("onPerformSync ---> 开始了账户的同步！" + account.toString());
-            LogUtil.writeDe(FILE_NAME, "我是账号同步时候主动拉活的应用，就是这么的拽呀！");
+            LogUtil.writeDe(FILE_NAME, "账号开始同步，数据开始更新！");
 
             Context context = getContext().getApplicationContext();
             if (context != null) {
