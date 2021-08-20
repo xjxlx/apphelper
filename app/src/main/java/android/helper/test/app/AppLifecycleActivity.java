@@ -3,12 +3,11 @@ package android.helper.test.app;
 import static com.android.helper.utils.NotificationUtil.CODE_REQUEST_ACTIVITY;
 
 import android.Manifest;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.helper.R;
 import android.helper.app.App;
+import android.helper.test.app.account.AccountHelper;
+import android.helper.test.app.keep.KeepManager;
 import android.os.Build;
 import android.view.View;
 
@@ -26,6 +25,7 @@ import com.android.helper.utils.SystemUtil;
 import com.android.helper.utils.ToastUtil;
 import com.android.helper.utils.dialog.DialogUtil;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,6 +34,10 @@ import java.util.List;
  * 1：建立一个service，并把服务提升到前台服务，在服务中去不停的刷新notification去保持前台的一个活性
  * 2：打开后台的电池优化
  * 3：打开后台的允许运行功能
+ * <p>
+ * 4:在8.0以下，使用一个像素的activity去保活
+ * 5:Jobservice 轮询拉活
+ * 6：账号拉活
  */
 public class AppLifecycleActivity extends BaseActivity {
     public static final String FILE_NAME = "AppLifecycle";
@@ -63,6 +67,11 @@ public class AppLifecycleActivity extends BaseActivity {
                 .setAdapter(mAppLifecycleAdapter);
 
         mWriteUtil = new LogWriteUtil();
+
+        KeepManager.getInstance().registerKeep(mContext);
+
+        AccountHelper.addAccount(this);//添加账户
+        AccountHelper.autoSync(mContext);//调用告知系统自动同步
     }
 
     @Override
@@ -81,9 +90,14 @@ public class AppLifecycleActivity extends BaseActivity {
         mBtStart.setOnClickListener(v -> {
             if (mWriteUtil != null) {
                 List<String> read = mWriteUtil.read(FILE_NAME);
+                Collections.reverse(read);
                 mAppLifecycleAdapter.setList(read);
             }
         });
+
+        List<String> read = mWriteUtil.read(FILE_NAME);
+        Collections.reverse(read);
+        mAppLifecycleAdapter.setList(read);
     }
 
     private void initNotificationDialog() {
@@ -198,24 +212,7 @@ public class AppLifecycleActivity extends BaseActivity {
     }
 
     private void jobWorks() {
-        // 创建JobService的类对象
-        ComponentName appJobComponentName = new ComponentName(this, AppJobService.class);
-        // 2：设置JobInfo 的参数信息
-        JobInfo.Builder builder = new JobInfo.Builder(AppJobService.AppJobId, appJobComponentName);
-        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // NETWORK_TYPE_ANY
-        int interval = 3000;
-
-        builder.setPeriodic(interval);
-        builder.setPersisted(true);  // 设置设备重启时，执行该任务
-        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-        builder.setRequiresCharging(true); // 当插入充电器，执行该任务
-        JobInfo jobInfo = builder.build();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // 3:获取JobScheduler的调度器，并调用
-            JobScheduler jobScheduler = getSystemService(JobScheduler.class);
-            jobScheduler.schedule(jobInfo);
-        }
+        AppJobService.startJob(mContext);
     }
 
     @Override
@@ -250,5 +247,11 @@ public class AppLifecycleActivity extends BaseActivity {
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        KeepManager.getInstance().unregisterKeep(mContext);
     }
 }

@@ -3,15 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="android.helper">
 
+    <!--添加账户需要的权限-->
+    <uses-permission
+        android:name="android.permission.AUTHENTICATE_ACCOUNTS"
+        android:maxSdkVersion="22" />
+    <uses-permission
+        android:name="android.permission.GET_ACCOUNTS"
+        android:maxSdkVersion="22" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" /> <!-- // 开机启动权限 -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
-    <!--    白名单的权限-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- 白名单的权限 -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
@@ -25,6 +32,47 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppThem"
         tools:targetApi="n">
+
+        <service
+            android:name=".test.app.account.SyncService"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_adapter" />
+        </service>
+
+        <provider
+            android:name=".test.app.account.SyncProvider"
+            android:authorities="android.helper.test.app.account" />
+
+        <service
+            android:name=".test.app.account.AccountService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/account_autenticator" />
+        </service>
+
+        <receiver
+            android:name=".test.app.keep.keepReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".test.app.keep.KeepActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/KeepTheme" />
+
         <service
             android:name=".test.app.AppLifecycleService"
             android:enabled="true"
@@ -36,6 +84,7 @@
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -56,7 +105,6 @@
             android:name=".test.TestTouchActivity"
             android:label="手势事件" />
         <activity android:name=".ui.activity.jetpack.lifecycle.LifecycleActivity" /> <!-- <activity android:name=".ui.activity.jetpack.JetPackMapActivity"> -->
-
         <activity android:name=".ui.activity.widget.NameListActivity" />
         <activity android:name=".ui.activity.otherutils.AudioPlayerActivity" />
         <activity android:name=".test.TestWebViewActivity" />
@@ -101,21 +149,27 @@
             <!-- 处理文字的Intent 我们需要定义action,  category, 和文字对应的MIME -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/*" />
             </intent-filter>
 
             <!-- 处理单张图片的Intent -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="image/*" />
             </intent-filter>
 
             <!-- 处理多张图片的Intent -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
@@ -194,10 +248,11 @@
         <activity android:name=".ui.activity.widget.ViewMapTitleActivity" />
         <activity android:name=".ui.activity.widget.ProgressTitleActivity" />
         <activity android:name=".MainActivity">
-            <!--            <intent-filter>-->
-            <!--                <action android:name="android.intent.action.MAIN" />-->
-            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
-            <!--            </intent-filter>-->
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
 
         <provider
