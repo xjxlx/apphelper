@@ -8,6 +8,7 @@ import android.helper.R;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
@@ -16,8 +17,6 @@ import com.android.helper.utils.DateUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
 import com.android.helper.utils.ServiceUtil;
-
-import java.util.Objects;
 
 public class AppLifecycleService extends Service {
 
@@ -60,13 +59,15 @@ public class AppLifecycleService extends Service {
         LogUtil.e("onStartCommand --->");
 
         String lifecycleType = intent.getStringExtra(KEY_LIFECYCLE_TYPE);
-        switch (Objects.requireNonNull(lifecycleType)) {
-            case KEY_LIFECYCLE_ACCOUNT:
-                LogUtil.writeDe(FILE_NAME, "我是被账号拉活的哦！");
-                break;
-            case KEY_LIFECYCLE_JOB:
-                LogUtil.writeDe(FILE_NAME, "我是被JobService拉活的哦！");
-                break;
+        if (!TextUtils.isEmpty(lifecycleType)) {
+            switch (lifecycleType) {
+                case KEY_LIFECYCLE_ACCOUNT:
+                    LogUtil.writeDe(FILE_NAME, "我是被账号拉活的哦！");
+                    break;
+                case KEY_LIFECYCLE_JOB:
+                    LogUtil.writeDe(FILE_NAME, "我是被JobService拉活的哦！");
+                    break;
+            }
         }
 
         /*启动服务 --- JobService*/
