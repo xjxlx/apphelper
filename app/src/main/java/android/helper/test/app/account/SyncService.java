@@ -1,6 +1,9 @@
 package android.helper.test.app.account;
 
 import static android.helper.test.app.AppLifecycleActivity.FILE_NAME;
+import static android.helper.test.app.AppLifecycleService.KEY_LIFECYCLE_JOB;
+import static android.helper.test.app.AppLifecycleService.KEY_LIFECYCLE_TYPE;
+import static android.helper.test.app.AppLifecycleService.KEY_LIFECYCLE_ACCOUNT;
 
 import android.accounts.Account;
 import android.app.Service;
@@ -9,6 +12,7 @@ import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.helper.test.app.AppJobService;
 import android.helper.test.app.AppLifecycleService;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -54,14 +58,24 @@ public class SyncService extends Service {
             LogUtil.e("onPerformSync ---> 开始了账户的同步！" + account.toString());
             LogUtil.writeDe(FILE_NAME, "我是账号同步时候主动拉活的应用，就是这么的拽呀！");
 
-            /*启动应用*/
-            boolean serviceRunning = ServiceUtil.isServiceRunning(getContext(), AppLifecycleService.class);
-            if (!serviceRunning) {
-                Intent intent = new Intent(getContext(), AppLifecycleService.class);
-                intent.putExtra("sysac", "sysac");
-                ServiceUtil.startService(getContext(), intent);
+            Context context = getContext().getApplicationContext();
+            if (context != null) {
+                /*启动服务  --- 主应用 */
+                boolean serviceRunning = ServiceUtil.isServiceRunning(context, AppLifecycleService.class);
+                if (!serviceRunning) {
+                    Intent intent = new Intent(context, AppLifecycleService.class);
+                    intent.putExtra(KEY_LIFECYCLE_TYPE, KEY_LIFECYCLE_ACCOUNT);
+                    ServiceUtil.startService(context, intent);
 
-                LogUtil.writeDe(FILE_NAME, "我是账号同步时候主动拉活的应用，就是这么的拽呀！");
+                    LogUtil.writeDe(FILE_NAME, "检测到后台服务被杀死了，账号同步的时候主动去拉起后台服务！");
+                }
+
+                /*启动服务 --- JobService*/
+                boolean jobServiceRunning = ServiceUtil.isServiceRunning(getContext(), AppJobService.class);
+                if (!jobServiceRunning) {
+                    LogUtil.writeDe(FILE_NAME, "检测到JobService被杀死了，账号同步的时候主动去拉起JobService！");
+                    AppJobService.startJob(context);
+                }
             }
         }
     }

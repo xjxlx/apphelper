@@ -8,7 +8,6 @@ import android.helper.R;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
@@ -16,11 +15,33 @@ import androidx.core.app.NotificationManagerCompat;
 import com.android.helper.utils.DateUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
+import com.android.helper.utils.ServiceUtil;
+
+import java.util.Objects;
 
 public class AppLifecycleService extends Service {
+
+    /**
+     * 写入日志的文件名字
+     */
     public static final String FILE_NAME = "AppLifecycle";
+    /**
+     * 保活机制的拉起key
+     */
+    public static final String KEY_LIFECYCLE_TYPE = "key_lifecycle_type";
+
+    /**
+     * 账户拉活的key值
+     */
+    public static final String KEY_LIFECYCLE_ACCOUNT = "key_lifecycle_account";
+
+    /**
+     * JobService拉活的key值
+     */
+    public static final String KEY_LIFECYCLE_JOB = "key_lifecycle_job";
 
     private static Notification mNotification;
+    @SuppressLint("StaticFieldLeak")
     private static NotificationUtil mInstance;
     private static final int CODE_NOTIFICATION = 19900713;
     private static final int CODE_SEND_NOTIFICATION = CODE_NOTIFICATION + 1;
@@ -36,15 +57,25 @@ public class AppLifecycleService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        LogUtil.e("onStartCommand --->");
 
-        String sysac = intent.getStringExtra("sysac");
-        if (TextUtils.equals(sysac, "sysac")) {
-            LogUtil.writeDe(FILE_NAME, "我是被账号拉活的哦！");
-        } else if (TextUtils.equals(sysac, "sysac222")) {
-            LogUtil.writeDe(FILE_NAME, "我是被JobService拉活的哦！");
+        String lifecycleType = intent.getStringExtra(KEY_LIFECYCLE_TYPE);
+        switch (Objects.requireNonNull(lifecycleType)) {
+            case KEY_LIFECYCLE_ACCOUNT:
+                LogUtil.writeDe(FILE_NAME, "我是被账号拉活的哦！");
+                break;
+            case KEY_LIFECYCLE_JOB:
+                LogUtil.writeDe(FILE_NAME, "我是被JobService拉活的哦！");
+                break;
         }
 
-        LogUtil.e("onStartCommand --->");
+        /*启动服务 --- JobService*/
+        boolean jobServiceRunning = ServiceUtil.isServiceRunning(getApplicationContext(), AppJobService.class);
+        if (!jobServiceRunning) {
+            LogUtil.writeDe(FILE_NAME, "检测到JobService被杀死了，账号同步的时候主动去拉起JobService！");
+            AppJobService.startJob(getApplicationContext());
+        }
+
         mNotification = getNotification();
 
         if (mNotification != null) {
@@ -67,7 +98,6 @@ public class AppLifecycleService extends Service {
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle("App的保活消息")
                     .setContentText("App保活的信息")
-                    // .setService(this.getClass())
                     .setActivity(AppLifecycleActivity.class)
                     .setVibrate(false)  // 停止震动
                     .setSound(false)    // 停止发出声音

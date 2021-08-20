@@ -83,7 +83,6 @@ public class AppLifecycleActivity extends BaseActivity {
 
         // 2:请求后台允许运行的功能
         initNotification();
-        jobWorks();
 
         initNotificationDialog();
 
@@ -193,7 +192,7 @@ public class AppLifecycleActivity extends BaseActivity {
         super.onNewIntent(intent);
         LogUtil.e("--->onNewIntent");
         initNotification();
-        jobWorks();
+
         initNotificationDialog();
     }
 
@@ -209,10 +208,6 @@ public class AppLifecycleActivity extends BaseActivity {
                 ServiceUtil.startService(mContext, intent);
             }
         });
-    }
-
-    private void jobWorks() {
-        AppJobService.startJob(mContext);
     }
 
     @Override

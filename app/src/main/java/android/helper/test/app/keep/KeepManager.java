@@ -5,8 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import com.android.helper.utils.LogUtil;
+
 import java.lang.ref.WeakReference;
 
+/**
+ * 一个像素activity的管理器
+ */
 public class KeepManager {
 
     private android.helper.test.app.keep.keepReceiver keepReceiver;
@@ -21,25 +26,43 @@ public class KeepManager {
     }
 
     public void registerKeep(Context context) {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
-        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        keepReceiver = new keepReceiver();
-        context.registerReceiver(keepReceiver, intentFilter);
-    }
-
-    public void unregisterKeep(Context context) {
-        if (keepReceiver != null) {
-            context.unregisterReceiver(keepReceiver);
+        if (context != null) {
+            try {
+                IntentFilter intentFilter = new IntentFilter();
+                intentFilter.addAction(Intent.ACTION_SCREEN_ON);
+                intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+                keepReceiver = new keepReceiver();
+                context.registerReceiver(keepReceiver, intentFilter);
+            } catch (Exception e) {
+                LogUtil.e("注册一个像素的activity异常！" + e.getMessage());
+            }
         }
     }
 
-    public void startKeep(Context context) {
-        Intent intent = new Intent(context, KeepActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startService(intent);
+    public void unregisterKeep(Context context) {
+        try {
+            if ((context != null) && (keepReceiver != null)) {
+                context.unregisterReceiver(keepReceiver);
+            }
+        } catch (Exception e) {
+            LogUtil.e("注销一个像素的activity异常！" + e.getMessage());
+        }
     }
 
+    /**
+     * 打开一个像素的activity的页面
+     */
+    public void startKeep(Context context) {
+        if (context != null) {
+            Intent intent = new Intent(context, KeepActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startService(intent);
+        }
+    }
+
+    /**
+     * 结束一个像素的activity的页面
+     */
     public void finishKeep() {
         if (weakReference != null) {
             Activity activity = weakReference.get();
@@ -50,8 +73,13 @@ public class KeepManager {
         }
     }
 
+    /**
+     * 添加一个activity到堆栈中去
+     */
     public void setKeep(KeepActivity keep) {
-        weakReference = new WeakReference<>(keep);
+        if (keep != null) {
+            weakReference = new WeakReference<>(keep);
+        }
     }
 
 }
