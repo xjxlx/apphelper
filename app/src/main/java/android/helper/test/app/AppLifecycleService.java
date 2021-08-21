@@ -3,6 +3,9 @@ package android.helper.test.app;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.content.Intent;
 import android.helper.R;
 import android.os.Handler;
@@ -13,6 +16,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.android.helper.utils.BluetoothUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
 
@@ -43,6 +47,9 @@ public class AppLifecycleService extends Service {
     private static final int CODE_NOTIFICATION = 19900713;
     private static final int CODE_SEND_NOTIFICATION = CODE_NOTIFICATION + 1;
     private static final int CODE_INTERVAL = 10 * 1000;
+
+    // ---------------------------- 蓝牙 ---------------------
+    private BluetoothManager mBluetoothManager;
 
     public AppLifecycleService() {
     }
@@ -128,11 +135,24 @@ public class AppLifecycleService extends Service {
                     startForeground(CODE_NOTIFICATION, mNotification);
                 }
 
+                // 回调保活的信息
+                onLifecycle();
+
                 Message message = mHandler.obtainMessage();
                 message.what = CODE_SEND_NOTIFICATION;
                 sendMessageDelayed(message, CODE_INTERVAL);
             }
         }
     };
+
+    /**
+     * 回调保活的信息
+     */
+    private void onLifecycle() {
+
+        BluetoothUtil bluetoothUtil = BluetoothUtil.getInstance(getApplication());
+        bluetoothUtil.startScan();
+
+    }
 
 }

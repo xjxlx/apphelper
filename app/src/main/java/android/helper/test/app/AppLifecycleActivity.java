@@ -5,11 +5,17 @@ import static com.android.helper.utils.SystemUtil.CODE_REQUEST_ACTIVITY_BATTERY;
 import android.content.Intent;
 import android.helper.R;
 import android.helper.app.App;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.helper.app.CommonConstant;
 import com.android.helper.base.BaseActivity;
+import com.android.helper.common.EventMessage;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.LogWriteUtil;
 import com.android.helper.utils.NotificationUtil;
@@ -17,6 +23,11 @@ import com.android.helper.utils.RecycleUtil;
 import com.android.helper.utils.SystemUtil;
 import com.android.helper.utils.ToastUtil;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +48,9 @@ public class AppLifecycleActivity extends BaseActivity {
     private AppLifecycleAdapter mAppLifecycleAdapter;
     private LogWriteUtil mWriteUtil;
     private LifecycleManager mLifecycleManager;
+    private ListView mLvListView;
+    private List<String> mListDev = new ArrayList<>();
+    private ArrayAdapter<String> mAdapter;
 
     @Override
     protected int getBaseLayout() {
@@ -56,6 +70,10 @@ public class AppLifecycleActivity extends BaseActivity {
                 .setAdapter(mAppLifecycleAdapter);
 
         mWriteUtil = new LogWriteUtil();
+
+        mLvListView = findViewById(R.id.lv_list);
+        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, this.mListDev);
+        mLvListView.setAdapter(mAdapter);
     }
 
     @Override
@@ -90,6 +108,11 @@ public class AppLifecycleActivity extends BaseActivity {
     }
 
     private void startLifecycle() {
+        boolean registered = EventBus.getDefault().isRegistered(this);
+        if (!registered) {
+            EventBus.getDefault().register(this);
+        }
+
         if (mLifecycleManager == null) {
             mLifecycleManager = LifecycleManager.getInstance();
         }
@@ -162,9 +185,28 @@ public class AppLifecycleActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        boolean registered = EventBus.getDefault().isRegistered(this);
+        if (registered) {
+            EventBus.getDefault().unregister(this);
+        }
 
 //        if (mLifecycleManager != null) {
 //            mLifecycleManager.stopLifecycle(mContext);
 //        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void handleEvent(EventMessage event) {
+        if (event != null) {
+            int code = event.getCode();
+            if (code == 111) {
+                // 更新数据
+
+                if (mListDev != null && mAdapter != null) {
+                    mListDev.add(event.getMsg());
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        }
     }
 }
