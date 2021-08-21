@@ -332,7 +332,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     }
 
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == NotificationUtil.CODE_REQUEST_ACTIVITY) {
+        if (requestCode == NotificationUtil.CODE_REQUEST_ACTIVITY_NOTIFICATION) {
             if (mNotificationUtil.checkOpenNotify(mContext)) {
                 initNotification();
             }

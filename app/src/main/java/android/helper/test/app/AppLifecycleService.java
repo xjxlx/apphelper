@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.android.helper.utils.DateUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
 import com.android.helper.utils.ServiceUtil;
@@ -45,6 +44,7 @@ public class AppLifecycleService extends Service {
     private static final int CODE_NOTIFICATION = 19900713;
     private static final int CODE_SEND_NOTIFICATION = CODE_NOTIFICATION + 1;
     private static final int CODE_INTERVAL = 10 * 1000;
+    private static LifecycleListener mLifecycleListener;
 
     public AppLifecycleService() {
     }
@@ -126,8 +126,7 @@ public class AppLifecycleService extends Service {
                 LogUtil.e("---> 开始发送了消息的轮询！");
 
                 // 写入本地的日志信息
-                String currentTimeToString = DateUtil.getCurrentTimeToString("yyyy-MM-dd HH:mm:ss");
-                LogUtil.writeDe(FILE_NAME, "当前的时间是：" + currentTimeToString + ",我是服务的轮询日志哦！");
+                LogUtil.writeDe(FILE_NAME, "我是服务的轮询日志哦！");
 
                 mNotification = getNotification();
 
@@ -139,8 +138,22 @@ public class AppLifecycleService extends Service {
                 Message message = mHandler.obtainMessage();
                 message.what = CODE_SEND_NOTIFICATION;
                 sendMessageDelayed(message, CODE_INTERVAL);
+
+                // 保活数据的回调
+                if (mLifecycleListener != null) {
+                    mLifecycleListener.onLifecycle("");
+                }
             }
         }
     };
+
+    /**
+     * 设置数据监听
+     */
+    public static void setLifecycleListener(LifecycleListener lifecycleListener) {
+        if (lifecycleListener != null) {
+            mLifecycleListener = lifecycleListener;
+        }
+    }
 
 }

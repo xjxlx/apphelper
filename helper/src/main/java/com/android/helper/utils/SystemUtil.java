@@ -1,5 +1,6 @@
 package com.android.helper.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
@@ -13,11 +14,15 @@ import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-@RequiresApi(api = Build.VERSION_CODES.M)
 public class SystemUtil {
 
     public static Application mApp;
     public static SystemUtil systemUtil;
+
+    /**
+     * 跳转activity的请求码
+     */
+    public static final int CODE_REQUEST_ACTIVITY_BATTERY = NotificationUtil.CODE_REQUEST_ACTIVITY_NOTIFICATION + 1;
 
     public static SystemUtil getInstance(Application application) {
         if (application != null) {
@@ -30,14 +35,16 @@ public class SystemUtil {
     }
 
     /**
-     * @return 检测是否在后台运行的白名单当中
+     * @return 检测是否在后台运行的白名单当中，也就是电池的优化权限
      */
     public boolean isIgnoringBatteryOptimizations() {
         boolean isIgnoring = false;
         if (mApp != null) {
-            PowerManager powerManager = (PowerManager) mApp.getSystemService(Context.POWER_SERVICE);
-            if (powerManager != null) {
-                isIgnoring = powerManager.isIgnoringBatteryOptimizations(mApp.getPackageName());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PowerManager powerManager = (PowerManager) mApp.getSystemService(Context.POWER_SERVICE);
+                if (powerManager != null) {
+                    isIgnoring = powerManager.isIgnoringBatteryOptimizations(mApp.getPackageName());
+                }
             }
         }
         return isIgnoring;
@@ -46,13 +53,16 @@ public class SystemUtil {
     /**
      * 申请白名单
      */
+    @SuppressLint("BatteryLife")
     public void requestIgnoreBatteryOptimizations() {
         if (mApp != null) {
             try {
-                Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setData(Uri.parse("package:" + mApp.getPackageName()));
-                mApp.startActivity(intent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setData(Uri.parse("package:" + mApp.getPackageName()));
+                    mApp.startActivity(intent);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -62,14 +72,15 @@ public class SystemUtil {
     /**
      * 申请白名单
      */
-    public void requestIgnoreBatteryOptimizations(Activity activity, int requestCode) {
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void requestIgnoreBatteryOptimizations(Activity activity) {
         if (activity != null) {
             try {
                 Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setData(Uri.parse("package:" + activity.getPackageName()));
                 activity.startActivity(intent);
-                activity.startActivityForResult(intent, requestCode);
+                activity.startActivityForResult(intent, CODE_REQUEST_ACTIVITY_BATTERY);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -39,6 +39,9 @@ public class KeepManager {
         }
     }
 
+    /**
+     * 解除一个像素的页面注册
+     */
     public void unregisterKeep(Context context) {
         try {
             if ((context != null) && (keepReceiver != null)) {

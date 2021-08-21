@@ -52,7 +52,8 @@ public class NotificationUtil {
     /**
      * 跳转activity的请求码
      */
-    public static final int CODE_REQUEST_ACTIVITY = CODE_WHAT_SEND_START_FOREGROUND_LOOP + 1;
+    public static final int CODE_REQUEST_ACTIVITY_NOTIFICATION = CODE_WHAT_SEND_START_FOREGROUND_LOOP + 1;
+
 
     private final Context mContext;
     @SuppressLint("StaticFieldLeak")
@@ -484,7 +485,7 @@ public class NotificationUtil {
     }
 
     /**
-     * 跳转通知的设置页面
+     * 跳转通知的设置页面，startActivityForResult的请求码为{CODE_REQUEST_ACTIVITY_NOTIFICATION}
      */
     public void goToSetNotify(Activity context) {
         Intent intent = new Intent();
@@ -497,7 +498,7 @@ public class NotificationUtil {
             intent.putExtra("app_package", context.getApplicationContext().getPackageName());
             intent.putExtra("app_uid", context.getApplicationInfo().uid);
         }
-        context.startActivityForResult(intent, CODE_REQUEST_ACTIVITY);
+        context.startActivityForResult(intent, CODE_REQUEST_ACTIVITY_NOTIFICATION);
     }
 
 }
