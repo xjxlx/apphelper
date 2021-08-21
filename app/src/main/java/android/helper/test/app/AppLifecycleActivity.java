@@ -72,6 +72,8 @@ public class AppLifecycleActivity extends BaseActivity {
 
         AccountHelper.addAccount(this);//添加账户
         AccountHelper.autoSync(mContext);//调用告知系统自动同步
+
+        // 测试
     }
 
     @Override
