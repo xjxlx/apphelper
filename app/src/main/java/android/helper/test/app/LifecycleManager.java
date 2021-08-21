@@ -1,8 +1,11 @@
 package android.helper.test.app;
 
+import static android.helper.test.app.AppLifecycleActivity.FILE_NAME;
+import static android.helper.test.app.AppLifecycleService.KEY_LIFECYCLE_ACCOUNT;
+import static android.helper.test.app.AppLifecycleService.KEY_LIFECYCLE_TYPE;
+
 import android.Manifest;
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.helper.R;
@@ -44,22 +47,41 @@ public class LifecycleManager {
      * 开启保活的方案，这个方法建议在activity的onCreate方法中卡其
      *
      * @param application 系统级的Context对象
+     * @param autoSync    是否是通过账户激活的
      */
-    public void startLifecycle(Application application) {
+    public void startLifecycle(Context application, boolean autoSync) {
         if (application != null) {
             // 1:屏幕一像素保活，适用于8.0以下的手机
             KeepManager.getInstance().registerKeep(application);
 
-            // 2：账号保活，适用于所有的手机
-            AccountHelper.addAccount(application);//添加账户
-            AccountHelper.autoSync(application);//调用告知系统自动同步
+            // 2: 启动后台进程，变更为前台进程，通过notification去保活
+            boolean serviceRunning = ServiceUtil.isServiceRunning(application, AppLifecycleService.class);
+            LogUtil.e("前台服务是是否正在运行：" + serviceRunning);
+            if (!serviceRunning) {
+                mIntentService = new Intent(application, AppLifecycleService.class);
+                if (autoSync) {
+                    // 只有账户激活的，才会去添加tag
+                    mIntentService.putExtra(KEY_LIFECYCLE_TYPE, KEY_LIFECYCLE_ACCOUNT);
+                    LogUtil.writeDe(FILE_NAME, "检测到前台Service被杀死了，账号同步的时候主动去拉起前台Service！");
+                    LogUtil.e("检测到前台Service被杀死了，账号同步的时候主动去拉起前台Service！");
+                }
+                ServiceUtil.startService(application, mIntentService);
+            }
 
-            // 3: 启动后台进程，变更为前台进程，通过notification去保活
-            mIntentService = new Intent(application, AppLifecycleService.class);
-            ServiceUtil.startService(application, mIntentService);
+            // 3：通过JobService 去进行系统的轮询处理
+            boolean jobServiceRunning = ServiceUtil.isServiceRunning(application, AppJobService.class);
+            LogUtil.e("Job服务是是否正在运行：" + jobServiceRunning);
+            if (!jobServiceRunning) {
+                LogUtil.writeDe(FILE_NAME, "检测到JobService被杀死了，账号同步的时候主动去拉起JobService！");
+                LogUtil.e("检测到JobService被杀死了，账号同步的时候主动去拉起JobService！");
+                AppJobService.startJob(application, autoSync);
+            }
 
-            // 4：通过JobService 去进行系统的轮询处理
-            AppJobService.startJob(application);
+            // 4：账号保活，适用于所有的手机
+            if (!autoSync) {
+                AccountHelper.addAccount(application);//添加账户
+                AccountHelper.autoSync(application);//调用告知系统自动同步
+            }
         }
     }
 
@@ -111,6 +133,7 @@ public class LifecycleManager {
                             mNotificationUtil.goToSetNotify(activity);
                             mDialogUtil.dismiss();
                         });
+                mDialogUtil.show();
             }
         }
     }
@@ -133,7 +156,7 @@ public class LifecycleManager {
     /**
      * 检测电池优化的权限，这个权限只有在android6.0之后才会去执行，低版本的手机也不用去考虑了，版本过低的话，也不会杀进程那么快的
      */
-    private void checkBatteryPermissions(Activity activity) {
+    public void checkBatteryPermissions(Activity activity) {
         if (activity != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // 判断电池时候被优化了
@@ -183,9 +206,7 @@ public class LifecycleManager {
      * 设置数据监听
      */
     public void setLifecycleListener(LifecycleListener lifecycleListener) {
-        if (lifecycleListener != null) {
-            AppLifecycleService.setLifecycleListener(lifecycleListener);
-        }
+
     }
 
 }

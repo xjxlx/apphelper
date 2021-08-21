@@ -31,7 +31,7 @@ public class AppJobService extends JobService {
      */
     private static final int CODE_INTERVAL = 15 * 1000;
     private static JobScheduler mJobScheduler;
-    private static JobInfo.Builder mBuilder;
+    private static boolean mAutoSync;
 
     public AppJobService() {
     }
@@ -42,15 +42,13 @@ public class AppJobService extends JobService {
 
         LogUtil.writeDe(FILE_NAME, "onStartJob ---> 我是JobService的服务，我在正常的运行着！");
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
-            startJob(getBaseContext());
-        }
-
         /*启动应用*/
         boolean serviceRunning = ServiceUtil.isServiceRunning(getBaseContext(), AppLifecycleService.class);
         if (!serviceRunning) {
             Intent intent = new Intent(getBaseContext(), AppLifecycleService.class);
-            intent.putExtra(KEY_LIFECYCLE_TYPE, KEY_LIFECYCLE_JOB);
+            if (mAutoSync) {
+                intent.putExtra(KEY_LIFECYCLE_TYPE, KEY_LIFECYCLE_JOB);
+            }
             ServiceUtil.startService(getBaseContext(), intent);
             LogUtil.writeDe(FILE_NAME, "检测到后台服务被杀死了，JobService主动去拉起后台服务！");
         }
@@ -60,32 +58,36 @@ public class AppJobService extends JobService {
     /**
      * @param context 启动JobService
      */
-    public static void startJob(Context context) {
-        // 取消服务
-        cancel();
+    public static void startJob(Context context, boolean autoSync) {
+        mAutoSync = autoSync;
+        LogUtil.writeDe(FILE_NAME, "启动了startJob的后台服务！");
+        LogUtil.e("启动了startJob的后台服务！");
+
+        if (autoSync) {
+            LogUtil.writeDe(FILE_NAME, "我是通过账号拉活的JobService!");
+            LogUtil.e("我是通过账号拉活的JobService！");
+        }
 
         if (mJobScheduler == null) {
             mJobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         }
 
-        if (mBuilder == null) {
-            // 创建JobService的类对象
-            ComponentName appJobComponentName = new ComponentName(context, AppJobService.class);
-            // 2：设置JobInfo 的参数信息
-            mBuilder = new JobInfo.Builder(AppJobService.AppJobId, appJobComponentName);
-        }
+        // 创建JobService的类对象
+        ComponentName appJobComponentName = new ComponentName(context, AppJobService.class);
+        // 2：设置JobInfo 的参数信息
+        JobInfo.Builder builder = new JobInfo.Builder(AppJobService.AppJobId, appJobComponentName);
 
-        mBuilder.setPersisted(true);  // 设置设备重启时，执行该任务
+        builder.setPersisted(true);  // 设置设备重启时，执行该任务
 
         // 7.0 之前没有任何的限制
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            mBuilder.setPeriodic(CODE_INTERVAL); // 轮询的间隔
+            builder.setPeriodic(CODE_INTERVAL); // 轮询的间隔
         } else {
-            mBuilder.setMinimumLatency(CODE_INTERVAL); // 延时的时间
+            builder.setMinimumLatency(CODE_INTERVAL); // 延时的时间
         }
 
         // 调用
-        mJobScheduler.schedule(mBuilder.build());
+        mJobScheduler.schedule(builder.build());
     }
 
     /**

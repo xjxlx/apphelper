@@ -37,8 +37,6 @@ public class AppLifecycleActivity extends BaseActivity {
     private AppLifecycleAdapter mAppLifecycleAdapter;
     private LogWriteUtil mWriteUtil;
     private LifecycleManager mLifecycleManager;
-    private NotificationUtil mNotificationUtil;
-    private SystemUtil mSystemUtil;
 
     @Override
     protected int getBaseLayout() {
@@ -96,33 +94,30 @@ public class AppLifecycleActivity extends BaseActivity {
             mLifecycleManager = LifecycleManager.getInstance();
         }
 
-        if (mNotificationUtil == null) {
-            mNotificationUtil = NotificationUtil.getInstance(mContext);
-        }
-
-        if (mSystemUtil == null) {
-            mSystemUtil = SystemUtil.getInstance(App.getInstance());
-        }
-
-        // 检测notification的权限
-        boolean openNotify = mNotificationUtil.checkOpenNotify(mContext);
-        //  检测充电的权限
-        boolean ignoringBatteryOptimizations = mSystemUtil.isIgnoringBatteryOptimizations();
-
-        if (!openNotify) {
-            // 1：检测notification
-            mLifecycleManager.checkNotificationPermissions(mContext);
-        } else {
-            if (ignoringBatteryOptimizations) {
-                // 2: 检测充电的权限
-                mLifecycleManager.checkAutoStartupPermissions(mContext);
-            }
-        }
+        // 检测权限
+        checkPermission();
 
         // 2：打开保活的流程
-        mLifecycleManager.startLifecycle(mContext.getApplication());
+        mLifecycleManager.startLifecycle(mContext.getApplication(), false);
+    }
 
-        mLifecycleManager.setLifecycleListener(tag -> LogUtil.e("我已经开始回调了服务中的数据！"));
+    private void checkPermission() {
+        // notification权限
+        boolean openNotify = NotificationUtil.getInstance(mContext).checkOpenNotify(mContext);
+        // 充电权限
+        boolean batteryOptimizations = SystemUtil.getInstance(App.getInstance()).isIgnoringBatteryOptimizations();
+
+        // 1:只有notification没有打开
+        if ((!openNotify) && (batteryOptimizations)) {
+            // 2：打开notification
+            mLifecycleManager.checkNotificationPermissions(mContext);
+        } else if ((openNotify) && (!batteryOptimizations)) {
+            // 3: 打开充电的权限
+            mLifecycleManager.checkBatteryPermissions(mContext);
+        } else if (openNotify) {
+            // 4：自动启动的权限
+            mLifecycleManager.checkAutoStartupPermissions(mContext);
+        }
     }
 
     @Override
@@ -131,15 +126,13 @@ public class AppLifecycleActivity extends BaseActivity {
         switch (requestCode) {
             case NotificationUtil.CODE_REQUEST_ACTIVITY_NOTIFICATION:
                 LogUtil.e("收到了notification的返回信息:" + resultCode);
-                if (mNotificationUtil != null) {
-                    boolean openNotify = mNotificationUtil.checkOpenNotify(mContext);
-                    if (!openNotify) {
-                        ToastUtil.show("消息通知权限打开异常！");
-                    } else {
-                        // 检测电池优化的权限
-                        if (mLifecycleManager != null) {
-                            mLifecycleManager.checkAutoStartupPermissions(mContext);
-                        }
+                boolean openNotify = NotificationUtil.getInstance(mContext).checkOpenNotify(mContext);
+                if (!openNotify) {
+                    ToastUtil.show("消息通知权限打开异常！");
+                } else {
+                    // 检测电池优化的权限
+                    if (mLifecycleManager != null) {
+                        mLifecycleManager.checkBatteryPermissions(mContext);
                     }
                 }
                 break;
@@ -147,18 +140,17 @@ public class AppLifecycleActivity extends BaseActivity {
                 LogUtil.e("电池优化的返回：" + resultCode);
 
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    if (mSystemUtil != null) {
-                        boolean ignoringBatteryOptimizations = mSystemUtil.isIgnoringBatteryOptimizations();
-                        if (ignoringBatteryOptimizations) {
-                            // 打开自动启动的权限
-                            if (mLifecycleManager != null) {
-                                mLifecycleManager.checkAutoStartupPermissions(mContext);
-                            }
-                        } else {
-                            ToastUtil.show("电池优化打开异常！");
+                    boolean batteryOptimizations = SystemUtil.getInstance(getApplication()).isIgnoringBatteryOptimizations();
+                    if (!batteryOptimizations) {
+                        ToastUtil.show("电池优化打开异常！");
+                    } else {
+                        // 打开自动启动的权限
+                        if (mLifecycleManager != null) {
+                            mLifecycleManager.checkAutoStartupPermissions(mContext);
                         }
                     }
                 } else {
+                    // 打开自动启动的权限
                     if (mLifecycleManager != null) {
                         mLifecycleManager.checkAutoStartupPermissions(mContext);
                     }

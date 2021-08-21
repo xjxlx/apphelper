@@ -9,13 +9,14 @@ import androidx.room.RoomDatabase;
  * 2：必须是抽象类，且继承RoomDatabase
  * 3:version: 版本号，entities:对应的实体类
  */
-@Database(version = 4, entities = {
-        RoomEntity1.class,
-        RoomEntity2.class,
-        RoomEntityLiveData.class,
-        RoomEntityTest.class,
-        RoomEntity3.class
-})
+@Database(version = 4,
+        entities = {
+                RoomEntity1.class,
+                RoomEntity2.class,
+                RoomEntityLiveData.class,
+                RoomEntityTest.class,
+                RoomEntity3.class
+        }, exportSchema = false)
 public abstract class RoomDataBaseHelper extends RoomDatabase {
 
     public static final String ROOM_DB_NAME = "room_table.db";

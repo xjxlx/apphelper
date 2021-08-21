@@ -9,7 +9,7 @@ import androidx.room.migration.Migration;
 
 import com.android.helper.utils.room.BaseRoomManager;
 
-@Database(version = BuildConfig.ROOM_VERSION, entities = {RoomTable1.class, RoomTable2.class})
+@Database(version = BuildConfig.ROOM_VERSION, entities = {RoomTable1.class, RoomTable2.class}, exportSchema = false)
 public abstract class RoomManager extends BaseRoomManager {
 
     public static int VERSION = BuildConfig.ROOM_VERSION;

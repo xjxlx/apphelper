@@ -15,7 +15,6 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
-import com.android.helper.utils.ServiceUtil;
 
 public class AppLifecycleService extends Service {
 
@@ -44,7 +43,6 @@ public class AppLifecycleService extends Service {
     private static final int CODE_NOTIFICATION = 19900713;
     private static final int CODE_SEND_NOTIFICATION = CODE_NOTIFICATION + 1;
     private static final int CODE_INTERVAL = 10 * 1000;
-    private static LifecycleListener mLifecycleListener;
 
     public AppLifecycleService() {
     }
@@ -63,18 +61,13 @@ public class AppLifecycleService extends Service {
             switch (lifecycleType) {
                 case KEY_LIFECYCLE_ACCOUNT:
                     LogUtil.writeDe(FILE_NAME, "我是被账号拉活的哦！");
+                    LogUtil.e("我是被账号拉活的哦！");
                     break;
                 case KEY_LIFECYCLE_JOB:
                     LogUtil.writeDe(FILE_NAME, "我是被JobService拉活的哦！");
+                    LogUtil.e("我是被JobService拉活的哦！");
                     break;
             }
-        }
-
-        /*启动服务 --- JobService*/
-        boolean jobServiceRunning = ServiceUtil.isServiceRunning(getApplicationContext(), AppJobService.class);
-        if (!jobServiceRunning) {
-            LogUtil.writeDe(FILE_NAME, "检测到JobService被杀死了，账号同步的时候主动去拉起JobService！");
-            AppJobService.startJob(getApplicationContext());
         }
 
         mNotification = getNotification();
@@ -138,22 +131,8 @@ public class AppLifecycleService extends Service {
                 Message message = mHandler.obtainMessage();
                 message.what = CODE_SEND_NOTIFICATION;
                 sendMessageDelayed(message, CODE_INTERVAL);
-
-                // 保活数据的回调
-                if (mLifecycleListener != null) {
-                    mLifecycleListener.onLifecycle("");
-                }
             }
         }
     };
-
-    /**
-     * 设置数据监听
-     */
-    public static void setLifecycleListener(LifecycleListener lifecycleListener) {
-        if (lifecycleListener != null) {
-            mLifecycleListener = lifecycleListener;
-        }
-    }
 
 }

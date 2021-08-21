@@ -1,8 +1,6 @@
 package android.helper.test.app.account;
 
 import static android.helper.test.app.AppLifecycleActivity.FILE_NAME;
-import static android.helper.test.app.AppLifecycleService.KEY_LIFECYCLE_ACCOUNT;
-import static android.helper.test.app.AppLifecycleService.KEY_LIFECYCLE_TYPE;
 
 import android.accounts.Account;
 import android.app.Service;
@@ -11,13 +9,11 @@ import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
-import android.helper.test.app.AppJobService;
-import android.helper.test.app.AppLifecycleService;
+import android.helper.test.app.LifecycleManager;
 import android.os.Bundle;
 import android.os.IBinder;
 
 import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.ServiceUtil;
 
 /**
  * 用于执行账户同步，当系统执行账户同步时则会自动拉活所在的进程,不需要手动配置好之后，系统会自动绑定并调起
@@ -57,25 +53,8 @@ public class SyncService extends Service {
             LogUtil.e("onPerformSync ---> 开始了账户的同步！" + account.toString());
             LogUtil.writeDe(FILE_NAME, "账号开始同步，数据开始更新！");
 
-            Context context = getContext().getApplicationContext();
-            if (context != null) {
-                /*启动服务  --- 主应用 */
-                boolean serviceRunning = ServiceUtil.isServiceRunning(context, AppLifecycleService.class);
-                if (!serviceRunning) {
-                    Intent intent = new Intent(context, AppLifecycleService.class);
-                    intent.putExtra(KEY_LIFECYCLE_TYPE, KEY_LIFECYCLE_ACCOUNT);
-                    ServiceUtil.startService(context, intent);
-
-                    LogUtil.writeDe(FILE_NAME, "检测到后台服务被杀死了，账号同步的时候主动去拉起后台服务！");
-                }
-
-                /*启动服务 --- JobService*/
-                boolean jobServiceRunning = ServiceUtil.isServiceRunning(getContext(), AppJobService.class);
-                if (!jobServiceRunning) {
-                    LogUtil.writeDe(FILE_NAME, "检测到JobService被杀死了，账号同步的时候主动去拉起JobService！");
-                    AppJobService.startJob(context);
-                }
-            }
+            // 保活程序开始运行
+            LifecycleManager.getInstance().startLifecycle(getContext().getApplicationContext(), true);
         }
     }
 }
