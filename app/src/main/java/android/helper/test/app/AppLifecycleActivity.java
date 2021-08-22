@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.helper.R;
 import android.helper.app.App;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -83,7 +84,12 @@ public class AppLifecycleActivity extends BaseActivity {
                 .setAdapter(mAdapter);
 
         findViewById(R.id.bt_bluetooth_start).setOnClickListener(v -> {
-
+            int visibility = mListBluetooth.getVisibility();
+            if (visibility == View.GONE) {
+                mListBluetooth.setVisibility(View.VISIBLE);
+            } else if (visibility == View.VISIBLE) {
+                mListBluetooth.setVisibility(View.GONE);
+            }
         });
     }
 

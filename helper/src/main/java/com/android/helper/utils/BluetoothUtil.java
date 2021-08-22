@@ -6,19 +6,24 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.os.Parcelable;
 
 import com.android.helper.common.EventMessage;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -131,18 +136,8 @@ public class BluetoothUtil {
                 // getPdList();
 
                 // 搜索附近的设备
-                //  doDiscovry();
-
-                mScanner = mAdapter.getBluetoothLeScanner();
-                if (mScanner != null) {
-                    if (!isScan) {
-                        mScanner.startScan(mScanCallback);
-                        LogUtil.e("开始去扫描蓝牙！");
-                        isScan = true;
-                    } else {
-                        LogUtil.e("正在扫描中，请等待~");
-                    }
-                }
+//                  startDiscovery();
+                startScanBackground();
             }
         } else {
             openBluetooth();
@@ -155,10 +150,8 @@ public class BluetoothUtil {
         //当一个蓝牙ble广播被发现时回调
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-            isScan = false;
-            LogUtil.writeDe(FILE_NAME, "蓝牙扫描回调：onScanResult！");
-            LogUtil.e("蓝牙扫描回调：onScanResult！");
             super.onScanResult(callbackType, result);
+            isScan = false;
             if (result != null) {
                 BluetoothDevice device = result.getDevice();
                 if (device != null) {
@@ -167,8 +160,8 @@ public class BluetoothUtil {
 
                     sendDevice(device);
 
-                    LogUtil.writeDe(FILE_NAME, "当前扫描到的蓝牙名字：" + name + "  描到的蓝牙地址为：" + address);
-                    LogUtil.e("当前扫描到的蓝牙名字：" + name + "  描到的蓝牙地址为：" + address);
+                    LogUtil.writeDe(FILE_NAME, "蓝牙扫描回调---成功：" + name + "  描到的蓝牙地址为：" + address);
+                    LogUtil.e("蓝牙扫描回调---成功：" + name + "  描到的蓝牙地址为：" + address);
                     if (mScanner != null) {
                         if (isOpenBluetooth()) {
                             mScanner.stopScan(mScanCallback);
@@ -184,8 +177,18 @@ public class BluetoothUtil {
             super.onBatchScanResults(results);
             isScan = false;
 
-            LogUtil.writeDe(FILE_NAME, "蓝牙扫描回调：onBatchScanResults！");
-            LogUtil.e("蓝牙扫描回调：onBatchScanResults！");
+            if (results != null) {
+                for (int i = 0; i < results.size(); i++) {
+                    ScanResult scanResult = results.get(i);
+                    BluetoothDevice device = scanResult.getDevice();
+                    if (device != null) {
+                        String address = device.getAddress();
+                        String name = device.getName();
+                        LogUtil.writeDe(FILE_NAME, "蓝牙扫描回调---批量成功：" + name + "  描到的蓝牙地址为：" + address);
+                        LogUtil.e("蓝牙扫描回调---批量成功：" + name + "  描到的蓝牙地址为：" + address);
+                    }
+                }
+            }
         }
 
         //当扫描不能开启时回调
@@ -194,8 +197,8 @@ public class BluetoothUtil {
             super.onScanFailed(errorCode);
             isScan = false;
 
-            LogUtil.writeDe(FILE_NAME, "蓝牙扫描异常的回调：onScanFailed！" + errorCode);
-            LogUtil.e("蓝牙扫描异常的回调：onScanFailed！" + errorCode);
+            LogUtil.writeDe(FILE_NAME, "蓝牙扫描回调---异常：onScanFailed！" + errorCode);
+            LogUtil.e("蓝牙扫描回调---异常：onScanFailed！" + errorCode);
 
             if (mScanner != null) {
                 if (isOpenBluetooth()) {
@@ -301,15 +304,8 @@ public class BluetoothUtil {
         }
     }
 
-    public void doDiscovry() {
+    public void startDiscovery() {
         if (mAdapter != null) {
-//            if (mAdapter.isDiscovering()) {
-//                //判断蓝牙是否正在扫描，如果是调用取消扫描方法；如果不是，则开始扫描
-//                mAdapter.cancelDiscovery();
-//            } else {
-//                mAdapter.startDiscovery();
-//            }
-
             if (isScan) {
                 long end = System.currentTimeMillis();
                 if (((end - mStartScan) / 1000) > 20) {
@@ -326,6 +322,59 @@ public class BluetoothUtil {
                 isScan = true;
                 mStartScan = System.currentTimeMillis();
             }
+        }
+    }
+
+    /**
+     * 可以设置后台模式
+     */
+    private void startScanBackground() {
+        mScanner = mAdapter.getBluetoothLeScanner();
+        if (isScan) {
+            long end = System.currentTimeMillis();
+            if (((end - mStartScan) / 1000) > 20) {
+                if (mScanner != null) {
+                    if (isOpenBluetooth()) {
+                        mScanner.stopScan(mScanCallback);
+                        LogUtil.e("扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
+                    }
+                }
+                mStartScan = end;
+                isScan = false;
+            } else {
+                LogUtil.e("蓝牙正在扫描中~~");
+            }
+        } else {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+                ScanSettings mScannerSetting = new ScanSettings.Builder()
+                        //  退到后台时设置扫描模式为低功耗
+                        .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
+                        //  使用最高占空比进行扫描。建议只在应用程序处于此模式时使用此模式在前台运行
+                        //  .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                        //  设置蓝牙LE扫描滤波器硬件匹配的匹配模式
+                        //  在主动模式下，即使信号强度较弱，hw也会更快地确定匹配.在一段时间内很少有目击/匹配。
+                        //  .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+                        .build();
+
+                List<ScanFilter> scanFilterList = new ArrayList<>();
+                // 通过服务 uuid 过滤自己要连接的设备   过滤器搜索GATT服务UUID
+//                ScanFilter.Builder scanFilterBuilder = new ScanFilter.Builder();
+//                ParcelUuid parcelUuidMask = ParcelUuid.fromString("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
+//                ParcelUuid parcelUuid = ParcelUuid.fromString("0000ff07-0000-1000-8000-00805f9b34fb");
+//                scanFilterBuilder.setServiceUuid(parcelUuid, parcelUuidMask);
+//                scanFilterList.add(scanFilterBuilder.build());
+
+                //  scanFilterList.add(new ScanFilter.Builder()
+                //  过滤扫描蓝牙设备的主服务
+                // .setServiceUuid(ParcelUuid.fromString("0000ffff-0000-1000-8000-00805f9bfffb"))
+                // .build());
+                mScanner.startScan(scanFilterList, mScannerSetting, mScanCallback);
+            } else {
+                mScanner.startScan(mScanCallback);
+            }
+            LogUtil.e("------开始扫描蓝牙------");
+            isScan = true;
+            mStartScan = System.currentTimeMillis();
         }
     }
 
