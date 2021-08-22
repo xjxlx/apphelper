@@ -2,24 +2,23 @@ package android.helper.test.app;
 
 import static com.android.helper.utils.SystemUtil.CODE_REQUEST_ACTIVITY_BATTERY;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.helper.R;
 import android.helper.app.App;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.helper.app.CommonConstant;
 import com.android.helper.base.BaseActivity;
 import com.android.helper.common.EventMessage;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.LogWriteUtil;
 import com.android.helper.utils.NotificationUtil;
 import com.android.helper.utils.RecycleUtil;
+import com.android.helper.utils.RxPermissionsUtil;
 import com.android.helper.utils.SystemUtil;
 import com.android.helper.utils.ToastUtil;
 
@@ -29,7 +28,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * App保活的一个实现方案
@@ -48,32 +50,41 @@ public class AppLifecycleActivity extends BaseActivity {
     private AppLifecycleAdapter mAppLifecycleAdapter;
     private LogWriteUtil mWriteUtil;
     private LifecycleManager mLifecycleManager;
-    private ListView mLvListView;
-    private List<String> mListDev = new ArrayList<>();
-    private ArrayAdapter<String> mAdapter;
+    private final Map<String, String> map = new HashMap<>();
+    private DeviceAdapter mAdapter;
+    private RecyclerView mListBluetooth;
+    private RecyclerView mListContent;
 
     @Override
     protected int getBaseLayout() {
         return R.layout.activity_app_lifecycle;
     }
 
+    @SuppressLint("WrongViewCast")
     @Override
     protected void initView() {
         super.initView();
 
         mBtStart = findViewById(R.id.bt_start);
-        RecyclerView tvContent = findViewById(R.id.tv_content);
+        mListContent = findViewById(R.id.tv_content);
 
         mAppLifecycleAdapter = new AppLifecycleAdapter(mContext);
-        RecycleUtil.getInstance(mContext, tvContent)
+        RecycleUtil.getInstance(mContext, mListContent)
                 .setVertical()
                 .setAdapter(mAppLifecycleAdapter);
 
         mWriteUtil = new LogWriteUtil();
 
-        mLvListView = findViewById(R.id.lv_list);
-        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, this.mListDev);
-        mLvListView.setAdapter(mAdapter);
+        mListBluetooth = findViewById(R.id.lv_bluetooth);
+        mAdapter = new DeviceAdapter(mContext);
+        RecycleUtil
+                .getInstance(mContext, mListBluetooth)
+                .setVertical()
+                .setAdapter(mAdapter);
+
+        findViewById(R.id.bt_bluetooth_start).setOnClickListener(v -> {
+
+        });
     }
 
     @Override
@@ -84,6 +95,7 @@ public class AppLifecycleActivity extends BaseActivity {
         startLifecycle();
 
         mBtStart.setOnClickListener(v -> {
+
             if (mWriteUtil != null) {
                 List<String> read = mWriteUtil.read(FILE_NAME);
                 if (read != null && read.size() > 0) {
@@ -98,6 +110,7 @@ public class AppLifecycleActivity extends BaseActivity {
             Collections.reverse(read);
         }
         mAppLifecycleAdapter.setList(read);
+
     }
 
     @Override
@@ -125,6 +138,19 @@ public class AppLifecycleActivity extends BaseActivity {
     }
 
     private void checkPermission() {
+
+        RxPermissionsUtil util = new RxPermissionsUtil(mContext,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_ADMIN,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        );
+        util.setAllPermissionListener((havePermission, permission) -> {
+            LogUtil.e("SD卡的读写权限：" + havePermission);
+        });
+
         // notification权限
         boolean openNotify = NotificationUtil.getInstance(mContext).checkOpenNotify(mContext);
         // 充电权限
@@ -195,16 +221,25 @@ public class AppLifecycleActivity extends BaseActivity {
 //        }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void handleEvent(EventMessage event) {
         if (event != null) {
             int code = event.getCode();
             if (code == 111) {
                 // 更新数据
+                LogUtil.e("开始更新数据了！");
+                if (mAdapter != null) {
+                    Bundle bundle = event.getBundle();
+                    String name = bundle.getString("name");
+                    String address = bundle.getString("address");
 
-                if (mListDev != null && mAdapter != null) {
-                    mListDev.add(event.getMsg());
-                    mAdapter.notifyDataSetChanged();
+                    map.put(address, name);
+
+                    Set<Map.Entry<String, String>> entries = map.entrySet();
+                    ArrayList<Map.Entry<String, String>> entries1 = new ArrayList<>(entries);
+
+                    mAdapter.setList(entries1);
                 }
             }
         }

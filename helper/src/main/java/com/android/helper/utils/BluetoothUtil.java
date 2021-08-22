@@ -1,5 +1,6 @@
 package com.android.helper.utils;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -11,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Parcelable;
 
 import com.android.helper.common.EventMessage;
@@ -18,6 +20,7 @@ import com.android.helper.common.EventMessage;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 蓝牙的工具类
@@ -29,13 +32,16 @@ public class BluetoothUtil {
     public static final String FILE_NAME = "AppLifecycle";
 
     private BluetoothManager mBluetoothManager;
-    private Context mContext;
+    private final Context mContext;
+    @SuppressLint("StaticFieldLeak")
     private static BluetoothUtil bluetoothUtil;
     private BluetoothAdapter mAdapter;
     private BluetoothLeScanner mScanner;
     private Intent mIntentBluetooth;
     private boolean isScan;// 是否正在扫描中
     private LocationManager locationManager;
+    private BluetoothReceiver mBluetoothReceiver;
+    private long mStartScan;
 
     public static BluetoothUtil getInstance(Context context) {
         if (bluetoothUtil == null) {
@@ -61,7 +67,7 @@ public class BluetoothUtil {
         if (mIntentBluetooth == null) {
             if (mContext != null) {
                 LogUtil.e("重新去注册蓝牙广播！");
-                MyBluetooth bluetooth = new MyBluetooth();
+                mBluetoothReceiver = new BluetoothReceiver();
                 IntentFilter intentFilter = new IntentFilter();
                 intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
                 intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
@@ -70,12 +76,12 @@ public class BluetoothUtil {
                 intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
                 intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
-                intentFilter.addAction("android.bluetooth.BluetoothAdapter.STATE_OFF");
-                intentFilter.addAction("android.bluetooth.BluetoothAdapter.STATE_ON");
+                intentFilter.addAction("android.bluetoothReceiver.BluetoothAdapter.STATE_OFF");
+                intentFilter.addAction("android.bluetoothReceiver.BluetoothAdapter.STATE_ON");
 
                 // 定位信息
                 intentFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
-                mIntentBluetooth = mContext.registerReceiver(bluetooth, intentFilter);
+                mIntentBluetooth = mContext.registerReceiver(mBluetoothReceiver, intentFilter);
             }
         }
     }
@@ -122,6 +128,11 @@ public class BluetoothUtil {
 
         if (openBluetooth) {
             if (mAdapter != null) {
+                // getPdList();
+
+                // 搜索附近的设备
+                //  doDiscovry();
+
                 mScanner = mAdapter.getBluetoothLeScanner();
                 if (mScanner != null) {
                     if (!isScan) {
@@ -154,7 +165,7 @@ public class BluetoothUtil {
                     String address = device.getAddress();
                     String name = device.getName();
 
-                    EventBus.getDefault().post(new EventMessage(111, name + "/" + address));
+                    sendDevice(device);
 
                     LogUtil.writeDe(FILE_NAME, "当前扫描到的蓝牙名字：" + name + "  描到的蓝牙地址为：" + address);
                     LogUtil.e("当前扫描到的蓝牙名字：" + name + "  描到的蓝牙地址为：" + address);
@@ -194,12 +205,13 @@ public class BluetoothUtil {
         }
     };
 
-    class MyBluetooth extends BroadcastReceiver {
+    class BluetoothReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
 
             if ((intent != null) && (intent.getAction() != null)) {
                 String action = intent.getAction();
+                LogUtil.e("action:" + action);
                 switch (action) {
                     case LocationManager.PROVIDERS_CHANGED_ACTION:// 定位的监听
 
@@ -240,18 +252,21 @@ public class BluetoothUtil {
                             BluetoothDevice device = (BluetoothDevice) parcelableExtra;
                             String address = device.getAddress();
                             String name = device.getName();
-                            LogUtil.e(" --> 扫描到的蓝牙名字：" + name + "  扫描到的蓝牙地址：" + address);
+                            LogUtil.e(" --> 发现的蓝牙名字：" + name + "  发现到的蓝牙地址：" + address);
 
-                            EventBus.getDefault().post(new EventMessage(111, name + "/" + address));
+                            sendDevice(device);
                         }
                     }
                     break;
                     case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
                         LogUtil.e("---> 蓝牙扫描中！");
+                        isScan = true;
                         break;
 
                     case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
                         LogUtil.e("---> 扫描完成，点击列表中的设备来尝试连接！");
+                        isScan = false;
+                        mStartScan = System.currentTimeMillis();
                         break;
                 }
             }
@@ -269,6 +284,85 @@ public class BluetoothUtil {
         boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean netWork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         return gps && netWork;
+    }
+
+    /**
+     * 获取已经配对的设备
+     */
+    public void getPdList() {
+        if (mAdapter != null) {
+            Set<BluetoothDevice> pairedDevices = mAdapter.getBondedDevices();
+            if (pairedDevices.size() > 0) {
+                for (BluetoothDevice device : pairedDevices) {
+                    // 把名字和地址取出来添加到适配器中
+                    sendDevice(device);
+                }
+            }
+        }
+    }
+
+    public void doDiscovry() {
+        if (mAdapter != null) {
+//            if (mAdapter.isDiscovering()) {
+//                //判断蓝牙是否正在扫描，如果是调用取消扫描方法；如果不是，则开始扫描
+//                mAdapter.cancelDiscovery();
+//            } else {
+//                mAdapter.startDiscovery();
+//            }
+
+            if (isScan) {
+                long end = System.currentTimeMillis();
+                if (((end - mStartScan) / 1000) > 20) {
+                    mAdapter.cancelDiscovery();
+                    LogUtil.e("扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
+                    mStartScan = end;
+                    isScan = false;
+                } else {
+                    LogUtil.e("蓝牙正在扫描中~~");
+                }
+            } else {
+                mAdapter.startDiscovery();
+                LogUtil.e("------开始扫描蓝牙------");
+                isScan = true;
+                mStartScan = System.currentTimeMillis();
+            }
+        }
+    }
+
+    private void sendDevice(BluetoothDevice device) {
+        EventMessage message = new EventMessage(111);
+        Bundle bundle = new Bundle();
+        bundle.putString("name", device.getName());
+        bundle.putString("address", device.getAddress());
+        message.setBundle(bundle);
+        EventBus.getDefault().post(message);
+    }
+
+    /**
+     * 是否可以被别人发现使用
+     */
+    private void canOtherUser() {
+        if (mAdapter != null) {
+            if (mAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+                //不在可被搜索的范围
+                Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);//设置本机蓝牙在300秒内可见
+                mContext.startActivity(discoverableIntent);
+            }
+        }
+    }
+
+    /**
+     * 搜索完设备后，要记得注销广播。注册后的广播对象在其他地方有强引用，如果不取消，activity会释放不了资源 。
+     */
+    public void destroy() {
+        if (mContext != null && mBluetoothReceiver != null) {
+            mContext.unregisterReceiver(mBluetoothReceiver);
+        }
+
+        if (mIntentBluetooth != null) {
+            mIntentBluetooth = null;
+        }
     }
 
 }
