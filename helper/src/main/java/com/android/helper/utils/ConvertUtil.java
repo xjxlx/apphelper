@@ -70,8 +70,7 @@ public class ConvertUtil {
     }
 
     /**
-     * @param array
-     * @param <T>   数组的泛型
+     * @param <T> 数组的泛型，各种的类型都可以转换
      * @return 把一个数组转换成集合
      */
     public static <T> List<T> ArrayToList(T[] array) {
