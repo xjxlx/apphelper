@@ -1,0 +1,28 @@
+ext {
+    // 全局版本配置
+    android = [
+            compileSdkVersion: 29,
+            buildToolsVersion: "29.0.2",
+            minSdkVersion    : 21,
+            targetSdkVersion : 29,
+            versionCode      : 1,
+            versionName      : "1.0"
+    ]
+
+    library = [
+            room      : "2.2.5",
+            navigation: "2.2.2"
+    ]
+
+    dependencies = [
+            "room-runtime"       : "androidx.room:room-runtime:${library.room}",
+            "room-compiler"      : "androidx.room:room-compiler:${library.room}",
+            'room-ktx'           : "androidx.room:room-ktx:${library.room}",
+            'room-rxjava2'       : "androidx.room:room-rxjava2:${library.room}",
+
+            "navigation_ui"      : "androidx.navigation:navigation-ui-ktx:${library.navigation}",
+            "navigation_fragment": "androidx.navigation:navigation-fragment-ktx:${library.navigation}",
+
+            "constraintlayout"   : "androidx.constraintlayout:constraintlayout:1.1.3"
+    ]
+}
