@@ -1,3 +1,2 @@
 include ':helper'
-include ':app'
 rootProject.name = "apphelper"
