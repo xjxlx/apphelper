@@ -16,7 +16,6 @@ import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelUuid;
 import android.os.Parcelable;
 
 import com.android.helper.common.EventMessage;
@@ -353,16 +352,16 @@ public class BluetoothUtil {
                         //  .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                         //  设置蓝牙LE扫描滤波器硬件匹配的匹配模式
                         //  在主动模式下，即使信号强度较弱，hw也会更快地确定匹配.在一段时间内很少有目击/匹配。
-                        //  .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+                        .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
                         .build();
 
                 List<ScanFilter> scanFilterList = new ArrayList<>();
                 // 通过服务 uuid 过滤自己要连接的设备   过滤器搜索GATT服务UUID
-//                ScanFilter.Builder scanFilterBuilder = new ScanFilter.Builder();
-//                ParcelUuid parcelUuidMask = ParcelUuid.fromString("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
-//                ParcelUuid parcelUuid = ParcelUuid.fromString("0000ff07-0000-1000-8000-00805f9b34fb");
-//                scanFilterBuilder.setServiceUuid(parcelUuid, parcelUuidMask);
-//                scanFilterList.add(scanFilterBuilder.build());
+                ScanFilter.Builder scanBuilder = new ScanFilter.Builder();
+//                ParcelUuid parcelUuid = ParcelUuid.fromString("0000fee7-0000-1000-8000-00805f9b34fb");
+//                scanBuilder.setServiceUuid(parcelUuid);
+                scanBuilder.setDeviceName("China Tower");
+                scanFilterList.add(scanBuilder.build());
 
                 //  scanFilterList.add(new ScanFilter.Builder()
                 //  过滤扫描蓝牙设备的主服务

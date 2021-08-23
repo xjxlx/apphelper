@@ -7,10 +7,12 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.helper.R;
 import android.helper.app.App;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.helper.base.BaseActivity;
@@ -143,15 +145,17 @@ public class AppLifecycleActivity extends BaseActivity {
         mLifecycleManager.startLifecycle(mContext.getApplication(), false);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void checkPermission() {
-
         RxPermissionsUtil util = new RxPermissionsUtil(mContext,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.BLUETOOTH,
                 Manifest.permission.BLUETOOTH_ADMIN,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.BLUETOOTH_PRIVILEGED,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
         );
         util.setAllPermissionListener((havePermission, permission) -> {
             LogUtil.e("SD卡的读写权限：" + havePermission);
