@@ -7,4 +7,9 @@ public class CommonConstant {
      */
     public static final String KEY_STATUS_BAR_HEIGHT = "key_status_bar_height";
 
+    /**
+     * 状态栏高度
+     */
+    public static final String KEY_STATUS_BAR_HEIGHT_2 = "key_status_bar_height";
+
 }
