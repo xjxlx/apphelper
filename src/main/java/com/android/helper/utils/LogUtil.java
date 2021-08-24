@@ -6,7 +6,7 @@ import com.android.helper.app.BaseApplication;
 import com.orhanobut.logger.Logger;
 
 /**
- * @author XJX
+ * @author XJX  日志工具类
  */
 public class LogUtil {
 
