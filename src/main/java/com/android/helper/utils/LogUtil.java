@@ -3,6 +3,7 @@ package com.android.helper.utils;
 import android.text.TextUtils;
 
 import com.android.helper.app.BaseApplication;
+import com.android.helper.common.CommonConstants;
 import com.orhanobut.logger.Logger;
 
 /**
@@ -101,6 +102,18 @@ public class LogUtil {
                 }
                 writeUtil.write(fileName, value);
             }
+        }
+    }
+
+    /**
+     * 写入保活的信息日志
+     */
+    public static void writeLifeCycle(String value) {
+        if (!TextUtils.isEmpty(value)) {
+            if (writeUtil == null) {
+                writeUtil = new LogWriteUtil();
+            }
+            writeUtil.write(CommonConstants.FILE_LIFECYCLE_NAME, value);
         }
     }
 
