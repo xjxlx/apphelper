@@ -102,7 +102,7 @@ public class LogWriteUtil {
                     mIsFirstWrite = true;
                     printStream.println(value);
                 }
-                value = "[ " + currentDateStr + " ] " + fileName + ": " + (++mNumber + " ") + content + "\n";
+                value = "[ " + currentDateStr + " ] " + (++mNumber + " ") + content + "\n";
 
                 printStream.println(value);
 
