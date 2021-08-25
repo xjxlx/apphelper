@@ -117,7 +117,7 @@ public class LogWriteUtil {
     }
 
     /**
-     * 创建一个公用的父类文件夹
+     * 创建一个公用的父类文件夹,只会每次项目启动的时候检测一次
      */
     private static void createCommonParenFile() {
         // sd卡根目录

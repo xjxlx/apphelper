@@ -19,4 +19,9 @@ public class CommonConstants {
      */
     public static final String KEY_BASE_WEB_VIEW_URL = "key_base_web_view_url";
 
+    /**
+     * 保活日志的文件名字
+     */
+    public static final String FILE_LIFECYCLE_NAME = "保活";
+
 }
