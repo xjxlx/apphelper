@@ -80,30 +80,21 @@ public class AccountHelper {
 
     public AccountHelper addAccountType(String accountType) {
         this.ACCOUNT_TYPE = accountType;
-        LogUtil.writeLifeCycle("设置了账户的Type:" + accountType);
-        LogUtil.e("设置了账户的Type:" + accountType);
-
         return mAccountHelper;
     }
 
     public AccountHelper addAccountName(String accountName) {
         this.ACCOUNT_NAME = accountName;
-        LogUtil.writeLifeCycle("设置了账户的Name:" + accountName);
-        LogUtil.e("设置了账户的Name:" + accountName);
         return mAccountHelper;
     }
 
     public AccountHelper addAccountAuthority(String accountAuthority) {
         this.ACCOUNT_AUTHORITY = accountAuthority;
-        LogUtil.writeLifeCycle("设置了账户的Authority:" + accountAuthority);
-        LogUtil.e("设置了账户的Authority:" + accountAuthority);
         return mAccountHelper;
     }
 
     public AccountHelper addAccountPassword(String accountPassword) {
         this.ACCOUNT_PASSWORD = accountPassword;
-        LogUtil.writeLifeCycle("设置了账户的Password:" + ACCOUNT_PASSWORD);
-        LogUtil.e("设置了账户的Password:" + ACCOUNT_PASSWORD);
         return mAccountHelper;
     }
 
@@ -135,7 +126,6 @@ public class AccountHelper {
             if (accounts != null && accounts.length > 0) {
                 LogUtil.writeLifeCycle("有数据，就不去再次添加新的账户");
                 LogUtil.e("有数据，就不去再次添加新的账户");
-
             } else {
                 LogUtil.writeLifeCycle("没有数据，去=添加新的账户");
                 LogUtil.e("没有数据，去=添加新的账户");

@@ -2,17 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.android.helper">
-
     <!-- 网络状态权限 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- 电池优化权限 -->
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <!--通知栏权限-->
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-    <!--设置振动， 需要添加权限-->
-    <uses-permission android:name="android.permission.VIBRATE" />
-
-    <!--蓝牙的权限-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 电池优化权限 -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" /> <!-- 通知栏权限 -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" /> <!-- 设置振动， 需要添加权限 -->
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 蓝牙的权限 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission
@@ -22,16 +16,13 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-
     <uses-permission
         android:name="android.permission.GET_ACCOUNTS"
-        android:maxSdkVersion="22" /><!--获取账号信息的权限-->
+        android:maxSdkVersion="22" /> <!-- 获取账号信息的权限 -->
     <uses-permission
         android:name="android.permission.AUTHENTICATE_ACCOUNTS"
-        android:maxSdkVersion="22" /><!--添加账号的权限-->
+        android:maxSdkVersion="22" />
 
-    <application>
-
-    </application>
+    <application></application>
 
 </manifest>
