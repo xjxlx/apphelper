@@ -131,4 +131,16 @@ public class ViewUtil {
         return 0;
     }
 
+    /**
+     * @param view 当前的view
+     * @return 获取view在屏幕上的位置
+     */
+    public static int[] getLocationOnScreen(View view) {
+        int[] ints = new int[2];
+        if (view != null) {
+            view.getLocationOnScreen(ints);
+        }
+        return ints;
+    }
+
 }
