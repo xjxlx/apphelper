@@ -10,7 +10,7 @@ android {
     def compile = rootProject.ext.android
 
     compileSdkVersion compile.compileSdkVersion
-    buildToolsVersion compile.buildToolsVersion
+    // buildToolsVersion compile.buildToolsVersion
 
     defaultConfig {
         minSdkVersion compile.minSdkVersion
@@ -34,7 +34,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
     }
 
