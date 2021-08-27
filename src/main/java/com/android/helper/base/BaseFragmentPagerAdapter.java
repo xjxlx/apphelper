@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
 
-    private List<Fragment> mListFragment;
+    private final List<Fragment> mListFragment;
     private List<String> mListTitles;
 
     public BaseFragmentPagerAdapter(@NonNull FragmentManager fm, List<Fragment> fragments, List<String> titles) {
@@ -22,11 +22,19 @@ public class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
         mListTitles = titles;
     }
 
+    public BaseFragmentPagerAdapter(@NonNull FragmentManager fm, List<Fragment> fragments) {
+        super(fm);
+        mListFragment = fragments;
+    }
+
     @NonNull
     @Override
     public Fragment getItem(int position) {
-
-        return mListFragment.get(position);
+        Fragment fragment = null;
+        if ((mListFragment != null) && (position < mListFragment.size())) {
+            fragment = mListFragment.get(position);
+        }
+        return fragment;
     }
 
     @Override
@@ -37,7 +45,6 @@ public class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-
         if ((mListTitles == null) || (mListTitles.size() <= 0) || (mListTitles.get(position) == null)) {
             return "";
         }
