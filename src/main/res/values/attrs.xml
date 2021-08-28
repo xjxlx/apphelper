@@ -89,7 +89,8 @@
 
     <!--Banner的指示器样式-->
     <declare-styleable name="BannerIndicator">
-        <attr name="bi_drawable" format="reference" />
+        <attr name="bi_selector_resource" format="reference" />
+        <attr name="bi_unselected_resource" format="reference" />
         <attr name="bi_interval" format="dimension" />
     </declare-styleable>
 

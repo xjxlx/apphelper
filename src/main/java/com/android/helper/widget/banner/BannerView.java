@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager.widget.ViewPager;
 
+import com.android.helper.common.CommonConstants;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 
 import org.jetbrains.annotations.NotNull;
@@ -91,28 +92,38 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         int size = getChildCount();
-        for (int i = 0; i < size; ++i) {
-            final View child = getChildAt(i);
-            if (child instanceof ViewGroup) {
-                ViewGroup group = (ViewGroup) child;
-                int childCount = group.getChildCount();
-                if (childCount > 0) {
-                    for (int j = 0; j < childCount; j++) {
-                        View childAt = group.getChildAt(j);
-                        if (childAt != null) {
-                            int measuredHeight = childAt.getMeasuredHeight();
-                            if (measuredHeight > maxHeight) {
-                                maxHeight = measuredHeight;
+        if (size > 0) {
+            // 有了数据，就去自己计算高度
+            for (int i = 0; i < size; ++i) {
+                final View child = getChildAt(i);
+                if (child instanceof ViewGroup) {
+                    ViewGroup group = (ViewGroup) child;
+                    int childCount = group.getChildCount();
+                    if (childCount > 0) {
+                        for (int j = 0; j < childCount; j++) {
+                            View childAt = group.getChildAt(j);
+                            if (childAt != null) {
+                                int measuredHeight = childAt.getMeasuredHeight();
+                                if (measuredHeight > maxHeight) {
+                                    maxHeight = measuredHeight;
+                                }
                             }
                         }
                     }
                 }
             }
+        } else {
+            // 假如还没有数据，就用指示的高度去预览
+            int mode = MeasureSpec.getMode(heightMeasureSpec);
+            // 如果是wrap_content模式的话，就显示高度为0
+            if (mode == MeasureSpec.AT_MOST) {
+                maxHeight = 0;
+            } else {
+                maxHeight = getDefaultSize(0, heightMeasureSpec);
+            }
         }
-
         int width = getDefaultSize(0, widthMeasureSpec);
         // 重新设置view的高度，避免预览的时候看不到视图
-
         setMeasuredDimension(width, maxHeight + getPaddingBottom() + getPaddingTop());
     }
 
@@ -161,6 +172,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             if (mListFragmentData != null && mListFragmentData.size() > 0) {
                 BannerFragmentAdapter fragmentAdapter = new BannerFragmentAdapter(manager, mListFragmentData);
                 setAdapter(fragmentAdapter);
+                // 重新测量宽高
+                invalidate();
             }
         } else if (mImageType == 1) {
             BannerAdapter bannerAdapter = new BannerAdapter(mListImageData);
@@ -168,16 +181,18 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 bannerAdapter.setBannerLoadListener(mLoadListener);
             }
             setAdapter(bannerAdapter);
+            // 重新测量宽高
+            invalidate();
         }
-
-        // 设置当前默认的位置
-        setCurrentItem(Integer.MAX_VALUE / 2);
-
-        // 开始轮询播放
-        sendMessage();
 
         // 添加指示器
         addIndicator(mIndicator);
+
+        // 设置当前默认的位置是在最中间的位置
+        setCurrentItem(CommonConstants.BANNER_LENGTH / mListImageData.size());
+
+        // 开始轮询播放
+        sendMessage();
     }
 
     /**
@@ -321,12 +336,12 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
     @Override
     public void onResume() {
-        sendMessage();
+        onStart();
     }
 
     @Override
     public void onPause() {
-
+        onStop();
     }
 
     @Override

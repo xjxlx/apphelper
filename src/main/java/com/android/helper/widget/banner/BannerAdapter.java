@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.android.helper.R;
+import com.android.helper.app.CommonConstant;
+import com.android.helper.common.CommonConstants;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +30,7 @@ public class BannerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return Integer.MAX_VALUE;
+        return CommonConstants.BANNER_LENGTH;
     }
 
     @Override

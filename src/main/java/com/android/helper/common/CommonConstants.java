@@ -24,4 +24,9 @@ public class CommonConstants {
      */
     public static final String FILE_LIFECYCLE_NAME = "保活";
 
+    /**
+     * Banner的轮播长度
+     */
+    public static final int BANNER_LENGTH = 100000;
+
 }
