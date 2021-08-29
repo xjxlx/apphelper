@@ -20,10 +20,13 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.android.helper.common.CommonConstants;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
+import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 自定义轮播图，可以实现自动滚动
@@ -34,8 +37,6 @@ import java.util.List;
  */
 public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private final int CODE_WHAT_LOOP = 1000;// 轮询的code值
-    private int maxHeight; // view的高度
-
     private int CODE_LOOP_INTERVAL;// 轮询的时间间隔，默认5s
     private boolean mAutoLoop = true;// 是否开启轮询，默认开启
     private List<Fragment> mListFragmentData;// fragment的集合
@@ -43,6 +44,11 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private int mImageType;// 1：普通的ImageView,2:fragment类型的
     private BannerLoadListener mLoadListener;// 加载本地图片页面的回调
     private BannerIndicator mIndicator;
+    private int mMaxWidth, mMaxHeight;
+    private final Map<Integer, Integer> mMapHeight = new HashMap<>(); // 用来存储每个item的高度
+    private float mStartX = 0;
+    private int mCurrent;// 当前的position
+    private BannerView mBannerView;
 
     public BannerView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -65,7 +71,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         mListImageData = builder.mListImageData;
         mLoadListener = builder.loadListener;
         mIndicator = builder.mIndicator;
-
         initView();
     }
 
@@ -90,46 +95,89 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int height = 0;
 
-        int size = getChildCount();
-        if (size > 0) {
-            // 有了数据，就去自己计算高度
-            for (int i = 0; i < size; ++i) {
-                final View child = getChildAt(i);
-                if (child instanceof ViewGroup) {
-                    ViewGroup group = (ViewGroup) child;
-                    int childCount = group.getChildCount();
-                    if (childCount > 0) {
-                        for (int j = 0; j < childCount; j++) {
-                            View childAt = group.getChildAt(j);
-                            if (childAt != null) {
-                                int measuredHeight = childAt.getMeasuredHeight();
-                                if (measuredHeight > maxHeight) {
-                                    maxHeight = measuredHeight;
+        if (isInEditMode()) { // 预览模式
+            // 假如还没有数据，就用指示的高度去预览
+            int mode = MeasureSpec.getMode(heightMeasureSpec);
+            // 如果是wrap_content模式的话，就显示高度为0
+            if (mode == MeasureSpec.AT_MOST) {
+                height = 0;
+            } else {
+                height = getDefaultSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
+            }
+        } else { // 正常模式
+
+            if (mImageType == 1) { // 图片模式
+                if ((mListImageData != null) && (mListImageData.size() > 0)) {
+                    int currentItem = getCurrentItem();
+                    // 求出当前item是第几列
+                    int position = currentItem % mListImageData.size();
+
+                    // 获取当前view的高度
+                    Integer heightForMap = mMapHeight.get(position);
+                    if ((heightForMap != null) && (heightForMap != 0)) {
+                        // 直接去赋值
+                        height = heightForMap;
+                    } else {
+                        // 获取当前的view高度
+                        View childAt = getChildAt(position);
+                        if (childAt != null) {
+                            if (childAt instanceof ViewGroup) {
+                                ViewGroup viewGroup = (ViewGroup) childAt;
+                                if (viewGroup.getChildCount() > 0) {
+                                    View child = viewGroup.getChildAt(0);
+                                    if (child != null) {
+                                        height = child.getMeasuredHeight();
+                                        //  存入的高度
+                                        mMapHeight.put(position, height);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-        } else {
-            // 假如还没有数据，就用指示的高度去预览
-            int mode = MeasureSpec.getMode(heightMeasureSpec);
-            // 如果是wrap_content模式的话，就显示高度为0
-            if (mode == MeasureSpec.AT_MOST) {
-                maxHeight = 0;
-            } else {
-                maxHeight = getDefaultSize(0, heightMeasureSpec);
+            } else if (mImageType == 2) { // fragment模式
+                if ((mListFragmentData != null) && (mListFragmentData.size() > 0)) {
+
+                    LogUtil.e("current:------>" + mCurrent);
+                    Fragment fragment = mListFragmentData.get(mCurrent);
+
+                    Integer integer = mMapHeight.get(mCurrent);
+                    if ((integer != null) && (integer > 0)) { // 如果是能直接拿到数据，就直接使用
+                        height = integer;
+                    } else { // 如果拿不到数据，就去自己获取
+                        if (fragment != null) {
+                            View view = fragment.getView();
+                            if (view != null) {
+                                // 先测量子View的大小
+                                int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST);//为子View准备测量的参数
+                                int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.AT_MOST);
+                                view.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+                                // 子View测量之后的宽和高
+                                height = view.getMeasuredHeight();
+                            }
+                            if (height != 0) {
+                                mMapHeight.put(mCurrent, height);
+                            }
+                        }
+                    }
+                }
             }
         }
-        int width = getDefaultSize(0, widthMeasureSpec);
-        // 重新设置view的高度，避免预览的时候看不到视图
-        setMeasuredDimension(width, maxHeight + getPaddingBottom() + getPaddingTop());
+        if (mMaxWidth == 0) {
+            mMaxWidth = getDefaultSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
+        }
+        mMaxHeight = height + getPaddingBottom() + getPaddingTop();
+
+        LogUtil.e("------>width:" + mMaxWidth + "  height:" + mMaxHeight);
+        setMeasuredDimension(1080, mMaxHeight);
     }
 
     private void initView() {
+        mBannerView = this;
         // 设置按下的手势操作
-        setTouch();
+        addPageListener();
     }
 
     /**
@@ -169,27 +217,31 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
      */
     private void setAdapter(FragmentManager manager) {
         if (mImageType == 2) {
-            if (mListFragmentData != null && mListFragmentData.size() > 0) {
+            if ((mListFragmentData != null) && (mListFragmentData.size() > 0)) {
                 BannerFragmentAdapter fragmentAdapter = new BannerFragmentAdapter(manager, mListFragmentData);
                 setAdapter(fragmentAdapter);
-                // 重新测量宽高
-                invalidate();
+
+                setOffscreenPageLimit(mListFragmentData.size());
+                // 添加指示器
+                addIndicator(mIndicator);
+                // 设置当前默认的位置是在最中间的位置
+                setCurrentItem(0);
             }
         } else if (mImageType == 1) {
-            BannerAdapter bannerAdapter = new BannerAdapter(mListImageData);
-            if (mLoadListener != null) {
-                bannerAdapter.setBannerLoadListener(mLoadListener);
+            if ((mListImageData != null) && (mListImageData.size() > 0)) {
+                BannerAdapter bannerAdapter = new BannerAdapter(mListImageData);
+                if (mLoadListener != null) {
+                    bannerAdapter.setBannerLoadListener(mLoadListener);
+                }
+                setAdapter(bannerAdapter);
+
+                setOffscreenPageLimit(mListImageData.size());
+                // 添加指示器
+                addIndicator(mIndicator);
+                // 设置当前默认的位置是在最中间的位置
+                setCurrentItem(CommonConstants.BANNER_LENGTH / mListImageData.size());
             }
-            setAdapter(bannerAdapter);
-            // 重新测量宽高
-            invalidate();
         }
-
-        // 添加指示器
-        addIndicator(mIndicator);
-
-        // 设置当前默认的位置是在最中间的位置
-        setCurrentItem(CommonConstants.BANNER_LENGTH / mListImageData.size());
 
         // 开始轮询播放
         sendMessage();
@@ -206,31 +258,89 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void setTouch() {
-        // 设置viewPager按下的时候，页面停止滑动
-        setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    //:在按下的时候停止发送Handler消息
-                    mHandler.removeMessages(CODE_WHAT_LOOP);
-                    mHandler.removeCallbacksAndMessages(null);
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    break;
-                case MotionEvent.ACTION_UP:
-                    //:在抬起的时候继续发送消息
-                    sendMessage();
-                    break;
+    private void addPageListener() {
+        addOnPageChangeListener(new OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
             }
-            return false;// 此处不能消费掉事件, 否则viewpager自带滑动效果无法响应
+
+            @Override
+            public void onPageSelected(int position) {
+                if (mIndicator != null) {
+                    mIndicator.onPageSelected(position);
+                }
+
+                if (mImageType == 2) {
+                    mCurrent = position;
+                } else if (mImageType == 1) {
+                    mCurrent = position % mListImageData.size();
+                }
+                LogUtil.e("当前选中的position：" + mCurrent);
+                // 重新测量当前view的宽高
+                if (mBannerView != null) {
+                    mBannerView.requestLayout();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
         });
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        // 向左滑动
+        boolean isLeft = false;
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                //:在按下的时候停止发送Handler消息
+                onStop();
+                mStartX = event.getX();
+                return true;
+
+            case MotionEvent.ACTION_MOVE:
+                onStop();
+                float endX = event.getX();
+                float dx = endX - mStartX;
+
+                if (dx > 0) {
+                    LogUtil.e("向右滑动 dx :" + dx);
+                    isLeft = false;
+                } else {
+                    LogUtil.e("向左滑动 dx: " + dx);
+                    isLeft = true;
+                }
+                mStartX = endX;
+
+                if (mImageType == 2) {
+                    if (isLeft) {    // 向左滑动
+                        if (mCurrent == (mListFragmentData.size() - 1)) {
+                            setCurrentItem(0);
+                        }
+                    } else {  // 向右滑动
+                        if (mCurrent == 0) {
+                            setCurrentItem(mListFragmentData.size() - 1);
+                        }
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                //:在抬起的时候继续发送消息
+                sendMessage();
+                break;
+        }
+        return super.onTouchEvent(event);// 此处不能消费掉事件, 否则viewpager自带滑动效果无法响应
     }
 
     /**
      * builder的设计模式
      */
     public static class Builder {
-        private int mInterval = 5 * 1000;// 轮询的时间间隔，默认5s
+        private int mInterval = 3 * 1000;// 轮询的时间间隔，默认5s
         private boolean mAutoLoop = true;// 是否开启轮询，默认开启
         private List<Fragment> mListFragmentData;// fragment的集合
         private List<Object> mListImageData;// 图片的集合
@@ -316,8 +426,17 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
                 //:获取当前的页面
                 int currentItem = getCurrentItem();
-                //:自动循环到下一个页面
-                setCurrentItem(++currentItem);
+                if (mImageType == 1) {
+                    //:自动循环到下一个页面
+                    setCurrentItem(++currentItem);
+                } else if (mImageType == 2) {
+                    if (currentItem == (mListFragmentData.size() - 1)) {
+                        currentItem = 0;
+                    } else {
+                        ++currentItem;
+                    }
+                    setCurrentItem(currentItem);
+                }
                 // 重新发送
                 BannerView.this.sendMessage();
             }

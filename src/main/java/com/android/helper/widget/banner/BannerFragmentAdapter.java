@@ -5,8 +5,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.android.helper.base.BaseFragmentPagerAdapter;
-import com.android.helper.common.CommonConstants;
-import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -24,18 +22,20 @@ public class BannerFragmentAdapter extends BaseFragmentPagerAdapter {
     @Override
     public int getCount() {
         if ((mListFragment != null) && (mListFragment.size() > 0)) {
-            return CommonConstants.BANNER_LENGTH;
+            return mListFragment.size();
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     @NonNull
     @NotNull
     @Override
     public Fragment getItem(int position) {
-        position = position % mListFragment.size();
-        LogUtil.e("position:" + position);
-        Fragment fragment = mListFragment.get(position);
-        return fragment;
+        if (mListFragment != null && (mListFragment.size() > 0)) {
+            // position = position % mListFragment.size();
+            return mListFragment.get(position);
+        }
+        return null;
     }
 }

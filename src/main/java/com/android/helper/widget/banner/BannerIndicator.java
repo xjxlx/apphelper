@@ -20,7 +20,7 @@ public class BannerIndicator extends LinearLayout {
     private float mInterval;
     private int mSelectorResource, mUnSelectedResource;
     private int mCurrentPosition;// 上一次点击的item位置
-    private static int mMaxWidth, mMaxHeight;
+    private int mMaxWidth, mMaxHeight;
     private BannerView mBannerView;
 
     public BannerIndicator(Context context) {
@@ -60,9 +60,9 @@ public class BannerIndicator extends LinearLayout {
             if (mode == MeasureSpec.AT_MOST) {
                 mMaxHeight = 0;
             } else {
-                mMaxHeight = MeasureSpec.getSize(heightMeasureSpec);
+                mMaxHeight = getDefaultSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
             }
-            mMaxWidth = MeasureSpec.getSize(widthMeasureSpec);
+            mMaxWidth = getDefaultSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
             setMeasuredDimension(mMaxWidth, mMaxHeight);
         } else {
             // 如果宽高为0，则重新去测量一遍
@@ -105,12 +105,13 @@ public class BannerIndicator extends LinearLayout {
             }
             // 设置属性
             imageView.setLayoutParams(params);
-            if (mUnSelectedResource != 0) {
-                imageView.setImageResource(mUnSelectedResource);
-            }
             //:3:把view添加到viewGroup中
             addView(imageView);
         }
+
+        // 默认的选中
+        onPageSelected(0);
+
         // 添加完指示器，就立刻去重新测量布局
         this.invalidate();
     }
