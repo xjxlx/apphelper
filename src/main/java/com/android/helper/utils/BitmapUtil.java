@@ -228,8 +228,9 @@ public class BitmapUtil {
         }
         return bitmap;
     }
+
     /**
-     * @param bitmap      原来的bitmap
+     * @param bitmap       原来的bitmap
      * @param targetHeight 指定bitmap的宽度
      * @return 根据一个原有的bitmap，缩放其高度，让宽度也跟着高度的缩放而缩放，生成一个新的宽度，这种情况是为了避免输入随意的数字，导致图片缩放的时候回变形
      */
@@ -260,7 +261,6 @@ public class BitmapUtil {
      * @param callBackListener 返回接口，msg: 开始：start，成功： success，失败：error:
      */
     public static void getBitmapForService(Context context, final String path, CallBackListener<Bitmap> callBackListener) {
-
         Flowable.create(new FlowableOnSubscribe<Bitmap>() {
             @Override
             public void subscribe(@NonNull FlowableEmitter<Bitmap> emitter) throws Exception {
@@ -305,6 +305,64 @@ public class BitmapUtil {
 
                     @Override
                     public void onNext(Bitmap bitmap) {
+                        if (callBackListener != null) {
+                            callBackListener.onBack(true, STATUS_SUCCESS, bitmap);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        if (callBackListener != null) {
+                            callBackListener.onBack(false, STATUS_ERROR + t.getMessage(), null);
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    /**
+     * @param context          上下文
+     * @param path             图片路径
+     * @param callBackListener 返回接口，msg: 开始：start，成功： success，失败：error:
+     */
+    public static void getBitmapDrawableForService(Context context, final String path, CallBackListener<BitmapDrawable> callBackListener) {
+        Flowable.create(new FlowableOnSubscribe<BitmapDrawable>() {
+            @Override
+            public void subscribe(@NonNull FlowableEmitter<BitmapDrawable> emitter) throws Exception {
+                Glide.with(context)
+                        .load(path)
+                        .into(new CustomTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@androidx.annotation.NonNull @NotNull Drawable resource, @Nullable @org.jetbrains.annotations.Nullable Transition<? super Drawable> transition) {
+                                if (resource instanceof BitmapDrawable) {
+                                    BitmapDrawable bitmapDrawable = (BitmapDrawable) resource;
+                                    emitter.onNext(bitmapDrawable);
+                                }
+                            }
+
+                            @Override
+                            public void onLoadCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
+
+                            }
+                        });
+            }
+        }, BackpressureStrategy.LATEST)
+                .compose(RxUtil.getScheduler())
+                .subscribe(new DisposableSubscriber<BitmapDrawable>() {
+                    @Override
+                    protected void onStart() {
+                        super.onStart();
+                        if (callBackListener != null) {
+                            callBackListener.onBack(false, STATUS_START, null);
+                        }
+                    }
+
+                    @Override
+                    public void onNext(BitmapDrawable bitmap) {
                         if (callBackListener != null) {
                             callBackListener.onBack(true, STATUS_SUCCESS, bitmap);
                         }
