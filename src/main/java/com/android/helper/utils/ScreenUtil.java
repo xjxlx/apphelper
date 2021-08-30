@@ -15,7 +15,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 
-import com.android.helper.app.CommonConstant;
+import com.android.helper.common.CommonConstants;
 
 import java.lang.reflect.Method;
 
@@ -97,15 +97,15 @@ public class ScreenUtil {
             statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
         }
         if (statusBarHeight > 0) {
-            // 把状态栏的高度存入到sp中
-            SpUtil.putInt(CommonConstant.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
+            // 把状态栏高度存入到sp中
+            SpUtil.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
             LogUtil.e("获取状态栏的高度为：" + statusBarHeight);
         } else {
             LogUtil.e("拿不到状态栏的高度，走的是默认25dp的方法");
             float v1 = ConvertUtil.toDp(25);
             // 四舍五入取整数
             int round = Math.round(v1);
-            SpUtil.putInt(CommonConstant.KEY_STATUS_BAR_HEIGHT, round);
+            SpUtil.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, round);
         }
         return statusBarHeight;
     }
