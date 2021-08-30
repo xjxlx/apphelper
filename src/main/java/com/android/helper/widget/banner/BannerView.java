@@ -155,9 +155,9 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                             View view = fragment.getView();
                             if (view != null) {
                                 // 先测量子View的大小
-                                int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST);//为子View准备测量的参数
-                                int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.AT_MOST);
-                                view.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+                                // int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST);//为子View准备测量的参数
+                                // int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.AT_MOST);
+                                view.measure(widthMeasureSpec, heightMeasureSpec);
                                 // 子View测量之后的宽和高
                                 height = view.getMeasuredHeight();
                             }
@@ -175,7 +175,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         mMaxHeight = height + getPaddingBottom() + getPaddingTop();
 
         LogUtil.e("------>width:" + mMaxWidth + "  height:" + mMaxHeight);
-        setMeasuredDimension(1080, mMaxHeight);
+        setMeasuredDimension(mMaxWidth, mMaxHeight);
     }
 
     private void initView() {
@@ -189,14 +189,15 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
      *
      * @param fragment fragment类型的上下文
      */
-    public void start(Fragment fragment) {
+    public void start(Fragment fragment, FragmentManager manager) {
         // 感知fragment的生命周期
         if (fragment != null) {
             Lifecycle lifecycle = fragment.getLifecycle();
             lifecycle.addObserver(this);
         }
-        FragmentManager manager = fragment.getFragmentManager();
-        setAdapter(manager);
+        if (manager != null) {
+            setAdapter(manager);
+        }
     }
 
     /**
