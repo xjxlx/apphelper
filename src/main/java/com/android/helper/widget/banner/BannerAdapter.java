@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.android.helper.R;
-import com.android.helper.app.CommonConstant;
 import com.android.helper.common.CommonConstants;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +22,7 @@ public class BannerAdapter extends PagerAdapter {
 
     private List<Object> mListData;
     private BannerLoadListener mLoadListener;
+    private BannerItemClickListener mItemClickListener;// 点击事件
 
     public BannerAdapter(List<Object> listData) {
         mListData = listData;
@@ -54,6 +54,14 @@ public class BannerAdapter extends PagerAdapter {
             if (mLoadListener != null) {
                 mLoadListener.onLoadView(imageView, object);
             }
+
+            int finalPosition = position;
+            view.setOnClickListener(v -> {
+                if (mItemClickListener != null) {
+                    mItemClickListener.onItemClick(null, imageView, finalPosition, object);
+                }
+            });
+
             container.addView(view);
         }
         return view;
@@ -75,6 +83,10 @@ public class BannerAdapter extends PagerAdapter {
      */
     public void setBannerLoadListener(BannerLoadListener loadListener) {
         this.mLoadListener = loadListener;
+    }
+
+    public void setItemClickListener(BannerItemClickListener itemClickListener) {
+        this.mItemClickListener = itemClickListener;
     }
 
 }

@@ -43,12 +43,14 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private List<Object> mListImageData;// 图片的集合
     private int mImageType;// 1：普通的ImageView,2:fragment类型的
     private BannerLoadListener mLoadListener;// 加载本地图片页面的回调
+    private BannerItemClickListener mBannerItemClickListener;// 点击事件的处理
     private BannerIndicator mIndicator;
     private int mMaxWidth, mMaxHeight;
     private final Map<Integer, Integer> mMapHeight = new HashMap<>(); // 用来存储每个item的高度
     private float mStartX = 0;
     private int mCurrent;// 当前的position
     private BannerView mBannerView;
+    private boolean isLast = true; //滑动是否可用
 
     public BannerView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -71,6 +73,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         mListImageData = builder.mListImageData;
         mLoadListener = builder.loadListener;
         mIndicator = builder.mIndicator;
+        mBannerItemClickListener = builder.mBannerItemClickListener;
         initView();
     }
 
@@ -87,6 +90,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         mListImageData = builder.mListImageData;
         mLoadListener = builder.loadListener;
         mIndicator = builder.mIndicator;
+        mBannerItemClickListener = builder.mBannerItemClickListener;
 
         initView();
         return this;
@@ -233,6 +237,9 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 if (mLoadListener != null) {
                     bannerAdapter.setBannerLoadListener(mLoadListener);
                 }
+                if (mBannerItemClickListener != null) {
+                    bannerAdapter.setItemClickListener(mBannerItemClickListener);
+                }
                 setAdapter(bannerAdapter);
 
                 setOffscreenPageLimit(mListImageData.size());
@@ -267,6 +274,19 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
             @Override
             public void onPageSelected(int position) {
+                // 处理点击事件
+                if (mImageType == 2) {
+                    Fragment fragment = mListFragmentData.get(position);
+                    View view = fragment.getView();
+                    if (view != null) {
+                        view.setOnClickListener(v -> {
+                            if (mBannerItemClickListener != null) {
+                                mBannerItemClickListener.onItemClick(fragment, view, position, null);
+                            }
+                        });
+                    }
+                }
+
                 if (mIndicator != null) {
                     mIndicator.onPageSelected(position);
                 }
@@ -285,7 +305,23 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                if (mImageType == 2) {
+                    if (state == ViewPager.SCROLL_STATE_SETTLING) { // 正在定位的时候
+                        isLast = false;
+                    } else if (state == ViewPager.SCROLL_STATE_IDLE && isLast) { // viewPager 停止滑动了
+                        onStop();
+                        //此处为你需要的情况，再加入当前页码判断可知道是第一页还是最后一页
+                        if (mListFragmentData.size() != 0 && mCurrent == (mListFragmentData.size() - 1)) { // 最后一页
+                            setCurrentItem(0);
+                            LogUtil.e("滑动到第一页");
+                        } else if (mListFragmentData.size() != 0 && mCurrent == 0) {// 第一页
+                            setCurrentItem(mListFragmentData.size() - 1);
+                            LogUtil.e("滑动到最后一页");
+                        }
+                    } else if (state == ViewPager.SCROLL_STATE_DRAGGING) {// 用户拖动的时候
+                        isLast = true;
+                    }
+                }
             }
         });
     }
@@ -294,39 +330,14 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // 向左滑动
-        boolean isLeft = false;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 //:在按下的时候停止发送Handler消息
                 onStop();
-                mStartX = event.getX();
                 return true;
 
             case MotionEvent.ACTION_MOVE:
                 onStop();
-                float endX = event.getX();
-                float dx = endX - mStartX;
-
-                if (dx > 0) {
-                    LogUtil.e("向右滑动 dx :" + dx);
-                    isLeft = false;
-                } else {
-                    LogUtil.e("向左滑动 dx: " + dx);
-                    isLeft = true;
-                }
-                mStartX = endX;
-
-                if (mImageType == 2) {
-                    if (isLeft) {    // 向左滑动
-                        if (mCurrent == (mListFragmentData.size() - 1)) {
-                            setCurrentItem(0);
-                        }
-                    } else {  // 向右滑动
-                        if (mCurrent == 0) {
-                            setCurrentItem(mListFragmentData.size() - 1);
-                        }
-                    }
-                }
                 break;
             case MotionEvent.ACTION_UP:
                 //:在抬起的时候继续发送消息
@@ -347,6 +358,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         private int mImageType;// 1：普通的ImageView,2:fragment类型的
         private BannerLoadListener loadListener;// 加载本地图片页面的回调
         private BannerIndicator mIndicator; // 加载指示器
+        private BannerItemClickListener mBannerItemClickListener;// 图片点击事件的处理
 
         /**
          * @param interval 轮询的时间间隔，默认是5s
@@ -379,10 +391,18 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         }
 
         /**
-         * 加载的时候,自己去设置图片，
+         * 此方法，只适用于加载单独的图片去使用，因为有些图片可能要进行其他处理，例如圆角什么的，所以让使用者自己去加载处理。
          */
         public Builder setBannerLoadListener(BannerLoadListener loadListener) {
             this.loadListener = loadListener;
+            return this;
+        }
+
+        /**
+         * 图片类型点击事件的处理
+         */
+        public Builder setItemClickListener(BannerItemClickListener onItemClickListener) {
+            this.mBannerItemClickListener = onItemClickListener;
             return this;
         }
 

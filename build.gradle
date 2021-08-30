@@ -84,6 +84,7 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     api 'com.github.LuckSiege.PictureSelector:picture_library:v2.6.0' // 图片选择库
     api 'com.contrarywind:Android-PickerView:4.1.9' // 日历选择器
+    api 'androidx.viewpager2:viewpager2:1.0.0'
 
     // room数据库的依赖
     implementation configDependencies["room-runtime"]
