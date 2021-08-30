@@ -33,7 +33,7 @@ import java.util.Map;
  * 使用方式：
  * 一：如果是xml创建的view，那么需要走两步
  * 1：调用 {@link BannerView# } 创建一个Builder,用来设置各种数据
- * 2：调用{@link BannerView#start(Activity)}方法去开启轮播
+ * 2：调用{@link BannerView#show(Activity)}方法去开启轮播
  */
 public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private final int CODE_WHAT_LOOP = 1000;// 轮询的code值
