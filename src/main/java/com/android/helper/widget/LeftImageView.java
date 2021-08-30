@@ -60,7 +60,7 @@ public class LeftImageView extends androidx.appcompat.widget.AppCompatImageView 
         Rect des = new Rect(0, 0, measuredWidth, measuredHeight);
 
         // 缩放bitmap
-        Bitmap bitmap = BitmapUtil.getBitmapForMatrixScale(BitmapUtil.getBitmapForImageView(this), measuredWidth, measuredHeight);
+        Bitmap bitmap = BitmapUtil.getBitmapForScale(BitmapUtil.getBitmapForImageView(this), measuredWidth, measuredHeight);
 
         if (bitmap != null) {
             canvas.drawBitmap(bitmap, src, des, null);

@@ -56,7 +56,7 @@ public class RightImageView extends androidx.appcompat.widget.AppCompatImageView
 
         Rect src = new Rect(measuredWidth / 2, 0, measuredWidth, measuredHeight);
         Rect des = new Rect(0, 0, measuredWidth / 2, measuredHeight);
-        Bitmap bitmap = BitmapUtil.getBitmapForMatrixScale(BitmapUtil.getBitmapForImageView(this), measuredWidth, measuredHeight);
+        Bitmap bitmap = BitmapUtil.getBitmapForScale(BitmapUtil.getBitmapForImageView(this), measuredWidth, measuredHeight);
 
         if (bitmap != null) {
             canvas.drawBitmap(bitmap, src, des, null);
