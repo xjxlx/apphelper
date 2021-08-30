@@ -32,12 +32,12 @@ import java.util.Map;
  * 自定义轮播图，可以实现自动滚动
  * 使用方式：
  * 一：如果是xml创建的view，那么需要走两步
- * 1：调用 {@link BannerView#createBuild(Builder)} 创建一个Builder,用来设置各种数据
+ * 1：调用 {@link BannerView# } 创建一个Builder,用来设置各种数据
  * 2：调用{@link BannerView#start(Activity)}方法去开启轮播
  */
 public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private final int CODE_WHAT_LOOP = 1000;// 轮询的code值
-    private int CODE_LOOP_INTERVAL;// 轮询的时间间隔，默认5s
+    private int CODE_LOOP_INTERVAL = 3 * 1000;// 轮询的时间间隔，默认5s
     private boolean mAutoLoop = true;// 是否开启轮询，默认开启
     private List<Fragment> mListFragmentData;// fragment的集合
     private List<Object> mListImageData;// 图片的集合
@@ -47,7 +47,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private BannerIndicator mIndicator;
     private int mMaxWidth, mMaxHeight;
     private final Map<Integer, Integer> mMapHeight = new HashMap<>(); // 用来存储每个item的高度
-    private float mStartX = 0;
     private int mCurrent;// 当前的position
     private BannerView mBannerView;
     private boolean isLast = true; //滑动是否可用
@@ -55,45 +54,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     public BannerView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs) {
         super(context, attrs);
         initView();
-    }
-
-    /**
-     * 如果是new出来的类型，则必须使用这个对象
-     *
-     * @param context 上下文
-     * @param builder 构建的build对象
-     */
-    public BannerView(@NonNull @NotNull Context context, Builder builder) {
-        super(context);
-        mImageType = builder.mImageType;
-        mAutoLoop = builder.mAutoLoop;
-        CODE_LOOP_INTERVAL = builder.mInterval;
-
-        mListFragmentData = builder.mListFragmentData;
-        mListImageData = builder.mListImageData;
-        mLoadListener = builder.loadListener;
-        mIndicator = builder.mIndicator;
-        mBannerItemClickListener = builder.mBannerItemClickListener;
-        initView();
-    }
-
-    /**
-     * @param builder 参数依赖的builder
-     * @return 如果是一个xml形式的引用，则必须设置一个builder
-     */
-    public BannerView createBuild(Builder builder) {
-        mImageType = builder.mImageType;
-        mAutoLoop = builder.mAutoLoop;
-        CODE_LOOP_INTERVAL = builder.mInterval;
-
-        mListFragmentData = builder.mListFragmentData;
-        mListImageData = builder.mListImageData;
-        mLoadListener = builder.loadListener;
-        mIndicator = builder.mIndicator;
-        mBannerItemClickListener = builder.mBannerItemClickListener;
-
-        initView();
-        return this;
     }
 
     @Override
@@ -189,7 +149,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
      *
      * @param fragment fragment类型的上下文
      */
-    public void start(Fragment fragment, FragmentManager manager) {
+    public void show(Fragment fragment, FragmentManager manager) {
         // 感知fragment的生命周期
         if (fragment != null) {
             Lifecycle lifecycle = fragment.getLifecycle();
@@ -205,7 +165,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
      *
      * @param activity activity 类型的上下文
      */
-    public void start(Activity activity) {
+    public void show(Activity activity) {
         if (activity instanceof FragmentActivity) {
             FragmentActivity fragmentActivity = (FragmentActivity) activity;
             Lifecycle lifecycle = fragmentActivity.getLifecycle();
@@ -351,88 +311,77 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     /**
      * builder的设计模式
      */
-    public static class Builder {
-        private int mInterval = 3 * 1000;// 轮询的时间间隔，默认5s
-        private boolean mAutoLoop = true;// 是否开启轮询，默认开启
-        private List<Fragment> mListFragmentData;// fragment的集合
-        private List<Object> mListImageData;// 图片的集合
-        private int mImageType;// 1：普通的ImageView,2:fragment类型的
-        private BannerLoadListener loadListener;// 加载本地图片页面的回调
-        private BannerIndicator mIndicator; // 加载指示器
-        private BannerItemClickListener mBannerItemClickListener;// 图片点击事件的处理
+//    public static class Builder {
+//        private int mInterval = 3 * 1000;// 轮询的时间间隔，默认5s
+//        private boolean mAutoLoop = true;// 是否开启轮询，默认开启
+//        private List<Fragment> mListFragmentData;// fragment的集合
+//        private List<Object> mListImageData;// 图片的集合
+//        private int mImageType;// 1：普通的ImageView,2:fragment类型的
+//        private BannerLoadListener loadListener;// 加载本地图片页面的回调
+//        private BannerIndicator mIndicator; // 加载指示器
+//        private BannerItemClickListener mBannerItemClickListener;// 图片点击事件的处理
+//
+//    }
 
-        /**
-         * @param interval 轮询的时间间隔，默认是5s
-         */
-        public Builder setInterval(int interval) {
-            mInterval = interval;
-            return this;
-        }
-
-        /**
-         * 是否开启轮询
-         *
-         * @param autoLoop true:自动轮询，false:不轮询
-         */
-        public Builder autoLoop(boolean autoLoop) {
-            this.mAutoLoop = autoLoop;
-            return this;
-        }
-
-        public Builder setImageData(List<Object> listImageData) {
-            mListImageData = listImageData;
-            mImageType = 1;
-            return this;
-        }
-
-        public Builder setFragmentData(List<Fragment> fragmentList) {
-            this.mListFragmentData = fragmentList;
-            mImageType = 2;
-            return this;
-        }
-
-        /**
-         * 此方法，只适用于加载单独的图片去使用，因为有些图片可能要进行其他处理，例如圆角什么的，所以让使用者自己去加载处理。
-         */
-        public Builder setBannerLoadListener(BannerLoadListener loadListener) {
-            this.loadListener = loadListener;
-            return this;
-        }
-
-        /**
-         * 图片类型点击事件的处理
-         */
-        public Builder setItemClickListener(BannerItemClickListener onItemClickListener) {
-            this.mBannerItemClickListener = onItemClickListener;
-            return this;
-        }
-
-        /**
-         * @return 设置指示器
-         */
-        public Builder addIndicator(BannerIndicator bannerIndicator) {
-            this.mIndicator = bannerIndicator;
-            return this;
-        }
-
-        public BannerView build(Context context) {
-            return new BannerView(context, this);
-        }
+    /**
+     * @param interval 轮询的时间间隔，默认是5s
+     */
+    public BannerView setInterval(int interval) {
+        CODE_LOOP_INTERVAL = interval;
+        return this;
     }
 
     /**
-     * 添加指示器
+     * 是否开启轮询
      *
-     * @param indicator 指示器控件
+     * @param autoLoop true:自动轮询，false:不轮询
      */
-    private void addIndicator(BannerIndicator indicator) {
-        if (indicator != null) {
+    public BannerView autoLoop(boolean autoLoop) {
+        this.mAutoLoop = autoLoop;
+        return this;
+    }
+
+    public BannerView setImageData(List<Object> listImageData) {
+        mListImageData = listImageData;
+        mImageType = 1;
+        return this;
+    }
+
+    public BannerView setFragmentData(List<Fragment> fragmentList) {
+        this.mListFragmentData = fragmentList;
+        mImageType = 2;
+        return this;
+    }
+
+    /**
+     * 此方法，只适用于加载单独的图片去使用，因为有些图片可能要进行其他处理，例如圆角什么的，所以让使用者自己去加载处理。
+     */
+    public BannerView setBannerLoadListener(BannerLoadListener loadListener) {
+        this.mLoadListener = loadListener;
+        return this;
+    }
+
+    /**
+     * 图片类型点击事件的处理
+     */
+    public BannerView setItemClickListener(BannerItemClickListener onItemClickListener) {
+        this.mBannerItemClickListener = onItemClickListener;
+        return this;
+    }
+
+    /**
+     * @return 设置指示器
+     */
+    public BannerView addIndicator(BannerIndicator bannerIndicator) {
+        this.mIndicator = bannerIndicator;
+        if (bannerIndicator != null) {
             if (mImageType == 1) {
-                indicator.setViewPager(this, mListImageData.size());
+                bannerIndicator.setViewPager(this, mListImageData.size());
             } else if (mImageType == 2) {
-                indicator.setViewPager(this, mListFragmentData.size());
+                bannerIndicator.setViewPager(this, mListFragmentData.size());
             }
         }
+        return this;
     }
 
     @SuppressLint("HandlerLeak")
