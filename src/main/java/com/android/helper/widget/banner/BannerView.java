@@ -289,31 +289,28 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         });
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
         boolean isLeft = false;
-        switch (event.getAction()) {
+        switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                //:在按下的时候停止发送Handler消息
+                mStartX = ev.getX();
                 onStop();
-                mStartX = event.getX();
-                return true;
+                break;
 
             case MotionEvent.ACTION_MOVE:
                 onStop();
-                float endX = event.getX();
+                float endX = ev.getX();
+
                 float dx = endX - mStartX;
 
                 if (dx > 0) {
                     LogUtil.e("向右滑动 dx :" + dx);
-                    isLeft = false;
                 } else {
                     LogUtil.e("向左滑动 dx: " + dx);
                     isLeft = true;
                 }
                 mStartX = endX;
-
                 if (mImageType == 2) {
                     if (isLeft) {    // 向左滑动
                         if (mCurrent == (mListFragmentData.size() - 1)) {
@@ -337,7 +334,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 sendMessage();
                 break;
         }
-        return super.onTouchEvent(event);// 此处不能消费掉事件, 否则viewpager自带滑动效果无法响应
+
+        return super.onInterceptTouchEvent(ev);
     }
 
     /**
@@ -417,11 +415,11 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     }
 
     /**
-     * 父类是否拦截当前view的动作
+     * 设置父类不拦截当前的view动作
      *
      * @param parentIntercept true:不拦截，false:拦截，默认是拦截
      */
-    public BannerView setParentIntercept(boolean parentIntercept) {
+    public BannerView setParentNoIntercept(boolean parentIntercept) {
         mIsParentIntercept = parentIntercept;
         return this;
     }
