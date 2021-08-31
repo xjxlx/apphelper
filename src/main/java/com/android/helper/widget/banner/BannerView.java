@@ -50,6 +50,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private int mCurrent;// 当前的position
     private BannerView mBannerView;
     private boolean isLast = true; //滑动是否可用
+    private boolean mIsParentIntercept = false;// 父类是否拦截的标记
+    private float mStartX; // 开始滑动的x轴位置
 
     public BannerView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -290,15 +292,45 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // 向左滑动
+        boolean isLeft = false;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 //:在按下的时候停止发送Handler消息
                 onStop();
+                mStartX = event.getX();
                 return true;
 
             case MotionEvent.ACTION_MOVE:
                 onStop();
+                float endX = event.getX();
+                float dx = endX - mStartX;
+
+                if (dx > 0) {
+                    LogUtil.e("向右滑动 dx :" + dx);
+                    isLeft = false;
+                } else {
+                    LogUtil.e("向左滑动 dx: " + dx);
+                    isLeft = true;
+                }
+                mStartX = endX;
+
+                if (mImageType == 2) {
+                    if (isLeft) {    // 向左滑动
+                        if (mCurrent == (mListFragmentData.size() - 1)) {
+                            if (mIsParentIntercept) {
+                                // 请求父类不要拦截当前的事件
+                                getParent().requestDisallowInterceptTouchEvent(true);
+                            }
+                        }
+                    } else {  // 向右滑动
+                        if (mCurrent == 0) {
+                            if (mIsParentIntercept) {
+                                // 请求父类不要拦截当前的事件
+                                getParent().requestDisallowInterceptTouchEvent(true);
+                            }
+                        }
+                    }
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 //:在抬起的时候继续发送消息
@@ -381,6 +413,16 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 bannerIndicator.setViewPager(this, mListFragmentData.size());
             }
         }
+        return this;
+    }
+
+    /**
+     * 父类是否拦截当前view的动作
+     *
+     * @param parentIntercept true:不拦截，false:拦截，默认是拦截
+     */
+    public BannerView setParentIntercept(boolean parentIntercept) {
+        mIsParentIntercept = parentIntercept;
         return this;
     }
 
