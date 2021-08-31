@@ -61,16 +61,15 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int height = 0;
 
         if (isInEditMode()) { // 预览模式
             // 假如还没有数据，就用指示的高度去预览
             int mode = MeasureSpec.getMode(heightMeasureSpec);
             // 如果是wrap_content模式的话，就显示高度为0
             if (mode == MeasureSpec.AT_MOST) {
-                height = 0;
+                mMaxHeight = 0;
             } else {
-                height = getDefaultSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
+                mMaxHeight = getDefaultSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
             }
         } else { // 正常模式
 
@@ -84,7 +83,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                     Integer heightForMap = mMapHeight.get(position);
                     if ((heightForMap != null) && (heightForMap != 0)) {
                         // 直接去赋值
-                        height = heightForMap;
+                        mMaxHeight = heightForMap;
                     } else {
                         // 获取当前的view高度
                         View childAt = getChildAt(position);
@@ -94,9 +93,11 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                                 if (viewGroup.getChildCount() > 0) {
                                     View child = viewGroup.getChildAt(0);
                                     if (child != null) {
-                                        height = child.getMeasuredHeight();
+                                        int measuredHeight = child.getMeasuredHeight();
                                         //  存入的高度
-                                        mMapHeight.put(position, height);
+                                        if (measuredHeight > 0) {
+                                            mMapHeight.put(position, measuredHeight);
+                                        }
                                     }
                                 }
                             }
@@ -105,26 +106,18 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 }
             } else if (mImageType == 2) { // fragment模式
                 if ((mListFragmentData != null) && (mListFragmentData.size() > 0)) {
-
-                    LogUtil.e("current:------>" + mCurrent);
+                    // fragment类型的数据，不参与数据的保存操作，因为页面的复杂性，肯定会导致测量不精确，而且fragment数据比较少，多次测量也还可以承受
                     Fragment fragment = mListFragmentData.get(mCurrent);
-
-                    Integer integer = mMapHeight.get(mCurrent);
-                    if ((integer != null) && (integer > 0)) { // 如果是能直接拿到数据，就直接使用
-                        height = integer;
-                    } else { // 如果拿不到数据，就去自己获取
-                        if (fragment != null) {
-                            View view = fragment.getView();
-                            if (view != null) {
-                                // 先测量子View的大小
-                                // int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST);//为子View准备测量的参数
-                                // int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.AT_MOST);
-                                view.measure(widthMeasureSpec, heightMeasureSpec);
-                                // 子View测量之后的宽和高
-                                height = view.getMeasuredHeight();
-                            }
-                            if (height != 0) {
-                                mMapHeight.put(mCurrent, height);
+                    if (fragment != null) {
+                        View view = fragment.getView();
+                        if (view != null) {
+                            // 先测量子View的大小
+                            view.measure(widthMeasureSpec, heightMeasureSpec);
+                            // 子View测量之后的宽和高
+                            int measuredHeight = view.getMeasuredHeight();
+                            if (measuredHeight > 0) {
+                                mMaxHeight = measuredHeight + getPaddingBottom() + getPaddingTop();
+                                mMapHeight.put(mCurrent, mMaxHeight);
                             }
                         }
                     }
@@ -134,7 +127,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         if (mMaxWidth == 0) {
             mMaxWidth = getDefaultSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
         }
-        mMaxHeight = height + getPaddingBottom() + getPaddingTop();
 
         LogUtil.e("------>width:" + mMaxWidth + "  height:" + mMaxHeight);
         setMeasuredDimension(mMaxWidth, mMaxHeight);
