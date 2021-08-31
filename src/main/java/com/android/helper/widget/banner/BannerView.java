@@ -182,7 +182,9 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
                 setOffscreenPageLimit(mListFragmentData.size());
                 // 添加指示器
-                addIndicator(mIndicator);
+                if (mIndicator != null) {
+                    mIndicator.setViewPager(this, mListFragmentData.size());
+                }
                 // 设置当前默认的位置是在最中间的位置
                 setCurrentItem(0);
             }
@@ -199,6 +201,10 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
                 setOffscreenPageLimit(mListImageData.size());
                 // 添加指示器
+                if (mIndicator != null) {
+                    mIndicator.setViewPager(this, mListImageData.size());
+                }
+
                 addIndicator(mIndicator);
                 // 设置当前默认的位置是在最中间的位置
                 setCurrentItem(CommonConstants.BANNER_LENGTH / mListImageData.size());
@@ -396,13 +402,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
      */
     public BannerView addIndicator(BannerIndicator bannerIndicator) {
         this.mIndicator = bannerIndicator;
-        if (bannerIndicator != null) {
-            if (mImageType == 1) {
-                bannerIndicator.setViewPager(this, mListImageData.size());
-            } else if (mImageType == 2) {
-                bannerIndicator.setViewPager(this, mListFragmentData.size());
-            }
-        }
         return this;
     }
 
