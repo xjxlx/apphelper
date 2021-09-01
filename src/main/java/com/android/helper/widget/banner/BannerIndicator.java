@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -60,9 +61,9 @@ public class BannerIndicator extends LinearLayout {
             if (mode == MeasureSpec.AT_MOST) {
                 mMaxHeight = 0;
             } else {
-                mMaxHeight = getDefaultSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
+                mMaxHeight = resolveSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
             }
-            mMaxWidth = getDefaultSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
+            mMaxWidth = resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
             setMeasuredDimension(mMaxWidth, mMaxHeight);
         } else {
             // 如果宽高为0，则重新去测量一遍
@@ -71,13 +72,11 @@ public class BannerIndicator extends LinearLayout {
                 int childCount = getChildCount();
                 if (childCount > 0) {
                     View childAt = getChildAt(0);
-                    // 先测量子View的大小
-                    int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST);//为子View准备测量的参数
-                    int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.AT_MOST);
-
-                    childAt.measure(childWidthMeasureSpec, childHeightMeasureSpec);
                     // 计算高度
-                    mMaxHeight = childAt.getMeasuredHeight();
+                    if (childAt != null) {
+                        measureChild(childAt, widthMeasureSpec, heightMeasureSpec);
+                        mMaxHeight = childAt.getMeasuredHeight();
+                    }
                     // 计算宽度
                     width = childAt.getMeasuredWidth();
                 }
@@ -95,25 +94,22 @@ public class BannerIndicator extends LinearLayout {
         this.mBannerView = bannerView;
         // 添加指示器
         for (int i = 0; i < count; i++) {
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             ImageView imageView = new ImageView(getContext());
             //:从第二个开始设置
             if (mInterval > 0) {
                 if (i > 0) {
+                    // 设置属性
                     params.leftMargin = (int) mInterval;
                 }
             }
-            // 设置属性
-            imageView.setLayoutParams(params);
             //:3:把view添加到viewGroup中
-            addView(imageView);
+            addView(imageView, params);
         }
 
         // 默认的选中
-        onPageSelected(0);
-
-        // 添加完指示器，就立刻去重新测量布局
-        this.invalidate();
+        int currentItem = mBannerView.getCurrentItem();
+        onPageSelected(currentItem);
     }
 
     /**
@@ -122,24 +118,26 @@ public class BannerIndicator extends LinearLayout {
     public void onPageSelected(int position) {
         if (mBannerView != null) {
             int childCount = getChildCount();
-            // 重新测量宽高
-            mCurrentPosition = position;
-            position = position % childCount;
-            setSelector(position);
+            if (childCount > 0) {
+                // 重新测量宽高
+                mCurrentPosition = position;
+                position = position % childCount;
+                setSelector(position);
 
-            for (int i = 0; i < childCount; i++) {
-                View childAt = getChildAt(i);
-                // 设置点击事件
-                int finalI = i;
-                childAt.setOnClickListener(v -> {
-                    // 先停止轮询的事件
-                    mBannerView.onStop();
-                    // 计算出当前的position是站的第几列
-                    int column = mCurrentPosition % childCount;
-                    // 跳转到指定的页面去
-                    mBannerView.setCurrentItem(mCurrentPosition + (finalI - column));
-                    mBannerView.onStart();
-                });
+                for (int i = 0; i < childCount; i++) {
+                    View childAt = getChildAt(i);
+                    // 设置点击事件
+                    int finalI = i;
+                    childAt.setOnClickListener(v -> {
+                        // 先停止轮询的事件
+                        mBannerView.onStop();
+                        // 计算出当前的position是站的第几列
+                        int column = mCurrentPosition % childCount;
+                        // 跳转到指定的页面去
+                        mBannerView.setCurrentItem(mCurrentPosition + (finalI - column));
+                        mBannerView.onStart();
+                    });
+                }
             }
         }
     }

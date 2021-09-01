@@ -31,11 +31,20 @@ import java.util.Map;
 /**
  * 自定义轮播图，可以实现自动滚动
  * 使用方式：
- * 一：如果是xml创建的view，那么需要走两步
- * 1：调用 {@link BannerView# } 创建一个Builder,用来设置各种数据
- * 2：调用{@link BannerView#show(Activity)}方法去开启轮播
+ * 一：如果是fragment的话
+ * 1：需要调用{@link BannerView#setFragmentData(List)} 去设置数据
+ * 2：需要代用{@link BannerView#show(Activity)}方法去开启轮播
+ * 二：如果是普通的view的话
+ * 1：调用 {@link BannerView#setImageData(List)} 去设置数据
+ * 2：调用{@link BannerView#setBannerLoadListener(BannerLoadListener)}去给imageView设置数据
+ * 3：调用{@link BannerView#show(Activity)}方法去开启轮播
+ * 三：其他的方法，都是公用的方法，可以随意使用。、
+ * 四：注意
+ * 1：如果父类是NestedScrollView包裹的话，一定要给NestedScrollView的布局上加入： android:fillViewport="true"
+ * 让ScrollView去允许子view自控扩展高度
  */
 public class BannerView extends ViewPager implements BaseLifecycleObserver {
+
     private final int CODE_WHAT_LOOP = 1000;// 轮询的code值
     private int CODE_LOOP_INTERVAL = 3 * 1000;// 轮询的时间间隔，默认5s
     private boolean mAutoLoop = true;// 是否开启轮询，默认开启
@@ -48,7 +57,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private int mMaxWidth, mMaxHeight;
     private final Map<Integer, Integer> mMapHeight = new HashMap<>(); // 用来存储每个item的高度
     private int mCurrent;// 当前的position
-    private BannerView mBannerView;
     private boolean isLast = true; //滑动是否可用
     private boolean mIsParentIntercept = false;// 父类是否拦截的标记
     private float mStartX; // 开始滑动的x轴位置
@@ -60,7 +68,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         if (isInEditMode()) { // 预览模式
             // 假如还没有数据，就用指示的高度去预览
@@ -112,7 +119,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                         View view = fragment.getView();
                         if (view != null) {
                             // 测量view的大小
-                            int height = resolveSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
+                            view.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.UNSPECIFIED));
+                            int height = view.getMeasuredHeight();
                             if (height > 0) {
                                 mMaxHeight = height + getPaddingBottom() + getPaddingTop();
                             }
@@ -121,16 +129,21 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 }
             }
         }
+
         if (mMaxWidth <= 0) {
             mMaxWidth = resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
         }
 
         LogUtil.e("------>width:" + mMaxWidth + "  height:" + mMaxHeight);
-        setMeasuredDimension(mMaxWidth, mMaxHeight);
+        // 重新设置高度的模式
+        heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.EXACTLY);
+        // 重新设置宽度的模式
+        widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY);
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     private void initView() {
-        mBannerView = this;
         // 设置按下的手势操作
         addPageListener();
     }
@@ -255,10 +268,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                     mCurrent = position % mListImageData.size();
                 }
                 LogUtil.e("当前选中的position：" + mCurrent);
-                // 重新测量当前view的宽高
-                if (mBannerView != null) {
-                    mBannerView.requestLayout();
-                }
             }
 
             @Override
