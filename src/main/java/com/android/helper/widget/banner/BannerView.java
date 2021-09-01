@@ -111,21 +111,18 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                     if (fragment != null) {
                         View view = fragment.getView();
                         if (view != null) {
-                            // 先测量子View的大小
-                            view.measure(widthMeasureSpec, heightMeasureSpec);
-                            // 子View测量之后的宽和高
-                            int measuredHeight = view.getMeasuredHeight();
-                            if (measuredHeight > 0) {
-                                mMaxHeight = measuredHeight + getPaddingBottom() + getPaddingTop();
-                                mMapHeight.put(mCurrent, mMaxHeight);
+                            // 测量view的大小
+                            int height = resolveSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
+                            if (height > 0) {
+                                mMaxHeight = height + getPaddingBottom() + getPaddingTop();
                             }
                         }
                     }
                 }
             }
         }
-        if (mMaxWidth == 0) {
-            mMaxWidth = getDefaultSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
+        if (mMaxWidth <= 0) {
+            mMaxWidth = resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
         }
 
         LogUtil.e("------>width:" + mMaxWidth + "  height:" + mMaxHeight);
