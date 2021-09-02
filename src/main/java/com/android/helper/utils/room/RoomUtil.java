@@ -80,7 +80,7 @@ public class RoomUtil {
                         emitter.onComplete();
 
                     }, BackpressureStrategy.LATEST)
-                    .compose(RxUtil.getScheduler())
+                    .compose(RxUtil.getSchedulerFlowable())
                     .subscribe(new DisposableSubscriber<Long>() {
                         @Override
                         public void onNext(Long aLong) {
@@ -122,7 +122,7 @@ public class RoomUtil {
                         emitter.onComplete();
 
                     }, BackpressureStrategy.LATEST)
-                    .compose(RxUtil.getScheduler())
+                    .compose(RxUtil.getSchedulerFlowable())
                     .subscribe(new DisposableSubscriber<Integer>() {
                         @Override
                         public void onNext(Integer integer) {
@@ -165,7 +165,7 @@ public class RoomUtil {
                         emitter.onComplete();
 
                     }, BackpressureStrategy.LATEST)
-                    .compose(RxUtil.getScheduler())
+                    .compose(RxUtil.getSchedulerFlowable())
                     .subscribe(new DisposableSubscriber<Integer>() {
                         @Override
                         public void onNext(Integer integer) {
@@ -210,7 +210,7 @@ public class RoomUtil {
                         emitter.onComplete();
 
                     }, BackpressureStrategy.LATEST) //create方法中多了一个BackpressureStrategy类型的参数
-                    .compose(RxUtil.getScheduler())
+                    .compose(RxUtil.getSchedulerFlowable())
                     .subscribe(new DisposableSubscriber<T>() {
                         @Override
                         public void onNext(T t) {
@@ -246,7 +246,7 @@ public class RoomUtil {
                         emitter.onComplete();
 
                     }, BackpressureStrategy.LATEST)
-                    .compose(RxUtil.getScheduler())
+                    .compose(RxUtil.getSchedulerFlowable())
                     .subscribe(new DisposableSubscriber<T>() {
                         @Override
                         public void onNext(T t) {

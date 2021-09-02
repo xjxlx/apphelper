@@ -158,7 +158,7 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends AppComp
     @SuppressLint("CheckResult")
     public <F> Disposable net(@NonNull Flowable<F> flowAble, BaseHttpSubscriber<F> subscriber) {
         BaseHttpSubscriber<F> httpSubscriber = flowAble
-                .compose(RxUtil.getScheduler())  // 转换线程
+                .compose(RxUtil.getSchedulerFlowable())  // 转换线程
                 .onBackpressureLatest()  // 使用背压，保留最后一次的结果
                 .subscribeWith(subscriber);  // 返回对象
 

@@ -103,7 +103,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     public <T> Disposable net(@NonNull Flowable<T> flowAble, BaseHttpSubscriber<T> subscriber) {
 
         BaseHttpSubscriber<T> httpSubscriber = flowAble
-                .compose(RxUtil.getScheduler())  // 转换线程
+                .compose(RxUtil.getSchedulerFlowable())  // 转换线程
                 .onBackpressureLatest()  // 使用背压，保留最后一次的结果
                 .subscribeWith(subscriber);  // 返回对象
 

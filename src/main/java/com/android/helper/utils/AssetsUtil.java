@@ -57,7 +57,7 @@ public class AssetsUtil {
                 emitter.onComplete();
             }
         }, BackpressureStrategy.LATEST)
-                .compose(RxUtil.getScheduler())
+                .compose(RxUtil.getSchedulerFlowable())
                 .subscribe(new DisposableSubscriber<String>() {
                     @Override
                     protected void onStart() {

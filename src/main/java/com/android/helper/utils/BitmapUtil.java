@@ -267,7 +267,7 @@ public class BitmapUtil {
                         });
             }
         }, BackpressureStrategy.LATEST)
-                .compose(RxUtil.getScheduler())
+                .compose(RxUtil.getSchedulerFlowable())
                 .subscribe(new DisposableSubscriber<Bitmap>() {
                     @Override
                     protected void onStart() {
@@ -328,7 +328,7 @@ public class BitmapUtil {
                         });
             }
         }, BackpressureStrategy.LATEST)
-                .compose(RxUtil.getScheduler())
+                .compose(RxUtil.getSchedulerFlowable())
                 .subscribe(new DisposableSubscriber<Drawable>() {
                     @Override
                     protected void onStart() {
