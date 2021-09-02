@@ -2,6 +2,7 @@ package com.android.helper.utils.photo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,6 +32,18 @@ public class GlideUtil {
     /**
      * @return 是否能正常的加载view true:可以使用，false：不可使用
      */
+    private static boolean checkParameter(@NotNull Context context) {
+        if (context instanceof Activity) {
+            Activity activity = (Activity) context;
+            return checkParameter(activity);
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * @return 是否能正常的加载view true:可以使用，false：不可使用
+     */
     private static boolean checkParameter(@NotNull Activity activity) {
         if ((activity.isFinishing()) || (activity.isDestroyed())) {
             LogUtil.e(TAG, "传入的参数异常，请检查参数！");
@@ -46,6 +59,34 @@ public class GlideUtil {
     @SuppressLint("CheckResult")
     public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull ImageView imageView) {
         loadView(activity, url, imageView, 0);
+    }
+
+    /**
+     * 加载普通的view
+     */
+    @SuppressLint("CheckResult")
+    public static void loadView(@NotNull Context context, @NotNull String url, @NotNull ImageView imageView) {
+        loadView(context, url, imageView, 0);
+    }
+
+    /**
+     * @param placeResourceId 加载成功前显示的图片
+     */
+    @SuppressLint("CheckResult")
+    public static void loadView(@NotNull Context context, @NotNull String url, @NotNull ImageView imageView, @DrawableRes int placeResourceId) {
+        boolean checkParameter = checkParameter(context);
+
+        if (checkParameter) {
+            RequestOptions options = new RequestOptions();
+            if (placeResourceId != 0) {
+                options.placeholder(placeResourceId);
+            }
+
+            Glide.with(context)
+                    .load(url)
+                    .apply(options)
+                    .into(imageView);
+        }
     }
 
     /**

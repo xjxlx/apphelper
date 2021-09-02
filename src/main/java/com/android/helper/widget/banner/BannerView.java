@@ -126,7 +126,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
             mMaxWidth = resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
         }
 
-        LogUtil.e("------>width:" + mMaxWidth + "  height:" + mMaxHeight);
+        // LogUtil.e("------>width:" + mMaxWidth + "  height:" + mMaxHeight);
         // 重新设置高度的模式
         heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.EXACTLY);
         // 重新设置宽度的模式
@@ -273,7 +273,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
                 } else if (mImageType == 1) {
                     mCurrent = position % mListImageData.size();
                 }
-                LogUtil.e("当前选中的position：" + mCurrent);
+                // LogUtil.e("当前选中的position：" + mCurrent);
             }
 
             @Override

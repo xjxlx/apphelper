@@ -45,4 +45,20 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends BaseFra
     public View getRootView() {
         return mBinding.getRoot();
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mBinding != null) {
+            mBinding = null;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mBinding != null) {
+            mBinding = null;
+        }
+    }
 }
