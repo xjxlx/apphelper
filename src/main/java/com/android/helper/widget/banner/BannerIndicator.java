@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -92,19 +91,28 @@ public class BannerIndicator extends LinearLayout {
      */
     public void setViewPager(BannerView bannerView, int count) {
         this.mBannerView = bannerView;
+
+        // 先清空，在加入
+        int childCount = getChildCount();
+        if (childCount > 0) {
+            removeAllViews();
+        }
+
         // 添加指示器
-        for (int i = 0; i < count; i++) {
-            LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            ImageView imageView = new ImageView(getContext());
-            //:从第二个开始设置
-            if (mInterval > 0) {
-                if (i > 0) {
-                    // 设置属性
-                    params.leftMargin = (int) mInterval;
+        if (count > 1) {// 只有数据大于1的时候，采取添加，否则就不添加数据
+            for (int i = 0; i < count; i++) {
+                LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                ImageView imageView = new ImageView(getContext());
+                //:从第二个开始设置
+                if (mInterval > 0) {
+                    if (i > 0) {
+                        // 设置属性
+                        params.leftMargin = (int) mInterval;
+                    }
                 }
+                //:3:把view添加到viewGroup中
+                addView(imageView, params);
             }
-            //:3:把view添加到viewGroup中
-            addView(imageView, params);
         }
 
         // 默认的选中

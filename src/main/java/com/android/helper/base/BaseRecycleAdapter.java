@@ -9,7 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.helper.interfaces.listener.OnItemClickListener;
+import com.android.helper.interfaces.listener.OnRecycleLoadCompletedListener;
 import com.android.helper.utils.LogUtil;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -25,6 +28,7 @@ public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerVi
     protected List<T> mList;
 
     protected OnItemClickListener<T> mItemClickListener;
+    protected OnRecycleLoadCompletedListener<E> mCompletedListener;
 
     public BaseRecycleAdapter(Context mContext) {
         this.mContext = mContext;
@@ -58,12 +62,28 @@ public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerVi
     @NonNull
     @Override
     public E onCreateViewHolder(@NonNull ViewGroup viewGroup, int type) {
-        View inflate = LayoutInflater.from(mContext).inflate(getLayout(), viewGroup, false);
+        View inflate = LayoutInflater.from(viewGroup.getContext()).inflate(getLayout(), viewGroup, false);
         return createViewHolder(inflate);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull @NotNull E holder, int position) {
+        // 最后一个数据加载完成的通知
+        if ((mList != null) && (mCompletedListener != null)) {
+            if (position == (mList.size() - 1)) {
+                mCompletedListener.onLoadComplete(holder, position);
+            }
+        }
     }
 
     public void setItemClickListener(OnItemClickListener<T> mOnItemClickListener) {
         this.mItemClickListener = mOnItemClickListener;
     }
 
+    /**
+     * @param completedListener 数据加载完成的回调
+     */
+    public void setOnLoadComplete(OnRecycleLoadCompletedListener<E> completedListener) {
+        this.mCompletedListener = completedListener;
+    }
 }
