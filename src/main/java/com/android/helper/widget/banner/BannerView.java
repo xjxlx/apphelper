@@ -251,6 +251,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
 
             @Override
             public void onPageSelected(int position) {
+                LogUtil.e("----->current---onPageSelected:" + getCurrentItem());
                 // 处理点击事件
                 if (mImageType == 2) {
                     Fragment fragment = mListFragmentData.get(position);
@@ -270,8 +271,6 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
 
                 if (mImageType == 2) {
                     mCurrent = position;
-                } else if (mImageType == 1) {
-                    mCurrent = position % mListImageData.size();
                 }
                 // LogUtil.e("当前选中的position：" + mCurrent);
             }
@@ -300,7 +299,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    public boolean dispatchTouchEvent(MotionEvent ev) {
         boolean isLeft = false;
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -344,24 +343,8 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
                 sendMessage();
                 break;
         }
-
-        return super.onInterceptTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
-
-    /**
-     * builder的设计模式
-     */
-//    public static class Builder {
-//        private int mInterval = 3 * 1000;// 轮询的时间间隔，默认5s
-//        private boolean mAutoLoop = true;// 是否开启轮询，默认开启
-//        private List<Fragment> mListFragmentData;// fragment的集合
-//        private List<Object> mListImageData;// 图片的集合
-//        private int mImageType;// 1：普通的ImageView,2:fragment类型的
-//        private BannerLoadListener loadListener;// 加载本地图片页面的回调
-//        private BannerIndicator mIndicator; // 加载指示器
-//        private BannerItemClickListener mBannerItemClickListener;// 图片点击事件的处理
-//
-//    }
 
     /**
      * @param interval 轮询的时间间隔，默认是5s
@@ -432,6 +415,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
         @Override
         public void handleMessage(@NonNull @NotNull Message msg) {
             super.handleMessage(msg);
+            LogUtil.e("----->current---handleMessage:" + getCurrentItem());
 
             if (msg.what == CODE_WHAT_LOOP) {
                 //:移除掉所有的回调和message的消息，如果传入null的话
