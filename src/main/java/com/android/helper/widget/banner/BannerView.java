@@ -58,7 +58,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
     private int mCurrent;// 当前的position
     private boolean isLast = true; //滑动是否可用
     private boolean mIsParentIntercept = false;// 父类是否拦截的标记
-    private float mStartX; // 开始滑动的x轴位置
+    private int mStartX, mStartY; // 开始滑动的x轴位置
 
     public BannerView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -253,7 +253,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
 
             @Override
             public void onPageSelected(int position) {
-                LogUtil.e("----->current---onPageSelected:" + getCurrentItem());
+                //  LogUtil.e("----->current---onPageSelected:" + getCurrentItem());
                 // 处理点击事件
                 if (mImageType == 2) {
                     Fragment fragment = mListFragmentData.get(position);
@@ -302,49 +302,47 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        boolean isLeft = false;
+        //:进行判断：如果是第一页或者是最后一页的话，就不要拦截，其他的都拦截
+        //:如果是上下滑动的话，就需要拦截
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mStartX = ev.getX();
                 onStop();
+                mStartX = (int) ev.getX();
+                mStartY = (int) ev.getY();
                 break;
-
             case MotionEvent.ACTION_MOVE:
                 onStop();
-                float endX = ev.getX();
-
-                float dx = endX - mStartX;
+                int x = (int) ev.getX();
+                int y = (int) ev.getY();
+                //:得到左右上下的偏移量
+                int dx = x - mStartX;
+                int dy = y - mStartY;
 
                 if (dx > 0) {
                     LogUtil.e("向右滑动 dx :" + dx);
                 } else {
                     LogUtil.e("向左滑动 dx: " + dx);
-                    isLeft = true;
                 }
-                mStartX = endX;
-                if (mImageType == 2) {
-                    if (isLeft) {    // 向左滑动
-                        if (mCurrent == (mListFragmentData.size() - 1)) {
-                            if (mIsParentIntercept) {
-                                // 请求父类不要拦截当前的事件
-                                getParent().requestDisallowInterceptTouchEvent(true);
-                            }
-                        }
-                    } else {  // 向右滑动
-                        if (mCurrent == 0) {
-                            if (mIsParentIntercept) {
-                                // 请求父类不要拦截当前的事件
-                                getParent().requestDisallowInterceptTouchEvent(true);
-                            }
+
+                //:判断
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    //:如果左右的偏量大于上下的偏移量的话，那木就能确定是左右滑动
+                    //:获得当前的页面
+                    int currentItem = getCurrentItem();
+                    //:如果是第一个，或者最后一的话，不需要拦截
+                    if (mImageType == 2) {
+                        if ((currentItem == 0) || (currentItem == mListFragmentData.size() - 1)) {
+                            LogUtil.e("current:" + currentItem + "  请求父类不要拦截我");
+                            getParent().requestDisallowInterceptTouchEvent(true);//:请求父类以及祖宗类要去拦截
                         }
                     }
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                //:在抬起的时候继续发送消息
                 sendMessage();
                 break;
         }
+
         return super.dispatchTouchEvent(ev);
     }
 
@@ -417,7 +415,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
         @Override
         public void handleMessage(@NonNull @NotNull Message msg) {
             super.handleMessage(msg);
-            LogUtil.e("----->current---handleMessage:" + getCurrentItem());
+            //  LogUtil.e("----->current---handleMessage:" + getCurrentItem());
 
             if (msg.what == CODE_WHAT_LOOP) {
                 //:移除掉所有的回调和message的消息，如果传入null的话
