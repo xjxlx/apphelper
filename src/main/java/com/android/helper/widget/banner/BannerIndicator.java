@@ -21,7 +21,9 @@ public class BannerIndicator extends LinearLayout {
     private int mSelectorResource, mUnSelectedResource;
     private int mCurrentPosition;// 上一次点击的item位置
     private int mMaxWidth, mMaxHeight;
-    private BannerView mBannerView;
+    private BannerView<?> mBannerView;
+    private float mWidth, mHeight;
+    private String TAG = "123";
 
     public BannerIndicator(Context context) {
         super(context);
@@ -41,6 +43,10 @@ public class BannerIndicator extends LinearLayout {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerIndicator);
             // 获取间距
             mInterval = typedArray.getDimension(R.styleable.BannerIndicator_bi_interval, 0);
+            // 获取宽度
+            mWidth = typedArray.getDimension(R.styleable.BannerIndicator_bi_width, 0);
+            // 过去高度
+            mHeight = typedArray.getDimension(R.styleable.BannerIndicator_bi_height, 0);
             // 选中的图形
             mSelectorResource = typedArray.getResourceId(R.styleable.BannerIndicator_bi_selector_resource, 0);
             // 未选中的图形
@@ -52,7 +58,7 @@ public class BannerIndicator extends LinearLayout {
     @SuppressLint("DrawAllocation")
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
         if (isInEditMode()) {
             // 解决预览模式不显示的问题
             int mode = MeasureSpec.getMode(heightMeasureSpec);
@@ -63,33 +69,40 @@ public class BannerIndicator extends LinearLayout {
                 mMaxHeight = resolveSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
             }
             mMaxWidth = resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
-            setMeasuredDimension(mMaxWidth, mMaxHeight);
         } else {
             // 如果宽高为0，则重新去测量一遍
-            if (mMaxWidth == 0 || mMaxHeight == 0) {
-                int width = 0;
-                int childCount = getChildCount();
-                if (childCount > 0) {
+            int childCount = getChildCount();
+            if (childCount > 1) { // 只有数量大于1，才会去显示，否则不去显示
+
+                // 如果设置了固定的宽高，则直接去使用
+                if (mWidth > 0 && mHeight > 0) {
+                    mMaxWidth = (int) (((childCount - 1) * mInterval) + (mWidth * childCount));
+                    mMaxHeight = (int) mHeight;
+                } else {
+                    // 如果没有设置宽高，就自己去计算
                     View childAt = getChildAt(0);
-                    // 计算高度
                     if (childAt != null) {
                         measureChild(childAt, widthMeasureSpec, heightMeasureSpec);
-                        mMaxHeight = childAt.getMeasuredHeight();
+                        int measuredHeight = childAt.getMeasuredHeight();
+                        int measuredWidth = childAt.getMeasuredWidth();
+
+                        mMaxHeight = measuredHeight;
+                        // 总体宽度 = view 的个数 * 宽度 + view的个数 -1 * 间距
+                        mMaxWidth = (int) (((childCount - 1) * mInterval) + (measuredWidth * childCount));
                     }
-                    // 计算宽度
-                    width = childAt.getMeasuredWidth();
                 }
-                // 总体宽度 = view 的个数 * 宽度 + view的个数 -1 * 间距
-                mMaxWidth = (int) (((childCount - 1) * mInterval) + (width * childCount));
             }
-            setMeasuredDimension(mMaxWidth, mMaxHeight);
         }
+
+        widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY);
+        heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.EXACTLY);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     /**
      * 结合viewPager
      */
-    public void setViewPager(BannerView bannerView, int count) {
+    public void setViewPager(BannerView<?> bannerView, int count) {
         this.mBannerView = bannerView;
 
         // 先清空，在加入
@@ -110,14 +123,23 @@ public class BannerIndicator extends LinearLayout {
                         params.leftMargin = (int) mInterval;
                     }
                 }
+
+                if (mWidth != 0) {
+                    params.weight = mWidth;
+                }
+                if (mHeight != 0) {
+                    params.height = (int) mHeight;
+                }
+                imageView.setLayoutParams(params);
                 //:3:把view添加到viewGroup中
-                addView(imageView, params);
+                addView(imageView);
             }
         }
 
         // 默认的选中
         int currentItem = mBannerView.getCurrentItem();
         onPageSelected(currentItem);
+        requestLayout();
     }
 
     /**

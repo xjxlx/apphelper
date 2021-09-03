@@ -475,6 +475,13 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
             mListFragmentData.clear();
             mListFragmentData = null;
         }
+        if (mListImageData != null) {
+            mListImageData.clear();
+            mListImageData = null;
+        }
+        if (mIndicator != null) {
+            mIndicator = null;
+        }
     }
 
 }
