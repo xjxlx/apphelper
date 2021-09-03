@@ -415,7 +415,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
         @Override
         public void handleMessage(@NonNull @NotNull Message msg) {
             super.handleMessage(msg);
-            //  LogUtil.e("----->current---handleMessage:" + getCurrentItem());
+            LogUtil.e("----->Banner---mHandler:" + getCurrentItem());
 
             if (msg.what == CODE_WHAT_LOOP) {
                 //:移除掉所有的回调和message的消息，如果传入null的话
