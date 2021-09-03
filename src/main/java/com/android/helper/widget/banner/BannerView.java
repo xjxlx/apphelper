@@ -193,6 +193,8 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
         } else if (mImageType == 1) {
             if ((mListImageData != null) && (mListImageData.size() > 0)) {
                 BannerAdapter<T> bannerAdapter = new BannerAdapter<>(mListImageData);
+                bannerAdapter.setParentView(this);
+
                 if (mLoadListener != null) {
                     bannerAdapter.setBannerLoadListener(mLoadListener);
                 }

@@ -23,6 +23,7 @@ public class BannerAdapter<T> extends PagerAdapter {
     private final List<T> mListData;
     private BannerLoadListener<T> mLoadListener;
     private BannerItemClickListener<T> mItemClickListener;// 点击事件
+    private BannerView<T> mBannerView;
 
     public BannerAdapter(List<T> listData) {
         mListData = listData;
@@ -52,7 +53,20 @@ public class BannerAdapter<T> extends PagerAdapter {
             position = position % mListData.size();
             //:2:设置对象
             view = LayoutInflater.from(container.getContext()).inflate(R.layout.base_banner, null);
+
             ImageView imageView = view.findViewById(R.id.iv_banner_image);
+            ViewGroup.LayoutParams params = imageView.getLayoutParams();
+            if ((mBannerView != null) && (params != null)) {
+                int width = mBannerView.getWidth();
+                int height = mBannerView.getHeight();
+
+                // 设置view的宽高
+                params.width = width;
+                params.height = height;
+                imageView.setLayoutParams(params);
+                imageView.setAdjustViewBounds(true);
+            }
+
             // 此处为了兼容多种处理方式，以一个imageView的形式，把图片给传递出去，让用户手动选择怎么去处理
             T t = mListData.get(position);
             if (mLoadListener != null) {
@@ -94,4 +108,10 @@ public class BannerAdapter<T> extends PagerAdapter {
         this.mItemClickListener = itemClickListener;
     }
 
+    /**
+     * 设置轮播图的对象，用来获取轮播图的信息
+     */
+    public void setParentView(BannerView<T> bannerView) {
+        mBannerView = bannerView;
+    }
 }
