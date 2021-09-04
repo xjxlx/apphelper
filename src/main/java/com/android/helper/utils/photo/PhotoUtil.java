@@ -1,14 +1,17 @@
 package com.android.helper.utils.photo;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
+import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.FileUtil;
 import com.android.helper.utils.LogUtil;
 import com.luck.picture.lib.PictureSelector;
+import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.listener.OnResultCallbackListener;
@@ -20,7 +23,15 @@ import kotlin.Suppress;
 /**
  * 照片的工具类
  */
-public class PhotoUtil {
+public class PhotoUtil implements BaseLifecycleObserver {
+    private static PhotoUtil mPhotoUtil;
+
+    public static PhotoUtil getInstance() {
+        if (mPhotoUtil == null) {
+            mPhotoUtil = new PhotoUtil();
+        }
+        return mPhotoUtil;
+    }
 
     /**
      * @param context    context
@@ -52,8 +63,8 @@ public class PhotoUtil {
      * @param maxSelectNum 最大选择数量
      * @param listener     选择图片后返回的结果
      */
-    public static void SelectorImage(Activity activity, boolean isCamera, int maxSelectNum,
-                                     OnResultCallbackListener<LocalMedia> listener) {
+    public void SelectorImage(FragmentActivity activity, boolean isCamera, int maxSelectNum,
+                              OnResultCallbackListener<LocalMedia> listener) {
 //        PictureSelector.create(this)
 //                .openGallery()//相册 媒体类型 PictureMimeType.ofAll()、ofImage()、ofVideo()、ofAudio()
 //                //.openCamera()//单独使用相机 媒体类型 PictureMimeType.ofImage()、ofVideo()
@@ -146,17 +157,22 @@ public class PhotoUtil {
 //                .setOutputCameraPath()// 自定义相机输出目录只针对Android Q以下版本，具体参考Demo
 //                .forResult();//结果回调分两种方式onActivityResult()和OnResultCallbackListener方式
 
-        PictureSelector
-                .create(activity)
-                .openGallery(PictureMimeType.ofImage())
-                .imageEngine(GlideEngine.createGlideEngine())
-                .isCamera(isCamera) // 是否显示拍照的按钮
-                .maxSelectNum(maxSelectNum) // 最大选择数量
-                .isPreviewEggs(true) // 是否预览图片
-                .isCompress(true) // 是否压缩
-                .minimumCompressSize(30) //  小于多少kb的图片不压缩
-                .synOrAsy(true)// 异步压缩
-                .forResult(listener); // 返回结果
+        if (activity != null) {
+            Lifecycle lifecycle = activity.getLifecycle();
+            lifecycle.addObserver(this);
+
+            PictureSelector
+                    .create(activity)
+                    .openGallery(PictureMimeType.ofImage())
+                    .imageEngine(GlideEngine.createGlideEngine())
+                    .isCamera(isCamera) // 是否显示拍照的按钮
+                    .maxSelectNum(maxSelectNum) // 最大选择数量
+                    .isPreviewEggs(true) // 是否预览图片
+                    .isCompress(true) // 是否压缩
+                    .minimumCompressSize(30) //  小于多少kb的图片不压缩
+                    .synOrAsy(true)// 异步压缩
+                    .forResult(listener); // 返回结果
+        }
     }
 
     /**
@@ -165,40 +181,57 @@ public class PhotoUtil {
      * @param maxSelectNum 最大选择数量
      * @param listener     选择图片后返回的结果
      */
-    public static void SelectorImage(Fragment fragment, boolean isCamera, int maxSelectNum, OnResultCallbackListener<LocalMedia> listener) {
-        PictureSelector
-                .create(fragment)
-                .openGallery(PictureMimeType.ofImage())
-                .imageEngine(GlideEngine.createGlideEngine())
-                .isCamera(isCamera) // 是否显示拍照的按钮
-                .maxSelectNum(maxSelectNum) // 最大选择数量
-                .isPreviewEggs(true) // 是否预览图片
-                .isCompress(true) // 是否压缩
-                .minimumCompressSize(30) //  小于多少kb的图片不压缩
-                .synOrAsy(true)// 异步压缩
-                .forResult(listener); // 返回结果
+    public void SelectorImage(Fragment fragment, boolean isCamera, int maxSelectNum, OnResultCallbackListener<LocalMedia> listener) {
+        if (fragment != null) {
+            Lifecycle lifecycle = fragment.getLifecycle();
+            lifecycle.addObserver(this);
+
+            PictureSelector
+                    .create(fragment)
+                    .openGallery(PictureMimeType.ofImage())
+                    .imageEngine(GlideEngine.createGlideEngine())
+                    .isCamera(isCamera) // 是否显示拍照的按钮
+                    .maxSelectNum(maxSelectNum) // 最大选择数量
+                    .isPreviewEggs(true) // 是否预览图片
+                    .isCompress(true) // 是否压缩
+                    .minimumCompressSize(30) //  小于多少kb的图片不压缩
+                    .synOrAsy(true)// 异步压缩
+                    .forResult(listener); // 返回结果
+        }
     }
 
     /**
      * 打开照相机
      */
-    public static void openCamera(Activity activity, OnResultCallbackListener<LocalMedia> listener) {
-        PictureSelector.create(activity)
-                .openCamera(PictureMimeType.ofImage())
-                .isCompress(true) // 打开压缩
-                .imageEngine(GlideEngine.createGlideEngine())
-                .forResult(listener);
+    public void openCamera(FragmentActivity activity, OnResultCallbackListener<LocalMedia> listener) {
+        if (activity != null) {
+            Lifecycle lifecycle = activity.getLifecycle();
+            lifecycle.addObserver(this);
+
+            PictureSelector.create(activity)
+                    .openCamera(PictureMimeType.ofImage())
+                    .isCompress(true) // 打开压缩
+                    .selectionMode(PictureConfig.SINGLE)
+                    .imageEngine(GlideEngine.createGlideEngine())
+                    .forResult(listener);
+        }
     }
 
     /**
      * 打开照相机
      */
-    public static void openCamera(Fragment fragment, OnResultCallbackListener<LocalMedia> listener) {
-        PictureSelector.create(fragment)
-                .openCamera(PictureMimeType.ofImage())
-                .isCompress(true) // 打开压缩
-                .imageEngine(GlideEngine.createGlideEngine())
-                .forResult(listener);
+    public void openCamera(Fragment fragment, OnResultCallbackListener<LocalMedia> listener) {
+        if (fragment != null) {
+            Lifecycle lifecycle = fragment.getLifecycle();
+            lifecycle.addObserver(this);
+
+            PictureSelector.create(fragment)
+                    .openCamera(PictureMimeType.ofImage())
+                    .isCompress(true) // 打开压缩
+                    .selectionMode(PictureConfig.SINGLE)
+                    .imageEngine(GlideEngine.createGlideEngine())
+                    .forResult(listener);
+        }
     }
 
     /**
@@ -208,21 +241,26 @@ public class PhotoUtil {
      * @param recordVideoSecond 录制视频秒数 默认60s
      * @param listener          选择图片后返回的结果
      */
-    public static void SelectorVideo(Activity activity, boolean isCamera, int maxVideoSelectNum, int recordVideoSecond,
-                                     OnResultCallbackListener<LocalMedia> listener) {
-        PictureSelector
-                .create(activity)
-                .openGallery(PictureMimeType.ofVideo())
-                .imageEngine(GlideEngine.createGlideEngine())
-                .isCamera(isCamera) // 是否显示拍照的按钮
-                .maxVideoSelectNum(maxVideoSelectNum) // 最大选择数量
-                .maxSelectNum(maxVideoSelectNum)
-                .recordVideoSecond(recordVideoSecond)//录制视频秒数 默认60s
-                .isPreviewVideo(true) //是否预览视频
-                .isCompress(true) // 是否压缩
-                .minimumCompressSize(30) //  小于多少kb的图片不压缩
-                .synOrAsy(true)// 异步压缩
-                .forResult(listener); // 返回结果
+    public void SelectorVideo(FragmentActivity activity, boolean isCamera, int maxVideoSelectNum, int recordVideoSecond,
+                              OnResultCallbackListener<LocalMedia> listener) {
+        if (activity != null) {
+            Lifecycle lifecycle = activity.getLifecycle();
+            lifecycle.addObserver(this);
+
+            PictureSelector
+                    .create(activity)
+                    .openGallery(PictureMimeType.ofVideo())
+                    .imageEngine(GlideEngine.createGlideEngine())
+                    .isCamera(isCamera) // 是否显示拍照的按钮
+                    .maxVideoSelectNum(maxVideoSelectNum) // 最大选择数量
+                    .maxSelectNum(maxVideoSelectNum)
+                    .recordVideoSecond(recordVideoSecond)//录制视频秒数 默认60s
+                    .isPreviewVideo(true) //是否预览视频
+                    .isCompress(true) // 是否压缩
+                    .minimumCompressSize(30) //  小于多少kb的图片不压缩
+                    .synOrAsy(true)// 异步压缩
+                    .forResult(listener); // 返回结果
+        }
     }
 
     /**
@@ -232,44 +270,97 @@ public class PhotoUtil {
      * @param recordVideoSecond 录制视频秒数 默认60s
      * @param listener          选择图片后返回的结果
      */
-    public static void SelectorVideo(Fragment fragment, boolean isCamera, int maxVideoSelectNum,
-                                     int recordVideoSecond,
-                                     OnResultCallbackListener<LocalMedia> listener) {
-        PictureSelector
-                .create(fragment)
-                .openGallery(PictureMimeType.ofVideo())
-                .imageEngine(GlideEngine.createGlideEngine())
-                .isCamera(isCamera) // 是否显示拍照的按钮
-                .maxVideoSelectNum(maxVideoSelectNum) // 最大选择数量
-                .maxSelectNum(maxVideoSelectNum)
-                .recordVideoSecond(recordVideoSecond)//录制视频秒数 默认60s
-                .isPreviewVideo(true) //是否预览视频
-                .isCompress(true) // 是否压缩
-                .minimumCompressSize(30) //  小于多少kb的图片不压缩
-                .synOrAsy(true)// 异步压缩
-                .forResult(listener); // 返回结果
+    public void SelectorVideo(Fragment fragment, boolean isCamera, int maxVideoSelectNum,
+                              int recordVideoSecond,
+                              OnResultCallbackListener<LocalMedia> listener) {
+
+        if (fragment != null) {
+            Lifecycle lifecycle = fragment.getLifecycle();
+            lifecycle.addObserver(this);
+
+            PictureSelector
+                    .create(fragment)
+                    .openGallery(PictureMimeType.ofVideo())
+                    .imageEngine(GlideEngine.createGlideEngine())
+                    .isCamera(isCamera) // 是否显示拍照的按钮
+                    .maxVideoSelectNum(maxVideoSelectNum) // 最大选择数量
+                    .maxSelectNum(maxVideoSelectNum)
+                    .recordVideoSecond(recordVideoSecond)//录制视频秒数 默认60s
+                    .isPreviewVideo(true) //是否预览视频
+                    .isCompress(true) // 是否压缩
+                    .minimumCompressSize(30) //  小于多少kb的图片不压缩
+                    .synOrAsy(true)// 异步压缩
+                    .forResult(listener); // 返回结果
+        }
     }
 
     /**
      * 打开录像机
      */
-    public static void openVideo(Activity activity, OnResultCallbackListener<LocalMedia> listener) {
-        PictureSelector.create(activity)
-                .openCamera(PictureMimeType.ofVideo())
-                .isCompress(true) // 打开压缩
-                .imageEngine(GlideEngine.createGlideEngine())
-                .forResult(listener);
+    public void openVideo(FragmentActivity activity, OnResultCallbackListener<LocalMedia> listener) {
+        if (activity != null) {
+            Lifecycle lifecycle = activity.getLifecycle();
+            lifecycle.addObserver(this);
+
+            PictureSelector.create(activity)
+                    .openCamera(PictureMimeType.ofVideo())
+                    .isCompress(true) // 打开压缩
+                    .selectionMode(PictureConfig.SINGLE)
+                    .imageEngine(GlideEngine.createGlideEngine())
+                    .forResult(listener);
+        }
     }
 
     /**
      * 打开录像机
      */
-    public static void openVideo(Fragment fragment, OnResultCallbackListener<LocalMedia> listener) {
-        PictureSelector.create(fragment)
-                .openCamera(PictureMimeType.ofVideo())
-                .isCompress(true) // 打开压缩
-                .imageEngine(GlideEngine.createGlideEngine())
-                .forResult(listener);
+    public void openVideo(Fragment fragment, OnResultCallbackListener<LocalMedia> listener) {
+        if (fragment != null) {
+            Lifecycle lifecycle = fragment.getLifecycle();
+            lifecycle.addObserver(this);
+
+            PictureSelector.create(fragment)
+                    .openCamera(PictureMimeType.ofVideo())
+                    .isCompress(true) // 打开压缩
+                    .selectionMode(PictureConfig.SINGLE)
+                    .imageEngine(GlideEngine.createGlideEngine())
+                    .forResult(listener);
+        }
     }
 
+    @Override
+    public void onCreate() {
+
+    }
+
+    @Override
+    public void onStart() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+//        //包括裁剪和压缩后的缓存，要在上传成功后调用，type 指的是图片or视频缓存取决于你设置的ofImage或ofVideo 注意：需要系统sd卡权限
+//        PictureCacheManager.deleteCacheDirFile(this,type);
+//        // 清除所有缓存 例如：压缩、裁剪、视频、音频所生成的临时文件
+//        PictureCacheManager.deleteAllCacheDirFile(this);
+//        // 清除缓存且刷新图库
+//        PictureCacheManager.deleteAllCacheDirRefreshFile(this);
+
+    }
 }
