@@ -1,6 +1,7 @@
 package com.android.helper.utils.photo;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.fragment.app.Fragment;
@@ -8,7 +9,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
-import com.android.helper.utils.FileUtil;
 import com.android.helper.utils.LogUtil;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
@@ -33,6 +33,8 @@ public class PhotoUtil implements BaseLifecycleObserver {
         return mPhotoUtil;
     }
 
+    private static String tag = "video";
+
     /**
      * @param context    context
      * @param localMedia localMedia
@@ -40,19 +42,46 @@ public class PhotoUtil implements BaseLifecycleObserver {
      */
     @Suppress(names = "MISSING_DEPENDENCY_CLASS")
     public static String getPathForSelectorPicture(@NotNull Context context, @NotNull LocalMedia localMedia) {
+        String url = "";
         boolean compressed = localMedia.isCompressed();
-        String url;
+
+        LogUtil.write(tag, "当前的文件是否被压缩：" + compressed);
         if (compressed) {
             url = localMedia.getCompressPath();
             LogUtil.e("压缩拍摄视频的路径为：$mPhoto_path");
         } else {
-            url = localMedia.getPath();
+            // android Q 版本数据的获取
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+                String androidQToPath = localMedia.getAndroidQToPath();
+                if (!TextUtils.isEmpty(androidQToPath)) {
+                    url = androidQToPath;
+                }
+            } else {
+                // 其他版本数据的获取
+                String realPath = localMedia.getRealPath();
+                if (!TextUtils.isEmpty(realPath)) {
+                    url = realPath;
+                }
+            }
+
+            // 如果还获取不到，就获取path路径
+            if (TextUtils.isEmpty(url)) {
+                String path = localMedia.getPath();
+                if (!TextUtils.isEmpty(path)) {
+                    url = path;
+                }
+            }
+
+            // 如果还获取不到，就获取path路径
+            if (TextUtils.isEmpty(url)) {
+                String originalPath = localMedia.getOriginalPath();
+                if (!TextUtils.isEmpty(originalPath)) {
+                    url = originalPath;
+                }
+            }
             LogUtil.e("没有压缩拍摄视频的路径为：$mPhoto_path");
         }
-        if (!TextUtils.isEmpty(url)) {
-            return FileUtil.UriToPath(context, url);
-        }
-        return null;
+        return url;
     }
 
     /**

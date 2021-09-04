@@ -117,5 +117,17 @@ public class LogUtil {
         }
     }
 
+    /**
+     * 写入保活的信息日志
+     */
+    public static void write(String fileName, String value) {
+        if ((!TextUtils.isEmpty(value)) && (!TextUtils.isEmpty(fileName))) {
+            if (writeUtil == null) {
+                writeUtil = new LogWriteUtil();
+            }
+            writeUtil.write(fileName, value);
+        }
+    }
+
 }
 
