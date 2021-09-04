@@ -634,7 +634,7 @@ public class AudioService extends Service {
                     public boolean test(@NonNull Long aLong) throws Exception {
                         return (mediaPlayer != null) && isPlaying();
                     }
-                }).compose(RxUtil.getScheduler())
+                }).compose(RxUtil.getSchedulerFlowable())
                 .subscribeWith(new DisposableSubscriber<Long>() {
                     @Override
                     public void onNext(Long aLong) {

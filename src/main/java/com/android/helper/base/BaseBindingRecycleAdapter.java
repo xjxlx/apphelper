@@ -1,36 +1,40 @@
 package com.android.helper.base;
 
-import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewbinding.ViewBinding;
 
+import com.android.helper.interfaces.BindingViewListener;
 import com.android.helper.interfaces.listener.OnItemClickListener;
 import com.android.helper.utils.LogUtil;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * RecycleView的封装基类
+ * 加入了viewBinding的RecycleView
  *
- * @param <T> 数据的类型
- * @param <E> ViewHolder的对象
+ * @param <T> 数据类型
+ * @param <E> ViewBinding的具体类型
  */
-public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerView.Adapter<E> {
+public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extends RecyclerView.Adapter<BaseBindingVH<E>> implements BindingViewListener<E> {
 
-    protected Activity mContext;
+    protected Context mContext;
     protected List<T> mList;
-
+    protected E mBinding;
     protected OnItemClickListener<T> mItemClickListener;
 
-    public BaseRecycleAdapter(Activity mContext) {
+    public BaseBindingRecycleAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-    public BaseRecycleAdapter(Activity mContext, List<T> mList) {
+    public BaseBindingRecycleAdapter(Context mContext, List<T> mList) {
         this.mContext = mContext;
         this.mList = mList;
     }
@@ -48,22 +52,23 @@ public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerVi
         return mList == null ? 0 : mList.size();
     }
 
-    /**
-     * @return 返回一个RecycleView的布局
-     */
-    protected abstract int getLayout();
-
-    protected abstract E createViewHolder(View inflate);
-
     @NonNull
+    @NotNull
     @Override
-    public E onCreateViewHolder(@NonNull ViewGroup viewGroup, int type) {
-        View inflate = LayoutInflater.from(viewGroup.getContext()).inflate(getLayout(), viewGroup, false);
-        return createViewHolder(inflate);
+    public BaseBindingVH<E> onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
+        mBinding = getBinding(LayoutInflater.from(mContext), parent);
+        if (mBinding != null) {
+            return new BaseBindingVH<E>(mBinding);
+        }
+        return null;
     }
 
     public void setItemClickListener(OnItemClickListener<T> mOnItemClickListener) {
         this.mItemClickListener = mOnItemClickListener;
     }
 
+    @Override
+    public View getRootView() {
+        return mBinding.getRoot();
+    }
 }

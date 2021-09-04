@@ -51,6 +51,18 @@ public class RecycleUtil {
 
     /**
      * @param rowCount 需要显示的行数
+     * @return 设置 设置recycleView 为多行显示
+     */
+    public RecycleUtil setGridLayout(int rowCount) {
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, rowCount);
+        if (view != null) {
+            view.setLayoutManager(gridLayoutManager);
+        }
+        return util;
+    }
+
+    /**
+     * @param rowCount 需要显示的行数
      * @return 设置recycleView 为多行显示
      */
     public RecycleUtil setGridLayout(int rowCount, @RecyclerView.Orientation int orientation) {

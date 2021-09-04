@@ -55,35 +55,6 @@ public class BitmapUtil {
     }
 
     /**
-     * @return 根据bitmap 生成一个缩放的bitmap
-     */
-    public static Bitmap getScaleBitmap(@NotNull Bitmap bitmap, int newWidth, int newHeight) {
-        Bitmap bitmapResult = null;
-
-        if ((newWidth > 0) && (newHeight > 0)) {
-
-            int bitmapWidth = bitmap.getWidth();
-            int bitmapHeight = bitmap.getHeight();
-
-            Matrix matrix = new Matrix();
-
-            // 求出缩放的比例
-            float scaleWidth = (float) newWidth / bitmapWidth;
-            float scaleHeight = (float) newHeight / bitmapHeight;
-
-            // 使用最小的缩放比例，避免变形
-            matrix.postScale(scaleWidth, scaleHeight);
-
-            bitmapResult = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
-
-            if (!bitmap.equals(bitmapResult) && !bitmap.isRecycled()) {
-                bitmap.recycle();
-            }
-        }
-        return bitmapResult;// Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
-    }
-
-    /**
      * @return 获取ImageView设置的图片内容
      */
     public static Bitmap getBitmapForImageView(ImageView imageView) {
@@ -146,6 +117,89 @@ public class BitmapUtil {
         return bitmap;
     }
 
+    /**
+     * @return 根据bitmap 生成一个缩放的bitmap
+     */
+    public static Bitmap getScaleBitmap(@NotNull Bitmap bitmap, int newWidth, int newHeight) {
+        Bitmap bitmapResult = null;
+
+        if ((newWidth > 0) && (newHeight > 0)) {
+
+            int bitmapWidth = bitmap.getWidth();
+            int bitmapHeight = bitmap.getHeight();
+
+            Matrix matrix = new Matrix();
+
+            // 求出缩放的比例
+            float scaleWidth = (float) newWidth / bitmapWidth;
+            float scaleHeight = (float) newHeight / bitmapHeight;
+
+            // 使用最小的缩放比例，避免变形
+            matrix.postScale(scaleWidth, scaleHeight);
+
+            bitmapResult = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
+
+            if (!bitmap.equals(bitmapResult) && !bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+        }
+        return bitmapResult;// Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
+    }
+
+    /**
+     * @param bitmap       原来的bitmap
+     * @param targetWidth  目标的宽度
+     * @param targetHeight 目标的高度
+     * @return 把bitmap转换成一个适合指定宽高尺寸的缩放bitmap
+     */
+    public static Bitmap getBitmapForScale(Bitmap bitmap, int targetWidth, int targetHeight) {
+        Bitmap bitmapResult = null;
+        try {
+            if ((bitmap != null) && (targetWidth != 0) && (targetHeight != 0)) {
+                int bitmapWidth = bitmap.getWidth();
+                int bitmapHeight = bitmap.getHeight();
+
+                // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
+                float scaleWidth = (float) targetWidth / bitmapWidth;
+                float scaleHeight = (float) targetHeight / bitmapHeight;
+
+                Matrix matrix = new Matrix();
+                matrix.postScale(scaleWidth, scaleHeight);
+
+                bitmapResult = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
+            }
+        } catch (Exception ignored) {
+            LogUtil.e("图像缩放失败！");
+        }
+        return bitmapResult;
+    }
+
+    /**
+     * @param bitmap      原来的bitmap
+     * @param targetWidth 指定bitmap的宽度
+     * @return 根据一个原有的bitmap，缩放其宽度，让高度也跟着宽度的缩放而缩放，生成一个新的高度，这种情况是为了避免输入随意的数字，导致图片缩放的时候回变形
+     */
+    public static Bitmap getBitmapScaleForWidth(Bitmap bitmap, float targetWidth) {
+        Bitmap resultBitmap;
+        if (bitmap != null && targetWidth > 0) {
+            try {
+                int bitmapWidth = bitmap.getWidth();
+                int bitmapHeight = bitmap.getHeight();
+
+                // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
+                float scaleWidth = targetWidth / bitmapWidth;
+                Matrix matrix = new Matrix();
+                matrix.postScale(scaleWidth, scaleWidth);
+
+                resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
+                return resultBitmap;
+            } catch (Exception ignored) {
+                LogUtil.e("图像缩放失败！");
+            }
+        }
+        return bitmap;
+    }
+
     public static Bitmap getBitmapScaleWidth(Drawable drawable, float height) {
         Bitmap bitmap = null;
         if (drawable == null) {
@@ -176,91 +230,11 @@ public class BitmapUtil {
     }
 
     /**
-     * @param bitmap       原来的bitmap
-     * @param targetWidth  目标的宽度
-     * @param targetHeight 目标的高度
-     * @return 把bitmap转换成一个适合指定宽高尺寸的缩放bitmap
-     */
-    public static Bitmap getBitmapForMatrixScale(Bitmap bitmap, int targetWidth, int targetHeight) {
-        Bitmap bitmapResult = null;
-        try {
-            if ((bitmap != null) && (targetWidth != 0) && (targetHeight != 0)) {
-                int bitmapWidth = bitmap.getWidth();
-                int bitmapHeight = bitmap.getHeight();
-
-                // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
-                float scaleWidth = (float) targetWidth / bitmapWidth;
-                float scaleHeight = (float) targetHeight / bitmapHeight;
-
-                Matrix matrix = new Matrix();
-                matrix.postScale(scaleWidth, scaleHeight);
-
-                bitmapResult = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
-            }
-        } catch (Exception ignored) {
-            LogUtil.e("图像缩放失败！");
-        }
-        return bitmapResult;
-    }
-
-    /**
-     * @param bitmap      原来的bitmap
-     * @param targetWidth 指定bitmap的宽度
-     * @return 根据一个原有的bitmap，缩放其宽度，让高度也跟着宽度的缩放而缩放，生成一个新的高度，这种情况是为了避免输入随意的数字，导致图片缩放的时候回变形
-     */
-    public static Bitmap getBitmapForMatrixScaleWidth(Bitmap bitmap, float targetWidth) {
-        Bitmap resultBitmap;
-        if (bitmap != null && targetWidth > 0) {
-            try {
-                int bitmapWidth = bitmap.getWidth();
-                int bitmapHeight = bitmap.getHeight();
-
-                // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
-                float scaleWidth = targetWidth / bitmapWidth;
-                Matrix matrix = new Matrix();
-                matrix.postScale(scaleWidth, scaleWidth);
-
-                resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
-                return resultBitmap;
-            } catch (Exception ignored) {
-                LogUtil.e("图像缩放失败！");
-            }
-        }
-        return bitmap;
-    }
-    /**
-     * @param bitmap      原来的bitmap
-     * @param targetHeight 指定bitmap的宽度
-     * @return 根据一个原有的bitmap，缩放其高度，让宽度也跟着高度的缩放而缩放，生成一个新的宽度，这种情况是为了避免输入随意的数字，导致图片缩放的时候回变形
-     */
-    public static Bitmap getBitmapForMatrixScaleHeight(Bitmap bitmap, float targetHeight) {
-        Bitmap resultBitmap;
-        if (bitmap != null && targetHeight > 0) {
-            try {
-                int bitmapWidth = bitmap.getWidth();
-                int bitmapHeight = bitmap.getHeight();
-
-                // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
-                float scaleWidth = targetHeight / bitmapHeight;
-                Matrix matrix = new Matrix();
-                matrix.postScale(scaleWidth, scaleWidth);
-
-                resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
-                return resultBitmap;
-            } catch (Exception ignored) {
-                LogUtil.e("图像缩放失败！");
-            }
-        }
-        return bitmap;
-    }
-
-    /**
      * @param context          上下文
      * @param path             图片路径
      * @param callBackListener 返回接口，msg: 开始：start，成功： success，失败：error:
      */
     public static void getBitmapForService(Context context, final String path, CallBackListener<Bitmap> callBackListener) {
-
         Flowable.create(new FlowableOnSubscribe<Bitmap>() {
             @Override
             public void subscribe(@NonNull FlowableEmitter<Bitmap> emitter) throws Exception {
@@ -293,7 +267,7 @@ public class BitmapUtil {
                         });
             }
         }, BackpressureStrategy.LATEST)
-                .compose(RxUtil.getScheduler())
+                .compose(RxUtil.getSchedulerFlowable())
                 .subscribe(new DisposableSubscriber<Bitmap>() {
                     @Override
                     protected void onStart() {
@@ -323,5 +297,67 @@ public class BitmapUtil {
                     }
                 });
     }
+
+    /**
+     * @param context          上下文
+     * @param path             网络路径
+     * @param callBackListener 数据回调的接口
+     */
+    public static void getDrawableForService(Context context, final String path, CallBackListener<Drawable> callBackListener) {
+        Flowable.create(new FlowableOnSubscribe<Drawable>() {
+            @Override
+            public void subscribe(@NonNull FlowableEmitter<Drawable> emitter) throws Exception {
+                Glide.with(context)
+                        .load(path)
+                        .into(new CustomTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@androidx.annotation.NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                emitter.onNext(resource);
+                            }
+
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                            }
+
+                            @Override
+                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                                super.onLoadFailed(errorDrawable);
+                                emitter.onError(new Exception("获取的bitmap异常"));
+                            }
+                        });
+            }
+        }, BackpressureStrategy.LATEST)
+                .compose(RxUtil.getSchedulerFlowable())
+                .subscribe(new DisposableSubscriber<Drawable>() {
+                    @Override
+                    protected void onStart() {
+                        super.onStart();
+                        if (callBackListener != null) {
+                            callBackListener.onBack(false, STATUS_START, null);
+                        }
+                    }
+
+                    @Override
+                    public void onNext(Drawable drawable) {
+                        if (callBackListener != null) {
+                            callBackListener.onBack(true, STATUS_SUCCESS, drawable);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        if (callBackListener != null) {
+                            callBackListener.onBack(false, STATUS_ERROR + t.getMessage(), null);
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
 
 }
