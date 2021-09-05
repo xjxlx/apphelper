@@ -16,7 +16,7 @@ public class CommonConstants {
     public static final String KEY_BASE_WEB_VIEW_URL = "key_base_web_view_url";
 
     public static final String KEY_LIFECYCLE_FROM = "key_lifecycle_from";
-    public static final String KEY_LIFECYCLE_FROM_ACCOUNT = "key_lifecycle_from_account";
+    public static final String KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME = "key_lifecycle_notification_channel_name";
 
     /**
      * 保活日志的文件名字

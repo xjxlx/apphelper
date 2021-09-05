@@ -1,13 +1,19 @@
 package com.android.helper.utils;
 
 import android.app.ActivityManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.text.TextUtils;
 
 import java.util.List;
 
 public class ServiceUtil {
+
+    private static JobScheduler scheduler;
 
     /**
      * 开始服务 ，如果使用了startForegroundService（）这个方法，那么就必须要在service中开通 startForeground(1, notification)方法，可以尝试使用
@@ -68,4 +74,48 @@ public class ServiceUtil {
         return false;
     }
 
+    /**
+     * @param context 上下文
+     * @param cls     jobService的对象
+     * @return 如果当前有指定的jobService在运行，就返回true，否则返回false
+     */
+    public synchronized static boolean isJobServiceRunning(Context context, Class<?> cls) {
+        if (scheduler == null) {
+            scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        }
+        boolean hasBeenScheduled = false;
+        for (JobInfo jobInfo : scheduler.getAllPendingJobs()) {
+            ComponentName service = jobInfo.getService();
+            if (service != null) {
+                String jobServiceName = service.getClassName();
+                String className = cls.getName();
+                if (TextUtils.equals(jobServiceName, className)) {
+                    hasBeenScheduled = true;
+                    break;
+                }
+            }
+        }
+        return hasBeenScheduled;
+    }
+
+    /**
+     * @param context 上下文
+     * @param clsName jobService的名字，例如： com.jaychan.demo.service.PushService
+     * @return 如果当前有指定的jobService在运行，就返回true，否则返回false
+     */
+    public static boolean isJobServiceRunning(Context context, String clsName) {
+        JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        boolean hasBeenScheduled = false;
+        for (JobInfo jobInfo : scheduler.getAllPendingJobs()) {
+            ComponentName service = jobInfo.getService();
+            if (service != null) {
+                String jobServiceName = service.getClassName();
+                if (TextUtils.equals(jobServiceName, clsName)) {
+                    hasBeenScheduled = true;
+                    break;
+                }
+            }
+        }
+        return hasBeenScheduled;
+    }
 }
