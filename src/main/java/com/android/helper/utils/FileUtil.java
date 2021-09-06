@@ -2,11 +2,11 @@ package com.android.helper.utils;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.text.TextUtils;
+
+import com.luck.picture.lib.tools.PictureFileUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -26,9 +26,9 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class FileUtil {
-    
+
     private final static String TAG = "FileUtil";
-    
+
     public final static String CONTROL_VEHICLE_LOG_PATH = Environment
             .getExternalStorageDirectory().getAbsolutePath()
             + File.separator
@@ -36,14 +36,14 @@ public class FileUtil {
             + File.separator
             + "控制车辆"
             + File.separator;
-    
+
     /**
      * @return 检测sd卡是否存在，如果存在就返回tru，否则就返回false
      */
     public static boolean checkoutSdExists() {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
-    
+
     /**
      * @return 获取保存到sd卡中的文件内容
      */
@@ -81,7 +81,7 @@ public class FileUtil {
         }
         return result;
     }
-    
+
     /**
      * @param fileName 文件名字,例如：device.text
      * @param content  具体的内容 "123"
@@ -109,7 +109,7 @@ public class FileUtil {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    
+
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -121,7 +121,7 @@ public class FileUtil {
         }
         return isSaveSuccess;
     }
-    
+
     /**
      * @return 获取Sd卡的路径，因为7.0之后SD卡的路径可能会被拒绝访问，所以分为两种不同的情况去获取
      * 1:7.0之上的方式：获取的路径为App内部的路径，会随着App的删除而被删除掉，具体路径为：/storage/emulated/0/Android/data/com.xjx.helper.debug/files/Download
@@ -141,7 +141,7 @@ public class FileUtil {
         LogUtil.e(TAG, "获取的Sd卡根路径为：" + path);
         return path;
     }
-    
+
     /**
      * @return 保存到App路径下面
      */
@@ -180,7 +180,7 @@ public class FileUtil {
         }
         return isSaveSuccess;
     }
-    
+
     /**
      * @return 获取保存在App里面的内容
      */
@@ -218,14 +218,14 @@ public class FileUtil {
         }
         return result;
     }
-    
+
     /**
      * @return 获取sd卡的根目录的File
      */
     public static File getRootFileForSd() {
         return Environment.getExternalStorageDirectory();
     }
-    
+
     /**
      * @param context context
      * @return 获取app目录下的根目录
@@ -233,7 +233,7 @@ public class FileUtil {
     public static File getRootFileForApp(Context context) {
         return context.getExternalFilesDir(null);
     }
-    
+
     /**
      * @return 根据一个原始的路径，在同一个目录下面去生成一个新的文件名字，例如：/storage/emulated/0/a_pdf_list/test_2_abc.pdf，
      * 经过优化之后，会在/storage/emulated/0/a_pdf_list/目录下，生成另外一个文件/storage/emulated/0/a_pdf_list/test_2_abc(0).pdf
@@ -250,16 +250,16 @@ public class FileUtil {
             if (length >= contentLength) {
                 LogUtil.e(TAG, "本地文件和文件总大小一致，需要重新命名文件名字！");
                 String newFileName = "";// 新文件的名字
-                
+
                 if (OriginalPath.contains(".")) {
                     // 最后一个.的index位置
                     int index = OriginalPath.lastIndexOf(".");
-                    
+
                     // 获取前半部分的名字
                     String beginIndex = OriginalPath.substring(0, index);
                     // 获取.后面的文件格式
                     String endIndex = OriginalPath.substring(index);
-                    
+
                     // 这里要去判断该文件夹下面，有没有已经命名过的文件了
                     File parentFile = file.getParentFile();
                     if (parentFile != null) {
@@ -273,14 +273,14 @@ public class FileUtil {
                                     // 包含了修改过文件的情况
                                     if ((name.contains("(")) && (name.contains(")"))) {
                                         LogUtil.e(TAG, "包含了修改过文件名字的对象，文件名字为：" + name);
-                                        
+
                                         // 从角标0开始便利文件名字
                                         for (int i = 0; i < Long.MAX_VALUE; i++) {
                                             // 重新构建文件的名字
                                             newFileName = beginIndex + "(" + (i) + ")" + endIndex;
                                             File newFile = new File(newFileName);
                                             long newFileLength = newFile.length();
-                                            
+
                                             // 如果新文件的大小小于等于0，或者新文件的大小小于文件的总大小，那么就找到了我们需要的文件,并且要停掉整个轮询
                                             if ((newFileLength <= 0) || (newFileLength < contentLength)) {
                                                 LogUtil.e(TAG, "新生成的文件名字大小大于0，小于文件的总大小，这个文件就是当前需要的文件：newFileName:" + newFileName);
@@ -308,14 +308,14 @@ public class FileUtil {
         }
         return path;
     }
-    
+
     /**
      * @param url 文件地址的url
      * @return 根据url 获取远程文件的大小
      */
     public static long getFileSizeForUrl(String url) {
         final long[] contentLength = {0};
-        
+
         Request.Builder builder = new Request
                 .Builder()
                 .url(url);
@@ -324,9 +324,9 @@ public class FileUtil {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-            
+
             }
-            
+
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
@@ -338,10 +338,10 @@ public class FileUtil {
                 }
             }
         });
-        
+
         return contentLength[0];
     }
-    
+
     /**
      * @param context context
      * @param uri     一个uri类型的字符串
@@ -353,21 +353,15 @@ public class FileUtil {
             try {
                 Uri parse = Uri.parse(uri);
                 final String scheme = parse.getScheme();
+
                 if (TextUtils.isEmpty(scheme)) {
                     return parse.getPath();
                 } else if (TextUtils.equals(ContentResolver.SCHEME_FILE, scheme)) {
+                    // file:// 开头的
                     data = parse.getPath();
                 } else if (TextUtils.equals(ContentResolver.SCHEME_CONTENT, scheme)) {
-                    Cursor cursor = context.getContentResolver().query(parse, new String[]{MediaStore.Images.ImageColumns.DATA}, null, null, null);
-                    if (null != cursor) {
-                        if (cursor.moveToFirst()) {
-                            int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-                            if (index > -1) {
-                                return cursor.getString(index);
-                            }
-                        }
-                        cursor.close();
-                    }
+                    // 使用选择器的三方类库去获取
+                    data = PictureFileUtils.getPath(context, parse);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -376,4 +370,5 @@ public class FileUtil {
         }
         return data;
     }
+
 }

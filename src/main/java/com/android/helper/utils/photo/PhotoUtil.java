@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
+import com.android.helper.utils.FileUtil;
 import com.android.helper.utils.LogUtil;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
@@ -33,8 +34,6 @@ public class PhotoUtil implements BaseLifecycleObserver {
         return mPhotoUtil;
     }
 
-    private static String tag = "video";
-
     /**
      * @param context    context
      * @param localMedia localMedia
@@ -45,7 +44,6 @@ public class PhotoUtil implements BaseLifecycleObserver {
         String url = "";
         boolean compressed = localMedia.isCompressed();
 
-        LogUtil.write(tag, "当前的文件是否被压缩：" + compressed);
         if (compressed) {
             url = localMedia.getCompressPath();
             LogUtil.e("压缩拍摄视频的路径为：$mPhoto_path");
@@ -81,7 +79,7 @@ public class PhotoUtil implements BaseLifecycleObserver {
             }
             LogUtil.e("没有压缩拍摄视频的路径为：$mPhoto_path");
         }
-        return url;
+        return FileUtil.UriToPath(context, url);
     }
 
     /**
