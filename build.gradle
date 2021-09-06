@@ -10,7 +10,8 @@ android {
     def compile = rootProject.ext.android
 
     compileSdkVersion compile.compileSdkVersion
-    buildToolsVersion compile.buildToolsVersion
+    // 此处暂时先别打开
+    // buildToolsVersion compile.buildToolsVersion
 
     defaultConfig {
         minSdkVersion compile.minSdkVersion
