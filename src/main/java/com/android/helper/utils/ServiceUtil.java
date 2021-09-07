@@ -83,12 +83,14 @@ public class ServiceUtil {
         if (scheduler == null) {
             scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         }
+
         boolean hasBeenScheduled = false;
         for (JobInfo jobInfo : scheduler.getAllPendingJobs()) {
             ComponentName service = jobInfo.getService();
             if (service != null) {
                 String jobServiceName = service.getClassName();
                 String className = cls.getName();
+                LogUtil.e("job:" + jobServiceName + "  cls:" + className + "  " + TextUtils.equals(jobServiceName, className));
                 if (TextUtils.equals(jobServiceName, className)) {
                     hasBeenScheduled = true;
                     break;
@@ -103,7 +105,7 @@ public class ServiceUtil {
      * @param clsName jobService的名字，例如： com.jaychan.demo.service.PushService
      * @return 如果当前有指定的jobService在运行，就返回true，否则返回false
      */
-    public static boolean isJobServiceRunning(Context context, String clsName) {
+    public synchronized static boolean isJobServiceRunning(Context context, String clsName) {
         JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         boolean hasBeenScheduled = false;
         for (JobInfo jobInfo : scheduler.getAllPendingJobs()) {

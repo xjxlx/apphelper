@@ -4,19 +4,24 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import com.android.helper.R;
 import com.android.helper.httpclient.BaseHttpSubscriber;
 import com.android.helper.httpclient.RxUtil;
 import com.android.helper.interfaces.TagListener;
+import com.android.helper.interfaces.UIListener;
 import com.android.helper.interfaces.listener.HttpManagerListener;
 import com.android.helper.utils.ClassUtil;
 import com.android.helper.utils.ClickUtil;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.TextViewUtil;
 import com.android.helper.utils.statusBar.StatusBarUtil;
 
 import io.reactivex.Flowable;
@@ -27,15 +32,16 @@ import io.reactivex.disposables.Disposable;
 /**
  * 最基层的Activity
  */
-public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, HttpManagerListener, TagListener {
+public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, HttpManagerListener, TagListener, UIListener {
 
-    public BaseActivity mContext;
+    public FragmentActivity mContext;
     private int mClickInterval = 500;// view的点击事件间隔
 
     /*
      *此处不能写成静态的，否则就会和使用RxManager一样了
      */
     private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    protected View.OnClickListener mBackClickListener = null;// 返回的点击事件
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,7 +51,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         LogUtil.e("当前的页面：Activity：--->  " + getClass().getName());
 
         // 在onCreate之前调用的方法
-        OnCreatedBefore();
+        onBeforeCreateView();
 
         int baseLayout = getBaseLayout();
         if (baseLayout != 0) {
@@ -55,15 +61,18 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         // 设置状态栏
         StatusBarUtil.getInstance(mContext).setStatusColor(R.color.base_title_background_color);
 
-        onInitViewBefore();
         initView();
         initListener();
         initData();
     }
 
+    @Override
+    public void onBeforeCreateView() {
+
+    }
+
     @SuppressLint("CheckResult")
     public <T> Disposable net(@NonNull Flowable<T> flowAble, BaseHttpSubscriber<T> subscriber) {
-
         BaseHttpSubscriber<T> httpSubscriber = flowAble
                 .compose(RxUtil.getSchedulerFlowable())  // 转换线程
                 .onBackpressureLatest()  // 使用背压，保留最后一次的结果
@@ -81,25 +90,17 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         mContext = this;
     }
 
-    /**
-     * 在onCreate之前调用的方法，用于特殊的使用
-     */
-    protected void OnCreatedBefore() {
-    }
-
-    protected void initListener() {
-    }
-
-    protected void onInitViewBefore() {
-    }
-
-    protected void initView() {
-    }
-
-    protected void initData() {
-    }
-
     protected abstract int getBaseLayout();
+
+    @Override
+    public void initView() {
+
+    }
+
+    @Override
+    public void initListener() {
+
+    }
 
     /**
      * 新建一个Intent，然后跳转到指定的界面
@@ -170,7 +171,17 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View v) {
-
+        int id = v.getId();
+        // 返回键
+        if (id == R.id.ll_base_title_back) {
+            if (mBackClickListener != null) {
+                // 处理额外的点击事件
+                mBackClickListener.onClick(v);
+            } else {
+                // 直接返回
+                finish();
+            }
+        }
     }
 
     @Override
@@ -216,6 +227,27 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      */
     public void setClickInterval(int mClickInterval) {
         this.mClickInterval = mClickInterval;
+    }
+
+    /**
+     * 给activity设置title
+     *
+     * @param title 标题内容
+     */
+    protected void setTitleContent(String title) {
+        if (!TextUtils.isEmpty(title)) {
+            TextView tvBaseTitle = findViewById(R.id.tv_base_title);
+            TextViewUtil.setText(tvBaseTitle, title);
+        }
+    }
+
+    /**
+     * 设置返回按钮的点击事件
+     *
+     * @param listener 返回的点击事件
+     */
+    protected void setBackClickListener(View.OnClickListener listener) {
+        this.mBackClickListener = listener;
     }
 
     @Override

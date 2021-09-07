@@ -17,7 +17,7 @@ public class BaseRefreshHeader extends ClassicsHeader {
         initView(context, attrs);
     }
 
-    protected void initView(Context context, AttributeSet attrs) {
+    public void initView(Context context, AttributeSet attrs) {
 
     }
 }

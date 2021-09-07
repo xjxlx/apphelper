@@ -170,7 +170,7 @@ public class RefreshUtil implements OnRefreshLoadMoreListener {
     /**
      * 刷新事件类型
      */
-    protected void initListener() {
+    public void initListener() {
         // 刷新布局
         if (mRefreshType != null) {
             if (mRefreshType == RefreshType.TYPE_REFRESH) {

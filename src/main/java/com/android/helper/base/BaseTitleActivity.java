@@ -32,8 +32,8 @@ public abstract class BaseTitleActivity extends BaseActivity {
     }
 
     @Override
-    protected void onInitViewBefore() {
-        super.onInitViewBefore();
+    public void onBeforeCreateView() {
+        super.onBeforeCreateView();
         // root
         mRlBaseTitleRoot = findViewById(R.id.rl_base_title_root);
         // left parent
@@ -62,6 +62,16 @@ public abstract class BaseTitleActivity extends BaseActivity {
      * @return 获取子类布局的view
      */
     protected abstract int getTitleLayout();
+
+    @Override
+    public void initListener() {
+
+    }
+
+    @Override
+    public void initData() {
+
+    }
 
     /**
      * 给activity设置title

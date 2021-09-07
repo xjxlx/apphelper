@@ -47,8 +47,8 @@ public abstract class BaseRefreshActivity extends BaseTitleActivity implements O
     }
 
     @Override
-    protected void onInitViewBefore() {
-        super.onInitViewBefore();
+    public void onBeforeCreateView() {
+        super.onBeforeCreateView();
 
         // refresh layout
         mBrlBaseRefresh = (BaseRefreshLayout) findViewById(R.id.brl_base_refresh);
@@ -79,8 +79,7 @@ public abstract class BaseRefreshActivity extends BaseTitleActivity implements O
     }
 
     @Override
-    protected void initListener() {
-        super.initListener();
+    public void initListener() {
         // 刷新事件
         initRefreshListener();
     }
@@ -271,6 +270,5 @@ public abstract class BaseRefreshActivity extends BaseTitleActivity implements O
         // //完成加载并标记没有更多数据 1.0.4
         mBrlBaseRefresh.finishLoadMoreWithNoMoreData();
     }
-
 
 }

@@ -89,7 +89,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         initData();
     }
 
-    protected void initListener() {
+    public void initListener() {
     }
 
     protected void onInitViewBefore(LayoutInflater inflater, View container) {

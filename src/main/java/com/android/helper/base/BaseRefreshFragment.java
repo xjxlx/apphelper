@@ -128,7 +128,7 @@ public abstract class BaseRefreshFragment<T, T2> extends BaseFragment implements
     }
 
     @Override
-    protected void initListener() {
+    public void initListener() {
         super.initListener();
 
         // 初始化刷新事件
@@ -183,7 +183,7 @@ public abstract class BaseRefreshFragment<T, T2> extends BaseFragment implements
     }
 
     @Override
-    protected void initData() {
+    public void initData() {
         // 开始请求数据
         disposable = requestData();
     }

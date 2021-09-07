@@ -23,6 +23,16 @@ public class CommonConstants {
      */
     public static final String FILE_LIFECYCLE_NAME = "保活";
 
+    /**
+     * 保活 服务的名字
+     */
+    public static final String FILE_LIFECYCLE_SERVICE_NAME = "file_lifecycle_service_name";
+
+    /**
+     * 保活 JOB服务的名字
+     */
+    public static final String FILE_LIFECYCLE_JOB_SERVICE_NAME = "file_lifecycle_job_service_name";
+
     /* *************************************** key end **********************************************/
 
     /* *************************************** code start **********************************************/

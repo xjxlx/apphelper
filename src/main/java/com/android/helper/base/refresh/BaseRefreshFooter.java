@@ -20,7 +20,7 @@ public class BaseRefreshFooter extends ClassicsFooter {
         initView(context, attrs);
     }
 
-    protected void initView(Context context, AttributeSet attrs) {
+    public void initView(Context context, AttributeSet attrs) {
 
     }
 
