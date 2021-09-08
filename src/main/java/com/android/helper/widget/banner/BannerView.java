@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,9 +24,7 @@ import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 自定义轮播图，可以实现自动滚动
@@ -54,7 +53,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private BannerItemClickListener<?> mBannerItemClickListener;// 点击事件的处理
     private BannerIndicator mIndicator;
     private int mMaxWidth, mMaxHeight;
-    private final Map<Integer, Integer> mMapHeight = new HashMap<>(); // 用来存储每个item的高度
     private int mCurrent;// 当前的position
     private boolean isLast = true; //滑动是否可用
     private boolean mIsParentIntercept = false;// 父类是否拦截的标记
@@ -81,27 +79,21 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 mMaxHeight = getDefaultSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
             }
         } else { // 正常模式
-
             if (mImageType == 1) { // 图片模式
                 if ((mListImageData != null) && (mListImageData.size() > 0)) {
                     int currentItem = getCurrentItem();
                     // 求出当前item是第几列
                     int position = currentItem % mListImageData.size();
-
-                    // 获取当前view的高度
-                    Integer heightForMap = mMapHeight.get(position);
-                    if ((heightForMap != null) && (heightForMap != 0)) {
-                        // 直接去赋值
-                        mMaxHeight = heightForMap;
-                    } else {
-                        // 获取当前的view高度
-                        View childAt = getChildAt(position);
-                        if (childAt != null) {
-                            // 测量view的大小
-                            childAt.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.UNSPECIFIED));
-                            mMaxHeight = childAt.getMeasuredHeight();
-                            if (mMaxHeight > 0) {
-                                mMapHeight.put(position, mMaxHeight);
+                    // 获取当前的view高度
+                    View childAt = getChildAt(position);
+                    if (childAt != null) {
+                        // 测量view的大小
+                        if (childAt instanceof ViewGroup) {
+                            ViewGroup group = (ViewGroup) childAt;
+                            View child = group.getChildAt(0);
+                            if (child != null) {
+                                child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.UNSPECIFIED));
+                                mMaxHeight = child.getMeasuredHeight();
                             }
                         }
                     }
@@ -129,12 +121,12 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             mMaxWidth = resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
         }
 
-        // LogUtil.e("------>width:" + mMaxWidth + "  height:" + mMaxHeight);
         // 重新设置高度的模式
         heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.EXACTLY);
         // 重新设置宽度的模式
         widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY);
 
+        LogUtil.e("mMaxWidth:" + mMaxWidth + "  mMaxHeight:" + mMaxHeight);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
