@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -142,6 +143,14 @@ public class GlideUtil {
                         }
                     });
         }
+    }
+
+    public static void loadViewCenterCrop(Context context, ImageView view, String url) {
+        if ((context != null) && (view != null) && (!TextUtils.isEmpty(url)))
+            Glide.with(context)
+                    .load(url)
+                    .centerCrop()
+                    .into(view);
     }
 
 }

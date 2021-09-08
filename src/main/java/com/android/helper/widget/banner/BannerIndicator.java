@@ -21,9 +21,8 @@ public class BannerIndicator extends LinearLayout {
     private int mSelectorResource, mUnSelectedResource;
     private int mCurrentPosition;// 上一次点击的item位置
     private int mMaxWidth, mMaxHeight;
-    private BannerView<?> mBannerView;
+    private BannerView mBannerView;
     private float mWidth, mHeight;
-    private String TAG = "123";
 
     public BannerIndicator(Context context) {
         super(context);
@@ -102,7 +101,7 @@ public class BannerIndicator extends LinearLayout {
     /**
      * 结合viewPager
      */
-    public void setViewPager(BannerView<?> bannerView, int count) {
+    public void setViewPager(BannerView bannerView, int count) {
         this.mBannerView = bannerView;
 
         // 先清空，在加入

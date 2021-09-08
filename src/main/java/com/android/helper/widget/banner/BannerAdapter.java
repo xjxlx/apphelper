@@ -23,7 +23,7 @@ public class BannerAdapter<T> extends PagerAdapter {
     private final List<T> mListData;
     private BannerLoadListener<T> mLoadListener;
     private BannerItemClickListener<T> mItemClickListener;// 点击事件
-    private BannerView<T> mBannerView;
+    private BannerView mBannerView;
 
     public BannerAdapter(List<T> listData) {
         mListData = listData;
@@ -111,7 +111,7 @@ public class BannerAdapter<T> extends PagerAdapter {
     /**
      * 设置轮播图的对象，用来获取轮播图的信息
      */
-    public void setParentView(BannerView<T> bannerView) {
+    public void setParentView(BannerView bannerView) {
         mBannerView = bannerView;
     }
 }

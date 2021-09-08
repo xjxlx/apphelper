@@ -42,16 +42,16 @@ import java.util.Map;
  * 1：如果父类是NestedScrollView包裹的话，一定要给NestedScrollView的布局上加入： android:fillViewport="true"
  * 让ScrollView去允许子view自控扩展高度
  */
-public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
+public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
     private final int CODE_WHAT_LOOP = 1000;// 轮询的code值
     private int CODE_LOOP_INTERVAL = 3 * 1000;// 轮询的时间间隔，默认5s
     private boolean mAutoLoop = true;// 是否开启轮询，默认开启
     private List<Fragment> mListFragmentData;// fragment的集合
-    private List<T> mListImageData;// 图片的集合
+    private List<?> mListImageData;// 图片的集合
     private int mImageType;// 1：普通的ImageView,2:fragment类型的
-    private BannerLoadListener<T> mLoadListener;// 加载本地图片页面的回调
-    private BannerItemClickListener<T> mBannerItemClickListener;// 点击事件的处理
+    private BannerLoadListener<?> mLoadListener;// 加载本地图片页面的回调
+    private BannerItemClickListener<?> mBannerItemClickListener;// 点击事件的处理
     private BannerIndicator mIndicator;
     private int mMaxWidth, mMaxHeight;
     private final Map<Integer, Integer> mMapHeight = new HashMap<>(); // 用来存储每个item的高度
@@ -192,7 +192,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
             }
         } else if (mImageType == 1) {
             if ((mListImageData != null) && (mListImageData.size() > 0)) {
-                BannerAdapter<T> bannerAdapter = new BannerAdapter<>(mListImageData);
+                BannerAdapter bannerAdapter = new BannerAdapter(mListImageData);
                 bannerAdapter.setParentView(this);
 
                 if (mLoadListener != null) {
@@ -349,7 +349,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
     /**
      * @param interval 轮询的时间间隔，默认是5s
      */
-    public BannerView<T> setInterval(int interval) {
+    public BannerView setInterval(int interval) {
         CODE_LOOP_INTERVAL = interval;
         return this;
     }
@@ -359,18 +359,18 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
      *
      * @param autoLoop true:自动轮询，false:不轮询
      */
-    public BannerView<T> autoLoop(boolean autoLoop) {
+    public BannerView autoLoop(boolean autoLoop) {
         this.mAutoLoop = autoLoop;
         return this;
     }
 
-    public BannerView<T> setImageData(List<T> listImageData) {
+    public <T> BannerView setImageData(List<T> listImageData) {
         mListImageData = listImageData;
         mImageType = 1;
         return this;
     }
 
-    public BannerView<T> setFragmentData(List<Fragment> fragmentList) {
+    public BannerView setFragmentData(List<Fragment> fragmentList) {
         this.mListFragmentData = fragmentList;
         mImageType = 2;
         return this;
@@ -379,7 +379,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
     /**
      * 此方法，只适用于加载单独的图片去使用，因为有些图片可能要进行其他处理，例如圆角什么的，所以让使用者自己去加载处理。
      */
-    public BannerView<T> setBannerLoadListener(BannerLoadListener<T> loadListener) {
+    public <T> BannerView setBannerLoadListener(BannerLoadListener<T> loadListener) {
         this.mLoadListener = loadListener;
         return this;
     }
@@ -387,7 +387,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
     /**
      * 图片类型点击事件的处理
      */
-    public BannerView<T> setItemClickListener(BannerItemClickListener<T> onItemClickListener) {
+    public <T> BannerView setItemClickListener(BannerItemClickListener<T> onItemClickListener) {
         this.mBannerItemClickListener = onItemClickListener;
         return this;
     }
@@ -395,7 +395,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
     /**
      * @return 设置指示器
      */
-    public BannerView<T> addIndicator(BannerIndicator bannerIndicator) {
+    public BannerView addIndicator(BannerIndicator bannerIndicator) {
         this.mIndicator = bannerIndicator;
         return this;
     }
@@ -405,7 +405,7 @@ public class BannerView<T> extends ViewPager implements BaseLifecycleObserver {
      *
      * @param parentIntercept true:不拦截，false:拦截，默认是拦截
      */
-    public BannerView<T> setParentNoIntercept(boolean parentIntercept) {
+    public BannerView setParentNoIntercept(boolean parentIntercept) {
         mIsParentIntercept = parentIntercept;
         return this;
     }
