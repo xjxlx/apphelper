@@ -147,10 +147,21 @@ public class GlideUtil {
 
     public static void loadViewCenterCrop(Context context, ImageView view, String url) {
         if ((context != null) && (view != null) && (!TextUtils.isEmpty(url)))
+            loadViewCenterCrop(context, view, url, 0);
+    }
+
+    @SuppressLint("CheckResult")
+    public static void loadViewCenterCrop(Context context, ImageView view, String url, int placeResourceId) {
+        if ((context != null) && (view != null) && (!TextUtils.isEmpty(url))) {
+            RequestOptions options = new RequestOptions();
+            if (placeResourceId != 0) {
+                options.placeholder(placeResourceId);
+            }
+
             Glide.with(context)
                     .load(url)
                     .centerCrop()
                     .into(view);
+        }
     }
-
 }

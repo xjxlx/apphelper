@@ -59,6 +59,9 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private boolean isLast = true; //滑动是否可用
     private boolean mIsParentIntercept = false;// 父类是否拦截的标记
     private int mStartX, mStartY; // 开始滑动的x轴位置
+    private BannerAdapter mBannerAdapter;
+    private BannerFragmentAdapter mFragmentAdapter;
+    boolean isWhereVisible = true; // 是否轮询检查view的可见性
 
     public BannerView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -179,8 +182,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private void setAdapter(FragmentManager manager) {
         if (mImageType == 2) {
             if ((mListFragmentData != null) && (mListFragmentData.size() > 0)) {
-                BannerFragmentAdapter fragmentAdapter = new BannerFragmentAdapter(manager, mListFragmentData);
-                setAdapter(fragmentAdapter);
+                mFragmentAdapter = new BannerFragmentAdapter(manager, mListFragmentData);
+                setAdapter(mFragmentAdapter);
 
                 setOffscreenPageLimit(mListFragmentData.size());
                 // 添加指示器
@@ -192,16 +195,16 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             }
         } else if (mImageType == 1) {
             if ((mListImageData != null) && (mListImageData.size() > 0)) {
-                BannerAdapter bannerAdapter = new BannerAdapter(mListImageData);
-                bannerAdapter.setParentView(this);
+                mBannerAdapter = new BannerAdapter(mListImageData);
+                mBannerAdapter.setParentView(this);
 
                 if (mLoadListener != null) {
-                    bannerAdapter.setBannerLoadListener(mLoadListener);
+                    mBannerAdapter.setBannerLoadListener(mLoadListener);
                 }
                 if (mBannerItemClickListener != null) {
-                    bannerAdapter.setItemClickListener(mBannerItemClickListener);
+                    mBannerAdapter.setItemClickListener(mBannerItemClickListener);
                 }
-                setAdapter(bannerAdapter);
+                setAdapter(mBannerAdapter);
 
                 // size 的长度
                 int size = mListImageData.size();
@@ -411,7 +414,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     }
 
     @SuppressLint("HandlerLeak")
-    private final Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull @NotNull Message msg) {
             super.handleMessage(msg);
@@ -470,6 +473,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
     @Override
     public void onDestroy() {
+        isWhereVisible = false;
+
         onStop();
         if (mListFragmentData != null) {
             mListFragmentData.clear();
@@ -482,6 +487,32 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         if (mIndicator != null) {
             mIndicator = null;
         }
+        if (mBannerAdapter != null) {
+            mBannerAdapter = null;
+        }
+        if (mFragmentAdapter != null) {
+            mFragmentAdapter = null;
+        }
+        if (mHandler != null) {
+            mHandler = null;
+        }
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        LogUtil.e("onSizeChanged: w:" + w + " h:" + h + "  oldw:" + oldw + "  olh:" + oldh);
+        int visibility = getVisibility();
+        if (visibility == View.VISIBLE) {
+            if (mImageType == 1) {
+                if (mBannerAdapter != null) {
+                    setAdapter(mBannerAdapter);
+                }
+            } else if (mImageType == 2) {
+                if (mFragmentAdapter != null) {
+                    setAdapter(mFragmentAdapter);
+                }
+            }
+        }
+    }
 }
