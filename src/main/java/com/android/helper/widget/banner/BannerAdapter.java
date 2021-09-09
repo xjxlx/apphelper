@@ -10,6 +10,8 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.photo.GlideUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -47,6 +49,7 @@ public class BannerAdapter<T> extends PagerAdapter {
     @NotNull
     @Override
     public Object instantiateItem(@NotNull ViewGroup container, int position) {
+        LogUtil.e("instantiateItem:");
         View view = null;
         //:1:首先要拿到position的位置，为了避免角标越界，进行取余运算
         if (mListData != null) {
@@ -71,6 +74,10 @@ public class BannerAdapter<T> extends PagerAdapter {
             T t = mListData.get(position);
             if (mLoadListener != null) {
                 mLoadListener.onLoadView(imageView, t);
+            }
+            if (t instanceof String) {
+                String url = (String) t;
+                GlideUtil.loadViewCenterCrop(container.getContext(), imageView, url);
             }
 
             int finalPosition = position;

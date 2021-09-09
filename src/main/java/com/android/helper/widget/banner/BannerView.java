@@ -59,7 +59,9 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private int mStartX, mStartY; // 开始滑动的x轴位置
     private BannerAdapter mBannerAdapter;
     private BannerFragmentAdapter mFragmentAdapter;
-    boolean isWhereVisible = true; // 是否轮询检查view的可见性
+    private FragmentManager mFragmentManager;
+    private boolean isVisibility; // view是否可见，只有布局显示完全了，才会去设置为可见
+    private boolean isSetAdapter; // 是否已经设置了adapter
 
     public BannerView(@NonNull @NotNull Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -121,6 +123,10 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             mMaxWidth = resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
         }
 
+        if (mMaxHeight <= 0) {
+            mMaxHeight = resolveSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
+        }
+
         // 重新设置高度的模式
         heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.EXACTLY);
         // 重新设置宽度的模式
@@ -141,6 +147,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
      * @param fragment fragment类型的上下文
      */
     public void show(Fragment fragment, FragmentManager manager) {
+        this.mFragmentManager = manager;
         // 感知fragment的生命周期
         if (fragment != null) {
             Lifecycle lifecycle = fragment.getLifecycle();
@@ -163,6 +170,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             lifecycle.addObserver(this);
 
             FragmentManager manager = fragmentActivity.getSupportFragmentManager();
+            this.mFragmentManager = manager;
 
             setAdapter(manager);
         }
@@ -172,52 +180,61 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
      * 设置adapter，内部使用
      */
     private void setAdapter(FragmentManager manager) {
-        if (mImageType == 2) {
-            if ((mListFragmentData != null) && (mListFragmentData.size() > 0)) {
-                mFragmentAdapter = new BannerFragmentAdapter(manager, mListFragmentData);
-                setAdapter(mFragmentAdapter);
+        LogUtil.e("---: setAdapter");
 
-                setOffscreenPageLimit(mListFragmentData.size());
-                // 添加指示器
-                if (mIndicator != null) {
-                    mIndicator.setViewPager(this, mListFragmentData.size());
+        if (isVisibility) {
+            if (mImageType == 2) {
+                if ((mListFragmentData != null) && (mListFragmentData.size() > 0)) {
+                    mFragmentAdapter = new BannerFragmentAdapter(manager, mListFragmentData);
+                    setAdapter(mFragmentAdapter);
+
+                    setOffscreenPageLimit(mListFragmentData.size());
+                    if (mListFragmentData.size() > 1) {
+                        // 添加指示器
+                        if (mIndicator != null) {
+                            mIndicator.setViewPager(this, mListFragmentData.size());
+                        }
+                    }
+                    // 设置当前默认的位置是在最中间的位置
+                    setCurrentItem(0);
+
+                    isSetAdapter = true;
                 }
-                // 设置当前默认的位置是在最中间的位置
-                setCurrentItem(0);
+            } else if (mImageType == 1) {
+                if ((mListImageData != null) && (mListImageData.size() > 0)) {
+                    mBannerAdapter = new BannerAdapter(mListImageData);
+                    mBannerAdapter.setParentView(this);
+
+                    if (mLoadListener != null) {
+                        mBannerAdapter.setBannerLoadListener(mLoadListener);
+                    }
+                    if (mBannerItemClickListener != null) {
+                        mBannerAdapter.setItemClickListener(mBannerItemClickListener);
+                    }
+                    setAdapter(mBannerAdapter);
+
+                    // size 的长度
+                    int size = mListImageData.size();
+                    setOffscreenPageLimit(size);
+
+                    // 设置当前默认的位置是在最中间的位置
+                    if (size <= 1) {
+                        setCurrentItem(0);
+                    } else {
+                        // 添加指示器
+                        if (mIndicator != null) {
+                            mIndicator.setViewPager(this, size);
+                        }
+                        setCurrentItem(CommonConstants.BANNER_LENGTH / size);
+                    }
+
+                    isSetAdapter = true;
+                }
             }
-        } else if (mImageType == 1) {
-            if ((mListImageData != null) && (mListImageData.size() > 0)) {
-                mBannerAdapter = new BannerAdapter(mListImageData);
-                mBannerAdapter.setParentView(this);
 
-                if (mLoadListener != null) {
-                    mBannerAdapter.setBannerLoadListener(mLoadListener);
-                }
-                if (mBannerItemClickListener != null) {
-                    mBannerAdapter.setItemClickListener(mBannerItemClickListener);
-                }
-                setAdapter(mBannerAdapter);
-
-                // size 的长度
-                int size = mListImageData.size();
-                setOffscreenPageLimit(size);
-                // 添加指示器
-                if (mIndicator != null) {
-                    mIndicator.setViewPager(this, size);
-                }
-
-                addIndicator(mIndicator);
-                // 设置当前默认的位置是在最中间的位置
-                if (size == 1) {
-                    setCurrentItem(CommonConstants.BANNER_LENGTH / 2);
-                } else {
-                    setCurrentItem(CommonConstants.BANNER_LENGTH / size);
-                }
-            }
+            // 开始轮询播放
+            sendMessage();
         }
-
-        // 开始轮询播放
-        sendMessage();
     }
 
     /**
@@ -248,7 +265,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
             @Override
             public void onPageSelected(int position) {
-                //  LogUtil.e("----->current---onPageSelected:" + getCurrentItem());
+                LogUtil.e("----->current---onPageSelected:" + getCurrentItem());
                 // 处理点击事件
                 if (mImageType == 2) {
                     Fragment fragment = mListFragmentData.get(position);
@@ -314,9 +331,9 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 int dy = y - mStartY;
 
                 if (dx > 0) {
-                    LogUtil.e("向右滑动 dx :" + dx);
+                    // LogUtil.e("向右滑动 dx :" + dx);
                 } else {
-                    LogUtil.e("向左滑动 dx: " + dx);
+                    //  LogUtil.e("向左滑动 dx: " + dx);
                 }
 
                 //:判断
@@ -465,7 +482,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
     @Override
     public void onDestroy() {
-        isWhereVisible = false;
 
         onStop();
         if (mListFragmentData != null) {
@@ -491,20 +507,21 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     }
 
     @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        LogUtil.e("visibility:" + visibility);
+    }
+
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         LogUtil.e("onSizeChanged: w:" + w + " h:" + h + "  oldw:" + oldw + "  olh:" + oldh);
-        int visibility = getVisibility();
-        if (visibility == View.VISIBLE) {
-            if (mImageType == 1) {
-                if (mBannerAdapter != null) {
-                    setAdapter(mBannerAdapter);
-                }
-            } else if (mImageType == 2) {
-                if (mFragmentAdapter != null) {
-                    setAdapter(mFragmentAdapter);
-                }
-            }
+
+        if (getVisibility() == View.VISIBLE) {
+            isVisibility = true;
+        }
+        if (!isSetAdapter) {
+            setAdapter(mFragmentManager);
         }
     }
 }
