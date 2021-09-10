@@ -11,7 +11,6 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.photo.GlideUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -74,10 +73,6 @@ public class BannerAdapter<T> extends PagerAdapter {
             T t = mListData.get(position);
             if (mLoadListener != null) {
                 mLoadListener.onLoadView(imageView, t);
-            }
-            if (t instanceof String) {
-                String url = (String) t;
-                GlideUtil.loadViewCenterCrop(container.getContext(), imageView, url);
             }
 
             int finalPosition = position;

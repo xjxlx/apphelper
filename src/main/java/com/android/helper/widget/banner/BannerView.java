@@ -44,6 +44,7 @@ import java.util.List;
 public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
     private final int CODE_WHAT_LOOP = 1000;// 轮询的code值
+    private final int CODE_WHAT_NOW = CODE_WHAT_LOOP + 1;// 轮询的code值
     private int CODE_LOOP_INTERVAL = 3 * 1000;// 轮询的时间间隔，默认5s
     private boolean mAutoLoop = true;// 是否开启轮询，默认开启
     private List<Fragment> mListFragmentData;// fragment的集合
@@ -180,9 +181,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
      * 设置adapter，内部使用
      */
     private void setAdapter(FragmentManager manager) {
-        LogUtil.e("---: setAdapter");
-
         if (isVisibility) {
+            LogUtil.e("---: setAdapter");
             if (mImageType == 2) {
                 if ((mListFragmentData != null) && (mListFragmentData.size() > 0)) {
                     mFragmentAdapter = new BannerFragmentAdapter(manager, mListFragmentData);
@@ -231,6 +231,9 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                     isSetAdapter = true;
                 }
             }
+
+            // 再次发送一次请求，轮询数据
+            mHandler.sendEmptyMessage(CODE_WHAT_NOW);
 
             // 开始轮询播放
             sendMessage();
@@ -430,27 +433,38 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             LogUtil.e("----->Banner---mHandler:" + getCurrentItem());
 
             if (msg.what == CODE_WHAT_LOOP) {
-                //:移除掉所有的回调和message的消息，如果传入null的话
-                onStop();
-
-                //:获取当前的页面
-                int currentItem = getCurrentItem();
-                if (mImageType == 1) {
-                    //:自动循环到下一个页面
-                    setCurrentItem(++currentItem);
-                } else if (mImageType == 2) {
-                    if (currentItem == (mListFragmentData.size() - 1)) {
-                        currentItem = 0;
-                    } else {
-                        ++currentItem;
-                    }
-                    setCurrentItem(currentItem);
-                }
+                nestPage();
                 // 重新发送
                 BannerView.this.sendMessage();
+            } else if (msg.what == CODE_WHAT_NOW) { // 立即刷新
+                nestPage();
             }
         }
     };
+
+    /**
+     * 跳转到下个界面
+     */
+    private void nestPage() {
+        //:移除掉所有的回调和message的消息，如果传入null的话
+        onStop();
+
+        //:获取当前的页面
+        int currentItem = getCurrentItem();
+        if (mImageType == 1) {
+            if (currentItem == 0) { // 只有一条数据
+            } else { //:自动循环到下一个页面
+                ++currentItem;
+            }
+        } else if (mImageType == 2) {
+            if (currentItem == (mListFragmentData.size() - 1)) { // 只有一条数据
+                currentItem = 0;
+            } else { //:自动循环到下一个页面
+                ++currentItem;
+            }
+        }
+        setCurrentItem(currentItem);
+    }
 
     @Override
     public void onCreate() {
@@ -476,7 +490,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     public void onStop() {
         if (mHandler != null) {
             mHandler.removeMessages(CODE_WHAT_LOOP);
-            mHandler.removeCallbacksAndMessages(null);
         }
     }
 
@@ -504,12 +517,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         if (mHandler != null) {
             mHandler = null;
         }
-    }
-
-    @Override
-    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-        super.onVisibilityChanged(changedView, visibility);
-        LogUtil.e("visibility:" + visibility);
     }
 
     @Override
