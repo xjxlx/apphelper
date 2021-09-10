@@ -72,6 +72,24 @@ public class ViewUtil {
         }
     }
 
+    public static void setMarginStart(View view, int marginStart) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+            marginLayoutParams.setMarginStart((int) ConvertUtil.toDp(marginStart));
+            view.setLayoutParams(marginLayoutParams);
+        }
+    }
+
+    public static void setMarginEnd(View view, int marginEnd) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+            marginLayoutParams.setMarginEnd((int) ConvertUtil.toDp(marginEnd));
+            view.setLayoutParams(marginLayoutParams);
+        }
+    }
+
     /**
      * 设置view的状态
      *
