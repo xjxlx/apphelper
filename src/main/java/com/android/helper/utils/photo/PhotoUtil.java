@@ -265,10 +265,9 @@ public class PhotoUtil implements BaseLifecycleObserver {
      * @param activity          fragment上下文
      * @param isCamera          是否显示拍照的按钮
      * @param maxVideoSelectNum 视频最大选择数量
-     * @param recordVideoSecond 录制视频秒数 默认60s
      * @param listener          选择图片后返回的结果
      */
-    public void SelectorVideo(FragmentActivity activity, boolean isCamera, int maxVideoSelectNum, int recordVideoSecond,
+    public void SelectorVideo(FragmentActivity activity, boolean isCamera, int maxVideoSelectNum,
                               OnResultCallbackListener<LocalMedia> listener) {
         if (activity != null) {
             Lifecycle lifecycle = activity.getLifecycle();
@@ -281,7 +280,6 @@ public class PhotoUtil implements BaseLifecycleObserver {
                     .isCamera(isCamera) // 是否显示拍照的按钮
                     .maxVideoSelectNum(maxVideoSelectNum) // 最大选择数量
                     .maxSelectNum(maxVideoSelectNum)
-                    .recordVideoSecond(recordVideoSecond)//录制视频秒数 默认60s
                     .isPreviewVideo(true) //是否预览视频
                     .isCompress(true) // 是否压缩
                     .minimumCompressSize(30) //  小于多少kb的图片不压缩
@@ -294,11 +292,9 @@ public class PhotoUtil implements BaseLifecycleObserver {
      * @param fragment          fragment上下文
      * @param isCamera          是否显示拍照的按钮
      * @param maxVideoSelectNum 视频最大选择数量
-     * @param recordVideoSecond 录制视频秒数 默认60s
      * @param listener          选择图片后返回的结果
      */
     public void SelectorVideo(Fragment fragment, boolean isCamera, int maxVideoSelectNum,
-                              int recordVideoSecond,
                               OnResultCallbackListener<LocalMedia> listener) {
 
         if (fragment != null) {
@@ -312,7 +308,6 @@ public class PhotoUtil implements BaseLifecycleObserver {
                     .isCamera(isCamera) // 是否显示拍照的按钮
                     .maxVideoSelectNum(maxVideoSelectNum) // 最大选择数量
                     .maxSelectNum(maxVideoSelectNum)
-                    .recordVideoSecond(recordVideoSecond)//录制视频秒数 默认60s
                     .isPreviewVideo(true) //是否预览视频
                     .isCompress(true) // 是否压缩
                     .minimumCompressSize(30) //  小于多少kb的图片不压缩
@@ -324,7 +319,7 @@ public class PhotoUtil implements BaseLifecycleObserver {
     /**
      * 打开录像机
      */
-    public void openVideo(FragmentActivity activity, OnResultCallbackListener<LocalMedia> listener) {
+    public void openVideo(FragmentActivity activity, int recordVideoSecond, OnResultCallbackListener<LocalMedia> listener) {
         if (activity != null) {
             Lifecycle lifecycle = activity.getLifecycle();
             lifecycle.addObserver(this);
@@ -333,6 +328,8 @@ public class PhotoUtil implements BaseLifecycleObserver {
                     .openCamera(PictureMimeType.ofVideo())
                     .isCompress(true) // 打开压缩
                     .selectionMode(PictureConfig.SINGLE)
+                    .recordVideoSecond(recordVideoSecond)//录制视频秒数 默认60s
+                    .videoMaxSecond(recordVideoSecond)
                     .imageEngine(GlideEngine.createGlideEngine())
                     .forResult(listener);
         }
@@ -341,7 +338,7 @@ public class PhotoUtil implements BaseLifecycleObserver {
     /**
      * 打开录像机
      */
-    public void openVideo(Fragment fragment, OnResultCallbackListener<LocalMedia> listener) {
+    public void openVideo(Fragment fragment, int recordVideoSecond, OnResultCallbackListener<LocalMedia> listener) {
         if (fragment != null) {
             Lifecycle lifecycle = fragment.getLifecycle();
             lifecycle.addObserver(this);
@@ -350,6 +347,7 @@ public class PhotoUtil implements BaseLifecycleObserver {
                     .openCamera(PictureMimeType.ofVideo())
                     .isCompress(true) // 打开压缩
                     .selectionMode(PictureConfig.SINGLE)
+                    .recordVideoSecond(recordVideoSecond)//录制视频秒数 默认60s
                     .imageEngine(GlideEngine.createGlideEngine())
                     .forResult(listener);
         }
