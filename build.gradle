@@ -95,5 +95,7 @@ dependencies {
     // 高德
     api 'com.amap.api:location:5.4.0'  // 定位
     api 'com.amap.api:search:7.9.0'    // 搜索
-    api 'com.amap.api:map2d:6.0.0'     // 地图
+    api 'com.amap.api:3dmap:7.1.0'     // 地图
+
+
 }
