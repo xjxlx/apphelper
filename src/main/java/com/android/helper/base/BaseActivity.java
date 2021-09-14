@@ -194,7 +194,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         }
     }
 
-
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -328,6 +327,49 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void setRightTitleClickListener(View.OnClickListener listener) {
         if (listener != null) {
             mFlBaseTitleRightParent.setOnClickListener(listener);
+        }
+    }
+
+    /**
+     * 页面的返回
+     *
+     * @param backId    返回的id
+     * @param listeners 返回的点击事件
+     */
+    public void setTitleBack(int backId, View.OnClickListener listeners) {
+        if (backId != 0) {
+            if (listeners != null) {
+                findViewById(backId).setOnClickListener(listeners);
+            } else {
+                setTitleBack(backId);
+            }
+        }
+    }
+
+    /**
+     * 页面的返回
+     *
+     * @param backId 返回的id
+     */
+    public void setTitleBack(int backId) {
+        if (backId != 0) {
+            findViewById(backId).setOnClickListener(v -> finish());
+        }
+    }
+
+    /**
+     * 设置标题
+     *
+     * @param titleId      标题控件的id
+     * @param titleContent 标题的内容
+     */
+    public void setTitleContent(int titleId, String titleContent) {
+        if (titleId != 0) {
+            View view = findViewById(titleId);
+            if (view instanceof TextView) {
+                TextView titleView = (TextView) view;
+                TextViewUtil.setText(titleView, titleContent);
+            }
         }
     }
 
