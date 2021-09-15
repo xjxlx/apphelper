@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.android.helper.R;
+import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -42,32 +43,62 @@ public class BannerAdapter<T> extends PagerAdapter {
 
     //:初始化每个Item的实布局，类似于getview
     // :viewpager会默认加载三个布局，上一页，本业，和下一页，其他页面会自动销毁，防止内存溢出
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "InflateParams"})
     @NotNull
     @Override
     public Object instantiateItem(@NotNull ViewGroup container, int position) {
         // LogUtil.e("instantiateItem:");
+
         View view = null;
-        //:1:首先要拿到position的位置，为了避免角标越界，进行取余运算
-        if (mListData != null) {
-            //:2:设置对象
-            view = LayoutInflater.from(container.getContext()).inflate(R.layout.base_banner, null);
+        if ((mListData != null) && (mListData.size() > 0)) {
+            // 获取其中一个数据的类型
+            T temp = mListData.get(0);
+            if (temp instanceof View) {
+                // View类型的处理
+                T t1 = mListData.get(position);
+                if (t1 instanceof View) {
+                    view = (View) t1;
+                    // 该类型，不用去设置view的加载数据了，直接去返回整个view
+//                    if (mLoadListener != null) {
+//                        mLoadListener.onLoadView(view, position, mListData.get(position));
+//                    }
+                }
+            } else if ((temp instanceof String) || (temp instanceof Integer)) {
+                // String类型 或者Integer类型的处理
 
-            ImageView imageView = view.findViewById(R.id.iv_banner_image);
-            TextView tvPosition = view.findViewById(R.id.tv_position);
-            tvPosition.setText("" + position);
+                //:2:设置对象
+                view = LayoutInflater.from(container.getContext()).inflate(R.layout.base_banner, null);
 
-            // 此处为了兼容多种处理方式，以一个imageView的形式，把图片给传递出去，让用户手动选择怎么去处理
-            T t = mListData.get(position);
-            if (mLoadListener != null) {
-                mLoadListener.onLoadView(imageView, t);
+                ImageView imageView = view.findViewById(R.id.iv_banner_image);
+                TextView tvPosition = view.findViewById(R.id.tv_position);
+                tvPosition.setText("" + position);
+
+                // 此处为了兼容多种处理方式，以一个imageView的形式，把图片给传递出去，让用户手动选择怎么去处理
+                if (mLoadListener != null) {
+                    mLoadListener.onLoadView(imageView, position, mListData.get(position));
+                }
+
+                // 整个view的点击事件
+                View finalView = view;
+                view.setOnClickListener(v -> {
+                    if (mItemClickListener != null) {
+                        mItemClickListener.onItemClick(finalView, position, mListData.get(position));
+                    }
+                });
             }
 
-            view.setOnClickListener(v -> {
-                if (mItemClickListener != null) {
-                    mItemClickListener.onItemClick(null, imageView, position, t);
+            // 先移除，后添加
+            int childCount = container.getChildCount();
+            if (childCount > 0) {
+                for (int i = 0; i < childCount; i++) {
+                    View child = container.getChildAt(i);
+                    if (child == view) {
+                        container.removeView(child);
+                        // 移除了相同的view
+                        LogUtil.e("移除了相同的view");
+                    }
                 }
-            });
+            }
 
             container.addView(view);
         }
