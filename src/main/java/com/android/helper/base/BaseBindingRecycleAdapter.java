@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
 import com.android.helper.interfaces.BindingViewListener;
+import com.android.helper.interfaces.listener.ItemClickListener;
 import com.android.helper.interfaces.listener.OnItemClickListener;
 import com.android.helper.utils.LogUtil;
 
@@ -29,6 +30,7 @@ public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extend
     protected List<T> mList;
     protected E mBinding;
     protected OnItemClickListener<T> mItemClickListener;
+    protected ItemClickListener<E, T> mItemBindingClickListener;
 
     public BaseBindingRecycleAdapter(Context mContext) {
         this.mContext = mContext;
@@ -56,15 +58,23 @@ public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extend
     @NotNull
     @Override
     public BaseBindingVH<E> onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
-        mBinding = getBinding(LayoutInflater.from(mContext), parent);
-        if (mBinding != null) {
-            return new BaseBindingVH<E>(mBinding);
+        if (mContext != null) {
+            mBinding = getBinding(LayoutInflater.from(mContext), parent);
+            if (mBinding != null) {
+                return new BaseBindingVH<E>(mBinding);
+            }
+        } else {
+            throw new NullPointerException("BaseBindingRecycle ---> context 为空！");
         }
         return null;
     }
 
     public void setItemClickListener(OnItemClickListener<T> mOnItemClickListener) {
         this.mItemClickListener = mOnItemClickListener;
+    }
+
+    public void setItemClickListener(ItemClickListener<E, T> itemClickListener) {
+        this.mItemBindingClickListener = itemClickListener;
     }
 
     @Override
