@@ -7,10 +7,12 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 
 import com.android.helper.R;
+import com.android.helper.utils.LogUtil;
 
 /**
  * BannerView的指示器，用于配合Banner的联动
@@ -19,10 +21,10 @@ public class BannerIndicator extends LinearLayout {
 
     private float mInterval;
     private int mSelectorResource, mUnSelectedResource;
-    private int mCurrentPosition;// 上一次点击的item位置
     private int mMaxWidth, mMaxHeight;
     private BannerView mBannerView;
-    private float mWidth, mHeight;
+    private int mWidth, mHeight;
+    private String TAG = "BannerIndicator ---> ";
 
     public BannerIndicator(Context context) {
         super(context);
@@ -35,6 +37,8 @@ public class BannerIndicator extends LinearLayout {
     }
 
     private void initView(Context context, AttributeSet attrs) {
+        LogUtil.e(TAG, "initView:");
+
         // 固定设置横向
         setOrientation(LinearLayout.HORIZONTAL);
 
@@ -42,14 +46,11 @@ public class BannerIndicator extends LinearLayout {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerIndicator);
             // 获取间距
             mInterval = typedArray.getDimension(R.styleable.BannerIndicator_bi_interval, 0);
-            // 获取宽度
-            mWidth = typedArray.getDimension(R.styleable.BannerIndicator_bi_width, 0);
-            // 过去高度
-            mHeight = typedArray.getDimension(R.styleable.BannerIndicator_bi_height, 0);
             // 选中的图形
             mSelectorResource = typedArray.getResourceId(R.styleable.BannerIndicator_bi_selector_resource, 0);
             // 未选中的图形
             mUnSelectedResource = typedArray.getResourceId(R.styleable.BannerIndicator_bi_unselected_resource, 0);
+
             typedArray.recycle();
         }
     }
@@ -57,6 +58,7 @@ public class BannerIndicator extends LinearLayout {
     @SuppressLint("DrawAllocation")
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        LogUtil.e(TAG, "onMease:");
 
         if (isInEditMode()) {
             // 解决预览模式不显示的问题
@@ -72,29 +74,26 @@ public class BannerIndicator extends LinearLayout {
             // 如果宽高为0，则重新去测量一遍
             int childCount = getChildCount();
             if (childCount > 1) { // 只有数量大于1，才会去显示，否则不去显示
-
-                // 如果设置了固定的宽高，则直接去使用
-                if (mWidth > 0 && mHeight > 0) {
-                    mMaxWidth = (int) (((childCount - 1) * mInterval) + (mWidth * childCount));
-                    mMaxHeight = (int) mHeight;
-                } else {
+                // 如果没有测量出宽高，则重新测量一边
+                if (mWidth <= 0 || mHeight <= 0) {
                     // 如果没有设置宽高，就自己去计算
                     View childAt = getChildAt(0);
                     if (childAt != null) {
                         measureChild(childAt, widthMeasureSpec, heightMeasureSpec);
-                        int measuredHeight = childAt.getMeasuredHeight();
-                        int measuredWidth = childAt.getMeasuredWidth();
-
-                        mMaxHeight = measuredHeight;
-                        // 总体宽度 = view 的个数 * 宽度 + view的个数 -1 * 间距
-                        mMaxWidth = (int) (((childCount - 1) * mInterval) + (measuredWidth * childCount));
+                        mWidth = childAt.getMeasuredWidth();
+                        mHeight = childAt.getMeasuredHeight();
                     }
                 }
+
+                // 总体宽度 = view 的个数 * 宽度 + view的个数 -1 * 间距
+                mMaxWidth = (int) (((childCount - 1) * mInterval) + (mWidth * childCount));
+                mMaxHeight = mHeight;
+
+                widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY);
+                heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.EXACTLY);
             }
         }
 
-        widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY);
-        heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.EXACTLY);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -103,6 +102,7 @@ public class BannerIndicator extends LinearLayout {
      */
     public void setViewPager(BannerView bannerView, int count) {
         this.mBannerView = bannerView;
+        LogUtil.e(TAG, "setViewPager: ");
 
         // 先清空，在加入
         int childCount = getChildCount();
@@ -111,10 +111,11 @@ public class BannerIndicator extends LinearLayout {
         }
 
         // 添加指示器
-        if (count > 1) {// 只有数据大于1的时候，采取添加，否则就不添加数据
-            for (int i = 0; i < count; i++) {
-                LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        if (count > 1) { // 只有数据大于1的时候，才去添加，否则就不添加数据
+            for (int i = 0; i < count - 2; i++) {
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 ImageView imageView = new ImageView(getContext());
+
                 //:从第二个开始设置
                 if (mInterval > 0) {
                     if (i > 0) {
@@ -123,34 +124,37 @@ public class BannerIndicator extends LinearLayout {
                     }
                 }
 
-                if (mWidth != 0) {
-                    params.weight = mWidth;
-                }
-                if (mHeight != 0) {
-                    params.height = (int) mHeight;
-                }
                 imageView.setLayoutParams(params);
                 //:3:把view添加到viewGroup中
                 addView(imageView);
             }
-        }
 
-        // 默认的选中
-        int currentItem = mBannerView.getCurrentItem();
-        onPageSelected(currentItem);
-        requestLayout();
+            // 默认的选中
+            onPageSelected(0);
+
+            // 设置数据后，重新测量view的宽高
+            post(this::requestLayout);
+
+        }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        LogUtil.e(TAG, "onSizeChange:  w:" + w + "  h:" + h);
     }
 
     /**
      * viewPager选中时候的状态监听
      */
     public void onPageSelected(int position) {
+        LogUtil.e(TAG, "onPageSelected:" + position);
+
         if (mBannerView != null) {
             int childCount = getChildCount();
             if (childCount > 0) {
-                // 重新测量宽高
-                mCurrentPosition = position;
-                position = position % childCount;
+
+                // 重新设置数据
                 setSelector(position);
 
                 for (int i = 0; i < childCount; i++) {
@@ -160,10 +164,8 @@ public class BannerIndicator extends LinearLayout {
                     childAt.setOnClickListener(v -> {
                         // 先停止轮询的事件
                         mBannerView.onStop();
-                        // 计算出当前的position是站的第几列
-                        int column = mCurrentPosition % childCount;
-                        // 跳转到指定的页面去
-                        mBannerView.setCurrentItem(mCurrentPosition + (finalI - column));
+                        // 跳转到指定的页面去，因为banner最左侧加了数据，所以正确的角标应该是当前的角标+1
+                        mBannerView.setCurrentItem(finalI + 1);
                         mBannerView.onStart();
                     });
                 }
