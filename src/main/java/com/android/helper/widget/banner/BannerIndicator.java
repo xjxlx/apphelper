@@ -102,7 +102,7 @@ public class BannerIndicator extends LinearLayout {
      */
     public void setViewPager(BannerView bannerView, int count) {
         this.mBannerView = bannerView;
-        LogUtil.e(TAG, "setViewPager: ");
+        // LogUtil.e(TAG, "setViewPager: ");
 
         // 先清空，在加入
         int childCount = getChildCount();
@@ -148,7 +148,7 @@ public class BannerIndicator extends LinearLayout {
      * viewPager选中时候的状态监听
      */
     public void onPageSelected(int position) {
-        LogUtil.e(TAG, "onPageSelected:" + position);
+        //  LogUtil.e(TAG, "onPageSelected:" + position);
 
         if (mBannerView != null) {
             int childCount = getChildCount();

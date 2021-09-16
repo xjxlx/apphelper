@@ -4,8 +4,8 @@ import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
@@ -21,11 +21,10 @@ import java.util.List;
  * banner的图片适配器，适用于加载单独的图片
  */
 public class BannerAdapter<T> extends PagerAdapter {
-
+    String tag = "Adapter ---> ";
     private final List<T> mListData;
     private BannerLoadListener<T> mLoadListener;
     private BannerItemClickListener<T> mItemClickListener;// 点击事件
-    private BannerView mBannerView;
 
     public BannerAdapter(List<T> listData) {
         mListData = listData;
@@ -47,62 +46,36 @@ public class BannerAdapter<T> extends PagerAdapter {
     @NotNull
     @Override
     public Object instantiateItem(@NotNull ViewGroup container, int position) {
-        // LogUtil.e("instantiateItem:");
-
+        LogUtil.e(tag, "instantiateItem: " + position);
         View view = null;
         if ((mListData != null) && (mListData.size() > 0)) {
-            // 获取其中一个数据的类型
-            T temp = mListData.get(0);
-            if (temp instanceof View) {
-                // View类型的处理
-                T t1 = mListData.get(position);
-                if (t1 instanceof View) {
-                    view = (View) t1;
-                    // 该类型，不用去设置view的加载数据了，直接去返回整个view
-//                    if (mLoadListener != null) {
-//                        mLoadListener.onLoadView(view, position, mListData.get(position));
-//                    }
-                }
-            } else if ((temp instanceof String) || (temp instanceof Integer)) {
-                // String类型 或者Integer类型的处理
+            // String类型 或者Integer类型的处理
+            //:2:设置对象
+            view = LayoutInflater.from(container.getContext()).inflate(R.layout.base_banner, null);
 
-                //:2:设置对象
-                view = LayoutInflater.from(container.getContext()).inflate(R.layout.base_banner, null);
-
-                ImageView imageView = view.findViewById(R.id.iv_banner_image);
-                TextView tvPosition = view.findViewById(R.id.tv_position);
-                tvPosition.setText("" + position);
-
-                // 此处为了兼容多种处理方式，以一个imageView的形式，把图片给传递出去，让用户手动选择怎么去处理
-                if (mLoadListener != null) {
-                    mLoadListener.onLoadView(imageView, position, mListData.get(position));
-                }
-
-                // 整个view的点击事件
-                View finalView = view;
-                view.setOnClickListener(v -> {
-                    if (mItemClickListener != null) {
-                        mItemClickListener.onItemClick(finalView, position, mListData.get(position));
-                    }
-                });
+            ImageView imageView = view.findViewById(R.id.iv_banner_image);
+            // 此处为了兼容多种处理方式，以一个imageView的形式，把图片给传递出去，让用户手动选择怎么去处理
+            if (mLoadListener != null) {
+                mLoadListener.onLoadView(imageView, position, mListData.get(position));
             }
 
-            // 先移除，后添加
-            int childCount = container.getChildCount();
-            if (childCount > 0) {
-                for (int i = 0; i < childCount; i++) {
-                    View child = container.getChildAt(i);
-                    if (child == view) {
-                        container.removeView(child);
-                        // 移除了相同的view
-                        LogUtil.e("移除了相同的view");
-                    }
+            // 整个view的点击事件
+            View finalView = view;
+            view.setOnClickListener(v -> {
+                if (mItemClickListener != null) {
+                    mItemClickListener.onItemClick(finalView, position - 1, mListData.get(position));
                 }
-            }
-
-            container.addView(view);
+            });
         }
-        assert view != null;
+
+        // 先移除，后添加
+        if (view != null) {
+            ViewParent parent = view.getParent();
+            if (parent == null) {
+                container.addView(view);
+                LogUtil.e("移除了相同的view");
+            }
+        }
         return view;
     }
 
@@ -115,6 +88,7 @@ public class BannerAdapter<T> extends PagerAdapter {
         //  super.destroyItem(container, position, object);
         //:从容器中溢出view
         container.removeView((View) object);
+        LogUtil.e(tag, "destroyItem: " + position);
     }
 
     /**
@@ -128,10 +102,4 @@ public class BannerAdapter<T> extends PagerAdapter {
         this.mItemClickListener = itemClickListener;
     }
 
-    /**
-     * 设置轮播图的对象，用来获取轮播图的信息
-     */
-    public void setParentView(BannerView bannerView) {
-        mBannerView = bannerView;
-    }
 }

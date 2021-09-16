@@ -1,6 +1,6 @@
 package com.android.helper.widget.banner;
 
-import android.view.View;
+import android.widget.ImageView;
 
 /**
  * banner加载时候的图片处理
@@ -12,6 +12,6 @@ public interface BannerLoadListener<T> {
      *             如果传入的是View类型的，则返回整个View供使用者去使用
      * @param t    当前的数据类型
      */
-    void onLoadView(View view, int position, T t);
+    void onLoadView(ImageView view, int position, T t);
 
 }
