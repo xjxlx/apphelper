@@ -43,7 +43,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private final int CODE_WHAT_LOOP = 1000;// 轮询的code值
     private int CODE_LOOP_INTERVAL = 3 * 1000;// 轮询的时间间隔，默认5s
     private boolean mAutoLoop = true;// 是否开启轮询，默认开启
-    private List mListImageData;// 图片的集合
+    private List mListData;// 数据的集合
     private BannerLoadListener<?> mLoadListener;// 加载本地图片页面的回调
     private BannerItemClickListener<?> mBannerItemClickListener;// 点击事件的处理
     private BannerIndicator mIndicator;
@@ -74,10 +74,10 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 mMaxHeight = getDefaultSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
             }
         } else { // 正常模式
-            if ((mListImageData != null) && (mListImageData.size() > 0)) {
+            if ((mListData != null) && (mListData.size() > 0)) {
                 int currentItem = getCurrentItem();
                 // 求出当前item是第几列
-                int position = currentItem % mListImageData.size();
+                int position = currentItem % mListData.size();
                 // 获取当前的view高度
                 View childAt = getChildAt(position);
                 if (childAt != null) {
@@ -152,8 +152,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private void seBannerAdapter() {
         if (isVisibility) {
             LogUtil.e(TAG, "---: setAdapter");
-            if ((mListImageData != null) && (mListImageData.size() > 0)) {
-                mBannerAdapter = new BannerAdapter(mListImageData);
+            if ((mListData != null) && (mListData.size() > 0)) {
+                mBannerAdapter = new BannerAdapter(mListData);
                 mBannerAdapter.setParentView(this);
 
                 if (mLoadListener != null) {
@@ -164,13 +164,13 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 }
 
                 // 预加载的数量
-                setOffscreenPageLimit(mListImageData.size());
+                setOffscreenPageLimit(mListData.size());
                 // 设置adapter
                 setAdapter(mBannerAdapter);
 
                 // 添加指示器
                 if (mIndicator != null) {
-                    mIndicator.setViewPager(BannerView.this, mListImageData.size());
+                    mIndicator.setViewPager(BannerView.this, mListData.size());
                 }
 
                 isSetAdapter = true;
@@ -186,8 +186,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
      */
     private void sendMessage() {
         // 发送轮询
-        if ((mHandler != null) && mAutoLoop && (mListImageData != null)) {
-            if (mListImageData.size() <= 1) {
+        if ((mHandler != null) && mAutoLoop && (mListData != null)) {
+            if (mListData.size() <= 1) {
                 return;
             }
             mHandler.sendEmptyMessageDelayed(CODE_WHAT_LOOP, CODE_LOOP_INTERVAL);
@@ -209,13 +209,13 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 mCurrent = position;
 
                 // 只有数据大于1的时候，才会去执行indicator的选中
-                if (mListImageData.size() > 1) {
+                if (mListData.size() > 1) {
 
                     // 0 -> size -2  (0/3)--->:3
-                    if ((mCurrent == 0) || (mCurrent == mListImageData.size() - 2)) {
+                    if ((mCurrent == 0) || (mCurrent == mListData.size() - 2)) {
                         // 因为indicator 是从0开始的，所以要减掉1
-                        selectorIndicator(mListImageData.size() - 3);
-                    } else if ((mCurrent == 1) || (mCurrent == mListImageData.size() - 1)) {
+                        selectorIndicator(mListData.size() - 3);
+                    } else if ((mCurrent == 1) || (mCurrent == mListData.size() - 1)) {
                         // 1 -> size -1 (1/4) --->:1
                         // 因为indicator 是从0开始的，所以要减掉1
                         selectorIndicator(0);
@@ -230,7 +230,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             public void onPageScrollStateChanged(int state) {
                 //  LogUtil.e(TAG, "----->current---onPageScrollStateChanged: current: " + getCurrentItem() + "  mCurrent:" + mCurrent);
 
-                if (mListImageData != null && mListImageData.size() > 1) {
+                if (mListData != null && mListData.size() > 1) {
                     if (state == ViewPager.SCROLL_STATE_IDLE) {
                         if (mCurrent == 0) { //
                             onStop();
@@ -239,12 +239,12 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                              * 2：如果到了这里，就需要先停止之前的轮询数据
                              * 3：在设置了转移数据之后，再次去重新开启轮询
                              */
-                            setCurrentItem(mListImageData.size() - 2, false);
+                            setCurrentItem(mListData.size() - 2, false);
 
                             // 再次去轮询
                             onStart();
 
-                        } else if (mCurrent == mListImageData.size() - 1) {
+                        } else if (mCurrent == mListData.size() - 1) {
                             onStop();
 
                             /*
@@ -305,8 +305,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                     //:获得当前的页面
                     int currentItem = getCurrentItem();
                     //:如果是第一个，或者最后一的话，不需要拦截
-                    if (mListImageData != null) {
-                        if ((currentItem == 0) || (currentItem == mListImageData.size() - 1)) {
+                    if (mListData != null) {
+                        if ((currentItem == 0) || (currentItem == mListData.size() - 1)) {
                             LogUtil.e(TAG, "current:" + currentItem + "  请求父类不要拦截我");
                             getParent().requestDisallowInterceptTouchEvent(true);//:请求父类以及祖宗类要去拦截
                         }
@@ -342,12 +342,12 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     public <T> BannerView setImageData(List<T> listImageData) {
         if (listImageData != null) {
             if (listImageData.size() > 1) {
-                mListImageData = new ArrayList<>();
-                mListImageData.add(listImageData.get(listImageData.size() - 1));
-                mListImageData.addAll(listImageData);
-                mListImageData.add(listImageData.get(0));
+                mListData = new ArrayList<>();
+                mListData.add(listImageData.get(listImageData.size() - 1));
+                mListData.addAll(listImageData);
+                mListData.add(listImageData.get(0));
             } else {
-                mListImageData = listImageData;
+                mListData = listImageData;
             }
         }
         return this;
@@ -397,9 +397,9 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             //:移除掉所有的回调和message的消息，如果传入null的话
             onStop();
 
-            if (mListImageData != null) {
+            if (mListData != null) {
                 if (msg.what == CODE_WHAT_LOOP) {
-                    if (mListImageData.size() <= 1) {  // 如果数据小于1，则停止
+                    if (mListData.size() <= 1) {  // 如果数据小于1，则停止
                         setCurrentItem(0);
 
                     } else { // 数据大于1
@@ -444,9 +444,9 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     public void onDestroy() {
 
         onStop();
-        if (mListImageData != null) {
-            mListImageData.clear();
-            mListImageData = null;
+        if (mListData != null) {
+            mListData.clear();
+            mListData = null;
         }
         if (mIndicator != null) {
             mIndicator = null;
