@@ -8,7 +8,6 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -61,56 +60,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         initView();
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-
-        if (isInEditMode()) { // 预览模式
-            // 假如还没有数据，就用指示的高度去预览
-            int mode = MeasureSpec.getMode(heightMeasureSpec);
-            // 如果是wrap_content模式的话，就显示高度为0
-            if (mode == MeasureSpec.AT_MOST) {
-                mMaxHeight = 0;
-            } else {
-                mMaxHeight = getDefaultSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
-            }
-        } else { // 正常模式
-            if ((mListData != null) && (mListData.size() > 0)) {
-                int currentItem = getCurrentItem();
-                // 求出当前item是第几列
-                int position = currentItem % mListData.size();
-                // 获取当前的view高度
-                View childAt = getChildAt(position);
-                if (childAt != null) {
-                    // 测量view的大小
-                    if (childAt instanceof ViewGroup) {
-                        ViewGroup group = (ViewGroup) childAt;
-                        View child = group.getChildAt(0);
-                        if (child != null) {
-                            child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.UNSPECIFIED));
-                            mMaxHeight = child.getMeasuredHeight();
-                        }
-                    }
-                }
-            }
-        }
-
-        if (mMaxWidth <= 0) {
-            mMaxWidth = resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
-        }
-
-        if (mMaxHeight <= 0) {
-            mMaxHeight = resolveSize(MeasureSpec.getSize(heightMeasureSpec), heightMeasureSpec);
-        }
-
-        // 重新设置高度的模式
-        heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.EXACTLY);
-        // 重新设置宽度的模式
-        widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY);
-
-        LogUtil.e(TAG, "mMaxWidth:" + mMaxWidth + "  mMaxHeight:" + mMaxHeight);
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
     private void initView() {
         TAG = getId() + "";
         // 设置按下的手势操作
@@ -154,7 +103,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             LogUtil.e(TAG, "---: setAdapter");
             if ((mListData != null) && (mListData.size() > 0)) {
                 mBannerAdapter = new BannerAdapter(mListData);
-                mBannerAdapter.setParentView(this);
 
                 if (mLoadListener != null) {
                     mBannerAdapter.setBannerLoadListener(mLoadListener);
@@ -164,7 +112,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 }
 
                 // 预加载的数量
-                setOffscreenPageLimit(mListData.size());
+                // setOffscreenPageLimit(mListData.size());
+
                 // 设置adapter
                 setAdapter(mBannerAdapter);
 
@@ -204,24 +153,25 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
             @Override
             public void onPageSelected(int position) {
-                //  LogUtil.e(TAG, "----->current---onPageSelected: current: " + getCurrentItem() + "  position:" + position);
+                LogUtil.e(TAG, "----->current---onPageSelected: current: " + getCurrentItem() + "  position:" + position);
                 // 处理点击事件
                 mCurrent = position;
 
                 // 只有数据大于1的时候，才会去执行indicator的选中
-                if (mListData.size() > 1) {
-
-                    // 0 -> size -2  (0/3)--->:3
-                    if ((mCurrent == 0) || (mCurrent == mListData.size() - 2)) {
-                        // 因为indicator 是从0开始的，所以要减掉1
-                        selectorIndicator(mListData.size() - 3);
-                    } else if ((mCurrent == 1) || (mCurrent == mListData.size() - 1)) {
-                        // 1 -> size -1 (1/4) --->:1
-                        // 因为indicator 是从0开始的，所以要减掉1
-                        selectorIndicator(0);
-                    } else {
-                        // 因为indicator 是从0开始的，所以要减掉1
-                        selectorIndicator(mCurrent - 1);
+                if (mListData != null) {
+                    if (mListData.size() > 1) {
+                        // 0 -> size -2  (0/3)--->:3
+                        if ((mCurrent == 0) || (mCurrent == mListData.size() - 2)) {
+                            // 因为indicator 是从0开始的，所以要减掉1
+                            selectorIndicator(mListData.size() - 3);
+                        } else if ((mCurrent == 1) || (mCurrent == mListData.size() - 1)) {
+                            // 1 -> size -1 (1/4) --->:1
+                            // 因为indicator 是从0开始的，所以要减掉1
+                            selectorIndicator(0);
+                        } else {
+                            // 因为indicator 是从0开始的，所以要减掉1
+                            selectorIndicator(mCurrent - 1);
+                        }
                     }
                 }
             }
@@ -270,7 +220,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
      */
     private void selectorIndicator(int position) {
         if (mIndicator != null) {
-            LogUtil.e(TAG, "indicator当前的选中为：" + position);
+            //    LogUtil.e(TAG, "indicator当前的选中为：" + position);
             mIndicator.onPageSelected(position);
         }
     }
@@ -305,12 +255,12 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                     //:获得当前的页面
                     int currentItem = getCurrentItem();
                     //:如果是第一个，或者最后一的话，不需要拦截
-                    if (mListData != null) {
-                        if ((currentItem == 0) || (currentItem == mListData.size() - 1)) {
-                            LogUtil.e(TAG, "current:" + currentItem + "  请求父类不要拦截我");
-                            getParent().requestDisallowInterceptTouchEvent(true);//:请求父类以及祖宗类要去拦截
-                        }
-                    }
+//                    if (mListData != null) {
+//                        if ((currentItem == 0) || (currentItem == mListData.size() - 1)) {
+//                            LogUtil.e(TAG, "current:" + currentItem + "  请求父类不要拦截我");
+//                            getParent().requestDisallowInterceptTouchEvent(true);//:请求父类以及祖宗类要去拦截
+//                        }
+//                    }
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -401,7 +351,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 if (msg.what == CODE_WHAT_LOOP) {
                     if (mListData.size() <= 1) {  // 如果数据小于1，则停止
                         setCurrentItem(0);
-
                     } else { // 数据大于1
                         // 自动轮询下一个数据
                         setCurrentItem(++mCurrent);
