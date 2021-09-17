@@ -43,7 +43,11 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends BaseFra
 
     @Override
     public View getRootView() {
-        return mBinding.getRoot();
+        View rootView = null;
+        if (mBinding != null) {
+            rootView = mBinding.getRoot();
+        }
+        return rootView;
     }
 
     @Override
