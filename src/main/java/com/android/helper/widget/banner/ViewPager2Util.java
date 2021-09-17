@@ -17,19 +17,26 @@ import com.android.helper.utils.LogUtil;
 
 /**
  * 这个ViewPager2的工具类，是为了做页面的无限轮播使用的，可以使用图片的轮播，也可以使用Fragment的轮播
+ * <p>
  * 一：使用方法：
- * 1:开启轮播，调用方法{@link ViewPager2Util#startLoop(Fragment, ViewPager2)}
- * 2：添加指示器，调用方法{@link ViewPager2Util#addIndicator(ViewPager2Indicator)}
+ * 1：创建Builder的对象，设置需要的参数，例如viewPager 和 indicator
+ * 2：调用 {@link ViewPager2Util#show(Fragment)}方法去展示轮播图
+ * </p>
+ *
  * <p>
  * 二：缺点：
- * 1:这个方法只适合
+ * 1:这个方法只适合Fragment 去使用，如果是单独的图片，有很多更好的选择可以去使用
+ * 2：如果设置无限循环的话，必须在集合第0个角标添加一个集合最后一条数据，在集合最后的位置，增加一个第0个的数据
+ * 3：第0个和最后一条数据，一定不能是单利的，否则会报异常。
+ * </P>
  */
 public class ViewPager2Util implements BaseLifecycleObserver {
-    private ViewPager2 mViewPager2;
     private int mItemCount;
     private final int CODE_WHAT = 1000;
     private final int CODE_INTERVAL = 3 * 1000;
     private int mCurrent;
+
+    private ViewPager2 mViewPager2;
     private ViewPager2Indicator mIndicator;
 
     private final ViewPager2.OnPageChangeCallback mCallback = new ViewPager2.OnPageChangeCallback() {
@@ -78,32 +85,38 @@ public class ViewPager2Util implements BaseLifecycleObserver {
         }
     };
 
+    private ViewPager2Util() {
+    }
+
+    public ViewPager2Util(Builder builder) {
+        this.mViewPager2 = builder.viewPager2;
+        this.mIndicator = builder.indicator;
+    }
+
     /**
      * 开始轮播
-     *
-     * @param viewPager2 viewPager2的对象
      */
-    public void startLoop(FragmentActivity activity, ViewPager2 viewPager2) {
-        this.mViewPager2 = viewPager2;
+    public ViewPager2Util show(FragmentActivity activity) {
         if (activity != null) {
             Lifecycle lifecycle = activity.getLifecycle();
             lifecycle.addObserver(this);
         }
-        loop();
+        startLoop();
+        return this;
     }
 
-    public void startLoop(Fragment fragment, ViewPager2 viewPager2) {
-        this.mViewPager2 = viewPager2;
+    public ViewPager2Util show(Fragment fragment) {
         if (fragment != null) {
             Lifecycle lifecycle = fragment.getLifecycle();
             lifecycle.addObserver(this);
         }
-        loop();
+        startLoop();
+        return this;
     }
 
-    private void loop() {
+    private void startLoop() {
         if (mViewPager2 != null) {
-            RecyclerView.Adapter adapter = mViewPager2.getAdapter();
+            RecyclerView.Adapter<?> adapter = mViewPager2.getAdapter();
             if (adapter != null) {
                 mItemCount = adapter.getItemCount();
                 if (mItemCount > 1) {
@@ -116,17 +129,15 @@ public class ViewPager2Util implements BaseLifecycleObserver {
                     // 设置默认的页数
                     mViewPager2.setCurrentItem(1, false);
 
+                    // 设置指示器
+                    if (mIndicator != null) {
+                        mIndicator.setViewPager(mViewPager2, this, mItemCount);
+                    }
+
                     // 开始轮播
                     onStart();
                 }
             }
-        }
-    }
-
-    public void addIndicator(ViewPager2Indicator bannerIndicator) {
-        this.mIndicator = bannerIndicator;
-        if (mIndicator != null) {
-            mIndicator.setViewPager(mViewPager2, this, mItemCount);
         }
     }
 
@@ -158,6 +169,25 @@ public class ViewPager2Util implements BaseLifecycleObserver {
         }
     }
 
+    public static class Builder {
+        private ViewPager2 viewPager2;
+        private ViewPager2Indicator indicator;
+
+        public Builder setViewPager2(ViewPager2 viewPager2) {
+            this.viewPager2 = viewPager2;
+            return this;
+        }
+
+        public Builder setIndicator(ViewPager2Indicator indicator) {
+            this.indicator = indicator;
+            return this;
+        }
+
+        public ViewPager2Util Build() {
+            return new ViewPager2Util(this);
+        }
+    }
+
     @Override
     public void onCreate() {
 
@@ -166,6 +196,8 @@ public class ViewPager2Util implements BaseLifecycleObserver {
     @Override
     public void onStart() {
         if (mHandler != null) {
+            // 先停止，后发送，避免造成快速轮转
+            onStop();
             mHandler.sendEmptyMessageDelayed(CODE_WHAT, CODE_INTERVAL);
         }
     }
