@@ -17,12 +17,18 @@ import com.android.helper.utils.LogUtil;
 
 /**
  * 这个ViewPager2的工具类，是为了做页面的无限轮播使用的，可以使用图片的轮播，也可以使用Fragment的轮播
+ * <p>
  * 一：使用方法：
- * 1:开启轮播，调用方法{@link ViewPager2Util#startLoop(Fragment, ViewPager2)}
- * 2：添加指示器，调用方法{@link ViewPager2Util#addIndicator(ViewPager2Indicator)}
+ * 1：创建Builder的对象，设置需要的参数，例如viewPager 和 indicator
+ * 2：调用 {@link ViewPager2Util#show(Fragment)}方法去展示轮播图
+ * </p>
+ *
  * <p>
  * 二：缺点：
- * 1:这个方法只适合
+ * 1:这个方法只适合Fragment 去使用，如果是单独的图片，有很多更好的选择可以去使用
+ * 2：如果设置无限循环的话，必须在集合第0个角标添加一个集合最后一条数据，在集合最后的位置，增加一个第0个的数据
+ * 3：第0个和最后一条数据，一定不能是单利的，否则会报异常。
+ * </P>
  */
 public class ViewPager2Util implements BaseLifecycleObserver {
     private int mItemCount;
