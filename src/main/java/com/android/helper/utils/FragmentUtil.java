@@ -152,4 +152,29 @@ public class FragmentUtil {
         return this;
     }
 
+    /**
+     * @param manager     如果是tabLayout 这种的话，需要使用{@link Fragment#getParentFragmentManager()} ，如果是判断fragment内部的fragment是否可见，
+     *                    就需要使用{@link Fragment#getChildFragmentManager()}
+     * @param tagFragment 指定的fragment的对象
+     * @return 检测指定的fragment是否可见
+     */
+    public static boolean checkFragmentVisibilityForParent(FragmentManager manager, Fragment tagFragment) {
+        boolean isVisibility = false;
+        if (tagFragment != null && manager != null) {
+            List<Fragment> fragments = manager.getFragments();
+            // 只有fragment 子fragment不为空，且数据中包含了指定的fragment的时候，才去检查
+            if (fragments.size() > 0) {
+                // 这里之所以不去直接返回，是考虑到，只要出现了这种情况，必然还会有其他的页面，为了让其他页面也得到数据的回调，所有设置了遍历
+                for (int i = 0; i < fragments.size(); i++) {
+                    Fragment fragment = fragments.get(i);
+                    if (fragment == tagFragment) {
+                        isVisibility = true;
+                        break;
+                    }
+                }
+            }
+        }
+        LogUtil.e("⭐️⭐️⭐️ --->：当前检测的view是否可见：" + isVisibility);
+        return isVisibility;
+    }
 }
