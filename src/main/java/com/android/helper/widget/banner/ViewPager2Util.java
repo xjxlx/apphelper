@@ -204,12 +204,14 @@ public class ViewPager2Util implements BaseLifecycleObserver {
 
     @Override
     public void onResume() {
-
+        LogUtil.e("onResume");
+        onStart();
     }
 
     @Override
     public void onPause() {
-
+        LogUtil.e("onPause");
+        onStop();
     }
 
     @Override

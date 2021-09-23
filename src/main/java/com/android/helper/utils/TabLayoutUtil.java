@@ -34,6 +34,7 @@ public class TabLayoutUtil {
     private int mNormalTextSize;
     private int mNormalTypeface;
     private int mCurrentItem;
+    private TabLayout.OnTabSelectedListener mListener;
 
     public TabLayoutUtil(Builder builder) {
         if (builder != null) {
@@ -44,6 +45,7 @@ public class TabLayoutUtil {
             this.mNormalTextSize = builder.normalTextSize;
             this.mNormalTypeface = builder.normalTypeface;
             this.mCurrentItem = builder.currentItem;
+            this.mListener = builder.listener;
         }
     }
 
@@ -115,17 +117,25 @@ public class TabLayoutUtil {
                 public void onTabSelected(TabLayout.Tab tab) {
                     View view = tab.getCustomView();
                     setTextViewSelector(view, true);
+                    if (mListener != null) {
+                        mListener.onTabSelected(tab);
+                    }
                 }
 
                 @Override
                 public void onTabUnselected(TabLayout.Tab tab) {
                     View view = tab.getCustomView();
                     setTextViewSelector(view, false);
+                    if (mListener != null) {
+                        mListener.onTabUnselected(tab);
+                    }
                 }
 
                 @Override
                 public void onTabReselected(TabLayout.Tab tab) {
-
+                    if (mListener != null) {
+                        mListener.onTabReselected(tab);
+                    }
                 }
             });
         }
@@ -192,6 +202,7 @@ public class TabLayoutUtil {
         private int normalTextSize;
         private int normalTypeface;
         private int currentItem;
+        private TabLayout.OnTabSelectedListener listener;
 
         public Builder setSelectorColor(int selectorColor) {
             this.selectorColor = selectorColor;
@@ -231,6 +242,11 @@ public class TabLayoutUtil {
 
         public Builder setCurrentItem(int currentItem) {
             this.currentItem = currentItem;
+            return this;
+        }
+
+        public Builder setOnTabSelectedListener(TabLayout.OnTabSelectedListener listener) {
+            this.listener = listener;
             return this;
         }
 
