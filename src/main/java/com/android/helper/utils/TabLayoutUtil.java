@@ -241,19 +241,17 @@ public class TabLayoutUtil {
      * 设置默认的数据
      */
     private void setDefaultItem() {
-        if (mViewPager != null) {
-            if (mCurrentItem >= 0) {
-                if (mViewPagerType == 1) {
-                    mViewPager.setCurrentItem(mCurrentItem);
-                } else if (mViewPagerType == 2) {
-                    mViewPager2.setCurrentItem(mCurrentItem);
-                }
+        if (mCurrentItem >= 0) {
+            if (mViewPagerType == 1) {
+                mViewPager.setCurrentItem(mCurrentItem);
+            } else if (mViewPagerType == 2) {
+                mViewPager2.setCurrentItem(mCurrentItem);
             }
-            TabLayout.Tab tabAt = mTabLayout.getTabAt(mCurrentItem);
-            if (tabAt != null) {
-                View customView = tabAt.getCustomView();
-                setTextViewSelector(customView, true);
-            }
+        }
+        TabLayout.Tab tabAt = mTabLayout.getTabAt(mCurrentItem);
+        if (tabAt != null) {
+            View customView = tabAt.getCustomView();
+            setTextViewSelector(customView, true);
         }
     }
 
