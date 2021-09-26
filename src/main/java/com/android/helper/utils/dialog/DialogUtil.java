@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
@@ -326,6 +327,19 @@ public class DialogUtil implements BaseLifecycleObserver {
     }
 
     /**
+     * @param view 指定的view
+     * @return 点击指定id的时候，关闭弹窗
+     */
+    public DialogUtil setClose(View view) {
+        if (mRootView != null) {
+            if (view != null) {
+                view.setOnClickListener(v -> dismiss());
+            }
+        }
+        return dialogUtil;
+    }
+
+    /**
      * @param id       指定view的id
      * @param listener 点击事件
      * @return 响应view的点击事件
@@ -334,6 +348,20 @@ public class DialogUtil implements BaseLifecycleObserver {
         if (mRootView != null) {
             View view = mRootView.findViewById(id);
             if (view != null && listener != null) {
+                view.setOnClickListener(listener);
+            }
+        }
+        return dialogUtil;
+    }
+
+    /**
+     * @param view     指定view
+     * @param listener 点击事件
+     * @return 响应view的点击事件
+     */
+    public DialogUtil setOnClickListener(@NonNull View view, View.OnClickListener listener) {
+        if (mRootView != null) {
+            if (listener != null) {
                 view.setOnClickListener(listener);
             }
         }
