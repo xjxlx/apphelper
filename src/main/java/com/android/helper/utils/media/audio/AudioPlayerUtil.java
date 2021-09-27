@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import com.android.helper.R;
 import com.android.helper.utils.BitmapUtil;
@@ -50,7 +51,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     private AudioServiceConnection connection;
     private boolean mBindService;
-    private final Activity mContext;
+    private final FragmentActivity mContext;
     private Intent intent;
     @SuppressLint("StaticFieldLeak")
     private static AudioService.AudioBinder mAudioBinder;
@@ -78,8 +79,9 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     private int mAudioPosition = -1;             // 消息通知栏当前按播放音频的角标,默认的值是-1
     private RemoteViews mRemoteViews;
     private AudioService mAudioService;     // 音乐播放器的服务类
+    private DialogUtil mDialogUtil;
 
-    public AudioPlayerUtil(Activity context) {
+    public AudioPlayerUtil(FragmentActivity context) {
         this.mContext = context;
     }
 
@@ -246,18 +248,16 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
                             boolean openNotify = mNotificationUtil.checkOpenNotify(mContext);
                             if (!openNotify) {
-                                DialogUtil instance = DialogUtil.getInstance();
-                                instance.setContentView(mContext, R.layout.base_default_dialog);
-                                instance.setText(R.id.tv_title, "是否打开通知权限？");
-                                instance.setText(R.id.tv_msg, "如果不打开通知权限，则可能后台播放的时候会断开连接！");
-                                instance.setOnClickListener(R.id.tv_qx, v -> instance.dismiss());
-                                instance.setOnClickListener(R.id.tv_qd, v -> {
-                                    instance.dismiss();
-                                    mNotificationUtil.goToSetNotify(mContext);
-                                });
-                                instance.show();
+                                mDialogUtil = new DialogUtil.Builder(mContext, R.layout.base_default_dialog)
+                                        .setText(R.id.tv_title, "是否打开通知权限？")
+                                        .setText(R.id.tv_msg, "如果不打开通知权限，则可能后台播放的时候会断开连接！")
+                                        .setOnClickListener(R.id.tv_qx, v -> mDialogUtil.dismiss())
+                                        .setOnClickListener(R.id.tv_qd, v -> {
+                                            mDialogUtil.dismiss();
+                                            mNotificationUtil.goToSetNotify(mContext);
+                                        })
+                                        .Build();
                             }
-
                         }
                     } catch (Exception e) {
                         LogUtil.e("------------->:" + e.getMessage());

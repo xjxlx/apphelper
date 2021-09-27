@@ -162,11 +162,17 @@ public class TabLayoutUtil {
                 if ((mAdapter != null) && (mContext != null)) {
                     CharSequence pageTitle = mAdapter.getPageTitle(currentPosition);
                     TextViewUtil.setText(textView, pageTitle);
+
+                    // 设置不选中的样式
+                    setTextViewSelector(textView, false);
                 }
             } else if (mViewPagerType == 2) {
                 if (mListViewPager2Title != null && mListViewPager2Title.size() > 0) {
                     String title = mListViewPager2Title.get(currentPosition);
                     TextViewUtil.setText(textView, title);
+
+                    // 设置不选中的样式
+                    setTextViewSelector(textView, false);
                 }
             }
         }
@@ -230,6 +236,38 @@ public class TabLayoutUtil {
                 try {
                     if (mNormalTypeface > 0) {
                         textView.setTypeface(Typeface.defaultFromStyle(mNormalTypeface));
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    private void setTextViewSelector(TextView view, boolean selector) {
+        if ((view != null) && (mResources != null)) {
+            if (selector) {
+                if (mSelectorTextSize > 0) {
+                    view.setTextSize(TypedValue.COMPLEX_UNIT_PX, mResources.getDimension(mSelectorTextSize));
+                }
+                if (mSelectorColor > 0) {
+                    view.setTextColor(ContextCompat.getColor(mContext, mSelectorColor));
+                }
+                try {
+                    if (mSelectorTypeface > 0) {
+                        view.setTypeface(Typeface.defaultFromStyle(mSelectorTypeface));
+                    }
+                } catch (Exception ignored) {
+                }
+            } else {
+                if (mNormalTextSize > 0) {
+                    view.setTextSize(TypedValue.COMPLEX_UNIT_PX, mResources.getDimension(mNormalTextSize));
+                }
+                if (mNormalColor > 0) {
+                    view.setTextColor(ContextCompat.getColor(mContext, mNormalColor));
+                }
+                try {
+                    if (mNormalTypeface > 0) {
+                        view.setTypeface(Typeface.defaultFromStyle(mNormalTypeface));
                     }
                 } catch (Exception ignored) {
                 }
