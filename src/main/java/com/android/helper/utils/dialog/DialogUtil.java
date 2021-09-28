@@ -129,6 +129,11 @@ public class DialogUtil implements BaseLifecycleObserver {
 
                     // 设置属性
                     setWindowAttributes(builder);
+
+                    // view布局设置之后的回调
+                    if (builder.mOnViewCreateListener != null) {
+                        builder.mOnViewCreateListener.onViewCreated(builder.mLayoutView);
+                    }
                 }
             }
         }
@@ -212,6 +217,7 @@ public class DialogUtil implements BaseLifecycleObserver {
         private int mHeight = WindowManager.LayoutParams.WRAP_CONTENT; // 高
         private DialogInterface.OnShowListener mShowListener;
         private DialogInterface.OnDismissListener mDismissListener;
+        private OnViewCreateListener mOnViewCreateListener;
 
         /**
          * @param activity    依赖的activity
@@ -426,6 +432,11 @@ public class DialogUtil implements BaseLifecycleObserver {
             return this;
         }
 
+        public Builder setOnViewCreateListener(OnViewCreateListener listener) {
+            mOnViewCreateListener = listener;
+            return this;
+        }
+
         public DialogUtil Build() {
             return new DialogUtil(this);
         }
@@ -490,10 +501,8 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
     }
 
-    public interface OnDialogChangeListener {
-        void onShow(DialogInterface dialog);
-
-        void onDismiss(DialogInterface dialog);
+    public interface OnViewCreateListener {
+        void onViewCreated(View rootView);
     }
 
 }
