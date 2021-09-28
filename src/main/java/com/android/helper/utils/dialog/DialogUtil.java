@@ -36,7 +36,7 @@ import java.lang.annotation.RetentionPolicy;
 public class DialogUtil implements BaseLifecycleObserver {
 
     private Dialog mDialog;
-    private final Builder mBuilder;
+    private Builder mBuilder;
 
     @Override
     public void onCreate() {
@@ -122,7 +122,9 @@ public class DialogUtil implements BaseLifecycleObserver {
                     mDialog.setContentView(builder.mLayoutView);
 
                     // 点击关闭dialog
-                    builder.mCloseView.setOnClickListener(v -> dismiss());
+                    if (builder.mCloseView != null) {
+                        builder.mCloseView.setOnClickListener(v -> dismiss());
+                    }
 
                     // 设置属性
                     setWindowAttributes(builder);
@@ -423,6 +425,10 @@ public class DialogUtil implements BaseLifecycleObserver {
         if ((mDialog != null) && (mDialog.isShowing())) {
             dismiss();
             mDialog = null;
+        }
+
+        if (mBuilder != null) {
+            mBuilder = null;
         }
     }
 

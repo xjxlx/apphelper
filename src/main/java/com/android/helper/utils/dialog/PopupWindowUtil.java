@@ -35,7 +35,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
 
     @SuppressLint("StaticFieldLeak")
     private PopupWindow mPopupWindow;
-    private final Builder mBuilder;
+    private Builder mBuilder;
 
     private PopupWindowUtil(Builder builder) {
         this.mBuilder = builder;
@@ -97,8 +97,8 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
         mPopupWindow.setClippingEnabled(builder.mClippingEnabled);
 
         // 关闭布局的view
-        if (builder.mClose != null) {
-            builder.mClose.setOnClickListener(v -> dismiss());
+        if (builder.mCloseView != null) {
+            builder.mCloseView.setOnClickListener(v -> dismiss());
         }
 
         // 关闭的监听
@@ -217,7 +217,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
     public static class Builder {
         private final FragmentActivity mActivity; // 上下文对象
         private View mLayout; // 布局
-        private View mClose; // 关闭布局的view
+        private View mCloseView; // 关闭布局的view
         private DialogChangeListener mDialogChangeListener;
 
         private int mWidth = ViewGroup.LayoutParams.WRAP_CONTENT;   // 默认的宽高
@@ -378,11 +378,11 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
          * @param id 指定的id
          * @return 点击指定id的时候，关闭弹窗
          */
-        public Builder setClose(@IdRes int id) {
+        public Builder setCloseView(@IdRes int id) {
             if (mLayout != null) {
                 View view = mLayout.findViewById(id);
                 if (view != null) {
-                    mClose = view;
+                    mCloseView = view;
                 }
             }
             return this;
@@ -394,7 +394,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
          */
         public Builder setClose(View view) {
             if (view != null) {
-                mClose = view;
+                mCloseView = view;
             }
             return this;
         }
@@ -461,6 +461,15 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
     @Override
     public void onDestroy() {
         // 手动关闭弹窗，避免崩溃
-        dismiss();
+        if (isShowing()) {
+            dismiss();
+        }
+        if (mPopupWindow != null) {
+            mPopupWindow = null;
+        }
+
+        if (mBuilder != null) {
+            mBuilder = null;
+        }
     }
 }
