@@ -1,6 +1,7 @@
 package com.android.helper.utils.dialog;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -112,14 +113,14 @@ public class DialogUtil implements BaseLifecycleObserver {
                 // 设置布局
                 if ((builder.mLayoutView != null) && (mDialog != null)) {
 
+                    // 设置布局
+                    mDialog.setContentView(builder.mLayoutView);
+
                     // 按下返回键是否可以取消dialog
                     mDialog.setCancelable(builder.mCancelable);
 
                     // dialog点击区域外的时候，是否可以取消dialog
                     mDialog.setCanceledOnTouchOutside(builder.mCanceledOnTouchOutside);
-
-                    // 设置布局
-                    mDialog.setContentView(builder.mLayoutView);
 
                     // 点击关闭dialog
                     if (builder.mCloseView != null) {
@@ -209,6 +210,8 @@ public class DialogUtil implements BaseLifecycleObserver {
         private boolean mCancelable = true;// 按下返回键的时候，是否可以取消dialog,默认可以
         private int mWidth = WindowManager.LayoutParams.MATCH_PARENT; // 宽
         private int mHeight = WindowManager.LayoutParams.WRAP_CONTENT; // 高
+        private DialogInterface.OnShowListener mShowListener;
+        private DialogInterface.OnDismissListener mDismissListener;
 
         /**
          * @param activity    依赖的activity
@@ -307,8 +310,8 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param width 设置宽度
-         * @return 设置宽度，需要在setContentView()方法之前设置，否则不生效
+         * @param width 设置宽度 ,建议使用{@link android.view.ViewGroup.LayoutParams#MATCH_PARENT} or {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
+         * @return 设置宽度
          */
         public Builder setWidth(int width) {
             this.mWidth = width;
@@ -316,7 +319,7 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param mHeight 设置高度
+         * @param mHeight 设置高度,建议使用{@link android.view.ViewGroup.LayoutParams#MATCH_PARENT} or {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
          * @return 设置高度，需要在setContentView()方法之前设置，否则不生效
          */
         public Builder setHeight(int mHeight) {
@@ -413,6 +416,16 @@ public class DialogUtil implements BaseLifecycleObserver {
             return this;
         }
 
+        public Builder setOnShowListener(DialogInterface.OnShowListener showListener) {
+            mShowListener = showListener;
+            return this;
+        }
+
+        public Builder setOnDismissListener(DialogInterface.OnDismissListener dismissListener) {
+            mDismissListener = dismissListener;
+            return this;
+        }
+
         public DialogUtil Build() {
             return new DialogUtil(this);
         }
@@ -453,14 +466,34 @@ public class DialogUtil implements BaseLifecycleObserver {
                         attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
                     }
                 }
+                // 设置属性
+                window.setAttributes(attributes);
             }
 
             // dialog展示时候的监听
-            mDialog.setOnShowListener(dialog -> EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_SHOW)));
+            mDialog.setOnShowListener(dialog -> {
+                        if (mBuilder.mShowListener != null) {
+                            mBuilder.mShowListener.onShow(dialog);
+                        }
+                        EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_SHOW));
+                    }
+            );
 
             // dialog 关闭时候的监听
-            mDialog.setOnDismissListener(dialog -> EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_DISMISS)));
+            mDialog.setOnDismissListener(dialog -> {
+                        if (mBuilder.mDismissListener != null) {
+                            mBuilder.mDismissListener.onDismiss(dialog);
+                        }
+                        EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_DISMISS));
+                    }
+            );
         }
+    }
+
+    public interface OnDialogChangeListener {
+        void onShow(DialogInterface dialog);
+
+        void onDismiss(DialogInterface dialog);
     }
 
 }

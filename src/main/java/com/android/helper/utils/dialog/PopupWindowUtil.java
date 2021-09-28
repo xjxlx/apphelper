@@ -62,6 +62,11 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
 
         mPopupWindow = new PopupWindow(builder.mWidth, builder.mHeight);
 
+        // 设置布局
+        if (builder.mLayout != null) {
+            mPopupWindow.setContentView(builder.mLayout);
+        }
+
         if (builder.mActivity != null) {
             //解决android 9.0水滴屏/刘海屏有黑边的问题
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -74,11 +79,6 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
             // 添加管理
             Lifecycle lifecycle = builder.mActivity.getLifecycle();
             lifecycle.addObserver(this);
-        }
-
-        // 设置布局
-        if (builder.mLayout != null) {
-            mPopupWindow.setContentView(builder.mLayout);
         }
 
         //: pop背景（如果不设置就不会点击消失）
