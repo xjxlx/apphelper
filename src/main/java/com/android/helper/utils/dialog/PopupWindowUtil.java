@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
@@ -64,6 +65,12 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
 
         // 设置布局
         if (builder.mLayout != null) {
+            ViewParent parent = builder.mLayout.getParent();
+            if (parent instanceof ViewGroup) {
+                ViewGroup viewGroup = (ViewGroup) parent;
+                viewGroup.removeAllViews();
+            }
+
             mPopupWindow.setContentView(builder.mLayout);
         }
 

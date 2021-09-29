@@ -7,6 +7,8 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -112,6 +114,13 @@ public class DialogUtil implements BaseLifecycleObserver {
 
                 // 设置布局
                 if ((builder.mLayoutView != null) && (mDialog != null)) {
+
+                    // 移除view的父类，避免布局重复添加时候的崩溃异常
+                    ViewParent parent = builder.mLayoutView.getParent();
+                    if (parent instanceof ViewGroup) {
+                        ViewGroup group = (ViewGroup) parent;
+                        group.removeAllViews();
+                    }
 
                     // 设置布局
                     mDialog.setContentView(builder.mLayoutView);
