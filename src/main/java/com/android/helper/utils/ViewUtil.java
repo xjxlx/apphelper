@@ -151,7 +151,7 @@ public class ViewUtil {
 
     /**
      * @param view 当前的view
-     * @return 获取view在屏幕上的位置
+     * @return 获取view在屏幕上的位置，是相对于整个屏幕的，包含状态栏的高度
      */
     public static int[] getLocationOnScreen(View view) {
         int[] ints = new int[2];
