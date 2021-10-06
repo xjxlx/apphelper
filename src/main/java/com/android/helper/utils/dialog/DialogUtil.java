@@ -63,7 +63,13 @@ public class DialogUtil implements BaseLifecycleObserver {
 
     @Override
     public void onStop() {
-
+        LogUtil.e("dialog--->stop:");
+        if (mBuilder != null) {
+            boolean stopDialog = mBuilder.stopDialog;
+            if (stopDialog) {
+                dismiss();
+            }
+        }
     }
 
     @Override
@@ -227,6 +233,7 @@ public class DialogUtil implements BaseLifecycleObserver {
         private DialogInterface.OnShowListener mShowListener;
         private DialogInterface.OnDismissListener mDismissListener;
         private OnViewCreateListener mOnViewCreateListener;
+        private boolean stopDialog;// 在stop的时候，关闭dialog
 
         /**
          * @param activity    依赖的activity
@@ -443,6 +450,11 @@ public class DialogUtil implements BaseLifecycleObserver {
 
         public Builder setOnViewCreateListener(OnViewCreateListener listener) {
             mOnViewCreateListener = listener;
+            return this;
+        }
+
+        public Builder setDismissDialogForStop(boolean stop) {
+            stopDialog = stop;
             return this;
         }
 
