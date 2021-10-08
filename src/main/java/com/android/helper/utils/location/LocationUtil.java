@@ -1,5 +1,6 @@
 package com.android.helper.utils.location;
 
+import android.Manifest;
 import android.content.Context;
 
 import androidx.fragment.app.Fragment;
@@ -18,6 +19,8 @@ import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.RxPermissionsUtil;
+import com.android.helper.utils.ToastUtil;
 
 /**
  * 定位的工具类
@@ -209,7 +212,15 @@ public class LocationUtil implements BaseLifecycleObserver {
         if (activity != null) {
             Lifecycle lifecycle = activity.getLifecycle();
             lifecycle.addObserver(this);
-            getLocalInfo(activity, listener);
+
+            RxPermissionsUtil permissionsUtil = new RxPermissionsUtil(activity, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+            permissionsUtil.setAllPermissionListener((havePermission, permission) -> {
+                if (havePermission) {
+                    getLocalInfo(activity, listener);
+                } else {
+                    ToastUtil.show("请给与定位权限，否则无法使用定位功能");
+                }
+            });
         }
     }
 
@@ -222,7 +233,18 @@ public class LocationUtil implements BaseLifecycleObserver {
         if (fragment != null) {
             Lifecycle lifecycle = fragment.getLifecycle();
             lifecycle.addObserver(this);
-            getLocalInfo(fragment.getContext(), listener);
+
+            FragmentActivity activity = fragment.getActivity();
+            if (activity != null) {
+                RxPermissionsUtil permissionsUtil = new RxPermissionsUtil(activity, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+                permissionsUtil.setAllPermissionListener((havePermission, permission) -> {
+                    if (havePermission) {
+                        getLocalInfo(activity, listener);
+                    } else {
+                        ToastUtil.show("请给与定位权限，否则无法使用定位功能");
+                    }
+                });
+            }
         }
     }
 
