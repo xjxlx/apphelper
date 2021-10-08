@@ -167,6 +167,15 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
     }
 
+    /**
+     * 取消当前的dialog
+     */
+    public void cancel() {
+        if (mDialog != null) {
+            mDialog.cancel();
+        }
+    }
+
     public void dismiss() {
         if (mDialog != null) {
             mDialog.dismiss();
@@ -216,6 +225,13 @@ public class DialogUtil implements BaseLifecycleObserver {
             }
         }
         return null;
+    }
+
+    /**
+     * @return 获取当前的dialog
+     */
+    public Dialog getDialog() {
+        return mDialog;
     }
 
     public static class Builder {
