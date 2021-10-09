@@ -1,6 +1,7 @@
 package com.android.helper.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
@@ -19,6 +21,7 @@ import com.android.helper.interfaces.listener.CallBackListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.luck.picture.lib.tools.ScreenUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -359,5 +362,44 @@ public class BitmapUtil {
                 });
     }
 
+    /**
+     * 加载本地大图片
+     */
+    public static void LoadMorePhoto(Context context, int id, ViewGroup viewGroup) {
+        // 获取屏幕宽高
+        int screenWidth = ScreenUtils.getScreenWidth(context);
+        int screenHeight = ScreenUtils.getScreenHeight(context);
+
+        Resources resources = context.getResources();
+
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        //请求图片属性但不申请内存
+        opts.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(resources, id, opts);
+        // 获取图片宽高
+        int imageWidth = opts.outWidth;
+        int imageHeight = opts.outHeight;
+
+        // 图片的宽高除以屏幕宽高，算出宽和高的缩放比例，取较大值作为图片的缩放比例
+        int scale = 1;
+        int scaleX = imageWidth / screenWidth;
+        int scaleY = imageHeight / screenHeight;
+        if (scaleX >= scaleY && scaleX > 1) {
+            scale = scaleX;
+        } else if (scaleY > scaleX && scaleY > 1) {
+            scale = scaleY;
+        }
+
+        // * 按缩放比例加载图片
+        //设置缩放比例
+        opts.inSampleSize = scale;
+        //为图片申请内存
+        opts.inJustDecodeBounds = false;
+        Bitmap bm = BitmapFactory.decodeResource(resources, id, opts);
+
+        Drawable drawable = new BitmapDrawable(resources, bm);
+
+        viewGroup.setBackground(drawable);
+    }
 
 }
