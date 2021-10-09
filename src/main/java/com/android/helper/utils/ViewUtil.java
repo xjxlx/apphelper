@@ -156,9 +156,30 @@ public class ViewUtil {
     public static int[] getLocationOnScreen(View view) {
         int[] ints = new int[2];
         if (view != null) {
-            view.getLocationOnScreen(ints);
+            view.post(() -> view.getLocationOnScreen(ints));
         }
         return ints;
+    }
+
+    /**
+     * @param view 当前的view
+     * @return 获取view在屏幕上的位置，是相对于整个屏幕的，包含状态栏的高度
+     */
+    public static void getLocationOnScreen(View view, long delayMillis, LocationCallBackListener locationCallBackListener) {
+        int[] ints = new int[2];
+        if (view != null) {
+            view.postDelayed(() -> {
+                view.getLocationOnScreen(ints);
+
+                if (locationCallBackListener != null) {
+                    locationCallBackListener.onLocation(ints[0], ints[1]);
+                }
+            }, delayMillis);
+        }
+    }
+
+    public interface LocationCallBackListener {
+        void onLocation(int x, int y);
     }
 
 }
