@@ -520,18 +520,20 @@ public class DialogUtil implements BaseLifecycleObserver {
 
             // dialog展示时候的监听
             mDialog.setOnShowListener(dialog -> {
-                        if (mBuilder.mShowListener != null) {
+                        if (mBuilder != null && mBuilder.mShowListener != null) {
                             mBuilder.mShowListener.onShow(dialog);
                         }
+
                         EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_SHOW));
                     }
             );
 
             // dialog 关闭时候的监听
             mDialog.setOnDismissListener(dialog -> {
-                        if (mBuilder.mDismissListener != null) {
+                        if (mBuilder != null && mBuilder.mDismissListener != null) {
                             mBuilder.mDismissListener.onDismiss(dialog);
                         }
+
                         EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_DISMISS));
                     }
             );
