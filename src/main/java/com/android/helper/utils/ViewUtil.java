@@ -90,6 +90,60 @@ public class ViewUtil {
         }
     }
 
+    public static void setMarginLeftPx(View view, int marginLeft) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+            marginLayoutParams.leftMargin = marginLeft;
+            view.setLayoutParams(marginLayoutParams);
+        }
+    }
+
+    public static void setMarginTopPx(View view, int marginTop) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+            marginLayoutParams.topMargin = marginTop;
+            view.setLayoutParams(marginLayoutParams);
+        }
+    }
+
+    public static void setMarginRightPx(View view, int marginRight) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+            marginLayoutParams.rightMargin = marginRight;
+            view.setLayoutParams(marginLayoutParams);
+        }
+    }
+
+    public static void setMarginBottomPx(View view, int marginBottom) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+            marginLayoutParams.bottomMargin = marginBottom;
+            view.setLayoutParams(marginLayoutParams);
+        }
+    }
+
+    public static void setMarginStartPx(View view, int marginStart) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+            marginLayoutParams.setMarginStart(marginStart);
+            view.setLayoutParams(marginLayoutParams);
+        }
+    }
+
+    public static void setMarginEndPx(View view, int marginEnd) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+            marginLayoutParams.setMarginEnd(marginEnd);
+            view.setLayoutParams(marginLayoutParams);
+        }
+    }
+
     /**
      * 设置view的状态
      *

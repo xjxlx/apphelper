@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.PowerManager;
 import android.util.DisplayMetrics;
@@ -16,6 +17,7 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 
 import com.android.helper.common.CommonConstants;
+import com.luck.picture.lib.tools.SPUtils;
 
 import java.lang.reflect.Method;
 
@@ -87,27 +89,63 @@ public class ScreenUtil {
     /**
      * 获取状态栏的高度
      */
-    public static int getStatusBarHeight(Context context) {
-        //获取status_bar_height资源的ID
+    @SuppressLint("PrivateApi")
+    public static int initStatusBarHeight(Context activity) {
         int statusBarHeight = 0;
-
-        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        // 第一种方法，获取status_bar_height资源的ID
+        int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             //根据资源ID获取响应的尺寸值
-            statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
+            statusBarHeight = activity.getResources().getDimensionPixelSize(resourceId);
         }
         if (statusBarHeight > 0) {
             // 把状态栏高度存入到sp中
             SpUtil.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
-            LogUtil.e("获取状态栏的高度为：" + statusBarHeight);
+            LogUtil.e("获取状态栏的高度为：【1】--->" + statusBarHeight);
         } else {
-            LogUtil.e("拿不到状态栏的高度，走的是默认25dp的方法");
-            float v1 = ConvertUtil.toDp(25);
-            // 四舍五入取整数
-            int round = Math.round(v1);
-            SpUtil.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, round);
+            // 第二种方法
+            if (activity instanceof Activity) {
+                Activity activity1 = (Activity) activity;
+                Rect localRect = new Rect();
+                activity1.getWindow().getDecorView().getWindowVisibleDisplayFrame(localRect);
+                statusBarHeight = localRect.top;
+            }
+
+            if (statusBarHeight > 0) {
+                SpUtil.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
+                LogUtil.e("获取状态栏的高度为：【2】--->" + statusBarHeight);
+            } else {
+                // 第三种方法
+                Class<?> localClass;
+                try {
+                    localClass = Class.forName("com.android.internal.R$dimen");
+                    Object localObject = localClass.newInstance();
+                    int i5 = Integer.parseInt(localClass.getField("status_bar_height").get(localObject).toString());
+                    statusBarHeight = activity.getResources().getDimensionPixelSize(i5);
+
+                    // 存入本地sp中状态栏高度
+                    if (statusBarHeight > 0) {
+                        SPUtils.getInstance().put(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
+                        LogUtil.e("获取状态栏的高度为：【3】--->" + statusBarHeight);
+                    } else {
+                        // 第四种方法
+                        LogUtil.e("拿不到状态栏的高度，走的是默认25dp的方法");
+                        float v1 = ConvertUtil.toDp(25);
+                        // 四舍五入取整数
+                        int round = Math.round(v1);
+                        SpUtil.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, round);
+                        LogUtil.e("获取状态栏的高度为：【4】--->" + statusBarHeight);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return statusBarHeight;
+    }
+
+    public static int getStatusBarHeight() {
+        return SpUtil.getInt(CommonConstants.KEY_STATUS_BAR_HEIGHT);
     }
 
     /**
