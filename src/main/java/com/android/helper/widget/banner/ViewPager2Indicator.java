@@ -59,7 +59,6 @@ public class ViewPager2Indicator extends LinearLayout {
     @SuppressLint("DrawAllocation")
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        LogUtil.e(TAG, "onMease:");
 
         if (isInEditMode()) {
             // 解决预览模式不显示的问题
