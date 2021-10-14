@@ -101,6 +101,8 @@ public class GlideUtil {
             RequestOptions options = new RequestOptions();
             if (placeResourceId != 0) {
                 options.placeholder(placeResourceId);
+                options.error(placeResourceId);
+                options.fallback(placeResourceId);
             }
 
             Glide.with(activity)
