@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
@@ -116,7 +115,7 @@ public class ViewPager2Indicator extends LinearLayout {
         // 添加指示器
         if (count > 1) { // 只有数据大于1的时候，才去添加，否则就不添加数据
             for (int i = 0; i < count - 2; i++) {
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 ImageView imageView = new ImageView(getContext());
 
                 //:从第二个开始设置
