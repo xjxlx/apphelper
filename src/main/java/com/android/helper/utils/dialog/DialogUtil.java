@@ -250,6 +250,8 @@ public class DialogUtil implements BaseLifecycleObserver {
         private DialogInterface.OnDismissListener mDismissListener;
         private OnViewCreateListener mOnViewCreateListener;
         private boolean stopDialog;// 在stop的时候，关闭dialog
+        private int mOffsetX; // 偏移的X轴
+        private int mOffsetY; // 偏移的Y轴
 
         /**
          * @param activity    依赖的activity
@@ -284,6 +286,16 @@ public class DialogUtil implements BaseLifecycleObserver {
                     mLayoutView = inflate;
                 }
             }
+        }
+
+        /**
+         * @param offsetX 偏移X轴
+         * @param offsetY 偏移Y轴
+         */
+        public Builder setOffset(int offsetX, int offsetY) {
+            this.mOffsetX = offsetX;
+            this.mOffsetY = offsetY;
+            return this;
         }
 
         /**
@@ -505,6 +517,9 @@ public class DialogUtil implements BaseLifecycleObserver {
                 if (attributes != null) {
                     attributes.width = builder.mWidth;
                     attributes.height = builder.mHeight;
+                    attributes.x = mBuilder.mOffsetX;
+                    attributes.y = mBuilder.mOffsetY;
+
                     if (builder.mAnimation != 0) {
                         attributes.windowAnimations = builder.mAnimation;
                     }
@@ -514,6 +529,7 @@ public class DialogUtil implements BaseLifecycleObserver {
                         attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
                     }
                 }
+
                 // 设置属性
                 window.setAttributes(attributes);
             }
