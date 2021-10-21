@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
 
-    public final List<Fragment> mListFragment;
+    public List<Fragment> mListFragment;
     public List<String> mListTitles;
 
     public BaseFragmentPagerAdapter(@NonNull FragmentManager fm, List<Fragment> fragments, List<String> titles) {
@@ -25,6 +25,17 @@ public class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
     public BaseFragmentPagerAdapter(@NonNull FragmentManager fm, List<Fragment> fragments) {
         super(fm);
         mListFragment = fragments;
+    }
+
+    public void setList(List<Fragment> fragments, List<String> titles) {
+        mListFragment = fragments;
+        mListTitles = titles;
+        notifyDataSetChanged();
+    }
+
+    public void setList(List<Fragment> fragments) {
+        mListFragment = fragments;
+        setList(fragments, null);
     }
 
     @NonNull
