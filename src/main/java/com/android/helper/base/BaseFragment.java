@@ -13,12 +13,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.android.helper.httpclient.BaseHttpSubscriber;
 import com.android.helper.httpclient.RxUtil;
 import com.android.helper.interfaces.listener.HttpManagerListener;
 import com.android.helper.utils.ClickUtil;
 import com.android.helper.utils.LogUtil;
+
+import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -176,6 +179,24 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
             if (!disposed) {
                 disposable.dispose();
                 LogUtil.e("移除一个指定的请求对象！");
+            }
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // 销毁内部嵌套的fragment，避免异常。
+        FragmentManager childFragmentManager = getChildFragmentManager();
+        List<Fragment> fragments = childFragmentManager.getFragments();
+        if (fragments.size() > 0) {
+            for (int i = 0; i < fragments.size(); i++) {
+                Fragment fragment = fragments.get(i);
+                if (fragment != null) {
+                    fragment.onDestroyView();
+                    fragment = null;
+                    LogUtil.e("销毁Fragment的时候，轮询销毁嵌套的fragment");
+                }
             }
         }
     }
