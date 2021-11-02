@@ -112,6 +112,58 @@ public class GlideUtil {
         }
     }
 
+    /**
+     * @param placeholder     占位图
+     * @param errorResourceId 错误资源
+     */
+    @SuppressLint("CheckResult")
+    public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull ImageView imageView, @DrawableRes int placeholder, @DrawableRes int errorResourceId) {
+        boolean checkParameter = checkParameter(activity);
+
+        if (checkParameter) {
+            RequestOptions options = new RequestOptions();
+            if (placeholder != 0) {
+                options.placeholder(placeholder);
+            }
+
+            if (errorResourceId != 0) {
+                options.error(errorResourceId);
+                options.fallback(errorResourceId);
+            }
+
+            Glide.with(activity)
+                    .load(url)
+                    .apply(options)
+                    .into(imageView);
+        }
+    }
+
+    /**
+     * @param placeholder     占位图
+     * @param errorResourceId 错误资源
+     */
+    @SuppressLint("CheckResult")
+    public static void loadView(@NotNull Context context, @NotNull String url, @NotNull ImageView imageView, @DrawableRes int placeholder, @DrawableRes int errorResourceId) {
+        boolean checkParameter = checkParameter(context);
+
+        if (checkParameter) {
+            RequestOptions options = new RequestOptions();
+            if (placeholder != 0) {
+                options.placeholder(placeholder);
+            }
+
+            if (errorResourceId != 0) {
+                options.error(errorResourceId);
+                options.fallback(errorResourceId);
+            }
+
+            Glide.with(context)
+                    .load(url)
+                    .apply(options)
+                    .into(imageView);
+        }
+    }
+
     public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull View view) {
         loadView(activity, url, view, 0);
     }
@@ -149,7 +201,8 @@ public class GlideUtil {
 
     public static void loadViewCenterCrop(Context context, ImageView view, String url) {
         if ((context != null) && (view != null) && (!TextUtils.isEmpty(url)))
-            loadViewCenterCrop(context, view, url, 0);;
+            loadViewCenterCrop(context, view, url, 0);
+        ;
     }
 
     @SuppressLint("CheckResult")
