@@ -38,6 +38,7 @@ public class ViewPager2Util implements BaseLifecycleObserver {
 
     private ViewPager2 mViewPager2;
     private ViewPager2Indicator mIndicator;
+    private boolean autoLoop;
 
     private final ViewPager2.OnPageChangeCallback mCallback = new ViewPager2.OnPageChangeCallback() {
         @Override
@@ -91,6 +92,7 @@ public class ViewPager2Util implements BaseLifecycleObserver {
     public ViewPager2Util(Builder builder) {
         this.mViewPager2 = builder.viewPager2;
         this.mIndicator = builder.indicator;
+        this.autoLoop = builder.autoLoop;
     }
 
     /**
@@ -147,11 +149,12 @@ public class ViewPager2Util implements BaseLifecycleObserver {
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             if (mViewPager2 != null) {
-                onStop();
 
-                LogUtil.e("handler:--->" + mCurrent);
-                if (msg.what == CODE_WHAT) {
-                    mViewPager2.setCurrentItem(++mCurrent);
+                if (autoLoop) {
+                    LogUtil.e("handler:--->" + mCurrent);
+                    if (msg.what == CODE_WHAT) {
+                        mViewPager2.setCurrentItem(++mCurrent);
+                    }
                     onStart();
                 }
             }
@@ -163,6 +166,7 @@ public class ViewPager2Util implements BaseLifecycleObserver {
      */
     public void isVisibility(boolean isVisibility) {
         if (isVisibility) {
+            autoLoop = true;
             onStart();
         } else {
             onStop();
@@ -172,6 +176,7 @@ public class ViewPager2Util implements BaseLifecycleObserver {
     public static class Builder {
         private ViewPager2 viewPager2;
         private ViewPager2Indicator indicator;
+        private boolean autoLoop = true;// 自动播放
 
         public Builder setViewPager2(ViewPager2 viewPager2) {
             this.viewPager2 = viewPager2;
@@ -180,6 +185,15 @@ public class ViewPager2Util implements BaseLifecycleObserver {
 
         public Builder setIndicator(ViewPager2Indicator indicator) {
             this.indicator = indicator;
+            return this;
+        }
+
+        /**
+         * @param autoLoop true:自动播放，false:停止自动播放
+         * @return 是否自动播放
+         */
+        public Builder autoLoop(boolean autoLoop) {
+            this.autoLoop = autoLoop;
             return this;
         }
 
@@ -198,7 +212,9 @@ public class ViewPager2Util implements BaseLifecycleObserver {
         if (mHandler != null) {
             // 先停止，后发送，避免造成快速轮转
             onStop();
-            mHandler.sendEmptyMessageDelayed(CODE_WHAT, CODE_INTERVAL);
+            if (autoLoop) {
+                mHandler.sendEmptyMessageDelayed(CODE_WHAT, CODE_INTERVAL);
+            }
         }
     }
 
