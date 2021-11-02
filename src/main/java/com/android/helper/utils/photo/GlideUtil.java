@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import com.android.helper.utils.LogUtil;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -58,114 +59,24 @@ public class GlideUtil {
      * 加载普通的view
      */
     @SuppressLint("CheckResult")
-    public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull ImageView imageView) {
-        loadView(activity, url, imageView, 0);
+    public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull View view) {
+        loadView(activity, url, view, 0);
     }
 
     /**
      * 加载普通的view
      */
     @SuppressLint("CheckResult")
-    public static void loadView(@NotNull Context context, @NotNull String url, @NotNull ImageView imageView) {
-        loadView(context, url, imageView, 0);
+    public static void loadView(@NotNull Context context, @NotNull String url, @NotNull View view) {
+        loadView(context, url, view, 0);
     }
 
     /**
      * @param placeResourceId 加载成功前显示的图片
      */
     @SuppressLint("CheckResult")
-    public static void loadView(@NotNull Context context, @NotNull String url, @NotNull ImageView imageView, @DrawableRes int placeResourceId) {
-        boolean checkParameter = checkParameter(context);
-
-        if (checkParameter) {
-            RequestOptions options = new RequestOptions();
-            if (placeResourceId != 0) {
-                options.placeholder(placeResourceId);
-            }
-
-            Glide.with(context)
-                    .load(url)
-                    .apply(options)
-                    .into(imageView);
-        }
-    }
-
-    /**
-     * @param placeResourceId 加载成功前显示的图片
-     */
-    @SuppressLint("CheckResult")
-    public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull ImageView imageView, @DrawableRes int placeResourceId) {
-        boolean checkParameter = checkParameter(activity);
-
-        if (checkParameter) {
-            RequestOptions options = new RequestOptions();
-            if (placeResourceId != 0) {
-                options.placeholder(placeResourceId);
-                options.error(placeResourceId);
-                options.fallback(placeResourceId);
-            }
-
-            Glide.with(activity)
-                    .load(url)
-                    .apply(options)
-                    .into(imageView);
-        }
-    }
-
-    /**
-     * @param placeholder     占位图
-     * @param errorResourceId 错误资源
-     */
-    @SuppressLint("CheckResult")
-    public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull ImageView imageView, @DrawableRes int placeholder, @DrawableRes int errorResourceId) {
-        boolean checkParameter = checkParameter(activity);
-
-        if (checkParameter) {
-            RequestOptions options = new RequestOptions();
-            if (placeholder != 0) {
-                options.placeholder(placeholder);
-            }
-
-            if (errorResourceId != 0) {
-                options.error(errorResourceId);
-                options.fallback(errorResourceId);
-            }
-
-            Glide.with(activity)
-                    .load(url)
-                    .apply(options)
-                    .into(imageView);
-        }
-    }
-
-    /**
-     * @param placeholder     占位图
-     * @param errorResourceId 错误资源
-     */
-    @SuppressLint("CheckResult")
-    public static void loadView(@NotNull Context context, @NotNull String url, @NotNull ImageView imageView, @DrawableRes int placeholder, @DrawableRes int errorResourceId) {
-        boolean checkParameter = checkParameter(context);
-
-        if (checkParameter) {
-            RequestOptions options = new RequestOptions();
-            if (placeholder != 0) {
-                options.placeholder(placeholder);
-            }
-
-            if (errorResourceId != 0) {
-                options.error(errorResourceId);
-                options.fallback(errorResourceId);
-            }
-
-            Glide.with(context)
-                    .load(url)
-                    .apply(options)
-                    .into(imageView);
-        }
-    }
-
-    public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull View view) {
-        loadView(activity, url, view, 0);
+    public static void loadView(@NotNull Context context, @NotNull String url, @NotNull View view, @DrawableRes int placeResourceId) {
+        loadView(context, url, view, placeResourceId, 0);
     }
 
     /**
@@ -173,50 +84,102 @@ public class GlideUtil {
      */
     @SuppressLint("CheckResult")
     public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull View view, @DrawableRes int placeResourceId) {
+        loadView(activity, url, view, placeResourceId, 0);
+    }
 
+    /**
+     * @param placeholder     占位图
+     * @param errorResourceId 错误资源
+     */
+    @SuppressLint("CheckResult")
+    public static void loadView(@NotNull Activity activity, @NotNull String url, @NotNull View view, @DrawableRes int placeholder, @DrawableRes int errorResourceId) {
         boolean checkParameter = checkParameter(activity);
-        if (checkParameter) {
 
+        if (checkParameter) {
             RequestOptions options = new RequestOptions();
-            if (placeResourceId != 0) {
-                options.placeholder(placeResourceId);
+            if (placeholder != 0) {
+                options.placeholder(placeholder);
             }
 
-            Glide.with(activity)
+            if (errorResourceId != 0) {
+                options.error(errorResourceId);
+                options.fallback(errorResourceId);
+            }
+
+            RequestBuilder<Drawable> builder = Glide.with(activity)
                     .load(url)
-                    .apply(options)
-                    .into(new CustomTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            view.setBackground(resource);
-                        }
+                    .apply(options);
 
-                        @Override
-                        public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                        }
-                    });
+            loadView(builder, view);
         }
     }
 
-    public static void loadViewCenterCrop(Context context, ImageView view, String url) {
+    /**
+     * @param placeholder     占位图
+     * @param errorResourceId 错误资源
+     */
+    @SuppressLint("CheckResult")
+    public static void loadView(@NotNull Context context, @NotNull String url, @NotNull View view, @DrawableRes int placeholder, @DrawableRes int errorResourceId) {
+        boolean checkParameter = checkParameter(context);
+
+        if (checkParameter) {
+            RequestOptions options = new RequestOptions();
+            if (placeholder != 0) {
+                options.placeholder(placeholder);
+            }
+
+            if (errorResourceId != 0) {
+                options.error(errorResourceId);
+                options.fallback(errorResourceId);
+            }
+
+            RequestBuilder<Drawable> builder = Glide.with(context)
+                    .load(url)
+                    .apply(options);
+
+            loadView(builder, view);
+        }
+    }
+
+    private static void loadView(RequestBuilder<Drawable> builder, View view) {
+        if (builder != null && view != null) {
+
+            if (view instanceof ImageView) {
+
+                builder.into((ImageView) view);
+
+            } else {
+                builder.into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        view.setBackground(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                    }
+                });
+            }
+        }
+    }
+
+    public static void loadViewCenterCrop(Context context, View view, String url) {
         if ((context != null) && (view != null) && (!TextUtils.isEmpty(url)))
             loadViewCenterCrop(context, view, url, 0);
-        ;
     }
 
-    @SuppressLint("CheckResult")
-    public static void loadViewCenterCrop(Context context, ImageView view, String url, int placeResourceId) {
-        if ((context != null) && (view != null) && (!TextUtils.isEmpty(url))) {
-            RequestOptions options = new RequestOptions();
-            if (placeResourceId != 0) {
-                options.placeholder(placeResourceId);
-            }
+    public static void loadViewCenterCrop(Context context, View view, String url, int placeResourceId) {
 
-            Glide.with(context)
-                    .load(url)
-                    .centerCrop()
-                    .into(view);
+        RequestOptions options = new RequestOptions();
+        if (placeResourceId != 0) {
+            options.placeholder(placeResourceId);
         }
+        RequestBuilder<Drawable> builder = Glide.with(context)
+                .load(url)
+                .centerCrop()
+                .apply(options);
+
+        loadView(builder, view);
     }
+
 }
