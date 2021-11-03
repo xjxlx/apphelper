@@ -190,6 +190,22 @@ public class BaseApplication {
 
                 // refreshLayout.setEnableOverScrollBounce(true); // 设置是否启用越界回弹
                 // refreshLayout.setEnableAutoLoadMore(false); //设置是否监听列表在滚动到底部时触发加载事件（默认true）
+
+                //  refreshLayout.autoRefresh();//自动刷新
+                //  refreshLayout.autoLoadMore();//自动加载
+                //  refreshLayout.autoRefresh(400);//延迟400毫秒后自动刷新
+                //  refreshLayout.autoLoadMore(400);//延迟400毫秒后自动加载
+                //  refreshLayout.finishRefresh();//结束刷新
+                //  refreshLayout.finishLoadMore();//结束加载
+                //  refreshLayout.finishRefresh(3000);//延迟3000毫秒后结束刷新
+                //  refreshLayout.finishLoadMore(3000);//延迟3000毫秒后结束加载
+                //  refreshLayout.finishRefresh(false);//结束刷新（刷新失败）
+                //  refreshLayout.finishLoadMore(false);//结束加载（加载失败）
+                //  refreshLayout.finishLoadMoreWithNoMoreData();//完成加载并标记没有更多数据 1.0.4
+                //  refreshLayout.closeHeaderOrFooter();//关闭正在打开状态的 Header 或者 Footer（1.1.0）
+                //  refreshLayout.resetNoMoreData();//恢复没有更多数据的原始状态 1.0.4（1.1.0删除）
+                //  refreshLayout.setNoMoreData(false);//恢复没有更多数据的原始状态 1.0.5
+
             }
         });
 
