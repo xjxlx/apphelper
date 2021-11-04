@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.helper.interfaces.listener.OnItemClickListener;
 import com.android.helper.utils.LogUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ import java.util.List;
 public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerView.Adapter<E> {
 
     protected Activity mContext;
-    protected List<T> mList;
+    protected List<T> mList = new ArrayList<>();
 
     protected OnItemClickListener<T> mItemClickListener;
 
@@ -35,12 +36,90 @@ public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerVi
         this.mList = mList;
     }
 
-    public void setList(List<T> mList) {
-        this.mList = mList;
+    /**
+     * <p>
+     * 刷新全部的数据
+     * </p>
+     *
+     * @param list 数据源
+     */
+    public void setList(List<T> list) {
+        this.mList = list;
         if (mList != null) {
             LogUtil.e("------------------------------------------------size: " + mList.size() + " ----------------------------------");
         }
         notifyDataSetChanged();
+    }
+
+    /**
+     * <p>
+     * 针对有上拉加载更多的时候去使用，如果是刷新，就刷新所有，如果是加载更多，就去添加数据
+     * </p>
+     *
+     * @param list      数据源
+     * @param isRefresh 是否是下拉刷新，如果是首次加载数据，就刷新全部数据，否则就添加数据
+     */
+    public void setList(List<T> list, boolean isRefresh) {
+        if (list != null) {
+            LogUtil.e("------------------------------------------------size: " + list.size() + " ----------------------------------");
+            // 首次加载数据，刷新全部的数据源
+            if (isRefresh) {
+                this.mList = list;
+                notifyDataSetChanged();
+                LogUtil.e("------------------------------------------------ 全部刷新了数据 ----------------------------------");
+            } else {
+                // 针对上拉加载的时候，如果是下拉加载，就添加新的数据源
+                insertedList(list);
+                LogUtil.e("------------------------------------------------ 插入了新的数据 ----------------------------------");
+            }
+        }
+        // 空数据的时候，不执行其他操作，避免数据显示异常
+    }
+
+    /**
+     * <p>
+     * 插入一个数据集合
+     * </p>
+     *
+     * @param list 插入的数据
+     */
+    public void insertedList(List<T> list) {
+        if ((list != null) && (list.size() > 0)) {
+            for (int i = 0; i < list.size(); i++) {
+                T t = list.get(i);
+                insertedItem(t);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * 插入单个的数据
+     * </p>
+     *
+     * @param t 具体的数据
+     */
+    public void insertedItem(T t) {
+        if (t != null) {
+            mList.add(t);
+            notifyItemInserted(mList.size());
+        }
+    }
+
+    /**
+     * todo  暂定，后续待优化
+     *
+     * @param position
+     */
+    private void removeItem(int position) {
+        if (position >= 0) {
+            // 移除数据源
+            mList.remove(position);
+            // 刷新adapter
+            notifyItemRemoved(position);
+
+            notifyDataSetChanged();
+        }
     }
 
     @Override
