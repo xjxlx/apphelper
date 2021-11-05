@@ -12,6 +12,8 @@ import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -37,9 +39,9 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     private RefreshHeader mRefreshHeader;
     private RefreshFooter mRefreshFooter;
     private RefreshType mRefreshType = RefreshType.TYPE_REFRESH;
-    private boolean mAutoLoad = true;// 是否自动加载
-    private boolean isFirstLoad = true;// 是否是首次加载，默认是首次，只要加载过数据，就设置非首次加载数据
-    private boolean isRefresh = true;// 是否是刷新的状态，用于控制数据是添加还是在更新
+    private boolean mAutoLoad = true;       // 是否自动加载
+    private boolean isFirstLoad = true;     // 是否是首次加载，默认是首次，只要加载过数据，就设置非首次加载数据
+    private boolean isRefresh = true;       // 是否是刷新的状态，用于控制数据是添加还是在更新
 
     public enum RefreshType {
         TYPE_NONE, // 不执行任何的操作
@@ -113,8 +115,34 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
      *
      * @return 用来控制是否已经没有更多的数据了, 默认是还有数据
      */
-    public boolean isNoMoreData() {
-        return false;
+    private boolean isNoMoreData() {
+        boolean isNoMoreData = false;   // 是否还有跟多的数据
+        if (mRefreshType == RefreshType.TYPE_REFRESH_LOAD_MORE) { // 只有在上拉加载的时候，判断这个才有意义，避免数据的繁琐逻辑
+            List<?> list = setNoMoreData(mData);
+            if (list == null) {
+                /*
+                 * 数据为空的时候，设置为没有更多数据了
+                 */
+                isNoMoreData = true;
+            } else {
+                /*
+                 * 1:数据不为空，数据为0的时候，设置为没有更多数据
+                 * 2:数据不为空，数据长度小于每页查询页数长度的时候，设置为没有更多数据
+                 */
+                if ((list.size() == 0) || (list.size() < getPageSiZe())) { //
+                    isNoMoreData = true;
+                }
+            }
+        }
+        return isNoMoreData;
+    }
+
+    /**
+     * @param t 当前请求下来的数据对象
+     * @return 返回一个实际使用到的集合列表，去判断还有没有跟多的数据，这个方法只适合使用列表型的数据
+     */
+    public List<?> setNoMoreData(T t) {
+        return null;
     }
 
     /**
@@ -308,9 +336,12 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
         mPage = 0;
         isRefresh = true;
 
-        // 恢复没有更多数据的原始状态
-        if (mRefreshLayout != null) {
-            mRefreshLayout.resetNoMoreData();
+        // 只有在没有跟多数据的情况下，才回去判断重置状态
+        if (isNoMoreData()) {
+            // 恢复没有更多数据的原始状态
+            if (mRefreshLayout != null) {
+                mRefreshLayout.resetNoMoreData();
+            }
         }
 
         // 自动加载
