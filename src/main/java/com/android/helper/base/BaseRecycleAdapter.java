@@ -164,5 +164,4 @@ public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerVi
     public void setItemClickListener(OnItemClickListener<T> mOnItemClickListener) {
         this.mItemClickListener = mOnItemClickListener;
     }
-
 }

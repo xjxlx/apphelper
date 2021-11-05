@@ -69,5 +69,4 @@ public class BaseVH extends RecyclerView.ViewHolder {
     public <T extends ViewGroup> T getViewGroup(int viewId) {
         return (T) itemView.findViewById(viewId);
     }
-
 }
