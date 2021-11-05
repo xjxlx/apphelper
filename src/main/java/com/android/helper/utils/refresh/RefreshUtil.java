@@ -1,8 +1,13 @@
-package com.android.helper.utils;
+package com.android.helper.utils.refresh;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import com.android.helper.httpclient.RxUtil;
+import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
+import com.android.helper.utils.LogUtil;
 import com.scwang.smart.refresh.layout.SmartRefreshLayout;
 import com.scwang.smart.refresh.layout.api.RefreshFooter;
 import com.scwang.smart.refresh.layout.api.RefreshHeader;
@@ -23,7 +28,7 @@ import io.reactivex.disposables.Disposable;
  * @CreateDate: 2021/11/3-4:41 下午
  * @Description: 刷新的工具类
  */
-public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreListener {
+public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreListener, BaseLifecycleObserver {
 
     private int mPage = 0;// 数据查询的页数
     private int mPageSiZe = 20;// 每页查询的数量，默认是20条数据
@@ -33,26 +38,38 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     public abstract Observable<T> getObservable();
 
     // 接口回调的数据
-    private CallBackListener<T> mCallBackListener;
+    private RefreshCallBack<T> mCallBack;
 
-    private final SmartRefreshLayout mRefreshLayout;
+    private SmartRefreshLayout mRefreshLayout;
     private RefreshHeader mRefreshHeader;
     private RefreshFooter mRefreshFooter;
     private RefreshType mRefreshType = RefreshType.TYPE_REFRESH;
     private boolean mAutoLoad = true;       // 是否自动加载
     private boolean isFirstLoad = true;     // 是否是首次加载，默认是首次，只要加载过数据，就设置非首次加载数据
     private boolean isRefresh = true;       // 是否是刷新的状态，用于控制数据是添加还是在更新
+    private Disposable mDisposable;         // 请求数据的对象，用于取消数据的请求
 
-    public enum RefreshType {
-        TYPE_NONE, // 不执行任何的操作
-        TYPE_REFRESH,// 只能刷新
-        TYPE_REFRESH_LOAD_MORE// 既能刷新也能加载更多
+    /**
+     * @param activity      activity的对象
+     * @param refreshLayout 刷新布局的对象
+     */
+    public RefreshUtil(FragmentActivity activity, SmartRefreshLayout refreshLayout) {
+        if (activity != null) {
+            Lifecycle lifecycle = activity.getLifecycle();
+            lifecycle.addObserver(this);
+        }
+        this.mRefreshLayout = refreshLayout;
     }
 
     /**
+     * @param fragment      fragment的对象
      * @param refreshLayout 刷新布局的对象
      */
-    public RefreshUtil(SmartRefreshLayout refreshLayout) {
+    public RefreshUtil(Fragment fragment, SmartRefreshLayout refreshLayout) {
+        if (fragment != null) {
+            Lifecycle lifecycle = fragment.getLifecycle();
+            lifecycle.addObserver(this);
+        }
         this.mRefreshLayout = refreshLayout;
     }
 
@@ -203,8 +220,11 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
         return this;
     }
 
-    public RefreshUtil<T> setCallBackListener(CallBackListener<T> callBackListener) {
-        this.mCallBackListener = callBackListener;
+    /**
+     * @return 设置刷新数据的监听对象
+     */
+    public RefreshUtil<T> setCallBackListener(RefreshCallBack<T> callBack) {
+        this.mCallBack = callBack;
         return this;
     }
 
@@ -251,8 +271,13 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
                 .subscribe(new Observer<T>() {
                     @Override
                     public void onSubscribe(@NotNull Disposable d) {
-                        RefreshUtil.this.onStart();
+                        mDisposable = d;
+
                         isFirstLoad = false;
+
+                        if (mCallBack != null) {
+                            mCallBack.onStart();
+                        }
                     }
 
                     @Override
@@ -279,8 +304,8 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
                             }
                         }
 
-                        if (mCallBackListener != null) {
-                            mCallBackListener.onSuccess(t);
+                        if (mCallBack != null) {
+                            mCallBack.onSuccess(t);
                         }
                     }
 
@@ -291,14 +316,16 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
                             mRefreshLayout.finishLoadMore();
                         }
 
-                        if (mCallBackListener != null) {
-                            mCallBackListener.onError(e);
+                        if (mCallBack != null) {
+                            mCallBack.onError(e);
                         }
                     }
 
                     @Override
                     public void onComplete() {
-                        RefreshUtil.this.onComplete();
+                        if (mCallBack != null) {
+                            mCallBack.onComplete();
+                        }
                     }
                 });
     }
@@ -357,23 +384,47 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
         clientHttp();
     }
 
-    /**
-     * 预置的网络刷新开始的回调，因为有些地方是在刷新的布局头上显示的动画，所以没有必要所有的接口都重写这个方法
-     * 这里预置一个方法，在有需要的时候去进行重写
-     */
+    @Override
+    public void onCreate() {
+
+    }
+
+    @Override
     public void onStart() {
+
     }
 
-    /**
-     * 预置的网络刷新结束的回调，因为有些地方是在成功和失败的时候已经处理了逻辑，所以没有必要所有的接口都重写这个方法
-     * 这里预置一个方法，在有需要的时候去进行重写
-     */
-    public void onComplete() {
+    @Override
+    public void onResume() {
+
     }
 
-    public interface CallBackListener<T> {
-        void onSuccess(@NotNull T t);
+    @Override
+    public void onPause() {
 
-        void onError(@NotNull Throwable e);
     }
+
+    @Override
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        // 页面销毁的时候，去切断网络的连接，避免异常
+        if ((mDisposable != null) && (!mDisposable.isDisposed())) {
+            mDisposable.dispose();
+            mDisposable = null;
+            LogUtil.e("销毁了刷新的接口对象！");
+        }
+
+        if (mRefreshLayout != null) {
+            mRefreshLayout = null;
+        }
+
+        if (mCallBack != null) {
+            mCallBack = null;
+        }
+    }
+
 }
