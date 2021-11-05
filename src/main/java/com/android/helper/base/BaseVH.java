@@ -22,45 +22,33 @@ public class BaseVH extends RecyclerView.ViewHolder {
     /**
      * 设置TextView的文字内容
      *
-     * @param textId
-     * @param value
+     * @param textId textView的对象
+     * @param value  具体展示的内容
      */
     public void setTextView(int textId, String value) {
-        if (itemView != null) {
-            TextView textView = itemView.findViewById(textId);
-            TextViewUtil.setText(textView, value);
-        }
+        TextView textView = getTextView(textId);
+        TextViewUtil.setText(textView, value);
     }
 
     /**
-     * @param imageId
      * @return 获取imageView对象
      */
     public ImageView getImageView(int imageId) {
-        if (itemView != null) {
-            ImageView imageView = itemView.findViewById(imageId);
-            if (imageView != null) {
-                return imageView;
-            } else {
-                return null;
-            }
+        View view = itemView.findViewById(imageId);
+        if (view instanceof ImageView) {
+            return (ImageView) view;
         } else {
             return null;
         }
     }
 
     /**
-     * @param textId
      * @return 获取imageView对象
      */
     public TextView getTextView(int textId) {
-        if (itemView != null) {
-            TextView textView = itemView.findViewById(textId);
-            if (textView != null) {
-                return textView;
-            } else {
-                return null;
-            }
+        View view = itemView.findViewById(textId);
+        if (view instanceof TextView) {
+            return (TextView) view;
         } else {
             return null;
         }
@@ -71,23 +59,15 @@ public class BaseVH extends RecyclerView.ViewHolder {
      * @return 获取指定类型的view
      */
     public <T extends View> T getView(int viewId) {
-        if (itemView != null) {
-            return (T) itemView.findViewById(viewId);
-        } else {
-            return null;
-        }
+        return (T) itemView.findViewById(viewId);
     }
 
     /**
      * @param viewId 对象id
      * @return 获取指定类型的ViewGrounp
      */
-    public <T extends ViewGroup> T getViewGrounp(int viewId) {
-        if (itemView != null) {
-            return (T) itemView.findViewById(viewId);
-        } else {
-            return null;
-        }
+    public <T extends ViewGroup> T getViewGroup(int viewId) {
+        return (T) itemView.findViewById(viewId);
     }
 
 }

@@ -85,10 +85,8 @@ public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerVi
      */
     public void insertedList(List<T> list) {
         if ((list != null) && (list.size() > 0)) {
-            for (int i = 0; i < list.size(); i++) {
-                T t = list.get(i);
-                insertedItem(t);
-            }
+            mList.addAll(list);
+            notifyItemInserted(mList.size());
         }
     }
 
