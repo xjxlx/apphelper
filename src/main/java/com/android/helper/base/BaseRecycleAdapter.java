@@ -1,11 +1,11 @@
 package com.android.helper.base;
 
-import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.helper.interfaces.listener.OnItemClickListener;
@@ -22,16 +22,16 @@ import java.util.List;
  */
 public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerView.Adapter<E> {
 
-    protected Activity mContext;
+    protected FragmentActivity mContext;
     protected List<T> mList = new ArrayList<>();
 
     protected OnItemClickListener<T> mItemClickListener;
 
-    public BaseRecycleAdapter(Activity mContext) {
+    public BaseRecycleAdapter(FragmentActivity mContext) {
         this.mContext = mContext;
     }
 
-    public BaseRecycleAdapter(Activity mContext, List<T> mList) {
+    public BaseRecycleAdapter(FragmentActivity mContext, List<T> mList) {
         this.mContext = mContext;
         this.mList = mList;
     }
