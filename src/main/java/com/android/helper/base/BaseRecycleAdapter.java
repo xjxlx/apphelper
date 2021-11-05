@@ -107,17 +107,39 @@ public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerVi
     }
 
     /**
-     * todo  暂定，后续待优化
-     *
-     * @param position
+     * @param position 删除具体的位置
      */
-    private void removeItem(int position) {
+    public void removeItem(int position) {
         if (position >= 0) {
             // 移除数据源
             mList.remove(position);
-            // 刷新adapter
+            // 刷新adapter  notifyItemRangeRemoved
             notifyItemRemoved(position);
 
+            // 有动画的效果
+            /*
+             * positionStart : 是从界面哪个位置的Item开始变化,比如你点击界面上的第二个ItemView positionStart是1
+             * itemCount : 是已经发生变化的item的个数(包括自己,即正在点击这个),比如,你点击界面上的第二个ItemView,position [1,9] 发生变化,共计
+             */
+            notifyItemRangeChanged(position, mList.size() - position);
+        }
+    }
+
+    /**
+     * @param position  具体的位置
+     * @param animation 是否显示动画，true:显示动画，false:不显示动画
+     */
+    public void removeItem(int position, boolean animation) {
+        if (animation) {
+            removeItem(position);
+        }
+        if (position >= 0) {
+            // 移除数据源
+            mList.remove(position);
+            // 刷新adapter  notifyItemRangeRemoved
+            notifyItemRemoved(position);
+
+            // 没有动画效果
             notifyDataSetChanged();
         }
     }
