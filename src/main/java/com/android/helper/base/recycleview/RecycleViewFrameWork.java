@@ -1,13 +1,11 @@
-package com.android.helper.base;
+package com.android.helper.base.recycleview;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.interfaces.listener.OnItemClickListener;
 import com.android.helper.utils.LogUtil;
 
@@ -15,25 +13,67 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * RecycleView的封装基类
- *
- * @param <T> 数据的类型
- * @param <E> ViewHolder的对象
+ * RecycleView 的最底层
  */
-public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerView.Adapter<E> {
+public abstract class RecycleViewFrameWork<T, R extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<R> implements BaseLifecycleObserver {
 
-    protected FragmentActivity mContext;
+    protected boolean isDestroy;// 页面是不是已经销毁了
+
+    /**
+     * Activity的对象
+     */
+    protected FragmentActivity mActivity;
+
+    /**
+     * Fragment的对象
+     */
+    private Fragment mFragment;
+
+    /**
+     * 集合的数据
+     */
     protected List<T> mList = new ArrayList<>();
 
+    /**
+     * 点击事件的对象
+     */
     protected OnItemClickListener<T> mItemClickListener;
 
-    public BaseRecycleAdapter(FragmentActivity mContext) {
-        this.mContext = mContext;
+    public RecycleViewFrameWork(Fragment fragment) {
+        mFragment = fragment;
+        if (fragment != null) {
+            Lifecycle lifecycle = fragment.getLifecycle();
+            lifecycle.addObserver(this);
+
+            mActivity = mFragment.getActivity();
+        }
     }
 
-    public BaseRecycleAdapter(FragmentActivity mContext, List<T> mList) {
-        this.mContext = mContext;
-        this.mList = mList;
+    public RecycleViewFrameWork(Fragment fragment, List<T> list) {
+        mFragment = fragment;
+        mList = list;
+        if (fragment != null) {
+            Lifecycle lifecycle = fragment.getLifecycle();
+            lifecycle.addObserver(this);
+            mActivity = mFragment.getActivity();
+        }
+    }
+
+    public RecycleViewFrameWork(FragmentActivity activity) {
+        mActivity = activity;
+        if (activity != null) {
+            Lifecycle lifecycle = activity.getLifecycle();
+            lifecycle.addObserver(this);
+        }
+    }
+
+    public RecycleViewFrameWork(FragmentActivity activity, List<T> list) {
+        mActivity = activity;
+        mList = list;
+        if (activity != null) {
+            Lifecycle lifecycle = activity.getLifecycle();
+            lifecycle.addObserver(this);
+        }
     }
 
     /**
@@ -148,20 +188,54 @@ public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecyclerVi
     }
 
     /**
-     * @return 返回一个RecycleView的布局
+     * 设置点击的对象
+     *
+     * @param mOnItemClickListener 点击对象
      */
-    protected abstract int getLayout();
-
-    protected abstract E createViewHolder(View inflate);
-
-    @NonNull
-    @Override
-    public E onCreateViewHolder(@NonNull ViewGroup viewGroup, int type) {
-        View inflate = LayoutInflater.from(viewGroup.getContext()).inflate(getLayout(), viewGroup, false);
-        return createViewHolder(inflate);
-    }
-
     public void setItemClickListener(OnItemClickListener<T> mOnItemClickListener) {
         this.mItemClickListener = mOnItemClickListener;
     }
+
+    @Override
+    public void onCreate() {
+
+    }
+
+    @Override
+    public void onStart() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mFragment != null) {
+            boolean detached = mFragment.isDetached();
+            if (detached) {
+                isDestroy = true;
+            }
+        }
+
+        if (mActivity != null) {
+            if (mActivity.isFinishing() || mActivity.isDestroyed()) {
+                isDestroy = true;
+            }
+        }
+        LogUtil.e("isDestroy:" + isDestroy);
+    }
+
 }
