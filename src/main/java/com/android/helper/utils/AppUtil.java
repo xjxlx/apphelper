@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
@@ -212,8 +211,7 @@ public class AppUtil {
 
         try {
             PackageManager packageManager = context.getPackageManager();
-            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
-            hasApp = true;
+            hasApp = packageManager.getApplicationInfo(packageName, 0).enabled;
         } catch (PackageManager.NameNotFoundException e) {
             // 抛出找不到的异常，说明该程序已经被卸载
         }
