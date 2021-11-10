@@ -56,9 +56,9 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
     /**
      * @return 返回一个RecycleView的布局
      */
-    protected abstract int getLayout();
+    protected abstract int getLayout(int viewType);
 
-    protected abstract E createViewHolder(View inflate);
+    protected abstract E createViewHolder(View inflate, int viewType);
 
     @NonNull
     @NotNull
@@ -66,11 +66,11 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
     public E onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         E viewHolder = null;
         if (viewType != 1) {
-            int layout = getLayout();
+            int layout = getLayout(viewType);
             if (layout > 0) {
-                View inflate = LayoutInflater.from(parent.getContext()).inflate(getLayout(), parent, false);
+                View inflate = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
                 if (inflate != null) {
-                    viewHolder = createViewHolder(inflate);
+                    viewHolder = createViewHolder(inflate, viewType);
                 }
             }
             if (viewHolder != null) {
