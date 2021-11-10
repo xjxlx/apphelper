@@ -29,12 +29,28 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
         super(fragment, list);
     }
 
+    public BaseRecycleAdapter(Fragment fragment, EmptyPlaceholder placeholder) {
+        super(fragment, placeholder);
+    }
+
+    public BaseRecycleAdapter(Fragment fragment, List<T> list, EmptyPlaceholder placeholder) {
+        super(fragment, list, placeholder);
+    }
+
     public BaseRecycleAdapter(FragmentActivity activity) {
         super(activity);
     }
 
+    public BaseRecycleAdapter(FragmentActivity activity, EmptyPlaceholder placeholder) {
+        super(activity, placeholder);
+    }
+
     public BaseRecycleAdapter(FragmentActivity activity, List<T> list) {
         super(activity, list);
+    }
+
+    public BaseRecycleAdapter(FragmentActivity activity, List<T> list, EmptyPlaceholder placeholder) {
+        super(activity, list, placeholder);
     }
 
     /**
@@ -43,28 +59,6 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
     protected abstract int getLayout();
 
     protected abstract E createViewHolder(View inflate);
-
-//    @NonNull
-//    @NotNull
-//    @Override
-//    public E onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
-//        E vh = null;
-//        if (viewType != 1) {
-//            int layout = getLayout();
-//            if (layout > 0) {
-//                View inflate = LayoutInflater.from(parent.getContext()).inflate(getLayout(), parent, false);
-//                if (inflate != null) {
-//                    vh = createViewHolder(inflate);
-//                }
-//            }
-//
-//            if (vh != null) {
-//                return vh;
-//            }
-//        }
-//        return super.onCreateViewHolder(parent, viewType);
-//    }
-
 
     @NonNull
     @NotNull
