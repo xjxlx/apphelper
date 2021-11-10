@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
 import com.android.helper.base.BaseBindingVH;
@@ -24,7 +25,7 @@ import java.util.List;
  * @param <T> 数据类型
  * @param <E> ViewBinding的具体类型，目前只适合单一的数据holder类型
  */
-public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extends RecycleViewFrameWork<T, BaseBindingVH<E>> implements BindingViewListener<E> {
+public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extends RecycleViewFrameWork<T, RecyclerView.ViewHolder> implements BindingViewListener<E> {
 
     protected E mBinding;
     protected ItemClickListener<E, T> mItemBindingClickListener;
@@ -48,25 +49,34 @@ public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extend
     @NonNull
     @NotNull
     @Override
-    public BaseBindingVH<E> onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         BaseBindingVH<E> vh;
+        if (viewType != 1) {
+            mBinding = getBinding(LayoutInflater.from(mActivity), parent);
 
-        mBinding = getBinding(LayoutInflater.from(mActivity), parent);
-
-        if (mBinding == null) {
-            LogUtil.e("BaseBindingRecycle ---> context 为空！");
+            if (mBinding == null) {
+                LogUtil.e("BaseBindingRecycle ---> context 为空！");
+            }
+            assert (mBinding != null);
+            vh = new BaseBindingVH<>(mBinding);
+            return vh;
         }
-        assert (mBinding != null);
-        vh = new BaseBindingVH<>(mBinding);
-        return vh;
+        return super.onCreateViewHolder(parent, viewType);
     }
 
     public abstract void onBindHolder(@NonNull @NotNull BaseBindingVH<E> holder, int position);
 
     @Override
-    public void onBindViewHolder(@NonNull @NotNull BaseBindingVH<E> holder, int position) {
+    public void onBindViewHolder(@NonNull @NotNull RecyclerView.ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
         if (!isDestroy) {
-            onBindHolder(holder, position);
+            int itemViewType = getItemViewType(position);
+            if (itemViewType != 1) {
+                // 只返回正常的布局，不返回空布局的holder
+                if (holder instanceof BaseBindingVH) {
+                    onBindHolder((BaseBindingVH<E>) holder, position);
+                }
+            }
         }
     }
 

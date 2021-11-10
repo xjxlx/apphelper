@@ -7,9 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
-import com.android.helper.base.BaseVH;
-import com.android.helper.utils.LogUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +19,7 @@ import java.util.List;
  * @param <T> 数据的类型
  * @param <E> ViewHolder的对象，目前只适合单数据类型的使用
  */
-public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecycleViewFrameWork<T, E> {
+public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> extends RecycleViewFrameWork<T, E> {
 
     public BaseRecycleAdapter(Fragment fragment) {
         super(fragment);
@@ -46,34 +44,58 @@ public abstract class BaseRecycleAdapter<T, E extends BaseVH> extends RecycleVie
 
     protected abstract E createViewHolder(View inflate);
 
+//    @NonNull
+//    @NotNull
+//    @Override
+//    public E onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
+//        E vh = null;
+//        if (viewType != 1) {
+//            int layout = getLayout();
+//            if (layout > 0) {
+//                View inflate = LayoutInflater.from(parent.getContext()).inflate(getLayout(), parent, false);
+//                if (inflate != null) {
+//                    vh = createViewHolder(inflate);
+//                }
+//            }
+//
+//            if (vh != null) {
+//                return vh;
+//            }
+//        }
+//        return super.onCreateViewHolder(parent, viewType);
+//    }
+
+
     @NonNull
     @NotNull
     @Override
     public E onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
-        E vh = null;
-        int layout = getLayout();
-        if (layout > 0) {
-            View inflate = LayoutInflater.from(parent.getContext()).inflate(getLayout(), parent, false);
-            if (inflate != null) {
-                vh = createViewHolder(inflate);
+        E viewHolder = null;
+        if (viewType != 1) {
+            int layout = getLayout();
+            if (layout > 0) {
+                View inflate = LayoutInflater.from(parent.getContext()).inflate(getLayout(), parent, false);
+                if (inflate != null) {
+                    viewHolder = createViewHolder(inflate);
+                }
+            }
+            if (viewHolder != null) {
+                return viewHolder;
             }
         }
-
-        if (vh == null) {
-            LogUtil.e("BaseRecycleView的 ViewHolder --->  为空！");
-        }
-
-        assert (vh != null);
-        return vh;
+        return super.onCreateViewHolder(parent, viewType);
     }
 
     public abstract void onBindHolder(@NonNull @NotNull E holder, int position);
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull E holder, int position) {
+        super.onBindViewHolder(holder, position);
         if (!isDestroy) {
-            onBindHolder(holder, position);
+            int itemViewType = getItemViewType(position);
+            if (itemViewType != 1) {
+                onBindHolder(holder, position);
+            }
         }
     }
-
 }
