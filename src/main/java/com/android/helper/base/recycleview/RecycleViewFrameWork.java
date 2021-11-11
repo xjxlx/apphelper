@@ -65,6 +65,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      */
     protected int mItemType;
     private EmptyPlaceholder mEmptyPlaceHolder;
+    private View mEmptyView;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.TYPE_EMPTY, ViewType.TYPE_HEAD, ViewType.TYPE_FOOT})
@@ -259,12 +260,14 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     public E onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         E vh = null;
         if (viewType == ViewType.TYPE_EMPTY) { // 设置空布局
-            if (mEmptyPlaceHolder != null) {
-                View emptyView = mEmptyPlaceHolder.getEmptyView();
-                if (emptyView != null) {
-                    EmptyVH emptyVH = new EmptyVH(emptyView);
-                    vh = (E) emptyVH;
+            if (mEmptyView == null) {
+                if (mEmptyPlaceHolder != null) {
+                    mEmptyView = mEmptyPlaceHolder.getEmptyView(parent);
                 }
+            }
+            if (mEmptyView != null) {
+                EmptyVH emptyVH = new EmptyVH(mEmptyView);
+                vh = (E) emptyVH;
             }
         }
         assert vh != null;
@@ -379,6 +382,10 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
             if (mActivity.isFinishing() || mActivity.isDestroyed()) {
                 isDestroy = true;
             }
+        }
+
+        if (mEmptyView != null) {
+            mEmptyView = null;
         }
         LogUtil.e("isDestroy:" + isDestroy);
     }

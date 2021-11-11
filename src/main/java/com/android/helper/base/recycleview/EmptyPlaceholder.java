@@ -33,7 +33,14 @@ public class EmptyPlaceholder {
         }
     }
 
-    public View getEmptyView() {
+    public View getEmptyView(ViewGroup parent) {
+        // 如果没有手动设置空布局，则使用默认的空布局
+        if ((mEmptyView == null) && (mTypeForView != 1)) {
+            if (parent != null) {
+                mEmptyView = LayoutInflater.from(parent.getContext()).inflate(R.layout.base_recycleview_empty, parent, false);
+                mTypeForView = 2;
+            }
+        }
         return mEmptyView;
     }
 
@@ -79,7 +86,6 @@ public class EmptyPlaceholder {
             return this;
         }
 
-
         /**
          * @param resources 指定的图片的资源
          * @param content   指定的内容
@@ -100,17 +106,8 @@ public class EmptyPlaceholder {
             return this;
         }
 
-        public EmptyPlaceholder Build(ViewGroup parent) {
-            EmptyPlaceholder placeholder = null;
-            // 如果没有手动设置空布局，则使用默认的空布局
-            if (mEmptyView == null) {
-                if (parent != null) {
-                    mEmptyView = LayoutInflater.from(parent.getContext()).inflate(R.layout.base_recycleview_empty, parent, false);
-                    mTypeForView = 2;
-                }
-            }
-            placeholder = new EmptyPlaceholder(this);
-            return placeholder;
+        public EmptyPlaceholder Build() {
+            return new EmptyPlaceholder(this);
         }
     }
 
