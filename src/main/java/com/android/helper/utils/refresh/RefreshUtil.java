@@ -47,15 +47,16 @@ import io.reactivex.disposables.Disposable;
  *            3：抽象方法{@link RefreshUtil#setNoMoreData(Object)}这个是用来检测是否有更多数据的方法，如果数据类型能统一的话，这个方法可以省略，目前
  *               接口不统一，需要手动去返回当前接口返回的集合对象，用于判定是否还有更多的数据
  *       六：刷新方法，调用{@link RefreshUtil#refresh()},这里刷新的是第一页的数据
- *       七：调用刷新流程：使用方法{@link RefreshUtil#execute()}
- *
+ *       七：数据回调，调用{@link RefreshUtil#setCallBackListener(RefreshCallBack)}，会把接口获取到的数据返回出去
+ *       八：调用刷新流程：使用方法{@link RefreshUtil#execute()}
+ * <p>
  *   使用例子：
  *   RefreshUtil mRefreshUtil = new RefreshUtil<Page<List<UserCollection>>>(this, sr, adapter) {
  *             @Override
  *             public Observable<Page<List<UserCollection>>> getObservable() {
  *                 return RetrofitUtils.getAPIInstance().create(TipAPI.class).getCollectListV2(id, getCurrentPage());
  *             }
- *
+ * <p>
  *             @Override
  *             public List<?> setNoMoreData(Page<List<UserCollection>> listPage) {
  *                 if (listPage != null) {
@@ -71,7 +72,7 @@ import io.reactivex.disposables.Disposable;
  *                             adapter.setList(listPage.getContent(), mRefreshUtil.isRefresh());
  *                         }
  *                     }
- *
+ * <p>
  *                     @Override
  *                     public void onError(@NotNull Throwable e) {
  *                         ToastUtil.show(e.getMessage());
