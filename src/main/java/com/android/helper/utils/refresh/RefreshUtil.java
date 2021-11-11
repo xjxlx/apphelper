@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
+import com.android.helper.base.recycleview.RecycleViewFrameWork;
 import com.android.helper.httpclient.RxUtil;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.LogUtil;
@@ -43,11 +44,12 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     private SmartRefreshLayout mRefreshLayout;
     private RefreshHeader mRefreshHeader;
     private RefreshFooter mRefreshFooter;
-    private RefreshType mRefreshType = RefreshType.TYPE_REFRESH;
-    private boolean mAutoLoad = true;       // 是否自动加载
-    private boolean isFirstLoad = true;     // 是否是首次加载，默认是首次，只要加载过数据，就设置非首次加载数据
-    private boolean isRefresh = true;       // 是否是刷新的状态，用于控制数据是添加还是在更新
-    private Disposable mDisposable;         // 请求数据的对象，用于取消数据的请求
+    private RefreshType mRefreshType = RefreshType.TYPE_REFRESH_LOAD_MORE;
+    private boolean mAutoLoad = true;           // 是否自动加载
+    private boolean isFirstLoad = true;         // 是否是首次加载，默认是首次，只要加载过数据，就设置非首次加载数据
+    private boolean isRefresh = true;           // 是否是刷新的状态，用于控制数据是添加还是在更新
+    private Disposable mDisposable;             // 请求数据的对象，用于取消数据的请求
+    private RecycleViewFrameWork<?, ?> mAdapter;   // RecycleView的适配器
 
     /**
      * @param activity      activity的对象
@@ -71,6 +73,19 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
             lifecycle.addObserver(this);
         }
         this.mRefreshLayout = refreshLayout;
+    }
+
+    /**
+     * @param fragment      fragment的对象
+     * @param refreshLayout 刷新布局的对象
+     */
+    public RefreshUtil(Fragment fragment, SmartRefreshLayout refreshLayout, RecycleViewFrameWork<?, ?> adapter) {
+        if (fragment != null) {
+            Lifecycle lifecycle = fragment.getLifecycle();
+            lifecycle.addObserver(this);
+        }
+        this.mRefreshLayout = refreshLayout;
+        this.mAdapter = adapter;
     }
 
     /**
@@ -210,7 +225,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     }
 
     /**
-     * @param refreshType 设置刷新的类型，默认是单独刷新
+     * @param refreshType 设置刷新的类型，默认是可以下拉刷新也可以上拉加载更多
      *                    单独刷新，使用：{@link RefreshType#TYPE_REFRESH}
      *                    刷新 + 下拉加载更多，使用{@link RefreshType#TYPE_REFRESH_LOAD_MORE}
      *                    不做刷新也不做加载更多，使用：{@link RefreshType#TYPE_REFRESH_LOAD_MORE}
@@ -318,6 +333,11 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
 
                         if (mCallBack != null) {
                             mCallBack.onError(e);
+                        }
+
+                        // 接口错误的回调
+                        if (mAdapter != null) {
+                            mAdapter.setErrorHttpClient(RefreshUtil.this);
                         }
                     }
 

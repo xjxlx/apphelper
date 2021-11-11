@@ -19,6 +19,7 @@ import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.interfaces.listener.OnItemClickListener;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.TextViewUtil;
+import com.android.helper.utils.refresh.RefreshUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -66,6 +67,8 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     protected int mItemType;
     private EmptyPlaceholder mEmptyPlaceHolder;
     private View mEmptyView;
+    private int mErrorType;  // 1:空数据  2：错误数据
+    private RefreshUtil<?> mRefreshUtil; // 刷新工具类
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.TYPE_EMPTY, ViewType.TYPE_HEAD, ViewType.TYPE_FOOT})
@@ -145,6 +148,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      * @param list 数据源
      */
     public void setList(List<T> list) {
+        mErrorType = 1; // 普通数据的设置
         this.mList = list;
         if (mList != null) {
             LogUtil.e("------------------------------------------------size: " + mList.size() + " ----------------------------------");
@@ -161,6 +165,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      * @param isRefresh 是否是下拉刷新，如果是首次加载数据，就刷新全部数据，否则就添加数据
      */
     public void setList(List<T> list, boolean isRefresh) {
+        mErrorType = 1; // 普通数据的设置
         if (list != null) {
             LogUtil.e("------------------------------------------------size: " + list.size() + " ----------------------------------");
             // 首次加载数据，刷新全部的数据源
@@ -283,24 +288,94 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                 EmptyVH emptyVH = (EmptyVH) holder;
                 if (mEmptyPlaceHolder.getTypeForView() == 2) {
 
-                    int emptyResource = mEmptyPlaceHolder.getEmptyResource();
-                    String emptyContent = mEmptyPlaceHolder.getEmptyContent();
+                    // 描述文字的大小
                     int contentSize = mEmptyPlaceHolder.getContentSize();
-                    int contentColor = mEmptyPlaceHolder.getContentColor();
-
-                    if (emptyResource != 0) {
-                        emptyVH.mIvBasePlaceholderImage.setImageResource(emptyResource);
-                    }
-                    if (!TextUtils.isEmpty(emptyContent)) {
-                        TextViewUtil.setText(emptyVH.mTvBasePlaceholderMsg, emptyContent);
-                    }
                     if (contentSize != 0) {
-                        emptyVH.mTvBasePlaceholderMsg.setTextSize(TypedValue.COMPLEX_UNIT_SP, contentSize);
+                        emptyVH.mTvMsg.setTextSize(TypedValue.COMPLEX_UNIT_SP, contentSize);
                     }
 
+                    // 提示信息的颜色
+                    int contentColor = mEmptyPlaceHolder.getContentColor();
                     if (contentColor != 0) {
-                        emptyVH.mTvBasePlaceholderMsg.setTextColor(contentColor);
+                        emptyVH.mTvMsg.setTextColor(contentColor);
                     }
+
+                    switch (mErrorType) {
+                        case 1:
+                            // 刷新按钮不可见
+                            emptyVH.mIvButton.setVisibility(View.GONE);
+                            // 空布局资源
+                            int emptyResource = mEmptyPlaceHolder.getEmptyResource();
+                            if (emptyResource != 0) {
+                                emptyVH.mIvImage.setImageResource(emptyResource);
+                            }
+
+                            // 空布局提示
+                            String emptyContent = mEmptyPlaceHolder.getEmptyContent();
+                            if (!TextUtils.isEmpty(emptyContent)) {
+                                TextViewUtil.setText(emptyVH.mTvMsg, emptyContent);
+                            }
+                            break;
+                        case 2: // 错误的布局可见
+                            emptyVH.mIvButton.setVisibility(View.VISIBLE);
+
+                            // 错误布局资源
+                            int errorImageResource = mEmptyPlaceHolder.getErrorImageResource();
+                            if (errorImageResource != 0) {
+                                emptyVH.mIvImage.setImageResource(errorImageResource);
+                            }
+
+                            // 设置全局的异常图片资源
+                            int globalErrorImage = EmptyPlaceholder.getGlobalErrorImage();
+                            if ((globalErrorImage != 0) && (errorImageResource == 0)) {
+                                emptyVH.mIvImage.setImageResource(globalErrorImage);
+                            }
+
+                            // 错误布局提示
+                            String errorContent = mEmptyPlaceHolder.getErrorContent();
+                            if (!TextUtils.isEmpty(errorContent)) {
+                                TextViewUtil.setText(emptyVH.mTvMsg, errorContent);
+                            }
+
+                            // 全局的错误提示
+                            String globalErrorContent = EmptyPlaceholder.getGlobalErrorTitle();
+                            if ((!TextUtils.isEmpty(globalErrorContent)) && (TextUtils.isEmpty(errorContent))) {
+                                TextViewUtil.setText(emptyVH.mTvMsg, globalErrorContent);
+                            }
+
+                            // 错误布局按钮的文字
+                            String errorButtonContent = mEmptyPlaceHolder.getErrorButtonContent();
+                            if (!TextUtils.isEmpty(errorButtonContent)) {
+                                TextViewUtil.setText(emptyVH.mIvButton, errorButtonContent);
+                            }
+
+                            // 全局的异常Button文字
+                            String globalErrorButtonContent = EmptyPlaceholder.getGlobalErrorButtonContent();
+                            if ((!TextUtils.isEmpty(globalErrorButtonContent)) && (TextUtils.isEmpty(errorButtonContent))) {
+                                TextViewUtil.setText(emptyVH.mIvButton, globalErrorButtonContent);
+                            }
+
+                            // 错误布局的背景
+                            int errorButtonBackground = mEmptyPlaceHolder.getErrorButtonBackgroundResource();
+                            if (errorButtonBackground != 0) {
+                                emptyVH.mIvButton.setBackgroundResource(errorButtonBackground);
+                            }
+
+                            // 全局的异常背景
+                            int globalBackground = EmptyPlaceholder.getGlobalErrorButtonBackgroundResource();
+                            if ((globalBackground != 0) && (errorButtonBackground == 0)) {
+                                emptyVH.mIvButton.setBackgroundResource(globalBackground);
+                            }
+
+                            emptyVH.mIvButton.setOnClickListener(v -> {
+                                if (mRefreshUtil != null) {
+                                    mRefreshUtil.refresh();
+                                }
+                            });
+
+                            break;
+                    }
+
                 }
             }
         }
@@ -325,6 +400,15 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     }
 
     /**
+     * 设置网络错误的展示
+     */
+    public void setErrorHttpClient(RefreshUtil<?> refreshUtil) {
+        this.mRefreshUtil = refreshUtil;
+        mErrorType = 2;
+        notifyDataSetChanged();
+    }
+
+    /**
      * 设置点击的对象
      *
      * @param mOnItemClickListener 点击对象
@@ -334,13 +418,15 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     }
 
     public static class EmptyVH extends RecyclerView.ViewHolder {
-        private final ImageView mIvBasePlaceholderImage;
-        private final TextView mTvBasePlaceholderMsg;
+        private final ImageView mIvImage;
+        private final TextView mTvMsg;
+        private final TextView mIvButton;
 
         public EmptyVH(@NonNull @NotNull View itemView) {
             super(itemView);
-            mIvBasePlaceholderImage = itemView.findViewById(R.id.iv_base_placeholder_image);
-            mTvBasePlaceholderMsg = itemView.findViewById(R.id.tv_base_placeholder_msg);
+            mIvImage = itemView.findViewById(R.id.iv_base_placeholder_image);
+            mTvMsg = itemView.findViewById(R.id.tv_base_placeholder_msg);
+            mIvButton = itemView.findViewById(R.id.iv_base_error_placeholder);
         }
     }
 

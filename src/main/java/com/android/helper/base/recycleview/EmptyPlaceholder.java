@@ -13,23 +13,78 @@ import com.android.helper.R;
  */
 public class EmptyPlaceholder {
 
-    private View mEmptyView;        // 空数据的指定布局
-    private int mEmptyResource;     // 空布局指定的图片资源
-    private String mEmptyContent;   // 空布局指定的文字内容
-    private int mContentSize;      // 空布局文字的大小
-    private int mContentColor;      // 空布局文字的颜色
-    private int mTypeForView;          // view的来源,1:指定的view ，2：默认的view
+    private View mEmptyView;                            // 空数据的指定布局
+    private int mEmptyResource;                         // 空布局指定的图片资源
+    private String mEmptyContent;                       // 空布局指定的文字内容
+    private int mContentSize;                           // 空布局文字的大小
+    private int mContentColor;                          // 空布局文字的颜色
+    private int mTypeForView;                           // view的来源,1:指定的view ，2：默认的view
+    private int mErrorImageResource;                    // 错误布局指定的图片资源
+    private String mErrorContent;                       // 错误的提示
+    private int mErrorButtonBackgroundResource;         // 错误布局的按钮背景
+    private String mErrorButtonContent;                 // 错误布局的按钮文字
+
+    private static int mGlobalErrorImage;                                  // 全局的异常图片
+    private static String mGlobalErrorTitle;                             // 全局的异常提示
+    private static int mGlobalErrorButtonBackgroundResource;               // 全局的异常Button背景
+    private static String mGlobalErrorButtonContent;                       // 全局的异常Button的文字描述
+
+    public static String getGlobalErrorTitle() {
+        return mGlobalErrorTitle;
+    }
+
+    /**
+     * @param globalErrorContent 设置全局的异常提示文字
+     */
+    public static void setGlobalErrorTitle(String globalErrorContent) {
+        mGlobalErrorTitle = globalErrorContent;
+    }
+
+    public static int getGlobalErrorButtonBackgroundResource() {
+        return mGlobalErrorButtonBackgroundResource;
+    }
+
+    /**
+     * @param globalErrorButtonBackgroundResource 设置全局的异常Button背景
+     */
+    public static void setGlobalErrorButtonBackgroundResource(int globalErrorButtonBackgroundResource) {
+        mGlobalErrorButtonBackgroundResource = globalErrorButtonBackgroundResource;
+    }
+
+    public static String getGlobalErrorButtonContent() {
+        return mGlobalErrorButtonContent;
+    }
+
+    /**
+     * @param globalErrorButtonContent 设置全局的异常Button文字
+     */
+    public static void setGlobalErrorButtonContent(String globalErrorButtonContent) {
+        mGlobalErrorButtonContent = globalErrorButtonContent;
+    }
+
+    public static int getGlobalErrorImage() {
+        return mGlobalErrorImage;
+    }
+
+    /**
+     * @param mGlobalErrorImage 设置全局的异常资源图片
+     */
+    public static void setGlobalErrorImage(int mGlobalErrorImage) {
+        EmptyPlaceholder.mGlobalErrorImage = mGlobalErrorImage;
+    }
 
     public EmptyPlaceholder(Builder builder) {
         if (builder != null) {
             this.mEmptyView = builder.mEmptyView;
             this.mTypeForView = builder.mTypeForView;
-            if (mTypeForView == 2) { // 这里只给默认的空布局设置资源，否则没有意义
-                this.mEmptyResource = builder.mEmptyResource;
-                this.mEmptyContent = builder.mEmptyContent;
-                this.mContentSize = builder.mContentSize;
-                this.mContentColor = builder.mContentColor;
-            }
+            this.mEmptyResource = builder.mEmptyResource;
+            this.mEmptyContent = builder.mEmptyContent;
+            this.mContentSize = builder.mContentSize;
+            this.mContentColor = builder.mContentColor;
+            this.mErrorImageResource = builder.mErrorImageResource;
+            this.mErrorContent = builder.mErrorContent;
+            this.mErrorButtonBackgroundResource = builder.mErrorButtonBackgroundResource;
+            this.mErrorButtonContent = builder.mErrorButtonContent;
         }
     }
 
@@ -60,6 +115,22 @@ public class EmptyPlaceholder {
         return mContentColor;
     }
 
+    public int getErrorImageResource() {
+        return mErrorImageResource;
+    }
+
+    public String getErrorContent() {
+        return mErrorContent;
+    }
+
+    public int getErrorButtonBackgroundResource() {
+        return mErrorButtonBackgroundResource;
+    }
+
+    public String getErrorButtonContent() {
+        return mErrorButtonContent;
+    }
+
     /**
      * @return view的来源, 1:指定的view ，2：默认的view
      */
@@ -68,12 +139,16 @@ public class EmptyPlaceholder {
     }
 
     public static class Builder {
-        private int mEmptyResource;     // 空布局指定的图片资源
-        private String mEmptyContent;   // 空布局指定的文字内容
-        private View mEmptyView;        // 空数据的指定布局
-        private int mContentSize;      // 空布局文字的大小
-        private int mContentColor;      // 空布局文字的颜色
-        private int mTypeForView;          // view的来源,1:指定的view ，2：默认的view
+        private View mEmptyView;                            // 空数据的指定布局
+        private int mEmptyResource;                         // 空布局指定的图片资源
+        private String mEmptyContent;                       // 空布局指定的文字内容
+        private int mContentSize;                           // 空布局文字的大小
+        private int mContentColor;                          // 空布局文字的颜色
+        private int mTypeForView;                           // view的来源,1:指定的view ，2：默认的view
+        private int mErrorImageResource;                    // 错误布局指定的图片资源
+        private String mErrorContent;                       // 错误的提示
+        private int mErrorButtonBackgroundResource;         // 错误布局的按钮背景
+        private String mErrorButtonContent;                    // 错误布局的按钮文字
 
         /**
          * 设置空布局的view
@@ -103,6 +178,38 @@ public class EmptyPlaceholder {
 
         public Builder setEmptyColor(int contentColor) {
             this.mContentColor = contentColor;
+            return this;
+        }
+
+        /**
+         * @param errorImageResource 错误图片的对象
+         */
+        public Builder setErrorImageResource(int errorImageResource) {
+            mErrorImageResource = errorImageResource;
+            return this;
+        }
+
+        /**
+         * @param errorContent 错误的提示
+         */
+        public Builder setErrorContent(String errorContent) {
+            mErrorContent = errorContent;
+            return this;
+        }
+
+        /**
+         * @param errorButtonBackgroundResource 错误按钮的背景
+         */
+        public Builder setErrorButtonBackgroundResource(int errorButtonBackgroundResource) {
+            mErrorButtonBackgroundResource = errorButtonBackgroundResource;
+            return this;
+        }
+
+        /**
+         * @param errorButtonContent 错误布局的文字描述
+         */
+        public Builder setErrorButtonContent(String errorButtonContent) {
+            mErrorButtonContent = errorButtonContent;
             return this;
         }
 

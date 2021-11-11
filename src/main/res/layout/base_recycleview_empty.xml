@@ -33,7 +33,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_base_placeholder_image"
         app:layout_constraintVertical_bias="0"
-        tools:text="您暂时没有好友哦" />
+        tools:text="默认的提示文字" />
 
+    <TextView
+        android:id="@+id/iv_base_error_placeholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:paddingLeft="@dimen/dp_16"
+        android:paddingTop="@dimen/dp_4"
+        android:paddingRight="@dimen/dp_16"
+        android:paddingBottom="@dimen/dp_4"
+        android:textColor="#3E485A"
+        android:textSize="@dimen/sp_13"
+        android:visibility="visible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_base_placeholder_msg"
+        tools:text="点击刷新" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
