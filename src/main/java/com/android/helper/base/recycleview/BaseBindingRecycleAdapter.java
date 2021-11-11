@@ -67,7 +67,7 @@ public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extend
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         BaseBindingVH<E> vh;
-        if (viewType != 1) {
+        if (viewType != ViewType.TYPE_EMPTY) {
             mBinding = getBinding(LayoutInflater.from(mActivity), parent);
 
             if (mBinding == null) {
@@ -87,7 +87,7 @@ public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extend
         super.onBindViewHolder(holder, position);
         if (!isDestroy) {
             int itemViewType = getItemViewType(position);
-            if (itemViewType != 1) {
+            if (itemViewType != ViewType.TYPE_EMPTY) {
                 // 只返回正常的布局，不返回空布局的holder
                 if (holder instanceof BaseBindingVH) {
                     onBindHolder((BaseBindingVH<E>) holder, position);

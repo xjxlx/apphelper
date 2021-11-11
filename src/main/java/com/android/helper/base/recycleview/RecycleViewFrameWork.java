@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -21,6 +22,8 @@ import com.android.helper.utils.TextViewUtil;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,13 +58,30 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     /**
      * 布局的类型
      * <ol>
-     *     1：空布局
-     *     2：头布局
-     *     3：脚布局
+     *     -1：空布局
+     *     -2：头布局
+     *     -3：脚布局
      * </ol>
      */
     protected int mItemType;
     private EmptyPlaceholder mEmptyPlaceHolder;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({ViewType.TYPE_EMPTY, ViewType.TYPE_HEAD, ViewType.TYPE_FOOT})
+    public @interface ViewType {
+        /**
+         * 空布局
+         */
+        int TYPE_EMPTY = -11;
+        /**
+         * 头布局
+         */
+        int TYPE_HEAD = -22;
+        /**
+         * 脚布局
+         */
+        int TYPE_FOOT = -33;
+    }
 
     public RecycleViewFrameWork(Fragment fragment) {
         addObserverFragment(fragment, null, null);
@@ -78,7 +98,6 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     public RecycleViewFrameWork(Fragment fragment, List<T> list, EmptyPlaceholder placeholder) {
         addObserverFragment(fragment, list, placeholder);
     }
-
 
     public RecycleViewFrameWork(FragmentActivity activity) {
         addObserverActivity(activity, null, null);
@@ -116,7 +135,6 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
             lifecycle.addObserver(this);
         }
     }
-
 
     /**
      * <p>
@@ -240,7 +258,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     @Override
     public E onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         E vh = null;
-        if (viewType == 1) { // 设置空布局
+        if (viewType == ViewType.TYPE_EMPTY) { // 设置空布局
             if (mEmptyPlaceHolder != null) {
                 View emptyView = mEmptyPlaceHolder.getEmptyView();
                 if (emptyView != null) {
@@ -257,7 +275,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     public void onBindViewHolder(@NonNull @NotNull E holder, int position) {
         int itemViewType = getItemViewType(position);
 
-        if (itemViewType == 1) { // 空布局的数据设置
+        if (itemViewType == mItemType) { // 空布局的数据设置
             if (holder instanceof EmptyVH) {
                 EmptyVH emptyVH = (EmptyVH) holder;
                 if (mEmptyPlaceHolder.getTypeForView() == 2) {
@@ -288,7 +306,8 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     @Override
     public int getItemViewType(int position) {
         if (isEmpty) {
-            return 1;
+            mItemType = ViewType.TYPE_EMPTY;
+            return mItemType;
         }
         return super.getItemViewType(position);
     }
@@ -310,7 +329,6 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     public void setItemClickListener(OnItemClickListener<T> mOnItemClickListener) {
         this.mItemClickListener = mOnItemClickListener;
     }
-
 
     public static class EmptyVH extends RecyclerView.ViewHolder {
         private final ImageView mIvBasePlaceholderImage;

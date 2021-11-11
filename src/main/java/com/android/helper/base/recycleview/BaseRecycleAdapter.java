@@ -65,7 +65,7 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
     @Override
     public E onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         E viewHolder = null;
-        if (viewType != 1) {
+        if (viewType != ViewType.TYPE_EMPTY) {
             int layout = getLayout(viewType);
             if (layout > 0) {
                 View inflate = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
@@ -87,7 +87,7 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
         super.onBindViewHolder(holder, position);
         if (!isDestroy) {
             int itemViewType = getItemViewType(position);
-            if (itemViewType != 1) {
+            if (itemViewType != ViewType.TYPE_EMPTY) {
                 onBindHolder(holder, position);
             }
         }
