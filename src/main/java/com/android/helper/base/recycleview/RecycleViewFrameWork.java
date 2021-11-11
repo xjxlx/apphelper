@@ -289,13 +289,13 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                 if (mEmptyPlaceHolder.getTypeForView() == 2) {
 
                     // 描述文字的大小
-                    int contentSize = mEmptyPlaceHolder.getContentSize();
+                    int contentSize = mEmptyPlaceHolder.getEmptyContentSize();
                     if (contentSize != 0) {
                         emptyVH.mTvMsg.setTextSize(TypedValue.COMPLEX_UNIT_SP, contentSize);
                     }
 
                     // 提示信息的颜色
-                    int contentColor = mEmptyPlaceHolder.getContentColor();
+                    int contentColor = mEmptyPlaceHolder.getEmptyContentColor();
                     if (contentColor != 0) {
                         emptyVH.mTvMsg.setTextColor(contentColor);
                     }
@@ -318,17 +318,29 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                             break;
                         case 2: // 错误的布局可见
                             emptyVH.mIvButton.setVisibility(View.VISIBLE);
+                            EmptyPlaceholder globalPlaceholder = EmptyPlaceholder.getGlobalPlaceholder();
+
+                            int mGlobalErrorImage = 0;
+                            String mGlobalErrorContent = null;
+                            String mGlobalErrorButtonContent = null;
+                            int mGlobalErrorButtonBackground = 0;
+
+                            if (globalPlaceholder != null) {
+                                mGlobalErrorImage = globalPlaceholder.getErrorImage();
+                                mGlobalErrorContent = globalPlaceholder.getErrorContent();
+                                mGlobalErrorButtonContent = globalPlaceholder.getErrorButtonContent();
+                                mGlobalErrorButtonBackground = globalPlaceholder.getErrorButtonBackground();
+                            }
 
                             // 错误布局资源
-                            int errorImageResource = mEmptyPlaceHolder.getErrorImageResource();
+                            int errorImageResource = mEmptyPlaceHolder.getErrorImage();
                             if (errorImageResource != 0) {
                                 emptyVH.mIvImage.setImageResource(errorImageResource);
                             }
 
                             // 设置全局的异常图片资源
-                            int globalErrorImage = EmptyPlaceholder.getGlobalErrorImage();
-                            if ((globalErrorImage != 0) && (errorImageResource == 0)) {
-                                emptyVH.mIvImage.setImageResource(globalErrorImage);
+                            if ((mGlobalErrorImage != 0) && (errorImageResource == 0)) {
+                                emptyVH.mIvImage.setImageResource(mGlobalErrorImage);
                             }
 
                             // 错误布局提示
@@ -338,9 +350,8 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                             }
 
                             // 全局的错误提示
-                            String globalErrorContent = EmptyPlaceholder.getGlobalErrorTitle();
-                            if ((!TextUtils.isEmpty(globalErrorContent)) && (TextUtils.isEmpty(errorContent))) {
-                                TextViewUtil.setText(emptyVH.mTvMsg, globalErrorContent);
+                            if ((!TextUtils.isEmpty(mGlobalErrorContent)) && (TextUtils.isEmpty(errorContent))) {
+                                TextViewUtil.setText(emptyVH.mTvMsg, mGlobalErrorContent);
                             }
 
                             // 错误布局按钮的文字
@@ -350,21 +361,19 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                             }
 
                             // 全局的异常Button文字
-                            String globalErrorButtonContent = EmptyPlaceholder.getGlobalErrorButtonContent();
-                            if ((!TextUtils.isEmpty(globalErrorButtonContent)) && (TextUtils.isEmpty(errorButtonContent))) {
-                                TextViewUtil.setText(emptyVH.mIvButton, globalErrorButtonContent);
+                            if ((!TextUtils.isEmpty(mGlobalErrorButtonContent)) && (TextUtils.isEmpty(errorButtonContent))) {
+                                TextViewUtil.setText(emptyVH.mIvButton, mGlobalErrorButtonContent);
                             }
 
                             // 错误布局的背景
-                            int errorButtonBackground = mEmptyPlaceHolder.getErrorButtonBackgroundResource();
+                            int errorButtonBackground = mEmptyPlaceHolder.getErrorButtonBackground();
                             if (errorButtonBackground != 0) {
                                 emptyVH.mIvButton.setBackgroundResource(errorButtonBackground);
                             }
 
                             // 全局的异常背景
-                            int globalBackground = EmptyPlaceholder.getGlobalErrorButtonBackgroundResource();
-                            if ((globalBackground != 0) && (errorButtonBackground == 0)) {
-                                emptyVH.mIvButton.setBackgroundResource(globalBackground);
+                            if ((mGlobalErrorButtonBackground != 0) && (errorButtonBackground == 0)) {
+                                emptyVH.mIvButton.setBackgroundResource(mGlobalErrorButtonBackground);
                             }
 
                             emptyVH.mIvButton.setOnClickListener(v -> {

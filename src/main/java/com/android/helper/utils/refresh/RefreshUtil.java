@@ -28,6 +28,57 @@ import io.reactivex.disposables.Disposable;
  * @author : 流星
  * @CreateDate: 2021/11/3-4:41 下午
  * @Description: 刷新的工具类
+ * <ol>
+ *   使用说明：
+ *      使用该工具类，必然是在请求接口的时候使用，否则没有任何意义
+ * <p>
+ *   使用文档：
+ *      一：T 泛型，这个是数据请求数据的类型
+ *      二：请求页数，默认是从第0页开始的，如果有特殊的需求，调用方法{@link RefreshUtil#setFromPage(int)}去设置
+ *      三：请求数量，默认的是指是20条，如果有其他需求，调用方法{@link RefreshUtil#setPageSize(int)}去做设置
+ *      四：刷新类型，默认的刷新类型是既能下拉刷新，也能上拉加载，如果要改变刷新类型，调用方法{@link RefreshUtil#setRefreshType(RefreshType)}
+ *      五：构造方法，
+ *            1：需要传入参数：
+ *               ①：SmartRefreshLayout 刷新的对象，这个是必填参数
+ *               ②：Activity ：上下文的对象，必填参数
+ *               ③：RecycleViewFrameWork：适配器的对象，这个是针对列表使用的，传入了该对象，就可以主动去设置接口异常的占位图
+ *            2：抽象方法{@link RefreshUtil#getObservable()} 这个方法是用来返回一个请求对象使用的，只要调用了构造方法，就必然要实现这个方法，
+ *               值得注意的是，如果有分页的话，需要调用获取页数的方法{@link RefreshUtil#getCurrentPage()}去动态变化页数
+ *            3：抽象方法{@link RefreshUtil#setNoMoreData(Object)}这个是用来检测是否有更多数据的方法，如果数据类型能统一的话，这个方法可以省略，目前
+ *               接口不统一，需要手动去返回当前接口返回的集合对象，用于判定是否还有更多的数据
+ *       六：刷新方法，调用{@link RefreshUtil#refresh()},这里刷新的是第一页的数据
+ *       七：调用刷新流程：使用方法{@link RefreshUtil#execute()}
+ *
+ *   使用例子：
+ *   RefreshUtil mRefreshUtil = new RefreshUtil<Page<List<UserCollection>>>(this, sr, adapter) {
+ *             @Override
+ *             public Observable<Page<List<UserCollection>>> getObservable() {
+ *                 return RetrofitUtils.getAPIInstance().create(TipAPI.class).getCollectListV2(id, getCurrentPage());
+ *             }
+ *
+ *             @Override
+ *             public List<?> setNoMoreData(Page<List<UserCollection>> listPage) {
+ *                 if (listPage != null) {
+ *                     return listPage.getContent();
+ *                 }
+ *                 return null;
+ *             }
+ *         }
+ *                 .setCallBackListener(new RefreshCallBack<Page<List<UserCollection>>>() {
+ *                     @Override
+ *                     public void onSuccess(@NotNull Page<List<UserCollection>> listPage) {
+ *                         if (listPage.getContent() != null) {
+ *                             adapter.setList(listPage.getContent(), mRefreshUtil.isRefresh());
+ *                         }
+ *                     }
+ *
+ *                     @Override
+ *                     public void onError(@NotNull Throwable e) {
+ *                         ToastUtil.show(e.getMessage());
+ *                     }
+ *                 })
+ *                 .execute();
+ * </ol>
  */
 public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreListener, BaseLifecycleObserver {
 
@@ -82,6 +133,15 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     public RefreshUtil(Fragment fragment, SmartRefreshLayout refreshLayout, RecycleViewFrameWork<?, ?> adapter) {
         if (fragment != null) {
             Lifecycle lifecycle = fragment.getLifecycle();
+            lifecycle.addObserver(this);
+        }
+        this.mRefreshLayout = refreshLayout;
+        this.mAdapter = adapter;
+    }
+
+    public RefreshUtil(FragmentActivity activity, SmartRefreshLayout refreshLayout, RecycleViewFrameWork<?, ?> adapter) {
+        if (activity != null) {
+            Lifecycle lifecycle = activity.getLifecycle();
             lifecycle.addObserver(this);
         }
         this.mRefreshLayout = refreshLayout;
@@ -173,9 +233,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
      * @param t 当前请求下来的数据对象
      * @return 返回一个实际使用到的集合列表，去判断还有没有跟多的数据，这个方法只适合使用列表型的数据
      */
-    public List<?> setNoMoreData(T t) {
-        return null;
-    }
+    public abstract List<?> setNoMoreData(T t);
 
     /**
      * @return 获取当前页面的数据
