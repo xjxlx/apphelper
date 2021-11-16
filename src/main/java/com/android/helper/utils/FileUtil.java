@@ -228,7 +228,8 @@ public class FileUtil implements BaseLifecycleObserver {
 
     /**
      * <ol>
-     *     例子：/data/user/0/com.android.app/files
+     *     1：从内部存储空间访问，可以使用，从内部存储空间访问不需要任何权限，如果文件存储在内部存储空间中的目录内，则不能访问
+     *     2：例子：/data/user/0/com.android.app/files
      * </ol>
      *
      * @return 获取App目录下的File目录下的路径，该路径可以在Android 11 上面任意使用
@@ -247,7 +248,8 @@ public class FileUtil implements BaseLifecycleObserver {
 
     /**
      * <ol>
-     *     例子：/storage/emulated/0/Android/data/com.android.app/files/Movies
+     *     1：例子：/storage/emulated/0/Android/data/com.android.app/files/Movies
+     *     2：从外部存储空间访问，从外部存储空间访问不需要任何权限，如果文件存储在外部存储空间中的目录内，则可以访问
      * </ol>
      *
      * @param type 指定的类型，type The type of files directory to return. May be {@code null}
@@ -330,7 +332,7 @@ public class FileUtil implements BaseLifecycleObserver {
      * @param inputStream 输入流
      * @return 把一个IO流的内容，写入指定的文件夹内，如果是Android 11的版本，无法直接写入到Sd卡的目录中，除非给与足够的权限
      */
-    public boolean writeInputStreamToSd(File file, InputStream inputStream) {
+    public boolean writeInputStreamToFile(File file, InputStream inputStream) {
         boolean isSuccess = false;
         if ((file != null) && (inputStream != null)) {
             BufferedInputStream in = null;
@@ -371,7 +373,7 @@ public class FileUtil implements BaseLifecycleObserver {
      * @param content 存储的内容，例如："123"
      * @return 把指定的内容以文件的形式保存到指定的位置中
      */
-    public boolean writeContentToSd(File file, String content) {
+    public boolean writeContentToFile(File file, String content) {
         boolean isSuccess = false;
         if ((file != null) && (!TextUtils.isEmpty(content)) && (checkSdStatus())) {
             FileOutputStream outStream = null;
@@ -399,7 +401,7 @@ public class FileUtil implements BaseLifecycleObserver {
      * @param file 指定的文件
      * @return 获取指定路径中文件的内容，把内容转换为String字符串，适用于单纯的文本内容
      */
-    public String getContentForPath(File file) {
+    public String getContentForFile(File file) {
         String result = "";
         if ((file != null) && (file.exists())) {
             FileInputStream mInputStream = null;
@@ -446,19 +448,6 @@ public class FileUtil implements BaseLifecycleObserver {
         return checkout;
     }
 
-    /**
-     * @return 检测是否拥有文件的所有访问权限
-     */
-    public boolean checkAllFilesPermission(Fragment fragment) {
-        mFragment = fragment;
-        boolean checkout = commonCheckAllFile(fragment.getActivity());
-        if (!checkout) {
-            Lifecycle lifecycle = fragment.getLifecycle();
-            lifecycle.addObserver(this);
-        }
-        return checkout;
-    }
-
     private boolean commonCheckAllFile(FragmentActivity activity) {
         boolean isPermission = false;
         if (activity != null) {
@@ -497,6 +486,8 @@ public class FileUtil implements BaseLifecycleObserver {
                     intent.setData(Uri.parse("package:" + mActivity.getPackageName()));
                     mRegister.launch(intent);
                 }
+            } else {
+                ToastUtil.show("当前系统无需开启所有文件访问权限！");
             }
         }
     }

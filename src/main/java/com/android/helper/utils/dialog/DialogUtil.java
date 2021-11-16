@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
@@ -87,10 +88,18 @@ public class DialogUtil implements BaseLifecycleObserver {
     private DialogUtil(Builder builder) {
         if (builder != null) {
             this.mBuilder = builder;
+
             // 添加生命周期的控制
-            if (builder.mActivity != null) {
-                Lifecycle lifecycle = builder.mActivity.getLifecycle();
-                lifecycle.addObserver(this);
+            if (builder.mTypeFrom == 1) {
+                if (builder.mActivity != null) {
+                    Lifecycle lifecycle = builder.mActivity.getLifecycle();
+                    lifecycle.addObserver(this);
+                }
+            } else if (builder.mTypeFrom == 2) {
+                if (builder.mFragment != null) {
+                    Lifecycle lifecycle = builder.mFragment.getLifecycle();
+                    lifecycle.addObserver(this);
+                }
             }
         }
     }
@@ -192,6 +201,7 @@ public class DialogUtil implements BaseLifecycleObserver {
 
         private View mLayoutView;       // dialog的布局
         private FragmentActivity mActivity;     // dialog依赖的activity对象
+        private Fragment mFragment;     // dialog依赖的activity对象
         private View mCloseView; // 关闭dialog的对象
         private int mGravity = Gravity.CENTER;// 默认居中显示
         private boolean mCanceledOnTouchOutside = true; // 点击dialog外界是否可以取消dialog ，默认可以
@@ -206,6 +216,10 @@ public class DialogUtil implements BaseLifecycleObserver {
         private int mOffsetY; // 偏移的Y轴
         private Dialog mDialog;
         private boolean isAutoDismiss = true;// 在点击按钮的时候，是否自定关闭dialog
+        /**
+         * 1：来源于activity，2：来源于fragment
+         */
+        private int mTypeFrom;
 
         /**
          * @param activity    依赖的activity
@@ -215,8 +229,20 @@ public class DialogUtil implements BaseLifecycleObserver {
          * @Description: 构造Dialog的参数
          */
         public Builder(FragmentActivity activity, View contentView) {
+            mTypeFrom = 1;
             if (activity != null) {
                 mActivity = activity;
+            }
+            if (contentView != null) {
+                mLayoutView = contentView;
+            }
+        }
+
+        public Builder(Fragment fragment, View contentView) {
+            mTypeFrom = 2;
+            if (fragment != null) {
+                mFragment = fragment;
+                mActivity = fragment.getActivity();
             }
             if (contentView != null) {
                 mLayoutView = contentView;
@@ -231,8 +257,23 @@ public class DialogUtil implements BaseLifecycleObserver {
          * @Description: 构造Dialog的参数
          */
         public Builder(FragmentActivity activity, @LayoutRes int resource) {
+            mTypeFrom = 1;
             if (activity != null) {
                 mActivity = activity;
+            }
+            if (resource != 0) {
+                View inflate = LayoutInflater.from(mActivity).inflate(resource, null, false);
+                if (inflate != null) {
+                    mLayoutView = inflate;
+                }
+            }
+        }
+
+        public Builder(Fragment fragment, @LayoutRes int resource) {
+            mTypeFrom = 2;
+            if (fragment != null) {
+                mFragment = fragment;
+                mActivity = fragment.getActivity();
             }
             if (resource != 0) {
                 View inflate = LayoutInflater.from(mActivity).inflate(resource, null, false);
@@ -601,6 +642,9 @@ public class DialogUtil implements BaseLifecycleObserver {
                 mBuilder.mDialog = null;
             }
 
+            if (mBuilder.mFragment != null) {
+                mBuilder.mFragment = null;
+            }
             if (mBuilder.mActivity != null) {
                 mBuilder.mActivity = null;
             }
