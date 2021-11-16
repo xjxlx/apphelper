@@ -492,6 +492,39 @@ public class FileUtil implements BaseLifecycleObserver {
         }
     }
 
+    /**
+     * 针对Android版本的变化，不推荐使用Sd卡的根目录，所以直接写入到App的存储空间中，
+     * 1:首先获取App的外部存储目录，如果外部存储目录获取失败，就获取App的内部存储目录
+     * 2:不管是外部存储路径还是内部存储路径，默认获取的是App目录下的下载文件路径
+     */
+    public String getCommonPath() {
+        String path = "";
+        path = getAppTypePath(Environment.DIRECTORY_DOWNLOADS);
+        LogUtil.e("获取App外部存储路径为：" + path);
+        if (TextUtils.isEmpty(path)) {
+            String appFilesPath = getAppFilesPath();
+            if (!TextUtils.isEmpty(appFilesPath)) {
+                path = appFilesPath + "/Download";
+            }
+            LogUtil.e("获取App内部存储路径为：" + path);
+        }
+        return path;
+    }
+
+    /**
+     * @return 如果可以正常获取路径的话，会返回一个指定Tag的目录
+     */
+    public String getCommonTagPath() {
+        String path = "";
+        path = getCommonPath();
+        if (!TextUtils.isEmpty(path)) {
+            if (BaseApplication.getLogTag() != null) {
+                path = path + "/" + BaseApplication.getLogTag();
+            }
+        }
+        return path;
+    }
+
     @Override
     public void onCreate() {
         if (mActivity != null) {
