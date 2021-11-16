@@ -79,7 +79,7 @@ public class PhotoUtil implements BaseLifecycleObserver {
             }
             LogUtil.e("没有压缩拍摄视频的路径为：$mPhoto_path");
         }
-        return FileUtil.UriToPath(context, url);
+        return FileUtil.getInstance().UriToPath(context, url);
     }
 
     /**

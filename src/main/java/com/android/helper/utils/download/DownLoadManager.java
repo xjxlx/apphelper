@@ -106,7 +106,7 @@ public class DownLoadManager {
             mContentLong = Long.parseLong(map);
         } else {
             // 避免第一次无法获取到文件的大小
-            mContentLong = FileUtil.getFileSizeForUrl(url);
+            mContentLong = FileUtil.getInstance().getFileSizeForUrl(url);
         }
 
         // 根据原有的路径，去生成一个新的路径

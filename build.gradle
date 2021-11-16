@@ -11,7 +11,7 @@ android {
 
     compileSdkVersion compile.compileSdkVersion
     // 此处暂时先别打开
-    // buildToolsVersion compile.buildToolsVersion
+    buildToolsVersion compile.buildToolsVersion
 
     defaultConfig {
         minSdkVersion compile.minSdkVersion

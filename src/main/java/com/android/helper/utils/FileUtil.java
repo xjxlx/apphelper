@@ -1,21 +1,41 @@
 package com.android.helper.utils;
 
+import android.Manifest;
+import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.Settings;
 import android.text.TextUtils;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
+
+import com.android.helper.app.BaseApplication;
+import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.luck.picture.lib.tools.PictureFileUtils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import okhttp3.Call;
@@ -25,213 +45,48 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class FileUtil {
+/**
+ * 使用说明：
+ * 1：因为要适配Android 11，所以文件的路径，如果不给与全部文件访问的权限，那么就尽量使用应用内部的存储目录，否则就容易发生文件读写异常。
+ * 2：在检测Android 11权限的时候，调用的流程为：
+ * <ol>
+ *     1：检测文件的全部访问权限，调用方法为{@link FileUtil#checkAllFilesPermission(FragmentActivity)}
+ *        <ul>
+ *            注意：如果需要进行所有文件访问页面的跳转的话，这个方法一定要卸载onCreate里面进行检测，这个是为了数据回调的必须步骤，否则不会跳转。
+ *        </ul>
+ * <p>
+ *     2：打开所有文件访问权限的跳转方法，{@link FileUtil#jumpAllFiles()}
+ *     3：如果要在Android 11上面进行所有文件访问权限的使用，必须要注册三个权限，并进行权限动态申请
+ *           <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+ *           <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+ *           <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+ *     4:其他方法看使用说明文档进行使用
+ * </ol>
+ */
+public class FileUtil implements BaseLifecycleObserver {
 
     private final static String TAG = "FileUtil";
+    private static FileUtil INSTANCE;
+    private FragmentActivity mActivity;
+    private Fragment mFragment;
+    private ActivityResultLauncher<Intent> mRegister;
 
-    public final static String CONTROL_VEHICLE_LOG_PATH = Environment
-            .getExternalStorageDirectory().getAbsolutePath()
-            + File.separator
-            + "ZHGJ"
-            + File.separator
-            + "控制车辆"
-            + File.separator;
-
-    /**
-     * @return 检测sd卡是否存在，如果存在就返回tru，否则就返回false
-     */
-    public static boolean checkoutSdExists() {
-        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-    }
-
-    /**
-     * @return 获取保存到sd卡中的文件内容
-     */
-    public String getContentForSd(String filename) {
-        String result = "";
-        boolean b = checkoutSdExists();
-        if (b) {
-            File file = new File(Environment.getExternalStorageDirectory(), filename);
-            if (file.exists()) {
-                try {
-                    FileInputStream inputStream = new FileInputStream(file);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder builder = new StringBuilder();
-                    String timeLine;
-                    while (true) {
-                        try {
-                            if ((timeLine = reader.readLine()) == null) {
-                                break;
-                            }
-                            builder.append(timeLine);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }
-                    result = builder.toString();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                LogUtil.e(TAG, "文件不存在");
-            }
-        } else {
-            LogUtil.e(TAG, "SD卡不存在！");
-        }
-        return result;
-    }
-
-    /**
-     * @param fileName 文件名字,例如：device.text
-     * @param content  具体的内容 "123"
-     * @return 保存到SD卡根目录
-     */
-    public static boolean PutContentToSd(String fileName, String content) {
-        boolean isSaveSuccess = false;
-        if ((!TextUtils.isEmpty(fileName)) && (!TextUtils.isEmpty(content))) {
-            boolean b = checkoutSdExists();
-            if (b) {
-                // 获取sd卡的根目录
-                File file = new File(Environment.getExternalStorageDirectory(), fileName);
-                FileOutputStream outStream;
-                try {
-                    outStream = new FileOutputStream(file);
-                    try {
-                        outStream.write(content.getBytes());
-                        isSaveSuccess = true;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        isSaveSuccess = false;
-                    }
-                    try {
-                        outStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                LogUtil.e(TAG, "SD卡不存在！");
-            }
-        } else {
-            LogUtil.e(TAG, "数据为空！");
-        }
-        return isSaveSuccess;
-    }
-
-    /**
-     * @return 获取Sd卡的路径，因为7.0之后SD卡的路径可能会被拒绝访问，所以分为两种不同的情况去获取
-     * 1:7.0之上的方式：获取的路径为App内部的路径，会随着App的删除而被删除掉，具体路径为：/storage/emulated/0/Android/data/com.xjx.helper.debug/files/Download
-     * 如果需要使用，则在mainfast.xml 中application下面加入：android:requestLegacyExternalStorage="true"
-     * <p>
-     * 2:7.0以下的方式：获取的是SD卡真实的路径，不会随着App的删除而被删除掉，具体路径为：/storage/emulated/0
-     */
-    public static String getSdPath() {
-        String path = "";
-        File externalStorageDirectory = Environment.getExternalStorageDirectory();
-        if (externalStorageDirectory != null) {
-            boolean exists = externalStorageDirectory.exists();
-            if (exists) {
-                path = externalStorageDirectory.getAbsolutePath();
-            }
-        }
-        LogUtil.e(TAG, "获取的Sd卡根路径为：" + path);
-        return path;
-    }
-
-    /**
-     * @return 保存到App路径下面
-     */
-    public static boolean putContentToApp(Context context, String fileName, String content) {
-        boolean isSaveSuccess = false;
-        boolean b = checkoutSdExists();
-        if (b) {
-            // 返回共享存储的路径
-            File externalFilesDir = context.getExternalFilesDir(null);
-            if (externalFilesDir != null) {
-                String absolutePath = externalFilesDir.getAbsolutePath();
-                File file = new File(absolutePath, fileName);
-                FileOutputStream outStream;
-                try {
-                    outStream = new FileOutputStream(file);
-                    try {
-                        outStream.write(content.getBytes());
-                        isSaveSuccess = true;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        isSaveSuccess = false;
-                    }
-                    try {
-                        outStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                LogUtil.e(TAG, "获取共享存储对象失败");
-            }
-        } else {
-            LogUtil.e(TAG, "Sd卡不可用");
-        }
-        return isSaveSuccess;
-    }
-
-    /**
-     * @return 获取保存在App里面的内容
-     */
-    public static String getContentForApp(Context context, String filName) {
-        String result = "";
-        boolean b = checkoutSdExists();
-        if (b) {
-            File externalFilesDir = context.getExternalFilesDir(null);
-            if (externalFilesDir != null) {
-                File file = new File(externalFilesDir, filName);
-                try {
-                    FileInputStream inputStream = new FileInputStream(file);
-                    BufferedReader tBufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder tStringBuffer = new StringBuilder();
-                    String sTempOneLine;
-                    while (true) {
-                        try {
-                            if ((sTempOneLine = tBufferedReader.readLine()) == null) {
-                                break;
-                            }
-                            tStringBuffer.append(sTempOneLine);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }
-                    result = tStringBuffer.toString();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    return "";
+    public static FileUtil getInstance() {
+        if (INSTANCE == null) {
+            synchronized (FileUtil.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new FileUtil();
                 }
             }
-        } else {
-            LogUtil.e(TAG, "Sd卡不可用");
         }
-        return result;
+        return INSTANCE;
     }
 
     /**
-     * @return 获取sd卡的根目录的File
+     * @return 获取sd卡的根目录的File，此目录在Android 11以后不可用
      */
-    public static File getRootFileForSd() {
+    public File getRootFileForSd() {
         return Environment.getExternalStorageDirectory();
-    }
-
-    /**
-     * @param context context
-     * @return 获取app目录下的根目录
-     */
-    public static File getRootFileForApp(Context context) {
-        return context.getExternalFilesDir(null);
     }
 
     /**
@@ -313,7 +168,7 @@ public class FileUtil {
      * @param url 文件地址的url
      * @return 根据url 获取远程文件的大小
      */
-    public static long getFileSizeForUrl(String url) {
+    public long getFileSizeForUrl(String url) {
         final long[] contentLength = {0};
 
         Request.Builder builder = new Request
@@ -347,7 +202,7 @@ public class FileUtil {
      * @param uri     一个uri类型的字符串
      * @return 把一个uri类型的字符串转换成一个正常的真实路径，如果是一个文件路径或者本身就是一个真实路径，就会直接转换成一个url
      */
-    public static String UriToPath(Context context, String uri) {
+    public String UriToPath(Context context, String uri) {
         String data = "";
         if (!TextUtils.isEmpty(uri)) {
             try {
@@ -371,4 +226,334 @@ public class FileUtil {
         return data;
     }
 
+    /**
+     * <ol>
+     *     例子：/data/user/0/com.android.app/files
+     * </ol>
+     *
+     * @return 获取App目录下的File目录下的路径，该路径可以在Android 11 上面任意使用
+     */
+    public String getAppFilesPath() {
+        String path = "";
+        Application application = BaseApplication.getApplication();
+        if (application != null) {
+            File filesDir = application.getFilesDir();
+            if (filesDir != null) {
+                path = filesDir.getPath();
+            }
+        }
+        return path;
+    }
+
+    /**
+     * <ol>
+     *     例子：/storage/emulated/0/Android/data/com.android.app/files/Movies
+     * </ol>
+     *
+     * @param type 指定的类型，type The type of files directory to return. May be {@code null}
+     *             for the root of the files directory or one of the following
+     *             constants for a subdirectory:
+     *             {@link android.os.Environment#DIRECTORY_MUSIC},
+     *             {@link android.os.Environment#DIRECTORY_PODCASTS},
+     *             {@link android.os.Environment#DIRECTORY_RINGTONES},
+     *             {@link android.os.Environment#DIRECTORY_ALARMS},
+     *             {@link android.os.Environment#DIRECTORY_NOTIFICATIONS},
+     *             {@link android.os.Environment#DIRECTORY_PICTURES}, or
+     *             {@link android.os.Environment#DIRECTORY_MOVIES}
+     * @return 返回App目录下，files目录下的指定路径，该路径可以在Android 11 上面任意使用。
+     */
+    public String getAppTypePath(String type) {
+        String path = "";
+        if ((BaseApplication.getApplication() != null) && (!TextUtils.isEmpty(type))) {
+            path = BaseApplication.getApplication().getExternalFilesDir(type).getPath();
+        }
+        return path;
+    }
+
+    /**
+     * @return true:设备sd卡正在挂载中，false：sd卡异常不可用
+     */
+    private boolean checkSdStatus() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+    }
+
+    /**
+     * <ol>
+     *      例子：/storage/emulated/0/Download
+     * </ol>
+     *
+     * @param type The type of storage directory to return. Should be one of
+     *             {@link Environment#DIRECTORY_MUSIC},
+     *             {@link Environment#DIRECTORY_PODCASTS},
+     *             {@link Environment#DIRECTORY_RINGTONES},
+     *             {@link Environment#DIRECTORY_ALARMS},
+     *             {@link Environment#DIRECTORY_NOTIFICATIONS},
+     *             {@link Environment#DIRECTORY_PICTURES},
+     *             {@link Environment#DIRECTORY_MOVIES},
+     *             {@link Environment#DIRECTORY_DOWNLOADS},
+     *             {@link Environment#DIRECTORY_DCIM}, or
+     *             {@link Environment#DIRECTORY_DOCUMENTS}.
+     * @return 获取SD卡下，指定公共目录的路径，该路径在android 11及以后，只能通过IO流的形式使用，直接读写不可用
+     */
+    public String getSdTypePublicPath(String type) {
+        String path = "";
+        if ((!TextUtils.isEmpty(type)) && checkSdStatus()) {
+            File publicDirectory = Environment.getExternalStoragePublicDirectory(type);
+            if (publicDirectory != null) {
+                path = publicDirectory.getPath();
+            }
+        }
+        return path;
+    }
+
+    /**
+     * <ol>
+     *     1:如果需要使用，则在mainfast.xml 中application下面加入：android:requestLegacyExternalStorage="true"
+     *     2:给与全部的访问权限
+     * </ol>
+     *
+     * @return 获取SD卡下的根目录路径，在Android 11及以上，不能直接使用，除非给与文件所有的访问权限，如果需要使用，则需要满足上面的两个条件
+     */
+    public String getSdRootPath() {
+        String path = "";
+        if (checkSdStatus()) {
+            File storageDirectory = Environment.getExternalStorageDirectory();
+            if (storageDirectory != null) {
+                path = storageDirectory.getPath();
+            }
+        }
+        return path;
+    }
+
+    /**
+     * @param file        指定的文件
+     * @param inputStream 输入流
+     * @return 把一个IO流的内容，写入指定的文件夹内，如果是Android 11的版本，无法直接写入到Sd卡的目录中，除非给与足够的权限
+     */
+    public boolean writeInputStreamToSd(File file, InputStream inputStream) {
+        boolean isSuccess = false;
+        if ((file != null) && (inputStream != null)) {
+            BufferedInputStream in = null;
+            BufferedOutputStream out = null;
+            try {
+                in = new BufferedInputStream(inputStream);
+                out = new BufferedOutputStream(new FileOutputStream(file));
+
+                int len = -1;
+                byte[] b = new byte[1024];
+                while ((len = in.read(b)) != -1) {
+                    out.write(b, 0, len);
+                }
+
+                isSuccess = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                isSuccess = false;
+            } finally {
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return isSuccess;
+    }
+
+    /**
+     * @param file    指定的文件
+     * @param content 存储的内容，例如："123"
+     * @return 把指定的内容以文件的形式保存到指定的位置中
+     */
+    public boolean writeContentToSd(File file, String content) {
+        boolean isSuccess = false;
+        if ((file != null) && (!TextUtils.isEmpty(content)) && (checkSdStatus())) {
+            FileOutputStream outStream = null;
+            try {
+                outStream = new FileOutputStream(file);
+                outStream.write(content.getBytes());
+                isSuccess = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                isSuccess = false;
+            } finally {
+                try {
+                    if (outStream != null) {
+                        outStream.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return isSuccess;
+    }
+
+    /**
+     * @param file 指定的文件
+     * @return 获取指定路径中文件的内容，把内容转换为String字符串，适用于单纯的文本内容
+     */
+    public String getContentForPath(File file) {
+        String result = "";
+        if ((file != null) && (file.exists())) {
+            FileInputStream mInputStream = null;
+            BufferedReader mReader = null;
+
+            try {
+                mInputStream = new FileInputStream(file);
+                mReader = new BufferedReader(new InputStreamReader(mInputStream));
+                StringBuilder builder = new StringBuilder();
+                String timeLine;
+
+                while ((timeLine = mReader.readLine()) != null) {
+                    builder.append(timeLine);
+                }
+                result = builder.toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (mInputStream != null) {
+                        mInputStream.close();
+                    }
+
+                    if (mReader != null) {
+                        mReader.close();
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return 检测是否拥有文件的所有访问权限
+     */
+    public boolean checkAllFilesPermission(FragmentActivity activity) {
+        mActivity = activity;
+        boolean checkout = commonCheckAllFile(activity);
+        if (!checkout) {
+            Lifecycle lifecycle = activity.getLifecycle();
+            lifecycle.addObserver(this);
+        }
+        return checkout;
+    }
+
+    /**
+     * @return 检测是否拥有文件的所有访问权限
+     */
+    public boolean checkAllFilesPermission(Fragment fragment) {
+        mFragment = fragment;
+        boolean checkout = commonCheckAllFile(fragment.getActivity());
+        if (!checkout) {
+            Lifecycle lifecycle = fragment.getLifecycle();
+            lifecycle.addObserver(this);
+        }
+        return checkout;
+    }
+
+    private boolean commonCheckAllFile(FragmentActivity activity) {
+        boolean isPermission = false;
+        if (activity != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // 先判断有没有权限
+                isPermission = Environment.isExternalStorageManager();
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // 7.0 判断读权限和写权限
+                if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                        ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    isPermission = true;
+                } else {
+                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
+                }
+            } else {
+                // 其他版本，默认拥有权限
+                isPermission = true;
+            }
+        }
+        return isPermission;
+    }
+
+    /**
+     * 在Android11的版本上，跳转到设置页面去设置所有文件的访问权限，如果要使用这个功能，则必须要满足三个权限要求：
+     * <ol>
+     *     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+     *     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+     *     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+     * </ol>
+     */
+    public void jumpAllFiles() {
+        if (mActivity != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (mRegister != null) {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                    intent.setData(Uri.parse("package:" + mActivity.getPackageName()));
+                    mRegister.launch(intent);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onCreate() {
+        if (mActivity != null) {
+            mRegister = mActivity.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    boolean allFilesPermission = checkAllFilesPermission(mActivity);
+                    // ToastUtil.show("是否拥有了全部的权限 ：+" + allFilesPermission);
+                    LogUtil.e("permission: -----> 是否拥有了全部的权限 :" + allFilesPermission);
+                }
+            });
+        }
+        if (mFragment != null) {
+            mRegister = mFragment.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    boolean allFilesPermission = checkAllFilesPermission(mActivity);
+                    // ToastUtil.show("是否拥有了全部的权限 ：+" + allFilesPermission);
+                    LogUtil.e("permission: -----> 是否拥有了全部的权限 :" + allFilesPermission);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onStart() {
+    }
+
+    @Override
+    public void onResume() {
+    }
+
+    @Override
+    public void onPause() {
+    }
+
+    @Override
+    public void onStop() {
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mRegister != null) {
+            mRegister = null;
+        }
+        if (mActivity != null) {
+            mActivity = null;
+        }
+        if (mFragment != null) {
+            mFragment = null;
+        }
+        if (INSTANCE != null) {
+            INSTANCE = null;
+        }
+    }
 }
