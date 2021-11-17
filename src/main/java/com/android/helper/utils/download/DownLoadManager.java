@@ -66,6 +66,8 @@ public class DownLoadManager {
      */
     private final HashMap<String, Call> mClientMap;
     private final OkHttpClient okHttpClient;
+    private final HashMap<String, Integer> mMapStatus = new HashMap<>();// 当前下载状态的集合
+
     /**
      * 已经下载文件的长度
      */
@@ -121,13 +123,11 @@ public class DownLoadManager {
             mContentLong = Long.parseLong(maxLength);
         }
 
-        // todo 此处要加上动态获取是否是断点的标记   sfs
-
         // 初始化临时的状态
         mTempDownloadLength = 0;
 
         // 获取车辆控制状态
-        int currentStatus = getCurrentStatus();
+        int currentStatus = getCurrentStatus(id);
         // 如果状态是在开始下载 或者下载中，就停止下载
         if (currentStatus == DOWNLOAD_TYPE.DOWNLOADING || currentStatus == DOWNLOAD_TYPE.DOWNLOAD_START) {
             return;
@@ -299,8 +299,12 @@ public class DownLoadManager {
     /**
      * @return 获取当前车辆的状态： 1：正在下载中 ，2：下载完毕  3：下载错误  4：取消下载
      */
-    public int getCurrentStatus() {
-        return mDownloadType;
+    public int getCurrentStatus(String id) {
+        int status = DOWNLOAD_TYPE.DOWNLOAD_IDLE;
+        if (mMapStatus.size() > 0) {
+            status = mMapStatus.get(id);
+        }
+        return status;
     }
 
     /**
