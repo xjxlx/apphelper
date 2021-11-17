@@ -9,10 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
-import com.android.helper.httpclient.RetrofitHelper;
 import com.android.helper.interfaces.listener.ProgressListener;
-import com.android.helper.utils.EncryptionUtil;
-import com.android.helper.utils.FileUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.SpUtil;
 
@@ -26,6 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -34,6 +32,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+import static com.android.helper.httpclient.RetrofitHelper.CUSTOM_TIMEOUT;
+
 /**
  * 带进度的上传和下载的工具类
  */
@@ -41,8 +41,9 @@ public class DownLoadManager {
 
     private static final String TAG = "DownLoadManager";
     private static final String KEY_DOWNLOAD_FILE_CONTENT_LENGTH = "key_download_file_content_length";
-    // 当前下载的状态
-    private int mDownloadType = 0;
+
+    // 当前下载的状态，默认为闲置的状态
+    private int mDownloadType = DOWNLOAD_TYPE.DOWNLOAD_IDLE;
 
     private static DownLoadManager manager;
     private ProgressListener mListener;
@@ -51,13 +52,13 @@ public class DownLoadManager {
      * 当前下载的状态  1：正在下载中 ，2：下载完毕  3：下载错误  4：取消下载
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({DOWNLOAD_TYPE.DOWNLOADING, DOWNLOAD_TYPE.DOWNLOAD_COMPLETE, DOWNLOAD_TYPE.DOWNLOAD_ERROR, DOWNLOAD_TYPE.DOWNLOAD_CANCEL})
+    @IntDef({DOWNLOAD_TYPE.DOWNLOADING, DOWNLOAD_TYPE.DOWNLOAD_COMPLETE, DOWNLOAD_TYPE.DOWNLOAD_ERROR})
     public @interface DOWNLOAD_TYPE {
-        int DOWNLOAD_START = 1;
-        int DOWNLOADING = 2;
-        int DOWNLOAD_COMPLETE = 3;
-        int DOWNLOAD_ERROR = 4;
-        int DOWNLOAD_CANCEL = 5;
+        int DOWNLOAD_START = 1; // 开始下载
+        int DOWNLOADING = 2;  // 下载中
+        int DOWNLOAD_COMPLETE = 3; // 下载完成
+        int DOWNLOAD_ERROR = 4; // 下载异常
+        int DOWNLOAD_IDLE = 6;// 闲置的状态
     }
 
     /**
@@ -80,7 +81,12 @@ public class DownLoadManager {
      */
     private DownLoadManager() {
         mClientMap = new HashMap<>();
-        okHttpClient = RetrofitHelper.getTimeOutClient();
+        okHttpClient = new OkHttpClient
+                .Builder()
+                .readTimeout(CUSTOM_TIMEOUT, TimeUnit.SECONDS)//设置读取超时时间
+                .writeTimeout(CUSTOM_TIMEOUT, TimeUnit.SECONDS)//设置写的超时时间
+                .connectTimeout(CUSTOM_TIMEOUT, TimeUnit.SECONDS)//设置连接超时时间
+                .build();
     }
 
     /**
@@ -94,33 +100,37 @@ public class DownLoadManager {
     }
 
     /**
-     * @param url        下载的路径
-     * @param outPutPath 保存文件的路径
+     * @param download         下载的对象信息
+     * @param progressListener 回调
      */
-    public void download(@NotNull String url, @NotNull String outPutPath, @NotNull ProgressListener progressListener) {
+    public void download(Download download, @NotNull ProgressListener progressListener) {
         mListener = progressListener;
-        // 获取总文件的大小
-        String map = SpUtil.getStringForMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, url);
-        if (!TextUtils.isEmpty(map)) {
-            // 获取long类型的总文件大小
-            mContentLong = Long.parseLong(map);
-        } else {
-            // 避免第一次无法获取到文件的大小
-            mContentLong = FileUtil.getInstance().getFileSizeForUrl(url);
+        if (download == null || (TextUtils.isEmpty(download.getId())) || (TextUtils.isEmpty(download.getUrl())) || (TextUtils.isEmpty(download.getOutputPath()))) {
+            LogUtil.e("下载的信息异常，停止下载！");
+            return;
         }
 
-        // 根据原有的路径，去生成一个新的路径
-        String pathForOriginalPath = FileUtil.getPathForOriginalPath(outPutPath, mContentLong);
+        String id = download.getId();
+        String outFilePath = download.getOutputPath();
+        String url = download.getUrl();
+
+        // 获取总文件的大小
+        String maxLength = SpUtil.getStringForMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id);
+        if (!TextUtils.isEmpty(maxLength)) {
+            // 获取long类型的总文件大小
+            mContentLong = Long.parseLong(maxLength);
+        }
+
+        // todo 此处要加上动态获取是否是断点的标记
+
+        // 初始化临时的状态
+        mTempDownloadLength = 0;
 
         // 获取车辆控制状态
         int currentStatus = getCurrentStatus();
-        // 如果是正在下载中，那么就停止下载
-        if (currentStatus == DOWNLOAD_TYPE.DOWNLOADING) {
-            cancel(url, pathForOriginalPath);
+        // 如果状态是在开始下载 或者下载中，就停止下载
+        if (currentStatus == DOWNLOAD_TYPE.DOWNLOADING || currentStatus == DOWNLOAD_TYPE.DOWNLOAD_START) {
             return;
-        } else {
-            // 重置临时的长度和文件
-            mTempDownloadLength = 0;
         }
 
         // 判断下载地址的url
@@ -128,18 +138,15 @@ public class DownLoadManager {
             throw new NullPointerException("下载的路径不能为空！");
         }
 
-        // 原始路径的tag
-        String tag = EncryptionUtil.enCodeBase64(url + pathForOriginalPath);
-
         Request.Builder builder = new Request
                 .Builder()
                 .url(url)
-                .tag(tag);
+                .tag(id);
 
         // 获取文件
-        File file = new File(pathForOriginalPath);
+        File file = new File(outFilePath);
         if (file.exists()) {
-            LogUtil.e(TAG, "原始路径的文件存在！");
+            LogUtil.e(TAG, "下载路径的文件存在！");
             if (mContentLong > 0) {
                 LogUtil.e(TAG, "文件的总大小为：" + mContentLong);
                 long length = file.length();
@@ -149,18 +156,20 @@ public class DownLoadManager {
                     mTempDownloadLength = length;
                     // 增加断点续传的节点
                     builder.addHeader("RANGE", "bytes=" + mTempDownloadLength + "-" + mContentLong);
+                } else {
+                    LogUtil.e(TAG, "不满足断点续传的条件，无法执行断点续传！");
                 }
             } else {
                 LogUtil.e(TAG, "文件的总大小小于0，不走断点续传的流程！");
             }
         } else {
-            LogUtil.e(TAG, "原始路径的文件不存在！");
+            LogUtil.e(TAG, "下载路径的文件不存在！");
         }
 
         Call call = okHttpClient.newCall(builder.build());
 
         // 把请求对象存入集合中，用于取消数据使用
-        mClientMap.put(tag, call);
+        mClientMap.put(id, call);
 
         call.enqueue(new Callback() {
             @Override
@@ -168,16 +177,8 @@ public class DownLoadManager {
                 LogUtil.e(TAG, "下载错误：" + e.getMessage());
                 call.cancel();
 
-                String eMessage = e.getMessage();
-                if (!TextUtils.isEmpty(eMessage)) {
-                    if (eMessage.contains("Socket closed")) {
-                        // 下载取消的状态
-                        mDownloadType = DOWNLOAD_TYPE.DOWNLOAD_CANCEL;
-                    }
-                } else {
-                    // 下载错误的状态
-                    mDownloadType = DOWNLOAD_TYPE.DOWNLOAD_ERROR;
-                }
+                // 下载错误的状态
+                mDownloadType = DOWNLOAD_TYPE.DOWNLOAD_ERROR;
 
                 // 发送错误的数据
                 Message message = mHandler.obtainMessage();
@@ -190,29 +191,22 @@ public class DownLoadManager {
             public void onResponse(@NotNull Call call, @NotNull Response response) {
                 // 可以移动写入位置的类，用于多线程断点点在
                 RandomAccessFile accessFile = null;
-                int code = response.code();
-
                 boolean successful = response.isSuccessful();
                 ResponseBody body = response.body();
                 if (successful && (body != null)) {
                     // 获取输入流
                     InputStream inputStream = body.byteStream();
-                    if (code == 200) {
-                        LogUtil.e(TAG, "code等于200,开始存入文件的总大小！");
-                        // 获取文件最大的长度
-                        long contentLength = body.contentLength();
-                        // 存入文件的总体长度
-                        SpUtil.putMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, url, String.valueOf(contentLength));
-                        mContentLong = contentLength;
-                    } else {
-                        LogUtil.e(TAG, "code不等于200，当前的code为：" + code);
-                    }
+                    LogUtil.e(TAG, "code等于200,开始存入文件的总大小！");
+//                    // 获取文件最大的长度
+//                    long contentLength = body.contentLength();
+//                    // 存入文件的总体长度
+//                    SpUtil.putMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id, String.valueOf(contentLength));
+//                    mContentLong = contentLength;
 
                     // 文件输出流
                     try {
                         // "rw": 打开以便读取和写入。
                         accessFile = new RandomAccessFile(file, "rw");
-
                         // 跳过
                         if ((mTempDownloadLength > 0) && (mContentLong > 0) && (mTempDownloadLength < mContentLong)) {
                             try {
@@ -230,9 +224,7 @@ public class DownLoadManager {
                         mHandler.sendMessage(message);
 
                         // 文件下载过程中变化的进度
-                        double progress = 0;
-                        // 增加断点下载的进度
-                        progress += mTempDownloadLength;
+                        long progress = mTempDownloadLength;
 
                         // 一次性读取2048个字节
                         byte[] buf = new byte[2048];
@@ -246,11 +238,10 @@ public class DownLoadManager {
                             // 进度累计
                             progress += len;
                             // 格式化数据，并小数保留两位
-                            String format = String.format(Locale.CHINA, "%.2f", ((progress / mContentLong) * 100));
-                            // String divide = NumberUtil.DecimalDivide(String.valueOf(progress), mContentLong, BigDecimal.ROUND_DOWN, 2);
-                            // LogUtil.e(TAG, "format：" + format + "   divide:" + divide);
-                            // LogUtil.e(TAG, "format：" + format);
 
+                            double v = (progress * 0.1) / mContentLong;
+                            String format = String.format(Locale.CHINA, "%.2f", (v * 1000));
+                            LogUtil.e("v:" + v + "   form:" + format);
                             // 进度的回调
                             Message message1 = mHandler.obtainMessage();
                             message1.what = DOWNLOAD_TYPE.DOWNLOADING;
@@ -280,9 +271,7 @@ public class DownLoadManager {
                             if (accessFile != null) {
                                 accessFile.close();
                             }
-                            if (inputStream != null) {
-                                inputStream.close();
-                            }
+                            inputStream.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                             mDownloadType = DOWNLOAD_TYPE.DOWNLOAD_ERROR;
@@ -314,39 +303,28 @@ public class DownLoadManager {
     /**
      * 取消下载
      *
-     * @param url        下载的url
-     * @param outPutPath 下载的地址
+     * @param id 唯一的标记
      */
-    public void cancel(@NonNull String url, @NonNull String outPutPath) {
+    public void cancel(@NonNull String id) {
         if (mClientMap.size() > 0) {
-            long contentLength = 0;
-            String map = SpUtil.getStringForMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, url);
-            if (!TextUtils.isEmpty(map)) {
-                // 获取long类型的总文件大小
-                contentLength = Long.parseLong(map);
-            }
-
-            String pathForOriginalPath = FileUtil.getPathForOriginalPath(outPutPath, contentLength);
-            // 通过url 和路径去转换一个Base64的tag
-
-            String tag = EncryptionUtil.enCodeBase64(url + pathForOriginalPath);
-            Call call = mClientMap.get(tag);
+            Call call = mClientMap.get(id);
             if (call != null) {
                 // 如果该对象已经取消了，就不用在去再次取消了
                 boolean canceled = call.isCanceled();
-                if (!canceled) {
+                if (canceled) {
+                    mDownloadType = DOWNLOAD_TYPE.DOWNLOAD_ERROR;
+                } else {
                     call.cancel();
                     // 移除该请求对象
-                    mClientMap.remove(tag);
-                    // 下载取消的状态
-                    mDownloadType = DOWNLOAD_TYPE.DOWNLOAD_CANCEL;
+                    mClientMap.remove(id);
                 }
+                LogUtil.e("下载取消了！");
             }
         }
     }
 
     @SuppressLint("HandlerLeak")
-    private Handler mHandler = new Handler() {
+    private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
