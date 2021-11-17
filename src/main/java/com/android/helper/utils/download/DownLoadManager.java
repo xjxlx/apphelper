@@ -121,7 +121,7 @@ public class DownLoadManager {
             mContentLong = Long.parseLong(maxLength);
         }
 
-        // todo 此处要加上动态获取是否是断点的标记
+        // todo 此处要加上动态获取是否是断点的标记   sfs
 
         // 初始化临时的状态
         mTempDownloadLength = 0;
