@@ -580,6 +580,65 @@ public class FileUtil implements BaseLifecycleObserver {
         return file;
     }
 
+    /**
+     * @param file       原始的文件，例如：/storage/emulated/0/Android/data/com.android.app/files/Download/AppHelper/apk/test_2.apk
+     * @param rules      指定的匹配规则的字符串，例如：。
+     * @param fileLength 文件的总长度
+     * @return 根据一个原始的文件，使用匹配规则去生成一个新的文件，常用于下载的时候，如果多次下载的时候，用于改变文件的名字，重新生成一个加（1）的路径，
+     * 例如：/storage/emulated/0/Android/data/com.android.app/files/Download/AppHelper/apk/test_2(1).apk
+     */
+    public String copyFilePath(File file, String rules, long fileLength) {
+        String newPath = "";
+        int pathIndex = 1;// 叠加的数据
+
+        if (file != null) {
+            boolean exists = file.exists();
+            if (exists) {
+                String path = file.getPath();
+                if (!TextUtils.isEmpty(path)) {
+                    if (path.contains(".")) {
+                        // 最后一个出现的.
+                        int index = path.lastIndexOf(rules);
+                        String left = path.substring(0, index);
+                        String right = path.substring(index);
+                        LogUtil.e(".最后出现的位置：" + index + "  left:" + left + "  right:" + right);
+
+                        // 组成一个新的路径
+                        newPath = left + "(" + pathIndex + ")" + right;
+
+                        File parentFile = file.getParentFile();
+                        if (parentFile != null) {
+                            File[] files = parentFile.listFiles();
+                            if (files != null) {
+                                for (File childFile : files) {
+                                    if (childFile != null) {
+                                        boolean childExists = childFile.exists();
+                                        if (childExists) {
+                                            String childPath = childFile.getPath();
+                                            // 跳过本身的文件
+                                            if (!TextUtils.equals(childPath, file.getPath())) {
+                                                if (TextUtils.equals(childPath, newPath)) {
+                                                    // 获取单个文件的大小
+                                                    long length = childFile.length();
+                                                    // 如果单个文件的大小比总的文件大小要小，则跳过，避免多次重复性创建
+                                                    if (length >= fileLength) {
+                                                        // 便利文件夹下面，如果有和新文件路径相同的，则重新生成
+                                                        newPath = left + "(" + ++pathIndex + ")" + right;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return newPath;
+    }
+
     @Override
     public void onCreate() {
         if (mActivity != null) {
