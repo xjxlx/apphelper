@@ -68,6 +68,9 @@ public class DownLoadManager {
     private final OkHttpClient okHttpClient;
     private final HashMap<String, Integer> mMapStatus = new HashMap<>();// 当前下载状态的集合
 
+
+
+
     /**
      * 已经下载文件的长度
      */
