@@ -197,11 +197,14 @@ public class DownLoadManager {
                     // 获取输入流
                     InputStream inputStream = body.byteStream();
                     LogUtil.e(TAG, "code等于200,开始存入文件的总大小！");
-//                    // 获取文件最大的长度
-//                    long contentLength = body.contentLength();
-//                    // 存入文件的总体长度
-//                    SpUtil.putMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id, String.valueOf(contentLength));
-//                    mContentLong = contentLength;
+
+                    if (response.code() == 200) {
+                        // 只记录原始文件长度
+                        long contentLength = body.contentLength();
+                        // 存入文件的总体长度
+                        SpUtil.putMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id, String.valueOf(contentLength));
+                        mContentLong = contentLength;
+                    }
 
                     // 文件输出流
                     try {
