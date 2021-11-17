@@ -522,7 +522,62 @@ public class FileUtil implements BaseLifecycleObserver {
                 path = path + "/" + BaseApplication.getLogTag();
             }
         }
+        LogUtil.e("获取App指定存储路径为：" + path);
         return path;
+    }
+
+    /**
+     * @param path 指定路径
+     * @return 创建文件夹是否成功，成功返回true,否则返回false
+     */
+    public boolean createFolder(String path) {
+        boolean mkdirs = false;
+        if (!TextUtils.isEmpty(path)) {
+            File folder = new File(path);
+            mkdirs = folder.exists();
+            if (!mkdirs) {
+                mkdirs = folder.mkdirs();
+            }
+        }
+        return mkdirs;
+    }
+
+    public boolean createFolder(File file) {
+        boolean mkdirs = false;
+        if (file != null) {
+            mkdirs = file.exists();
+            if (!mkdirs) {
+                mkdirs = file.mkdirs();
+            }
+        }
+        return mkdirs;
+    }
+
+    public File createFile(String parentPath, String childName) {
+        File file = null;
+        if ((!TextUtils.isEmpty(parentPath)) && (!TextUtils.isEmpty(childName))) {
+            // 创建父目录
+            createFolder(parentPath);
+
+            // 创建子文件
+            File fileChild = new File(parentPath, childName);
+
+            boolean exists = fileChild.exists();
+
+            if (exists) {
+                file = fileChild;
+            } else {
+                try {
+                    boolean newFile = fileChild.createNewFile();
+                    if (newFile) {
+                        file = fileChild;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return file;
     }
 
     @Override
