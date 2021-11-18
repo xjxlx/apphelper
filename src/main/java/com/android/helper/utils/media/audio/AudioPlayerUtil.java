@@ -241,7 +241,6 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                     // 在数据回调成功的时候去创建消息通知工具
                     try {
                         if (mNotificationUtil == null) {
-                            mNotificationUtil = NotificationUtil.getInstance(mContext);
 
                             // 此处无论如何都要初始化一次的，否则会nar异常
                             initNotification();
@@ -273,13 +272,13 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
     private void initNotification() {
         if (mNotificationUtil != null) {
-            mNotificationUtil
+            mNotificationUtil = new NotificationUtil.Builder(mContext)
                     .setSmallIcon(mNotificationSmallIcon)
                     .setNotificationLevel(Notification.PRIORITY_DEFAULT)
                     .setActivity(mPendingIntentActivity)
                     .setVibrate(true)
                     .setChannelImportance(IMPORTANCE_LOW)
-                    .setRemoteView(R.layout.notification_audio, (view, remoteViews) -> {
+                    .setRemoteView(R.layout.notification_audio, (remoteViews) -> {
                         if (remoteViews != null) {
                             AudioPlayerUtil.this.mRemoteViews = remoteViews;
 
@@ -323,8 +322,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                             PendingIntent btPendingIntentRight = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentRight, PendingIntent.FLAG_UPDATE_CURRENT);
                             remoteViews.setOnClickPendingIntent(R.id.iv_to_right, btPendingIntentRight);
                         }
-                    })
-                    .createNotification()
+                    }).build()
                     .sendNotification(1)
                     .startForeground(1, mAudioService);
         }

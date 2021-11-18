@@ -28,6 +28,47 @@ import com.android.helper.R;
 import com.android.helper.interfaces.listener.ViewCallBackListener;
 
 /**
+ * <ol>
+ * <p>
+ * RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.custom_notification);
+ * Bitmap mBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_summary_notice);
+ * Intent intent = new Intent(mContext, IconifyActivity.class);
+ * PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+ * NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext)
+ *       .setTicker("ticker")                //新来通知时在状态栏现实的文本
+ *       .setContentTitle("content title")  //设置通知标题
+ *       .setContentText("content text")        //设置通知文本
+ *       .setSmallIcon(R.drawable.ic_notice_1)  //设置通知左上角小图标
+ *       .setContentIntent(pendingIntent)    //设置点击通知的操作
+ *       .setDeleteIntent(pendingIntent)        //设置删除通知时的操作
+ *       .setWhen(System.currentTimeMillis()) //设置通知上的时间戳
+ *       .setProgress(0, 0, true)   //设置进度条
+ *       .setContent(remoteView)                //设置通知使用自定义的视图，而非系统默认视图
+ *       .setStyle(new NotificationCompat.BigTextStyle())   //设置通知样式，主要包括默认样式、BigTextStyle、BigPictureStyle和InboxStyle
+ *       .setLargeIcon(mBitmap)          //设置通知大图标
+ *       .setAutoCancel(true)                //设置用户点击通知后是否自动清除通知，true：清除；false：不清
+ *       .setNumber(count)                    //设置通知右下角显示的数字
+ *       .setDefaults(NotificationCompat.DEFAULT_ALL)    //设置应用于通知上的默认动作，如声音、三色灯、振动等
+ *       .setLights(0x0000ff, 300, 300)//设置通知三色灯
+ *       .setSound(Uri.parse("file:///sdcard/xx/xx.mp3"))    //自定义通知提示音
+ *       .setVibrate(new long[]{0, 300, 500, 700})    //自定义振动
+ *       .setOngoing(false)                    //设置是否为一个后台任务，默认为否；true表示是一个正在进行的后台任务，如音乐播放、文件下载、数据同步等
+ *       .setPriority(NotificationCompat.PRIORITY_DEFAULT)    //设置该通知相对重要性
+ *       .setColor(0x00ff00)                    //设置通知颜色
+ *       .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)   //设置通知的可见性，取值为VISIBILITY_PRIVATE（默认）、VISIBILITY_PUBLIC、VISIBILITY_SECRET中的一种
+ *       .setContentInfo("content info")        //设置通知右侧的大文本内容
+ *       .setFullScreenIntent(pendingIntent, false)    //设置一个直接全屏加载的动作，而不是发送通知至通知栏
+ *       .setExtras(new Bundle())            //设置通知的元信息
+ *       .setCategory(NotificationCompat.CATEGORY_MESSAGE)    //设置通知所属类别
+ *       .setGroupSummary(false)                //设置该通知为一个通知组中的摘要通知
+ *       .setGroup(NotificationCompat.CATEGORY_CALL)    //设置该通知为分享同一通知键值的通知组中的一部分
+ *       .setUsesChronometer(false)            //使用计时器而非时间戳来显示时间
+ *       .setSubText("sub text")                //设置扩展视图中的子文本内容
+ *       .setLocalOnly(false)                //设置该通知是否只在当前设备上显示，默认为否
+ *       .setOnlyAlertOnce(false)            //设置是否只提示一次
+ *       .setSortKey("sort key");                //设置针对一个包内的通知进行排序的键值
+ * </ol>
+ * <p>
  * 消息的管理类，使用的时候，配合service一块使用
  * 使用过方法：
  * 1：先创建notification,调用方法：createNotification（）
@@ -40,7 +81,6 @@ public class NotificationUtil {
      * 点击通知时候跳转的请求码
      */
     public static final int CODE_JUMP_REQUEST = 1000;
-
     /**
      * handler的单独发送
      */
@@ -50,192 +90,73 @@ public class NotificationUtil {
      */
     public static final int CODE_WHAT_SEND_START_FOREGROUND_LOOP = CODE_WHAT_SEND_START_FOREGROUND + 1;
     /**
+     * handler的轮询发送 -- notification
+     */
+    public static final int CODE_WHAT_SEND_START_NOTIFICATION_LOOP = CODE_WHAT_SEND_START_FOREGROUND_LOOP + 1;
+    /**
      * 跳转activity的请求码
      */
-    public static final int CODE_REQUEST_ACTIVITY_NOTIFICATION = CODE_WHAT_SEND_START_FOREGROUND_LOOP + 1;
+    public static final int CODE_REQUEST_ACTIVITY_NOTIFICATION = CODE_WHAT_SEND_START_NOTIFICATION_LOOP + 1;
 
-
-    private final Context mContext;
-    @SuppressLint("StaticFieldLeak")
-    private static NotificationUtil util;
+    private NotificationManager manager;
+    private Context mContext;
     private Intent mIntentActivity;
     private Intent mIntentService;
-
-    // 消息对象
-    private Notification mNotification;
-    private String mTickerText;     //  消息设置首次出现的名字
+    private String mTickerText;            //  消息设置首次出现的名字
     private String mContentTitle;          // 消息标题头
-    private String mContentText;           // 消息内容
     private int mContentSmallIcon;         // 消息的图标
+    private String mContentText;           // 消息内容
     private int mNotificationNumber;       // 消息的数量
-    private int mNotificationLevel = -100;        // 消息的等级
+    private int mNotificationLevel;        // 消息的等级
     private PendingIntent pendingIntent;
-
-    /**
-     * 自定义震动
-     * <p>
-     * vibrate属性是一个长整型的数组，用于设置手机静止和振动的时长，以毫秒为单位。
-     * 参数中下标为0的值表示手机静止的时长，下标为1的值表示手机振动的时长， 下标为2的值又表示手机静止的时长，以此类推。
-     */
-    private final long[] vibrates = {0, 1000};
-
+    private long[] vibrates;
     private String mChannelDescription;                 // 渠道的描述
     private String mChannelName;                        // 渠道的名字
     private int mChannelImportance;                     // 渠道的等级,默认是等级3，会提示声音
-
-    private NotificationManager manager;
     private int mRemoteViewsLayout;                     // 状态栏布局
-    private Service mService;                           // 服务类
-    private ViewCallBackListener<RemoteViews> mViewCallBackListener;
     private long mIntervalTime;                         // 轮询的间隔
     private boolean mVibrate;                           // 震动
-    private boolean mSound = true;                             // 是否发出声音，默认发出
+    private boolean mSound;                             // 是否发出声音，默认发出
+    private Service mService;                           // 服务类
+    private long mWhen;                                 // 消息出现的时间戳
+    private boolean mAutoCancel;                        // 手动取消
 
-    private NotificationUtil(Context context) {
-        this.mContext = context;
-        if (mContext != null) {
-            // 创建管理器
-            manager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+    private ViewCallBackListener<RemoteViews> mViewCallBackListener;
+    // 消息对象
+    private Notification mNotification;
+    private NotificationCompat.Builder mNotificationBuilder;
+
+    private NotificationUtil(Builder builder) {
+        if (builder != null) {
+            this.mContext = builder.mContext;
+            this.manager = builder.manager;
+            this.mIntentActivity = builder.mIntentActivity;
+            this.mIntentService = builder.mIntentService;
+            this.mTickerText = builder.mTickerText;
+            this.mContentTitle = builder.mContentTitle;
+            this.mContentText = builder.mContentText;
+            this.mContentSmallIcon = builder.mContentSmallIcon;
+            this.mNotificationNumber = builder.mNotificationNumber;
+            this.mNotificationLevel = builder.mNotificationLevel;
+            this.vibrates = builder.vibrates;
+            this.mChannelDescription = builder.mChannelDescription;
+            this.mChannelName = builder.mChannelName;
+            this.mChannelImportance = builder.mChannelImportance;
+            this.mRemoteViewsLayout = builder.mRemoteViewsLayout;
+            this.mViewCallBackListener = builder.mViewCallBackListener;
+            this.mVibrate = builder.mVibrate;
+            this.mSound = builder.mSound;
+            this.mWhen = builder.mWhen;
+            this.mAutoCancel = builder.autoCancel;
         }
-    }
 
-    public static NotificationUtil getInstance(Context context) {
-        if (util == null) {
-            util = new NotificationUtil(context);
-        }
-        return util;
-    }
-
-    public NotificationUtil setActivity(Class<? extends Activity> activityCls) {
-        mIntentActivity = new Intent(mContext, activityCls);
-        mIntentActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return util;
-    }
-
-    public NotificationUtil setService(Class<? extends Service> serviceCls) {
-        mIntentService = new Intent(mContext, serviceCls);
-        mIntentService.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return util;
-    }
-
-    /**
-     * 通知首次出现在通知栏，带上升动画效果的，可设置文字，图标
-     */
-    public NotificationUtil setTickerText(String tickerText) {
-        //通知首次出现在通知栏，带上升动画效果的，可设置文字，图标
-        this.mTickerText = tickerText;
-        return util;
-    }
-
-    /**
-     * 设置标题头
-     *
-     * @param title 标题头
-     */
-    public NotificationUtil setContentTitle(String title) {
-        this.mContentTitle = title;
-        return util;
-    }
-
-    public NotificationUtil setContentText(String text) {
-        this.mContentText = text;
-        return util;
-    }
-
-    public NotificationUtil setSmallIcon(@DrawableRes int icon) {
-        this.mContentSmallIcon = icon;
-        return util;
-    }
-
-    /**
-     * @param description 渠道的描述
-     * @return 可见的渠道的描述
-     */
-    public NotificationUtil setChannelDescription(String description) {
-        this.mChannelDescription = description;
-        return util;
-    }
-
-    /**
-     * @param channelName 渠道的名字
-     * @return 设置渠道的名字
-     */
-    public NotificationUtil setChannelName(String channelName) {
-        this.mChannelName = channelName;
-        return util;
-    }
-
-    /**
-     * @param importance * IMPORTANCE_NONE 关闭通知
-     *                   * IMPORTANCE_MIN 开启通知，不会弹出，但没有提示音，状态栏中无显示
-     *                   * IMPORTANCE_LOW 开启通知，不会弹出，不发出提示音，状态栏中显示
-     *                   * IMPORTANCE_DEFAULT 开启通知，不会弹出，发出提示音，状态栏中显示
-     *                   * IMPORTANCE_HIGH 开启通知，会弹出，发出提示音，状态栏中显示
-     * @return 设置渠道的等级，
-     */
-    public NotificationUtil setChannelImportance(int importance) {
-        this.mChannelImportance = importance;
-        return util;
-    }
-
-    /**
-     * 设置声音，使用这个方法的话，必须在资源目录下设置一个raw的目录，资源设置的话，也需要R.raw.xx,例如： R.raw.tougong
-     *
-     * @param sound 声音的路径，使用
-     */
-    public NotificationUtil setSound(@DrawableRes int sound) {
-        if (mContext != null) {
-            // 自定义声音
-            Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + mContext.getPackageName() + "/" + sound);
-        }
-        return util;
-    }
-
-    /**
-     * @param sound true：发出声音提示，fasle:不发出声音提示
-     * @return 是否震动，默认发出声音提示
-     */
-    public NotificationUtil setSound(boolean sound) {
-        this.mSound = sound;
-        return util;
-    }
-
-    public NotificationUtil setNumber(int number) {
-        this.mNotificationNumber = number;
-        return util;
-    }
-
-    /**
-     * @param level 消息通知的等级，7.0以下使用 {@link Notification#PRIORITY_HIGH } ，7.0以上使用 {@link NotificationManager#IMPORTANCE_HIGH }去设置
-     * @RequiresApi(api = Build.VERSION_CODES.N)  7.0 以上使用
-     */
-    public NotificationUtil setNotificationLevel(int level) {
-        this.mNotificationLevel = level;
-        return util;
-    }
-
-    /**
-     * @return 设置是否震动
-     */
-    public NotificationUtil setVibrate(boolean vibrate) {
-        this.mVibrate = vibrate;
-        return util;
-    }
-
-    /**
-     * @param layoutId 布局的资源
-     * @return 设置消息的通知栏布局
-     */
-    public <T> NotificationUtil setRemoteView(int layoutId, ViewCallBackListener<RemoteViews> callBackListener) {
-        this.mRemoteViewsLayout = layoutId;
-        this.mViewCallBackListener = callBackListener;
-        return util;
+        createNotification();
     }
 
     /**
      * 创建消息的对象
      */
-    public NotificationUtil createNotification() {
+    private void createNotification() {
         if (mContext != null) {
             // 跳转的activity意图
             if (mIntentActivity != null) {
@@ -257,73 +178,76 @@ public class NotificationUtil {
             }
 
             // 构建消息通知的对象
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, channelId);
+            mNotificationBuilder = new NotificationCompat.Builder(mContext, channelId);
+
+            if (mWhen != 0) {
+                mNotificationBuilder.setWhen(mWhen);
+            }
+
+            // 是否可以手动取消
+            if (!mAutoCancel) {
+                // 禁止自动取消
+                mNotificationBuilder.setAutoCancel(false);
+                mNotificationBuilder.setOngoing(true);
+            } else {
+                mNotificationBuilder.setAutoCancel(true);
+            }
 
             // 首次出现的提示
             if (!TextUtils.isEmpty(mTickerText)) {
-                builder.setTicker(mTickerText);
+                mNotificationBuilder.setTicker(mTickerText);
             }
 
             // 消息的标题
             if (!TextUtils.isEmpty(mContentTitle)) {
-                builder.setContentTitle(mContentTitle);
+                mNotificationBuilder.setContentTitle(mContentTitle);
             }
 
             // 消息的内容
             if (!TextUtils.isEmpty(mContentText)) {
-                builder.setContentText(mContentText);
+                mNotificationBuilder.setContentText(mContentText);
             }
 
             // 消息的图标
             if (mContentSmallIcon != 0) {
-                builder.setSmallIcon(mContentSmallIcon);
+                mNotificationBuilder.setSmallIcon(mContentSmallIcon);
             }
 
             // 消息的声音、灯光、震动
             if (mSound) {
-                builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE);
+                mNotificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE);
             }
 
             // 设置消息的数量
             if (mNotificationNumber > 0) {
-                builder.setNumber(mNotificationNumber);
+                mNotificationBuilder.setNumber(mNotificationNumber);
             }
 
             //点击之后的页面
             if (pendingIntent != null) {
-                builder.setContentIntent(pendingIntent);
+                mNotificationBuilder.setContentIntent(pendingIntent);
             }
 
             // 横幅通知
             if (pendingIntent != null) {
-                builder.setFullScreenIntent(pendingIntent, true);
+                mNotificationBuilder.setFullScreenIntent(pendingIntent, true);
             }
 
-            // 设置通知的等级
-            if (mNotificationLevel == -100) {
-                mNotificationLevel = NotificationCompat.PRIORITY_DEFAULT;
-            }
+            // 锁屏可见
+            mNotificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
             // 当SDK大于16且小于26的时候
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                // 锁屏可见
-                builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-
-                mNotification = builder
+                mNotification = mNotificationBuilder
                         .setPriority(mNotificationLevel)// 设置优先级
                         .build();
-            } else {    // 当SDK大于26的时候
-                // 渠道的等级
-                if (mChannelImportance == 0) {
-                    mChannelImportance = NotificationManager.IMPORTANCE_MAX;
-                }
-
+            } else {
                 // 渠道对象
                 NotificationChannel mChannel = new NotificationChannel(channelId, mChannelName, mChannelImportance);
 
+                // 默认的渠道描述
                 if (TextUtils.isEmpty(mChannelDescription)) {
-                    // 默认的渠道描述
-                    mChannelDescription = mChannelName + "的渠道描述";
+                    mChannelDescription = mChannelName + "的渠道";
                 }
 
                 // 消息通知的描述 , 用户可以看到的通知渠道的描述
@@ -351,7 +275,7 @@ public class NotificationUtil {
                 // 通知Manager去创建渠道
                 manager.createNotificationChannel(mChannel);
 
-                mNotification = builder
+                mNotification = mNotificationBuilder
                         .setPriority(mNotificationLevel)// 设置优先级
                         .setChannelId(channelId)// 设置渠道
                         .build();
@@ -362,10 +286,20 @@ public class NotificationUtil {
                 RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), mRemoteViewsLayout);
                 mNotification.contentView = remoteViews;
                 // 把布局回调回去
-                mViewCallBackListener.callBack(null, remoteViews);
+                mViewCallBackListener.callBack(remoteViews);
             }
         }
-        return util;
+    }
+
+    /**
+     * @return 获取builder
+     */
+    public NotificationCompat.Builder getNotificationBuilder() {
+        return mNotificationBuilder;
+    }
+
+    public Notification getNotification() {
+        return mNotification;
     }
 
     /**
@@ -377,11 +311,17 @@ public class NotificationUtil {
         if ((manager != null) && (mNotification != null)) {
             manager.notify(id, mNotification);
         }
-        return util;
+        return this;
     }
 
-    public Notification getNotification() {
-        return mNotification;
+    /**
+     * @return 取消指定的通知
+     */
+    public NotificationUtil cancel(int id) {
+        if (manager != null) {
+            manager.cancel(id);
+        }
+        return this;
     }
 
     /**
@@ -392,7 +332,6 @@ public class NotificationUtil {
         if (service != null) {
             if (id > 0) {
                 this.mService = service;
-
                 Message message = mHandler.obtainMessage();
                 message.what = CODE_WHAT_SEND_START_FOREGROUND;
                 message.arg1 = id;
@@ -401,7 +340,7 @@ public class NotificationUtil {
                 LogUtil.e("发送通知的id不能为0！");
             }
         }
-        return util;
+        return this;
     }
 
     /**
@@ -411,7 +350,7 @@ public class NotificationUtil {
      * @param service      指定的服务
      */
     @SuppressLint("CheckResult")
-    public void startLoopForeground(int id, long intervalTime, Service service) {
+    public NotificationUtil startLoopForeground(int id, long intervalTime, Service service) {
         if (service != null) {
             if (id > 0) {
                 this.mService = service;
@@ -425,6 +364,20 @@ public class NotificationUtil {
                 LogUtil.e("发送通知的id不能为0！");
             }
         }
+        return this;
+    }
+
+    public NotificationUtil startLoopNotification(int id, long intervalTime) {
+        if (id > 0) {
+            this.mIntervalTime = intervalTime;
+            Message message = mHandler.obtainMessage();
+            message.what = CODE_WHAT_SEND_START_NOTIFICATION_LOOP;
+            message.arg1 = id;
+            mHandler.sendMessage(message);
+        } else {
+            LogUtil.e("发送通知的id不能为0！");
+        }
+        return this;
     }
 
     /**
@@ -444,29 +397,45 @@ public class NotificationUtil {
             // 先停止之前的消息发送，避免数据的快速轮询
             stopLoopForeground();
 
-            if ((mService != null) && (mNotification != null)) {
+            if (mNotification != null) {
                 int id = msg.arg1;
 
                 switch (msg.what) {
                     case CODE_WHAT_SEND_START_FOREGROUND:
                         LogUtil.e("开始了服务消息的单独发送！");
-                        mService.startForeground(id, mNotification);
-                        // sendNotification(id);
+                        if (mService != null) {
+                            mService.startForeground(id, mNotification);
+                        }
                         break;
 
                     case CODE_WHAT_SEND_START_FOREGROUND_LOOP:
                         LogUtil.e("开始了服务消息的轮询发送！");
-                        mService.startForeground(id, mNotification);
-                        //  sendNotification(id);
+                        if (mService != null) {
 
-                        Message message = mHandler.obtainMessage();
-                        message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;
-                        message.arg1 = id;
-                        mHandler.sendMessageDelayed(message, mIntervalTime);
+                            mService.startForeground(id, mNotification);
+
+                            Message message = mHandler.obtainMessage();
+                            message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;
+                            message.arg1 = id;
+                            mHandler.sendMessageDelayed(message, mIntervalTime);
+                        }
+                        break;
+
+                    case CODE_WHAT_SEND_START_NOTIFICATION_LOOP:
+                        LogUtil.e("开始了---消息---的轮询发送！");
+
+                        removeMessages(CODE_WHAT_SEND_START_NOTIFICATION_LOOP);
+
+                        Message message1 = mHandler.obtainMessage();
+                        message1.what = CODE_WHAT_SEND_START_NOTIFICATION_LOOP;
+                        message1.arg1 = id;
+
+                        sendNotification(id);
+
+                        mHandler.sendMessageDelayed(message1, mIntervalTime);
                         break;
                 }
             }
-
         }
     };
 
@@ -499,6 +468,230 @@ public class NotificationUtil {
             intent.putExtra("app_uid", context.getApplicationInfo().uid);
         }
         context.startActivityForResult(intent, CODE_REQUEST_ACTIVITY_NOTIFICATION);
+    }
+
+    /**
+     * 打开消息通知的渠道设置
+     */
+    public void openChannelNotification() {
+        if (mContext != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                String packageName = mContext.getPackageName();
+                Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName);
+                intent.putExtra(Settings.EXTRA_CHANNEL_ID, packageName);
+                mContext.startActivity(intent);
+            }
+        }
+    }
+
+    public static class Builder {
+        private final Context mContext;
+        private NotificationManager manager;
+        private Intent mIntentActivity;
+        private Intent mIntentService;
+        private String mTickerText;            //  消息设置首次出现的名字
+        private String mContentTitle;          // 消息标题头
+        private String mContentText;           // 消息内容
+        private int mContentSmallIcon;         // 消息的图标
+        private int mNotificationNumber;       // 消息的数量
+        private int mNotificationLevel = NotificationCompat.PRIORITY_DEFAULT;        // 消息的等级
+
+        /**
+         * 自定义震动
+         * <p>
+         * vibrate属性是一个长整型的数组，用于设置手机静止和振动的时长，以毫秒为单位。
+         * 参数中下标为0的值表示手机静止的时长，下标为1的值表示手机振动的时长， 下标为2的值又表示手机静止的时长，以此类推。
+         */
+        private final long[] vibrates = {0, 1000};
+        private String mChannelDescription;                 // 渠道的描述
+        private String mChannelName;                        // 渠道的名字
+        private int mChannelImportance;                     // 渠道的等级,默认是等级3，会提示声音
+        private int mRemoteViewsLayout;                     // 状态栏布局
+        private ViewCallBackListener<RemoteViews> mViewCallBackListener;
+        private boolean mVibrate;                           // 震动
+        private boolean mSound = true;                      // 是否发出声音，默认发出
+        private long mWhen;                                 // 出现的时间戳
+        boolean autoCancel = true;                          // 是否点击取消通知
+
+        public Builder(Context context) {
+            mContext = context;
+            if (context != null) {
+                // 创建管理器
+                manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            }
+
+            // 默认的渠道等级
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                mChannelImportance = NotificationManager.IMPORTANCE_DEFAULT;
+            }
+        }
+
+        /**
+         * @param autoCancel true:自动取消，false：侧滑不会删除
+         * @return 设置是否点击取消
+         */
+        public Builder setAutoCancel(boolean autoCancel) {
+            this.autoCancel = autoCancel;
+            return this;
+        }
+
+        public Builder setActivityPendingIntent(Intent intent) {
+            mIntentActivity = intent;
+            return this;
+        }
+
+        public Builder setServicePendingIntent(Intent intent) {
+            mIntentService = intent;
+            return this;
+        }
+
+        public Builder setActivity(Class<? extends Activity> activityCls) {
+            if (mContext != null) {
+                mIntentActivity = new Intent(mContext, activityCls);
+                mIntentActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
+            return this;
+        }
+
+        public Builder setService(Class<? extends Service> serviceCls) {
+            if (mContext != null) {
+                mIntentService = new Intent(mContext, serviceCls);
+                mIntentService.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
+            return this;
+        }
+
+        /**
+         * 通知首次出现在通知栏，带上升动画效果的，可设置文字，图标
+         */
+        public Builder setTickerText(String tickerText) {
+            //通知首次出现在通知栏，带上升动画效果的，可设置文字，图标
+            this.mTickerText = tickerText;
+            return this;
+        }
+
+        /**
+         * 设置标题头
+         *
+         * @param title 标题头
+         */
+        public Builder setContentTitle(String title) {
+            this.mContentTitle = title;
+            return this;
+        }
+
+        public Builder setContentText(String text) {
+            this.mContentText = text;
+            return this;
+        }
+
+        public Builder setSmallIcon(@DrawableRes int icon) {
+            this.mContentSmallIcon = icon;
+            return this;
+        }
+
+        /**
+         * @param description 渠道的描述
+         * @return 可见的渠道的描述
+         */
+        public Builder setChannelDescription(String description) {
+            this.mChannelDescription = description;
+            return this;
+        }
+
+        /**
+         * @param channelName 渠道的名字
+         * @return 设置渠道的名字
+         */
+        public Builder setChannelName(String channelName) {
+            this.mChannelName = channelName;
+            return this;
+        }
+
+        /**
+         * @param importance NotificationManager # IMPORTANCE_NONE 关闭通知
+         *                   IMPORTANCE_MIN 开启通知，不会弹出，但没有提示音，状态栏中无显示
+         *                   IMPORTANCE_LOW 开启通知，不会弹出，不发出提示音，状态栏中显示
+         *                   IMPORTANCE_DEFAULT 开启通知，不会弹出，发出提示音，状态栏中显示
+         *                   IMPORTANCE_HIGH 开启通知，会弹出，发出提示音，状态栏中显示
+         * @return 设置渠道的等级
+         */
+        public Builder setChannelImportance(int importance) {
+            this.mChannelImportance = importance;
+            return this;
+        }
+
+        /**
+         * 设置声音，使用这个方法的话，必须在资源目录下设置一个raw的目录，资源设置的话，也需要R.raw.xx,例如： R.raw.tougong
+         *
+         * @param sound 声音的路径，使用
+         */
+        private Builder setSound(@DrawableRes int sound) {
+            if (mContext != null) {
+                // 自定义声音
+                Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + mContext.getPackageName() + "/" + sound);
+            }
+            return this;
+        }
+
+        /**
+         * @param sound true：发出声音提示，fasle:不发出声音提示
+         * @return 是否震动，默认发出声音提示
+         */
+        public Builder setSound(boolean sound) {
+            this.mSound = sound;
+            return this;
+        }
+
+        /**
+         * @return 设置通知右下角显示的数字
+         */
+        public Builder setNumber(int number) {
+            this.mNotificationNumber = number;
+            return this;
+        }
+
+        /**
+         * @param level 消息通知的等级，7.0以下使用 {@link Notification#PRIORITY_HIGH } ，7.0以上使用 {@link NotificationManager#IMPORTANCE_HIGH }去设置
+         * @RequiresApi(api = Build.VERSION_CODES.N)  7.0 以上使用
+         */
+        public Builder setNotificationLevel(int level) {
+            this.mNotificationLevel = level;
+            return this;
+        }
+
+        /**
+         * @return 设置是否震动
+         */
+        public Builder setVibrate(boolean vibrate) {
+            this.mVibrate = vibrate;
+            return this;
+        }
+
+        /**
+         * @return 设置通知上的时间戳
+         */
+        public Builder setWhen(long when) {
+            this.mWhen = when;
+            return this;
+        }
+
+        /**
+         * @param layoutId         布局的资源
+         * @param callBackListener 数据回调
+         * @return 设置消息的通知栏布局，这里如果有动态变化的view，需要去不停的调用发送消息的刷新
+         */
+        public Builder setRemoteView(int layoutId, ViewCallBackListener<RemoteViews> callBackListener) {
+            this.mRemoteViewsLayout = layoutId;
+            this.mViewCallBackListener = callBackListener;
+            return this;
+        }
+
+        public NotificationUtil build() {
+            return new NotificationUtil(this);
+        }
+
     }
 
 }
