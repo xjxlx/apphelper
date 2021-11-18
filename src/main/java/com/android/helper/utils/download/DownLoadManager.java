@@ -29,7 +29,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -106,26 +105,24 @@ public class DownLoadManager implements BaseLifecycleObserver {
     public void onDestroy() {
 
         // 停止所有的请求
-        for (Map.Entry<String, Call> entry : mClientMap.entrySet()) {
-            String id = entry.getKey();
-            cancel(id);
-        }
-        mClientMap.clear();
+        cancelAll(mClientMap);
         mClientMap = null;
 
         // 清空状态集合
-        mMapStatus.clear();
-        mMapStatus = null;
+        if (mMapStatus != null) {
+            mMapStatus.clear();
+            mMapStatus = null;
+        }
 
         // 清空回调对象
-        for (Map.Entry<String, ProgressListener> entry : mMapListener.entrySet()) {
-            ProgressListener listener = entry.getValue();
-            listener = null;
+        if (mMapListener != null) {
+            mMapListener.clear();
+            mMapListener = null;
         }
-        mMapListener.clear();
-        mMapListener = null;
 
-        okHttpClient = null;
+        if (okHttpClient != null) {
+            okHttpClient = null;
+        }
 
         if (mActivity != null) {
             mActivity = null;
@@ -194,7 +191,9 @@ public class DownLoadManager implements BaseLifecycleObserver {
         }
 
         // 存入回调对象的集合
-        mMapListener.put(id, progressListener);
+        if (mMapListener != null) {
+            mMapListener.put(id, progressListener);
+        }
 
         // 数据置空
         mContentLong = 0;
@@ -286,7 +285,9 @@ public class DownLoadManager implements BaseLifecycleObserver {
         Call call = okHttpClient.newCall(builder.build());
 
         // 把请求对象存入集合中，用于取消数据使用
-        mClientMap.put(id, call);
+        if (mClientMap != null) {
+            mClientMap.put(id, call);
+        }
 
         // 构建bundle的对象
         Bundle bundle = new Bundle();
@@ -443,7 +444,7 @@ public class DownLoadManager implements BaseLifecycleObserver {
      */
     public int getCurrentStatus(String id) {
         int status = DOWNLOAD_TYPE.DOWNLOAD_IDLE;
-        if (mMapStatus.size() > 0 && !TextUtils.isEmpty(id)) {
+        if ((mMapStatus != null) && (mMapStatus.size() > 0) && (!TextUtils.isEmpty(id))) {
             Integer tempStatus = mMapStatus.get(id);
             if (tempStatus != null) {
                 status = tempStatus;
@@ -456,7 +457,9 @@ public class DownLoadManager implements BaseLifecycleObserver {
      * 设置当前的状态
      */
     public void setCurrentStatus(String id, int status) {
-        mMapStatus.put(id, status);
+        if (mMapStatus != null) {
+            mMapStatus.put(id, status);
+        }
     }
 
     /**
@@ -465,7 +468,7 @@ public class DownLoadManager implements BaseLifecycleObserver {
      * @param id 唯一的标记
      */
     public void cancel(@NonNull String id) {
-        if (mClientMap.size() > 0) {
+        if ((mClientMap != null) && (mClientMap.size() > 0)) {
             Call call = mClientMap.get(id);
             if (call != null) {
                 // 如果该对象已经取消了，就不用在去再次取消了
@@ -502,49 +505,71 @@ public class DownLoadManager implements BaseLifecycleObserver {
         }
     }
 
+    public void cancelAll(@NonNull HashMap<String, Call> map) {
+        if (map.size() > 0) {
+            for (Map.Entry<String, Call> entry : map.entrySet()) {
+                String id = entry.getKey();
+                Call call = map.get(id);
+                if (call != null) {
+                    // 如果该对象已经取消了，就不用在去再次取消了
+                    boolean canceled = call.isCanceled();
+                    if (canceled) {
+                        setCurrentStatus(id, DOWNLOAD_TYPE.DOWNLOAD_ERROR);
+                    } else {
+                        call.cancel();
+                    }
+                    LogUtil.e(TAG, "全部下载取消了！");
+                }
+            }
+        }
+        map.clear();
+    }
+
     @SuppressLint("HandlerLeak")
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
-            Bundle data = msg.getData();
-            String id = data.getString("id");
-            ProgressListener mListener = mMapListener.get(id);
-            assert mListener != null;
+            if (mMapListener != null) {
+                Bundle data = msg.getData();
+                String id = data.getString("id");
+                ProgressListener mListener = mMapListener.get(id);
+                assert mListener != null;
 
-            switch (msg.what) {
-                case DOWNLOAD_TYPE.DOWNLOAD_START:
-                    LogUtil.e(TAG, "开始下载!");
+                switch (msg.what) {
+                    case DOWNLOAD_TYPE.DOWNLOAD_START:
+                        LogUtil.e(TAG, "开始下载!");
 
-                    mListener.onStart(id, (long) msg.obj);
-                    break;
+                        mListener.onStart(id, (long) msg.obj);
+                        break;
 
-                case DOWNLOAD_TYPE.DOWNLOAD_ERROR:
-                    Throwable throwable = (Throwable) msg.obj;
-                    LogUtil.e(TAG, " 下载异常：" + throwable.getMessage());
-                    mListener.onError(id, throwable);
-                    break;
+                    case DOWNLOAD_TYPE.DOWNLOAD_ERROR:
+                        Throwable throwable = (Throwable) msg.obj;
+                        LogUtil.e(TAG, " 下载异常：" + throwable.getMessage());
+                        mListener.onError(id, throwable);
+                        break;
 
-                case DOWNLOAD_TYPE.DOWNLOADING:
-                    double progress = data.getDouble("progress");
-                    long contentLength = data.getLong("contentLength");
-                    String percentage = data.getString("percentage");
-                    mListener.onProgress(id, progress, contentLength, percentage);
+                    case DOWNLOAD_TYPE.DOWNLOADING:
+                        double progress = data.getDouble("progress");
+                        long contentLength = data.getLong("contentLength");
+                        String percentage = data.getString("percentage");
+                        mListener.onProgress(id, progress, contentLength, percentage);
 
-                    break;
+                        break;
 
-                case DOWNLOAD_TYPE.DOWNLOAD_COMPLETE:
-                    LogUtil.e(TAG, "下载结束!");
-                    Object obj = msg.obj;
-                    Response response = null;
-                    if (obj != null) {
-                        response = (Response) obj;
-                    }
-                    String path = data.getString("path");
+                    case DOWNLOAD_TYPE.DOWNLOAD_COMPLETE:
+                        LogUtil.e(TAG, "下载结束!");
+                        Object obj = msg.obj;
+                        Response response = null;
+                        if (obj != null) {
+                            response = (Response) obj;
+                        }
+                        String path = data.getString("path");
 
-                    mListener.onComplete(id, path, response);
-                    break;
+                        mListener.onComplete(id, path, response);
+                        break;
+                }
             }
         }
     };
