@@ -105,8 +105,7 @@ public class DownLoadManager implements BaseLifecycleObserver {
     public void onDestroy() {
 
         // 停止所有的请求
-        cancelAll(mClientMap);
-        mClientMap = null;
+        cancelAll();
 
         // 清空状态集合
         if (mMapStatus != null) {
@@ -505,11 +504,11 @@ public class DownLoadManager implements BaseLifecycleObserver {
         }
     }
 
-    public void cancelAll(@NonNull HashMap<String, Call> map) {
-        if (map.size() > 0) {
-            for (Map.Entry<String, Call> entry : map.entrySet()) {
+    public void cancelAll() {
+        if (mClientMap.size() > 0) {
+            for (Map.Entry<String, Call> entry : mClientMap.entrySet()) {
                 String id = entry.getKey();
-                Call call = map.get(id);
+                Call call = mClientMap.get(id);
                 if (call != null) {
                     // 如果该对象已经取消了，就不用在去再次取消了
                     boolean canceled = call.isCanceled();
@@ -522,7 +521,8 @@ public class DownLoadManager implements BaseLifecycleObserver {
                 }
             }
         }
-        map.clear();
+        mClientMap.clear();
+        mClientMap = null;
     }
 
     @SuppressLint("HandlerLeak")
