@@ -378,13 +378,11 @@ public class DownLoadManager implements BaseLifecycleObserver {
                                 format = String.format(Locale.CHINA, "%.2f", (v * 1000));
                             }
 
-                            //  LogUtil.e("vvv:  progress:" + progress + "  mContentLong:" + mContentLong + " format:" + format);
-
                             // 进度的回调
                             Message message1 = mHandler.obtainMessage();
                             message1.what = DOWNLOAD_TYPE.DOWNLOADING;
 
-                            bundle.putDouble("progress", progress);
+                            bundle.putLong("progress", progress);
                             bundle.putLong("contentLength", mContentLong);
                             bundle.putString("percentage", format);
                             message1.setData(bundle);
@@ -551,7 +549,7 @@ public class DownLoadManager implements BaseLifecycleObserver {
                         break;
 
                     case DOWNLOAD_TYPE.DOWNLOADING:
-                        double progress = data.getDouble("progress");
+                        long progress = data.getLong("progress");
                         long contentLength = data.getLong("contentLength");
                         String percentage = data.getString("percentage");
                         mListener.onProgress(id, progress, contentLength, percentage);

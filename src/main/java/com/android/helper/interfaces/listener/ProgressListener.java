@@ -17,7 +17,7 @@ public interface ProgressListener {
      * @param progress      当前的进度
      * @param contentLength 总的进度
      */
-    void onProgress(String id, double progress, long contentLength, String percentage);
+    void onProgress(String id, long progress, long contentLength, String percentage);
 
     void onError(String id, Throwable throwable);
 
