@@ -74,6 +74,23 @@ import com.android.helper.interfaces.listener.ViewCallBackListener;
  * 1：先创建notification,调用方法：createNotification（）
  * 2：发送消息，可以选择三种情况，sendNotification（）发送单个消息，startForeground（），发送一个前台的消息，
  * startLoopForeground（） 发送轮询的消息
+ * <p>
+ * 消息的管理类：
+ *  使用方法：
+ *          1：通过builder设置所有的参数
+ *          2：创建通过Builder创建Notification的对象
+ *          3：发送单个的普通消息，调用{@link NotificationUtil#sendNotification(int)}方法
+ *          4：发送轮询的普通消息，调用{@link NotificationUtil#startLoopNotification(int, long)}方法
+ *          5：发送前台的服务消息，调用{@link NotificationUtil#startForeground(int, Service)}方法
+ *          6：发送前台的轮询服务消息，调用{@link NotificationUtil#startLoopForeground(int, long, Service)}方法
+ *          7：停止所有的消息，调用{@link NotificationUtil#stopAllLoop()}方法
+ *          8：停止单个的消息，调用{@link NotificationUtil#cancelNotification(int)}方法
+ *          9：检测是否打开了通知的功能，调用{@link NotificationUtil#checkOpenNotify(Context)}方法
+ *          10：跳转到通知的页面，调用{@link NotificationUtil#goToSetNotify(Activity)}方法，由于手机型号不同，可能会跳转失败
+ *          11：跳转到渠道通知的页面，调用{@link NotificationUtil#openChannelNotification()}方法，由于手机型号不同，可能会跳转失败
+ * <p>
+ *  注意：如果要开启前台服务，需要添加权限
+ *       <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
  */
 public class NotificationUtil {
 
@@ -315,16 +332,11 @@ public class NotificationUtil {
     }
 
     /**
-     * @return 取消指定的通知
-     */
-    public NotificationUtil cancel(int id) {
-        if (manager != null) {
-            manager.cancel(id);
-        }
-        return this;
-    }
-
-    /**
+     * <ol>
+     *     注意：如果要开启前台服务，需要添加权限
+     *     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+     * </ol>
+     *
      * @param service 指定的服务类型
      * @return 开启前台服务
      */
@@ -344,6 +356,10 @@ public class NotificationUtil {
     }
 
     /**
+     * <ol>
+     *     注意：如果要开启前台服务，需要添加权限
+     *     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+     * </ol>
      * 开始轮询的发送服务的通知，避免间隔的时间长了，服务被误判，停止联网的操作
      *
      * @param intervalTime 每次间隔的时间
@@ -381,11 +397,21 @@ public class NotificationUtil {
     }
 
     /**
-     * 停止轮询服务的发送
+     * 停止所有的发送
      */
-    public void stopLoopForeground() {
+    public void stopAllLoop() {
         mHandler.removeCallbacksAndMessages(null);
         LogUtil.e("停止了轮训消息的发送！");
+    }
+
+    /**
+     * @return 取消指定的通知
+     */
+    public NotificationUtil cancelNotification(int id) {
+        if (manager != null) {
+            manager.cancel(id);
+        }
+        return this;
     }
 
     @SuppressLint("HandlerLeak")
@@ -395,11 +421,10 @@ public class NotificationUtil {
             super.handleMessage(msg);
 
             // 先停止之前的消息发送，避免数据的快速轮询
-            stopLoopForeground();
+            stopAllLoop();
 
             if (mNotification != null) {
                 int id = msg.arg1;
-
                 switch (msg.what) {
                     case CODE_WHAT_SEND_START_FOREGROUND:
                         LogUtil.e("开始了服务消息的单独发送！");
@@ -653,6 +678,15 @@ public class NotificationUtil {
         }
 
         /**
+         * <ol>
+         *         // 设置等级
+         *         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+         *             builder.setNotificationLevel(NotificationManager.IMPORTANCE_HIGH);
+         *         } else {
+         *             builder.setNotificationLevel(Notification.PRIORITY_HIGH);
+         *         }
+         * </ol>
+         *
          * @param level 消息通知的等级，7.0以下使用 {@link Notification#PRIORITY_HIGH } ，7.0以上使用 {@link NotificationManager#IMPORTANCE_HIGH }去设置
          * @RequiresApi(api = Build.VERSION_CODES.N)  7.0 以上使用
          */

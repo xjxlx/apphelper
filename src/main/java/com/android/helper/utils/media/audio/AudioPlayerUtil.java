@@ -172,7 +172,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
 
         // 停止间隔的轮询
         if (mNotificationUtil != null) {
-            mNotificationUtil.stopLoopForeground();
+            mNotificationUtil.stopAllLoop();
         }
 
         // 停止后台的服务
