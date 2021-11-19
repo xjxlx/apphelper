@@ -241,9 +241,6 @@ public abstract class BaseRefreshFragment<T, T2> extends BaseFragment implements
                     super.onComplete();
                     // 回调子页面的处理事件
                     onHttpComplete();
-
-                    // 1： todo 结束弹窗
-
                     // 2：关闭刷新和加载
                     mRefreshLayout.finishLoadMore();
                     mRefreshLayout.finishRefresh();

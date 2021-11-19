@@ -7,7 +7,10 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.helper.utils.FileUtil;
 import com.android.helper.utils.PreferenceHelper;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -29,11 +32,7 @@ import retrofit2.HttpException;
 public class AppException extends Exception implements UncaughtExceptionHandler {
 
     // 日志文件的路径
-    public final static String DEFAULT_SAVE_LOG_FILE_PATH = Environment
-            .getExternalStorageDirectory()
-            + File.separator
-            + BaseApplication.getLogTag()
-            + File.separator + "log" + File.separator;
+    public final static String DEFAULT_SAVE_LOG_FILE_PATH = FileUtil.getInstance().getCommonTagPath() + "/Log";
 
     /**
      * 定义异常类型
@@ -71,38 +70,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         super(excp);
         this.type = type;
         this.code = code;
-//        makeToast(AppManager.getAppManager().getContext());
     }
-//
-//    public void makeToast(Context ctx) {
-//        switch (this.getType()) {
-//            case TYPE_HTTP_CODE:
-//                String err = ctx.getString(R.string.http_status_code_error, this.getCode());
-//                ToastUtil.showToast(ctx, err);
-//                break;
-//            case TYPE_HTTP_ERROR:
-//                Toast.makeText(ctx, R.string.http_exception_error, Toast.LENGTH_SHORT).show();
-//                break;
-//            case TYPE_SOCKET:
-//                Toast.makeText(ctx, R.string.socket_exception_error, Toast.LENGTH_SHORT).show();
-//                break;
-//            case TYPE_NETWORK:
-//                Toast.makeText(ctx, R.string.network_not_connected, Toast.LENGTH_SHORT).show();
-//                break;
-//            case TYPE_XML:
-//                Toast.makeText(ctx, R.string.xml_parser_failed, Toast.LENGTH_SHORT).show();
-//                break;
-//            case TYPE_JSON:
-//                Toast.makeText(ctx, R.string.xml_parser_failed, Toast.LENGTH_SHORT).show();
-//                break;
-//            case TYPE_IO:
-//                Toast.makeText(ctx, R.string.io_exception_error, Toast.LENGTH_SHORT).show();
-//                break;
-//            case TYPE_RUN:
-//                Toast.makeText(ctx, R.string.app_run_code_error, Toast.LENGTH_SHORT).show();
-//                break;
-//        }
-//    }
 
     public static AppException http(int code) {
         return new AppException(TYPE_HTTP_CODE, code, null);
@@ -153,7 +121,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
     }
 
     @Override
-    public void uncaughtException(Thread thread, Throwable ex) {
+    public void uncaughtException(@NotNull Thread thread, @NotNull Throwable ex) {
         if (!handleException(ex) && mDefaultHandler != null) {
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
@@ -172,7 +140,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
 
     public boolean saveErrorLog(Throwable ex) {
         boolean isSave = false;
-        String errorLog = "error.txt";
+        String errorLog = "/error.txt";
         String savePath;
         String logFilePath = "";
         FileWriter fw = null;
@@ -235,17 +203,12 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
      * @return true:处理了该异常信息;否则返回false
      */
     private boolean handleException(Throwable ex) {
-        if (ex == null) {
-            return false;
-        }
-        boolean success = true;
-        try {
-            success = saveErrorLog(ex);
-        } catch (Exception e) {
-        } finally {
-            if (!success) {
-                return false;
-            } else {
+        boolean success = false;
+        if (ex != null) {
+            try {
+                success = saveErrorLog(ex);
+            } catch (Exception ignored) {
+            } finally {
 //                final Context context = AppManager.getAppManager()
 //                        .currentActivity();
 //                // 显示异常信息&发送报告
