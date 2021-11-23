@@ -283,7 +283,6 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(@NonNull @NotNull E holder, int position) {
         int itemViewType = getItemViewType(position);
-
         if (itemViewType == ViewType.TYPE_EMPTY) { // 空布局的数据设置
             if (holder instanceof EmptyVH) {
                 EmptyVH emptyVH = (EmptyVH) holder;
