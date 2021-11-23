@@ -9,11 +9,15 @@ import org.jetbrains.annotations.NotNull;
 /**
  * 绑定viewBinding的RecycleView的ViewHolder
  *
- * @param <T> 指定类型的ViewBinding
+ * @param <V> 指定类型的ViewBinding
  */
-public class BaseBindingVH<T extends ViewBinding> extends RecyclerView.ViewHolder {
+public class BaseBindingVH<V extends ViewBinding> extends RecyclerView.ViewHolder {
 
-    public BaseBindingVH(@NonNull @NotNull T t) {
-        super(t.getRoot());
+    public V mBinding;
+
+    public BaseBindingVH(@NonNull @NotNull V viewBinding) {
+        super(viewBinding.getRoot());
+        this.mBinding = viewBinding;
     }
+
 }

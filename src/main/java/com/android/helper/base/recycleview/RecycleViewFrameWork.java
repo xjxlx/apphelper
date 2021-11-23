@@ -43,7 +43,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     /**
      * Fragment的对象
      */
-    private Fragment mFragment;
+    protected Fragment mFragment;
 
     /**
      * 集合的数据
@@ -283,7 +283,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     public void onBindViewHolder(@NonNull @NotNull E holder, int position) {
         int itemViewType = getItemViewType(position);
 
-        if (itemViewType == mItemType) { // 空布局的数据设置
+        if (itemViewType == ViewType.TYPE_EMPTY) { // 空布局的数据设置
             if (holder instanceof EmptyVH) {
                 EmptyVH emptyVH = (EmptyVH) holder;
                 if (mEmptyPlaceHolder.getTypeForView() == 2) {

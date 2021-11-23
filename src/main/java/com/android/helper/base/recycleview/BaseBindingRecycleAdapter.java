@@ -23,12 +23,12 @@ import java.util.List;
  * 加入了viewBinding的RecycleView
  *
  * @param <T> 数据类型
- * @param <E> ViewBinding的具体类型，目前只适合单一的数据holder类型
+ * @param <V> ViewBinding的具体类型，目前只适合单一的数据holder类型
  */
-public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extends RecycleViewFrameWork<T, RecyclerView.ViewHolder> implements BindingViewListener<E> {
+public abstract class BaseBindingRecycleAdapter<T, V extends ViewBinding> extends RecycleViewFrameWork<T, RecyclerView.ViewHolder> implements BindingViewListener<V> {
 
-    protected E mBinding;
-    protected ItemClickListener<E, T> mItemBindingClickListener;
+    protected ItemClickListener<V, T> mItemBindingClickListener;
+    private BaseBindingVH<V> mBaseBindingVH;
 
     public BaseBindingRecycleAdapter(Fragment fragment) {
         super(fragment);
@@ -66,21 +66,28 @@ public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extend
     @NotNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
-        BaseBindingVH<E> vh;
+        BaseBindingVH<V> vh;
         if (viewType != ViewType.TYPE_EMPTY) {
-            mBinding = getBinding(LayoutInflater.from(mActivity), parent);
+            V binding = null;
+            if (mActivity != null) {
+                binding = getBinding(LayoutInflater.from(mActivity), parent);
+            } else {
+                if (mFragment != null) {
+                    binding = getBinding(LayoutInflater.from(mFragment.getContext()), parent);
+                }
+            }
 
-            if (mBinding == null) {
+            if (binding == null) {
                 LogUtil.e("BaseBindingRecycle ---> context 为空！");
             }
-            assert (mBinding != null);
-            vh = new BaseBindingVH<>(mBinding);
+            assert (binding != null);
+            vh = new BaseBindingVH<>(binding);
             return vh;
         }
         return super.onCreateViewHolder(parent, viewType);
     }
 
-    public abstract void onBindHolder(@NonNull @NotNull BaseBindingVH<E> holder, int position);
+    public abstract void onBindHolder(@NonNull @NotNull BaseBindingVH<V> holder, int position);
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull RecyclerView.ViewHolder holder, int position) {
@@ -90,7 +97,8 @@ public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extend
             if (itemViewType != ViewType.TYPE_EMPTY) {
                 // 只返回正常的布局，不返回空布局的holder
                 if (holder instanceof BaseBindingVH) {
-                    onBindHolder((BaseBindingVH<E>) holder, position);
+                    mBaseBindingVH = (BaseBindingVH<V>) holder;
+                    onBindHolder(mBaseBindingVH, position);
                 }
             }
         }
@@ -98,12 +106,27 @@ public abstract class BaseBindingRecycleAdapter<T, E extends ViewBinding> extend
 
     @Override
     public View getRootView() {
-        assert mBinding != null;
-        return mBinding.getRoot();
+        assert mBaseBindingVH != null;
+        return mBaseBindingVH.itemView;
     }
 
-    public void setItemClickListener(ItemClickListener<E, T> itemClickListener) {
+    public void setItemBindingClickListener(ItemClickListener<V, T> itemClickListener) {
         this.mItemBindingClickListener = itemClickListener;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // 销毁对象
+        if (mBaseBindingVH != null) {
+            if (mBaseBindingVH.mBinding != null) {
+                mBaseBindingVH.mBinding = null;
+            }
+            mBaseBindingVH.mBinding = null;
+        }
+
+        if (mItemBindingClickListener != null) {
+            mItemBindingClickListener = null;
+        }
+    }
 }
