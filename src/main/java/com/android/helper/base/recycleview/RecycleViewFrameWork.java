@@ -50,10 +50,6 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      */
     protected List<T> mList = new ArrayList<>();
 
-    /**
-     * 点击事件的对象
-     */
-    protected OnItemClickListener<T> mItemClickListener;
     private boolean isEmpty; // 当前数据是否为空
 
     /**
@@ -417,14 +413,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
-    /**
-     * 设置点击的对象
-     *
-     * @param mOnItemClickListener 点击对象
-     */
-    public void setItemClickListener(OnItemClickListener<T> mOnItemClickListener) {
-        this.mItemClickListener = mOnItemClickListener;
-    }
+
 
     public static class EmptyVH extends RecyclerView.ViewHolder {
         private final ImageView mIvImage;

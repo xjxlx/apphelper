@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.helper.interfaces.listener.OnItemClickListener;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -20,6 +22,11 @@ import java.util.List;
  * @param <E> ViewHolder的对象，目前只适合单数据类型的使用
  */
 public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> extends RecycleViewFrameWork<T, E> {
+
+    /**
+     * 点击事件的对象
+     */
+    protected OnItemClickListener<T> mItemClickListener;
 
     public BaseRecycleAdapter(Fragment fragment) {
         super(fragment);
@@ -90,6 +97,23 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
             if (itemViewType != ViewType.TYPE_EMPTY) {
                 onBindHolder(holder, position);
             }
+        }
+    }
+
+    /**
+     * 设置点击的对象
+     *
+     * @param mOnItemClickListener 点击对象
+     */
+    public void setItemClickListener(OnItemClickListener<T> mOnItemClickListener) {
+        this.mItemClickListener = mOnItemClickListener;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mItemClickListener != null) {
+            mItemClickListener = null;
         }
     }
 }

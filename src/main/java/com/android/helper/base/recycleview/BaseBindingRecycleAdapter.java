@@ -110,7 +110,7 @@ public abstract class BaseBindingRecycleAdapter<T, V extends ViewBinding> extend
         return mBaseBindingVH.itemView;
     }
 
-    public void setItemBindingClickListener(ItemClickListener<V, T> itemClickListener) {
+    public void setItemClickListener(ItemClickListener<V, T> itemClickListener) {
         this.mItemBindingClickListener = itemClickListener;
     }
 
