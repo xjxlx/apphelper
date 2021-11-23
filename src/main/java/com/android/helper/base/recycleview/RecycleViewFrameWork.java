@@ -238,8 +238,9 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      * @param position 具体的位置
      */
     public void updateItem(int position) {
-        // todo 待测试
-        notifyItemChanged(position);
+        if ((mList != null) && (position < mList.size())) {
+            notifyItemChanged(position);
+        }
     }
 
     @Override
