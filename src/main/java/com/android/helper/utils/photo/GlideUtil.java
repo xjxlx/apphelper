@@ -62,7 +62,6 @@ public class GlideUtil implements BaseLifecycleObserver {
             this.mFragment = builder.mFragment;
             this.mActivity = builder.mActivity;
             this.mContext = builder.mContext;
-            LogUtil.e(TAG, "builder:" + builder);
         }
     }
 
@@ -76,8 +75,6 @@ public class GlideUtil implements BaseLifecycleObserver {
                     return;
                 }
             }
-            LogUtil.e(TAG, "addObserverActivity");
-
             Lifecycle lifecycle = mActivity.getLifecycle();
             lifecycle.addObserver(this);
             mOldAcivity = mActivity;
@@ -97,7 +94,6 @@ public class GlideUtil implements BaseLifecycleObserver {
             Lifecycle lifecycle = mFragment.getLifecycle();
             lifecycle.addObserver(this);
             mOldFragment = mFragment;
-            LogUtil.e(TAG, "addObserverFragment");
         }
     }
 
@@ -247,7 +243,6 @@ public class GlideUtil implements BaseLifecycleObserver {
     public void onCreate() {
         // 感知生命周期，在生命周期里面进行加载，避免加载异常
         isDestroy = false;
-        LogUtil.e(TAG, "onCreate");
         // 首次进来的时候，在这里加载一此对象
         loadView();
     }
@@ -275,7 +270,6 @@ public class GlideUtil implements BaseLifecycleObserver {
     @Override
     public void onDestroy() {
         isDestroy = true;
-        LogUtil.e(TAG, "onDestroy");
     }
 
     public static class Builder {
