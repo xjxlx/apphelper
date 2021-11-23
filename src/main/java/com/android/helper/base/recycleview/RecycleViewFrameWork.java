@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.helper.R;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
-import com.android.helper.interfaces.listener.OnItemClickListener;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.TextViewUtil;
 import com.android.helper.utils.refresh.RefreshUtil;
@@ -137,9 +136,14 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     }
 
     /**
-     * <p>
+     * @return 获取数据源
+     */
+    public List<T> getList() {
+        return mList;
+    }
+
+    /**
      * 刷新全部的数据
-     * </p>
      *
      * @param list 数据源
      */
@@ -412,8 +416,6 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         mErrorType = 2;
         notifyDataSetChanged();
     }
-
-
 
     public static class EmptyVH extends RecyclerView.ViewHolder {
         private final ImageView mIvImage;
