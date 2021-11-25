@@ -38,11 +38,11 @@ public abstract class BaseBindingRecycleAdapter<T, V extends ViewBinding> extend
         super(fragment, list);
     }
 
-    public BaseBindingRecycleAdapter(Fragment fragment, EmptyPlaceholder placeholder) {
+    public BaseBindingRecycleAdapter(Fragment fragment, Placeholder placeholder) {
         super(fragment, placeholder);
     }
 
-    public BaseBindingRecycleAdapter(Fragment fragment, List<T> list, EmptyPlaceholder placeholder) {
+    public BaseBindingRecycleAdapter(Fragment fragment, List<T> list, Placeholder placeholder) {
         super(fragment, list, placeholder);
     }
 
@@ -50,7 +50,7 @@ public abstract class BaseBindingRecycleAdapter<T, V extends ViewBinding> extend
         super(activity);
     }
 
-    public BaseBindingRecycleAdapter(FragmentActivity activity, EmptyPlaceholder placeholder) {
+    public BaseBindingRecycleAdapter(FragmentActivity activity, Placeholder placeholder) {
         super(activity, placeholder);
     }
 
@@ -58,7 +58,7 @@ public abstract class BaseBindingRecycleAdapter<T, V extends ViewBinding> extend
         super(activity, list);
     }
 
-    public BaseBindingRecycleAdapter(FragmentActivity activity, List<T> list, EmptyPlaceholder placeholder) {
+    public BaseBindingRecycleAdapter(FragmentActivity activity, List<T> list, Placeholder placeholder) {
         super(activity, list, placeholder);
     }
 

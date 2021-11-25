@@ -36,11 +36,11 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
         super(fragment, list);
     }
 
-    public BaseRecycleAdapter(Fragment fragment, EmptyPlaceholder placeholder) {
+    public BaseRecycleAdapter(Fragment fragment, Placeholder placeholder) {
         super(fragment, placeholder);
     }
 
-    public BaseRecycleAdapter(Fragment fragment, List<T> list, EmptyPlaceholder placeholder) {
+    public BaseRecycleAdapter(Fragment fragment, List<T> list, Placeholder placeholder) {
         super(fragment, list, placeholder);
     }
 
@@ -48,7 +48,7 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
         super(activity);
     }
 
-    public BaseRecycleAdapter(FragmentActivity activity, EmptyPlaceholder placeholder) {
+    public BaseRecycleAdapter(FragmentActivity activity, Placeholder placeholder) {
         super(activity, placeholder);
     }
 
@@ -56,7 +56,7 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
         super(activity, list);
     }
 
-    public BaseRecycleAdapter(FragmentActivity activity, List<T> list, EmptyPlaceholder placeholder) {
+    public BaseRecycleAdapter(FragmentActivity activity, List<T> list, Placeholder placeholder) {
         super(activity, list, placeholder);
     }
 

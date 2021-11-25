@@ -27,15 +27,15 @@ import com.android.helper.R;
  *          二：全局异常资源设置
  *                 说明：考虑到异常页面的占位图不会随意的变化，所以设置了一套静态的资源文件，供全局使用，一旦设置了新的异常资源，就不会使用全局的异常资源
  * <p>
- *              1：设置全局的异常资源，调用方法{@link EmptyPlaceholder#setGlobalPlaceholder(EmptyPlaceholder)} }
- *              2：获取全局的异常资源，调用方法{@link EmptyPlaceholder#getGlobalPlaceholder()}
+ *              1：设置全局的异常资源，调用方法{@link Placeholder#setGlobalPlaceholder(Placeholder)} }
+ *              2：获取全局的异常资源，调用方法{@link Placeholder#getGlobalPlaceholder()}
  * <p>
  *          三：获取资源
  *                  说明：文档只写了各种设置方法，具体的获取方式，如果是全局的，去使用静态的对应方法获取，如果不是全局的，就使用普通对象去获取，和设置方法都是一一对应的，设置是setXX( )方法，
  *                  获取就是getXX()方法
  * </ol>
  */
-public class EmptyPlaceholder {
+public class Placeholder {
 
     private View mEmptyView;                            // 空数据的指定布局
 
@@ -51,19 +51,20 @@ public class EmptyPlaceholder {
     private int mErrorTitleColor;                       // 空布局文字的颜色
     private int mErrorButtonBackground;                 // 错误布局的按钮背景
     private String mErrorButtonContent;                 // 错误布局的按钮文字
+    private boolean isFromGlobal;                       // 数据是否是全局设置的
 
     @SuppressLint("StaticFieldLeak")
-    private static EmptyPlaceholder GlobalPlaceholder; // 静态的对象
+    private static Placeholder GlobalPlaceholder; // 静态的对象
 
-    public static EmptyPlaceholder getGlobalPlaceholder() {
+    public static Placeholder getGlobalPlaceholder() {
         return GlobalPlaceholder;
     }
 
-    public static void setGlobalPlaceholder(EmptyPlaceholder globalPlaceholder) {
+    public static void setGlobalPlaceholder(Placeholder globalPlaceholder) {
         GlobalPlaceholder = globalPlaceholder;
     }
 
-    public EmptyPlaceholder(Builder builder) {
+    public Placeholder(Builder builder) {
         if (builder != null) {
             this.mEmptyView = builder.mEmptyView;
             this.mTypeForView = builder.mTypeForView;
@@ -78,12 +79,14 @@ public class EmptyPlaceholder {
             this.mErrorTitleColor = builder.mErrorTitleColor;
             this.mErrorButtonBackground = builder.mErrorButtonBackground;
             this.mErrorButtonContent = builder.mErrorButtonContent;
+            this.isFromGlobal = builder.isFromGlobal;
         }
     }
 
     public View getEmptyView(ViewGroup parent) {
         // 如果没有手动设置空布局，则使用默认的空布局
-        if ((mEmptyView == null) && (mTypeForView != 1)) {
+        if (mTypeForView != 1) {
+            // 此处的布局不能作为公共使用，每一个布局，都要使用一个单独的父布局，不然会报错
             if (parent != null) {
                 mEmptyView = LayoutInflater.from(parent.getContext()).inflate(R.layout.base_recycleview_empty, parent, false);
                 mTypeForView = 2;
@@ -133,6 +136,13 @@ public class EmptyPlaceholder {
     }
 
     /**
+     * @return true:表示：是手动设置的，false:默认为false，表示不是手动设置的。此标记是为了确定是否是项目设置了全局的对象，不能单纯地使用对象为空去判断
+     */
+    public boolean isFromGlobal() {
+        return isFromGlobal;
+    }
+
+    /**
      * @return view的来源, 1:指定的view ，2：默认的view
      */
     public int getTypeForView() {
@@ -154,6 +164,7 @@ public class EmptyPlaceholder {
         private int mErrorTitleColor;                       // 空布局文字的颜色
         private int mErrorButtonBackground;                 // 错误布局的按钮背景
         private String mErrorButtonContent;                 // 错误布局的按钮文字
+        private boolean isFromGlobal;                       // 数据是否是全局设置的
 
         /**
          * 设置空布局的view
@@ -226,8 +237,12 @@ public class EmptyPlaceholder {
             return this;
         }
 
-        public EmptyPlaceholder Build() {
-            return new EmptyPlaceholder(this);
+        public void setFromGlobal(boolean fromGlobal) {
+            isFromGlobal = fromGlobal;
+        }
+
+        public Placeholder Build() {
+            return new Placeholder(this);
         }
     }
 
