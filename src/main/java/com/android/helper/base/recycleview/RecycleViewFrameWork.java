@@ -183,6 +183,18 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     }
 
     /**
+     * @param list        数据源
+     * @param refreshUtil 刷新工具的对象
+     */
+    public void setList(List<T> list, RefreshUtil<?> refreshUtil) {
+        if (refreshUtil != null) {
+            setList(list, refreshUtil.isRefresh());
+        } else {
+            setList(list);
+        }
+    }
+
+    /**
      * <p>
      * 插入一个数据集合
      * </p>
