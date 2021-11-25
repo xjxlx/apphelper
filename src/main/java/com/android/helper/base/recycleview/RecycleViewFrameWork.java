@@ -485,6 +485,11 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         if (mEmptyView != null) {
             mEmptyView = null;
         }
+
+        if (mList != null) {
+            mList = null;
+        }
+
         LogUtil.e("isDestroy:" + isDestroy);
     }
 
