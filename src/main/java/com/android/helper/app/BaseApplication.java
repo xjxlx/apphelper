@@ -59,6 +59,7 @@ public class BaseApplication {
         initData();
     }
 
+    //<editor-fold desc="具体的逻辑代码">
     private void initData() {
         try {
             // 捕获所有的异常，存入到app目录下
@@ -206,6 +207,9 @@ public class BaseApplication {
                 //  refreshLayout.resetNoMoreData();//恢复没有更多数据的原始状态 1.0.4（1.1.0删除）
                 //  refreshLayout.setNoMoreData(false);//恢复没有更多数据的原始状态 1.0.5
 
+                // 刷新的时候，禁止其他的操作，这两个属性必须要加上，不然可能在刷新的时候，出现异常
+                refreshLayout.setDisableContentWhenRefresh(true);//是否在刷新的时候禁止列表的操作
+                refreshLayout.setDisableContentWhenLoading(true);//是否在加载的时候禁止列表的操作
             }
         });
 
