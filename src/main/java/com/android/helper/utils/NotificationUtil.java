@@ -84,7 +84,7 @@ import com.android.helper.interfaces.listener.ViewCallBackListener;
  *          5：发送前台的服务消息，调用{@link NotificationUtil#startForeground(int, Service)}方法
  *          6：发送前台的轮询服务消息，调用{@link NotificationUtil#startLoopForeground(int, long, Service)}方法
  *          7：停止所有的消息，调用{@link NotificationUtil#stopAllLoop()}方法
- *          8：停止单个的消息，调用{@link NotificationUtil#cancelNotification(int)}方法
+ *          8：停止单个的消息，调用{@link NotificationUtil#stopNotification(int)}方法
  *          9：检测是否打开了通知的功能，调用{@link NotificationUtil#checkOpenNotify(Context)}方法
  *          10：跳转到通知的页面，调用{@link NotificationUtil#goToSetNotify(Activity)}方法，由于手机型号不同，可能会跳转失败
  *          11：跳转到渠道通知的页面，调用{@link NotificationUtil#openChannelNotification()}方法，由于手机型号不同，可能会跳转失败
@@ -407,9 +407,20 @@ public class NotificationUtil {
     /**
      * @return 取消指定的通知
      */
-    public NotificationUtil cancelNotification(int id) {
+    public NotificationUtil stopNotification(int id) {
         if (manager != null) {
             manager.cancel(id);
+        }
+        return this;
+    }
+
+    /**
+     * @return 取消指定的通知，如果使用了这个方法，就必须先调用一下{@link NotificationUtil#stopAllLoop()}
+     * 避免因为轮询造成的再次启动
+     */
+    public NotificationUtil stopForeground() {
+        if (mService != null) {
+            mService.stopForeground(true);
         }
         return this;
     }
