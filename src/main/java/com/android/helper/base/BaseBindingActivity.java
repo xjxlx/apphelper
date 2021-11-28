@@ -14,6 +14,7 @@ import com.android.helper.interfaces.BindingViewListener;
 public abstract class BaseBindingActivity<T extends ViewBinding> extends BaseActivity implements BindingViewListener<T> {
 
     public T mBinding;
+    private View mBindingRoot;
 
     @Override
     public void onBeforeCreateView() {
@@ -22,18 +23,14 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends BaseAct
         mBinding = getBinding(getLayoutInflater(), null);
 
         if (mBinding != null) {
-            setContentView(mBinding.getRoot());
-        }
-
-        View rootView = getRootView();
-        if (rootView != null) {
-            setContentView(rootView);
+            mBindingRoot = mBinding.getRoot();
+            setContentView(mBindingRoot);
         }
     }
 
     @Override
     public View getRootView() {
-        return mBinding.getRoot();
+        return mBindingRoot;
     }
 
     @Override

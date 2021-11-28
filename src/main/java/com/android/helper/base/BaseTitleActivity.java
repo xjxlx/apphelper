@@ -1,5 +1,6 @@
 package com.android.helper.base;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -21,7 +22,8 @@ import com.android.helper.utils.TextViewUtil;
  */
 public abstract class BaseTitleActivity extends BaseActivity {
 
-    private FrameLayout mFlActivityContent;
+    protected View mInflate;
+    protected FrameLayout mFlActivityContent;
     private RelativeLayout mRlBaseTitleRoot;
     private LinearLayout mLlBaseTitleBack;
     private TextView mTvBaseTitleBackTitle;
@@ -31,19 +33,26 @@ public abstract class BaseTitleActivity extends BaseActivity {
     protected View.OnClickListener mBackClickListener = null;// 返回的点击事件
     protected View.OnClickListener mRightBackClickListener = null;// 返回的点击事件
 
+    @SuppressLint("InflateParams")
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+
         // 带title的Activity
-        View inflate = LayoutInflater.from(this).inflate(R.layout.base_title_activity, null, false);
+        mInflate = LayoutInflater.from(this).inflate(R.layout.base_title_activity, null, false);
 
         // 设置布局
-        setContentView(inflate);
+        if (mInflate != null) {
+            mFlActivityContent = mInflate.findViewById(R.id.fl_activity_content);  // activity的布局
+        }
 
         // 添加实际的activity
         int titleLayout = getTitleLayout();
         if (titleLayout != 0) {
-            mFlActivityContent = findViewById(R.id.fl_activity_content);  // activity的布局
+            // 把真实的布局添加到 mFlActivityContent 中去
             LayoutInflater.from(this).inflate(titleLayout, mFlActivityContent, true);
+
+            // 设置布局
+            setContentView(mInflate);
         }
         super.onCreate(savedInstanceState);
     }
@@ -52,12 +61,12 @@ public abstract class BaseTitleActivity extends BaseActivity {
     public void initView() {
         super.initView();
 
-        mRlBaseTitleRoot = findViewById(R.id.rl_base_title_root);   // 标题的根布局
-        mLlBaseTitleBack = findViewById(R.id.ll_base_title_back); // 返回的父类布局
-        mTvBaseTitleBackTitle = findViewById(R.id.tv_base_title_back_title); // 返回的文字
-        mTvBaseTitle = findViewById(R.id.tv_base_title); // 标题的内容
-        mFlBaseTitleRightParent = findViewById(R.id.fl_base_title_right_parent); // 右侧标题的父布局
-        mTvBaseTitleRightTitle = findViewById(R.id.tv_base_title_right_title); // 右侧标题的textView
+        mRlBaseTitleRoot = mInflate.findViewById(R.id.rl_base_title_root);   // 标题的根布局
+        mLlBaseTitleBack = mInflate.findViewById(R.id.ll_base_title_back); // 返回的父类布局
+        mTvBaseTitleBackTitle = mInflate.findViewById(R.id.tv_base_title_back_title); // 返回的文字
+        mTvBaseTitle = mInflate.findViewById(R.id.tv_base_title); // 标题的内容
+        mFlBaseTitleRightParent = mInflate.findViewById(R.id.fl_base_title_right_parent); // 右侧标题的父布局
+        mTvBaseTitleRightTitle = mInflate.findViewById(R.id.tv_base_title_right_title); // 右侧标题的textView
 
         // 设置标题
         String titleContent = setTitleContent();
