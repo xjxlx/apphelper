@@ -44,15 +44,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      *此处不能写成静态的，否则就会和使用RxManager一样了
      */
     private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
-    protected View.OnClickListener mBackClickListener = null;// 返回的点击事件
-    protected TextView mTvBaseTitle;
-    protected LinearLayout mLlBaseTitleBack;
-    protected LinearLayout mRlBaseTitleRoot;
-    protected ImageView mIvBaseTitleBack;
-    protected TextView mTvBaseTitleBackTitle;
-    protected FrameLayout mFlBaseTitleRightParent;
-    protected TextView mTvBaseTitleRightTitle;
-    protected FrameLayout mFlBaseTitleContent;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,21 +96,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void initView() {
-        // root
-        mRlBaseTitleRoot = findViewById(R.id.rl_base_title_root);
-        // left parent
-        mLlBaseTitleBack = findViewById(R.id.ll_base_title_back);
-        // lift icon
-        mIvBaseTitleBack = findViewById(R.id.iv_base_title_back);
-        // left title
-        mTvBaseTitleBackTitle = findViewById(R.id.tv_base_title_back_title);
 
-        // right parent
-        mFlBaseTitleRightParent = findViewById(R.id.fl_base_title_right_parent);
-        // right  title
-        mTvBaseTitleRightTitle = findViewById(R.id.tv_base_title_right_title);
-        // content
-        mFlBaseTitleContent = findViewById(R.id.fl_base_title_content);
     }
 
     @Override
@@ -127,6 +104,9 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     }
 
+    protected void setTitleContent(String title) {
+
+    }
     /**
      * 新建一个Intent，然后跳转到指定的界面
      *
@@ -196,17 +176,8 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View v) {
-        int id = v.getId();
-        // 返回键
-        if (id == R.id.ll_base_title_back) {
-            if (mBackClickListener != null) {
-                // 处理额外的点击事件
-                mBackClickListener.onClick(v);
-            } else {
-                // 直接返回
-                finish();
-            }
-        }
+
+
     }
 
     @Override
@@ -252,125 +223,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     @Override
     public String getTag() {
         return ClassUtil.getClassName(this);
-    }
-
-    /**
-     * 给activity设置title
-     *
-     * @param title 标题内容
-     */
-    protected void setTitleContent(String title) {
-        if (!TextUtils.isEmpty(title)) {
-            mTvBaseTitle = findViewById(R.id.tv_base_title);
-            TextViewUtil.setText(mTvBaseTitle, title);
-        }
-    }
-
-    /**
-     * @param showTitle 隐藏或者显示title
-     */
-    protected void showTitle(boolean showTitle) {
-        if (mRlBaseTitleRoot != null) {
-            mRlBaseTitleRoot.setVisibility(showTitle ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    /**
-     * 设置返回按钮的点击事件
-     *
-     * @param listener 返回的点击事件
-     */
-    protected void setBackClickListener(View.OnClickListener listener) {
-        this.mBackClickListener = listener;
-    }
-
-    /**
-     * 设置右侧的标题
-     *
-     * @param rightTitle 右侧的title
-     */
-    protected void setRightTitle(String rightTitle) {
-        if (TextUtils.isEmpty(rightTitle)) {
-            return;
-        }
-
-        int visibility = mTvBaseTitleRightTitle.getVisibility();
-        if (visibility != View.VISIBLE) {
-            mTvBaseTitleRightTitle.setVisibility(View.VISIBLE);
-        }
-
-        TextViewUtil.setText(mTvBaseTitleRightTitle, rightTitle);
-    }
-
-    /**
-     * 设置右侧的标题
-     *
-     * @param rightTitle 标题
-     * @param color      颜色
-     * @param size       大小
-     */
-    protected void setRightTitle(String rightTitle, int color, int size) {
-        setRightTitle(rightTitle);
-        if (color != 0) {
-            mTvBaseTitleRightTitle.setTextColor(color);
-        }
-        if (size > 0) {
-            mTvBaseTitleRightTitle.setTextSize(size);
-        }
-    }
-
-    /**
-     * 设置右侧的点击事件
-     *
-     * @param listener 右侧的点击事件
-     */
-    protected void setRightTitleClickListener(View.OnClickListener listener) {
-        if (listener != null) {
-            mFlBaseTitleRightParent.setOnClickListener(listener);
-        }
-    }
-
-    /**
-     * 页面的返回
-     *
-     * @param backId    返回的id
-     * @param listeners 返回的点击事件
-     */
-    public void setTitleBack(int backId, View.OnClickListener listeners) {
-        if (backId != 0) {
-            if (listeners != null) {
-                findViewById(backId).setOnClickListener(listeners);
-            } else {
-                setTitleBack(backId);
-            }
-        }
-    }
-
-    /**
-     * 页面的返回
-     *
-     * @param backId 返回的id
-     */
-    public void setTitleBack(int backId) {
-        if (backId != 0) {
-            findViewById(backId).setOnClickListener(v -> finish());
-        }
-    }
-
-    /**
-     * 设置标题
-     *
-     * @param titleId      标题控件的id
-     * @param titleContent 标题的内容
-     */
-    public void setTitleContent(int titleId, String titleContent) {
-        if (titleId != 0) {
-            View view = findViewById(titleId);
-            if (view instanceof TextView) {
-                TextView titleView = (TextView) view;
-                TextViewUtil.setText(titleView, titleContent);
-            }
-        }
     }
 
 }

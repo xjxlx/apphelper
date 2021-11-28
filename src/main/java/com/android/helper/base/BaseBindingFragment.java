@@ -51,6 +51,11 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends BaseFra
     }
 
     @Override
+    protected void initView(View view) {
+
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (mBinding != null) {
