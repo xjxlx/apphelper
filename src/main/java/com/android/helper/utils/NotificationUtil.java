@@ -142,9 +142,11 @@ public class NotificationUtil {
     // 消息对象
     private Notification mNotification;
     private NotificationCompat.Builder mNotificationBuilder;
+    private Builder mBuilder;
 
     private NotificationUtil(Builder builder) {
         if (builder != null) {
+            mBuilder = builder;
             this.mContext = builder.mContext;
             this.manager = builder.manager;
             this.mIntentActivity = builder.mIntentActivity;
@@ -739,4 +741,57 @@ public class NotificationUtil {
 
     }
 
+    public void clear() {
+        stopAllLoop();
+        stopForeground();
+
+        if (manager != null) {
+            manager = null;
+        }
+        if (mContext != null) {
+            mContext = null;
+        }
+        if (mIntentActivity != null) {
+            mIntentActivity = null;
+        }
+        if (mIntentService != null) {
+            mIntentService = null;
+        }
+        if (mTickerText != null) {
+            mTickerText = null;
+        }
+        if (mContentTitle != null) {
+            mContentTitle = null;
+        }
+        if (mContentText != null) {
+            mContentText = null;
+        }
+        if (pendingIntent != null) {
+            pendingIntent = null;
+        }
+        if (mChannelDescription != null) {
+            mChannelDescription = null;
+        }
+        if (mChannelName != null) {
+            mChannelName = null;
+        }
+        if (mViewCallBackListener != null) {
+            mViewCallBackListener = null;
+        }
+
+        if (mNotificationBuilder != null) {
+            mNotificationBuilder = null;
+        }
+
+        if (mNotification != null) {
+            mNotification = null;
+        }
+        if (mBuilder != null) {
+            mBuilder = null;
+        }
+
+        mNotificationNumber = 0;
+
+        LogUtil.e("清空了所有的Notification的对象！");
+    }
 }
