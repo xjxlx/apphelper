@@ -21,7 +21,7 @@ allprojects {
             android:enabled="true"
             android:exported="false" />
 
-2：如果要收集App的异常信息的话，必须要给与应用读写的权限，否则就会导致无法正常的存入日志
+2：如果要收集App的异常信息的话，必须要给予应用读写的权限，否则就会导致无法正常的存入日志
         String[] strings = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
 
         RxPermissionsUtil permissionsUtil = new RxPermissionsUtil(mContext, strings);

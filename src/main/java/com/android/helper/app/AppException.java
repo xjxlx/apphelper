@@ -182,7 +182,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             fw.close();
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("AppException", "App崩溃信息异常，请检查是否给与了应用读写权限！ --->error:" + e.getMessage());
+            Log.e("AppException", "App崩溃信息异常，请检查是否给予了应用读写权限！ --->error:" + e.getMessage());
         } finally {
             if (pw != null) {
                 pw.close();

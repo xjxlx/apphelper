@@ -47,7 +47,7 @@ import okhttp3.ResponseBody;
 
 /**
  * 使用说明：
- * 1：因为要适配Android 11，所以文件的路径，如果不给与全部文件访问的权限，那么就尽量使用应用内部的存储目录，否则就容易发生文件读写异常。
+ * 1：因为要适配Android 11，所以文件的路径，如果不给予全部文件访问的权限，那么就尽量使用应用内部的存储目录，否则就容易发生文件读写异常。
  * 2：在检测Android 11权限的时候，调用的流程为：
  * <ol>
  *     1：检测文件的全部访问权限，调用方法为{@link FileUtil#checkAllFilesPermission(FragmentActivity)}
@@ -311,10 +311,10 @@ public class FileUtil implements BaseLifecycleObserver {
     /**
      * <ol>
      *     1:如果需要使用，则在mainfast.xml 中application下面加入：android:requestLegacyExternalStorage="true"
-     *     2:给与全部的访问权限
+     *     2:给予全部的访问权限
      * </ol>
      *
-     * @return 获取SD卡下的根目录路径，在Android 11及以上，不能直接使用，除非给与文件所有的访问权限，如果需要使用，则需要满足上面的两个条件
+     * @return 获取SD卡下的根目录路径，在Android 11及以上，不能直接使用，除非给予文件所有的访问权限，如果需要使用，则需要满足上面的两个条件
      */
     public String getSdRootPath() {
         String path = "";
@@ -330,7 +330,7 @@ public class FileUtil implements BaseLifecycleObserver {
     /**
      * @param file        指定的文件
      * @param inputStream 输入流
-     * @return 把一个IO流的内容，写入指定的文件夹内，如果是Android 11的版本，无法直接写入到Sd卡的目录中，除非给与足够的权限
+     * @return 把一个IO流的内容，写入指定的文件夹内，如果是Android 11的版本，无法直接写入到Sd卡的目录中，除非给予足够的权限
      */
     public boolean writeInputStreamToFile(File file, InputStream inputStream) {
         boolean isSuccess = false;

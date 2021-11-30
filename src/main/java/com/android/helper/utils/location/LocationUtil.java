@@ -218,7 +218,7 @@ public class LocationUtil implements BaseLifecycleObserver {
                 if (havePermission) {
                     getLocalInfo(activity, listener);
                 } else {
-                    ToastUtil.show("请给与定位权限，否则无法使用定位功能");
+                    ToastUtil.show("请给予定位权限，否则无法使用定位功能");
                 }
             });
         }
@@ -241,7 +241,7 @@ public class LocationUtil implements BaseLifecycleObserver {
                     if (havePermission) {
                         getLocalInfo(activity, listener);
                     } else {
-                        ToastUtil.show("请给与定位权限，否则无法使用定位功能");
+                        ToastUtil.show("请给予定位权限，否则无法使用定位功能");
                     }
                 });
             }
