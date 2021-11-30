@@ -91,4 +91,23 @@ public class TextViewUtil {
         return null;
     }
 
+    /**
+     * @param value 数据对象
+     * @return 检测对象是否为空，true:为空，false:不为空
+     */
+    public static boolean isEmpty(CharSequence value) {
+        boolean empty = false;
+        empty = TextUtils.isEmpty(value);
+        if (!empty) {
+            if (value.equals("null")) {
+                empty = true;
+            } else if (value.equals("NULL")) {
+                empty = true;
+            } else if (value.equals("无")) {
+                empty = true;
+            }
+        }
+        return empty;
+    }
+
 }
