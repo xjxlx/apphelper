@@ -1,7 +1,6 @@
 package com.android.helper.utils;
 
 import android.annotation.SuppressLint;
-import android.os.Environment;
 import android.text.TextUtils;
 
 import com.android.helper.app.BaseApplication;
@@ -33,7 +32,7 @@ public class LogWriteUtil {
     private int mNumber = 0;// 每一行的编号
 
     private final static String WRITE_LOG_FILE_PARENT =
-            Environment.getExternalStorageDirectory().getAbsolutePath()
+            FileUtil.getInstance().getCommonTagPath()
                     + File.separator
                     + BaseApplication.getLogTag()  // 写入文件的目标路径
                     + File.separator;
