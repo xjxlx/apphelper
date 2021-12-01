@@ -159,6 +159,25 @@ public class ViewUtil {
         }
     }
 
+    /**
+     * @param view    指定view
+     * @param visible true:可见，false:不可见
+     */
+    public static void setViewVisible(View view, boolean visible) {
+        if (view != null) {
+            int visibility = view.getVisibility();
+            if (visible) {
+                if (visibility != View.VISIBLE) {
+                    view.setVisibility(View.VISIBLE);
+                }
+            } else {
+                if (visibility != View.GONE) {
+                    view.setVisibility(View.GONE);
+                }
+            }
+        }
+    }
+
     public static int getMarginLeft(View view) {
         if (view != null) {
             ViewGroup.LayoutParams layoutParams = view.getLayoutParams();

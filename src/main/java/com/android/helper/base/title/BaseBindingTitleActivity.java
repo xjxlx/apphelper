@@ -1,4 +1,4 @@
-package com.android.helper.base;
+package com.android.helper.base.title;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,11 +30,16 @@ public abstract class BaseBindingTitleActivity<T extends ViewBinding> extends Ba
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBinding = getBinding(getLayoutInflater(), mFlActivityContent);
+        if (mContentLayout!=null){
+            mBinding = getBinding(getLayoutInflater(), mContentLayout);
+
+        }
 
         if (mBinding != null) {
             mBindingRoot = mBinding.getRoot();
-            setContentView(mInflate);
+            if (mTitleRootLayout!=null){
+                setContentView(mTitleRootLayout);
+            }
         }
     }
 
