@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.android.helper.R;
-
 /**
  * @author : 流星
  * @CreateDate: 2021/12/1-23:56
@@ -20,6 +18,7 @@ public class TitleBar {
     private int mTitleLayoutId; // title的根布局资源
     private int mLeftBackLayoutId; //左侧返回键父布局id
     private int mLeftBackTextId; // 左侧返回键文字的id
+    private String mLeftBackText;// 左侧的返回文字内容
     private boolean mShowBackText; // 返回的文字是否可见
     private int mTitleId; // 中间标题的id
     private int mRightLayoutId; // 右侧标题的父布局
@@ -39,6 +38,7 @@ public class TitleBar {
             this.mTitleLayoutId = builder.mTitleLayoutId;
             this.mLeftBackLayoutId = builder.mLeftBackLayoutId;
             this.mLeftBackTextId = builder.mLeftBackTextId;
+            this.mLeftBackText = builder.mLeftBackText;
             this.mShowBackText = builder.mShowBackText;
             this.mTitleId = builder.mTitleId;
             this.mRightLayoutId = builder.mRightLayoutId;
@@ -81,16 +81,20 @@ public class TitleBar {
     /**
      * @return 获取左侧返回布局中的textView
      */
-    public TextView getLeftBackText() {
-        TextView mLeftBackText = null;
+    public TextView getLeftBackTextView() {
+        TextView leftBackText = null;
         if (mTitleLayout != null) {
             if (mLeftBackTextId != 0) {
                 View view = mTitleLayout.findViewById(mLeftBackTextId);
                 if (view instanceof TextView) {
-                    mLeftBackText = (TextView) view;
+                    leftBackText = (TextView) view;
                 }
             }
         }
+        return leftBackText;
+    }
+
+    public String getLeftBackText() {
         return mLeftBackText;
     }
 
@@ -104,7 +108,7 @@ public class TitleBar {
     /**
      * @return 获取中间的标题
      */
-    public TextView getTitle() {
+    public TextView getTitleView() {
         TextView mTitle = null;
         if (mTitleLayout != null) {
             if (mTitleId != 0) {
@@ -143,7 +147,7 @@ public class TitleBar {
     /**
      * 右侧标题中的文字id
      */
-    public TextView getRightText() {
+    public TextView getRightTextView() {
         TextView mRightText = null;
         if (mTitleLayout != null) {
             if (mRightTextId != 0) {

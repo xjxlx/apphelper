@@ -31,6 +31,10 @@ public class TitleBuilder {
      * 返回文字是否可见
      */
     protected boolean mShowBackText;
+    /**
+     * 左侧返回文字的内容
+     */
+    protected String mLeftBackText;
 
     /**
      * 中间标题的id
@@ -66,6 +70,10 @@ public class TitleBuilder {
      */
     protected int mContentLayoutId;
 
+    /**
+     * @param titleLayoutId R.layout.xxx
+     * @return 设置title的资源布局
+     */
     public TitleBuilder setTitleLayoutId(int titleLayoutId) {
         mTitleLayoutId = titleLayoutId;
         if (mTitleLayoutId != 0) {
@@ -74,47 +82,91 @@ public class TitleBuilder {
         return this;
     }
 
+    /**
+     * @param leftBackLayoutId R.id.xx
+     * @return 设置返回的父布局id
+     */
     public TitleBuilder setLeftBackLayoutId(int leftBackLayoutId) {
         mLeftBackLayoutId = leftBackLayoutId;
         return this;
     }
 
+    /**
+     * @param leftBackTextId R.id.xx
+     * @return 设置返回的TextView的id
+     */
     public TitleBuilder setLeftBackTextId(int leftBackTextId) {
         mLeftBackTextId = leftBackTextId;
         return this;
     }
 
+    /**
+     * @param showBackText true:可见，false:不可见
+     * @return 设置返回的文字是否可见
+     */
     public TitleBuilder setShowBackText(boolean showBackText) {
         mShowBackText = showBackText;
         return this;
     }
 
+    /**
+     * @param leftBackText 具体的返回文字的内容
+     * @return 设置返回的文字内容
+     */
+    public TitleBuilder setLeftBackText(String leftBackText) {
+        mLeftBackText = leftBackText;
+        return this;
+    }
+
+    /**
+     * @param titleId R.id.xx
+     * @return 设置title的id
+     */
     public TitleBuilder setTitleId(int titleId) {
         mTitleId = titleId;
         return this;
     }
 
+    /**
+     * @param rightLayoutId R.id.xx
+     * @return 设置右侧的父布局id
+     */
     public TitleBuilder setRightLayoutId(int rightLayoutId) {
         mRightLayoutId = rightLayoutId;
         return this;
     }
 
+    /**
+     * @param showRightLayout true:可见，false:不可见
+     * @return 右侧布局是否可见
+     */
     public TitleBuilder setShowRightLayout(boolean showRightLayout) {
         mShowRightLayout = showRightLayout;
         return this;
     }
 
+    /**
+     * @param rightTextId R.id.xx
+     * @return 设置右侧文字的id
+     */
     public TitleBuilder setRightTextId(int rightTextId) {
         mRightTextId = rightTextId;
         return this;
     }
 
+    /**
+     * @param showRightText true:可见，false:不可见
+     * @return 右侧文字是否可见
+     */
     public TitleBuilder setShowRightText(boolean showRightText) {
         mShowRightText = showRightText;
         return this;
     }
 
-
+    /**
+     * @param contentLayoutId R.id.xx
+     * @return 底部content具体使用的ViewGroup的布局id
+     */
     public TitleBuilder setContentLayoutId(int contentLayoutId) {
         mContentLayoutId = contentLayoutId;
         return this;
