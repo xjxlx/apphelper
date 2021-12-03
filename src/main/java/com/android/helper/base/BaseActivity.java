@@ -43,14 +43,13 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-
         LogUtil.e("当前的页面：Activity：--->  " + getClass().getName());
-
-        // 设置状态栏
-        StatusBarUtil.getInstance(this).setStatusColor(R.color.base_title_background_color);
 
         // 在onCreate之前调用的方法
         onBeforeCreateView();
+
+        // 设置状态栏
+        StatusBarUtil.getInstance(this).setStatusColor(R.color.base_title_background_color);
 
         int baseLayout = getBaseLayout();
         if (baseLayout != 0) {
@@ -101,10 +100,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void initListener() {
-
-    }
-
-    protected void setTitleContent(String title) {
 
     }
 

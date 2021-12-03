@@ -1,9 +1,11 @@
 package com.android.helper.base;
 
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 
 import com.android.helper.interfaces.BindingViewListener;
@@ -20,14 +22,17 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends BaseAct
     private View mBindingRoot;
 
     @Override
-    public void onBeforeCreateView() {
-        super.onBeforeCreateView();
+    protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         mBinding = getBinding(getLayoutInflater(), null);
-
         if (mBinding != null) {
             mBindingRoot = mBinding.getRoot();
             setContentView(mBindingRoot);
+
+            initView();
+            initListener();
+            initData(savedInstanceState);
         }
     }
 

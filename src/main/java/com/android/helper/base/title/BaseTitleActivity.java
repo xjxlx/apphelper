@@ -270,4 +270,25 @@ public abstract class BaseTitleActivity extends BaseActivity {
         setBackClickListener(null);
         super.onBackPressed();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mLeftBackTextView != null) {
+            mLeftBackTextView = null;
+        }
+        if (mTitleRootLayout != null) {
+            mTitleRootLayout = null;
+        }
+        if (mContentLayout != null) {
+            mContentLayout = null;
+        }
+        if (mRightText != null) {
+            mRightText = null;
+        }
+        if (mTitleBar != null) {
+            mTitleBar = null;
+        }
+    }
 }

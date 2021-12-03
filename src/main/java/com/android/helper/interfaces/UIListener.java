@@ -11,12 +11,12 @@ public interface UIListener {
     void onBeforeCreateView();
 
     /**
-     * 初始化view
+     * Fragment初始化view
      */
     void initView(View rootView);
 
     /**
-     * 初始化view
+     * Activity初始化view
      */
     void initView();
 
