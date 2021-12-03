@@ -30,15 +30,19 @@ public abstract class BaseBindingTitleActivity<T extends ViewBinding> extends Ba
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (mContentLayout!=null){
+        if (mContentLayout != null) {
             mBinding = getBinding(getLayoutInflater(), mContentLayout);
-
         }
 
         if (mBinding != null) {
             mBindingRoot = mBinding.getRoot();
-            if (mTitleRootLayout!=null){
+            if (mTitleRootLayout != null) {
                 setContentView(mTitleRootLayout);
+
+                // 避免加载顺序导致的异常
+                initView();
+                initListener();
+                initData(savedInstanceState);
             }
         }
     }

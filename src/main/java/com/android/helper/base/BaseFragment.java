@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.android.helper.httpclient.BaseHttpSubscriber;
 import com.android.helper.httpclient.RxUtil;
+import com.android.helper.interfaces.UIListener;
 import com.android.helper.interfaces.listener.HttpManagerListener;
 import com.android.helper.utils.ClickUtil;
 import com.android.helper.utils.LogUtil;
@@ -30,7 +31,7 @@ import io.reactivex.disposables.Disposable;
 /**
  * fragment的基类，全面使用viewBinding
  */
-public abstract class BaseFragment extends Fragment implements View.OnClickListener, HttpManagerListener {
+public abstract class BaseFragment extends Fragment implements View.OnClickListener, HttpManagerListener, UIListener {
 
     /*
      *此处不能写成静态的，否则就会和使用RxManager一样了
@@ -72,12 +73,14 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         int layout = getBaseLayout();
         if (layout != 0) {
             mRootView = inflater.inflate(layout, container, false);
+
+            onInitViewBefore(inflater, container);
+
+            onBeforeCreateView();
+
+            initView(mRootView);
+            initListener();
         }
-
-        onInitViewBefore(inflater, mRootView);
-
-        initView(mRootView);
-        initListener();
 
         // 获取布局资源文件
         return mRootView;
@@ -86,21 +89,35 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     protected abstract int getBaseLayout();
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        initData();
+    public void initView() {
+        // 空实现
     }
 
+    @Override
+    public void initView(View rootView) {
+
+    }
+
+    @Override
     public void initListener() {
+        // 空实现
+    }
+
+    @Override
+    public void onBeforeCreateView() {
+        // 空实现
     }
 
     protected void onInitViewBefore(LayoutInflater inflater, View container) {
     }
 
-    protected abstract void initView(View view);
-
-    protected abstract void initData();
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (mRootView != null) {
+            initData(savedInstanceState);
+        }
+    }
 
     @SuppressLint("CheckResult")
     public <T> Disposable net(@NonNull Flowable<T> flowAble, BaseHttpSubscriber<T> subscriber) {

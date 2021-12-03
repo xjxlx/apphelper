@@ -35,10 +35,20 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends BaseFra
         View rootView = getRootView();
         if (rootView != null) {
             mRootView = rootView;
+
             initView(rootView);
-            initData();
+            initListener();
         }
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (mRootView != null) {
+            initData(savedInstanceState);
+        }
     }
 
     @Override
@@ -48,11 +58,6 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends BaseFra
             rootView = mBinding.getRoot();
         }
         return rootView;
-    }
-
-    @Override
-    protected void initView(View view) {
-
     }
 
     @Override

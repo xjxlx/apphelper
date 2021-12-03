@@ -1,5 +1,6 @@
 package com.android.helper.base;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -183,7 +184,7 @@ public abstract class BaseRefreshFragment<T, T2> extends BaseFragment implements
     }
 
     @Override
-    public void initData() {
+    public void initData(Bundle savedInstanceState) {
         // 开始请求数据
         disposable = requestData();
     }

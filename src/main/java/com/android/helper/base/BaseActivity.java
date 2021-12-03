@@ -4,12 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +19,6 @@ import com.android.helper.interfaces.listener.HttpManagerListener;
 import com.android.helper.utils.ClassUtil;
 import com.android.helper.utils.ClickUtil;
 import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.TextViewUtil;
 import com.android.helper.utils.statusBar.StatusBarUtil;
 
 import io.reactivex.Flowable;
@@ -52,20 +46,21 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
         LogUtil.e("当前的页面：Activity：--->  " + getClass().getName());
 
+        // 设置状态栏
+        StatusBarUtil.getInstance(this).setStatusColor(R.color.base_title_background_color);
+
         // 在onCreate之前调用的方法
         onBeforeCreateView();
 
         int baseLayout = getBaseLayout();
         if (baseLayout != 0) {
             setContentView(baseLayout);
+
+            // 只有在设置完了布局之后才会去走初始化方法，避免顺序异常
+            initView();
+            initListener();
+            initData(savedInstanceState);
         }
-
-        // 设置状态栏
-        StatusBarUtil.getInstance(mContext).setStatusColor(R.color.base_title_background_color);
-
-        initView();
-        initListener();
-        initData();
     }
 
     @Override
@@ -95,6 +90,11 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected abstract int getBaseLayout();
 
     @Override
+    public void initView(View rootView) {
+
+    }
+
+    @Override
     public void initView() {
 
     }
@@ -107,6 +107,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void setTitleContent(String title) {
 
     }
+
     /**
      * 新建一个Intent，然后跳转到指定的界面
      *
@@ -176,7 +177,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View v) {
-
 
     }
 

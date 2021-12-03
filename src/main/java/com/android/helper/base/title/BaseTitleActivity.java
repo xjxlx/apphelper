@@ -52,6 +52,8 @@ public abstract class BaseTitleActivity extends BaseActivity {
     @SuppressLint("InflateParams")
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         // 如果单页面没有设置独立的title信息，就使用公用的title信息
         if (mTitleBar == null) {
             TitleBuilder globalBuilder = TitleBar.getGlobalTitleBarBuilder();
@@ -65,20 +67,6 @@ public abstract class BaseTitleActivity extends BaseActivity {
             mTitleRootLayout = mTitleBar.getTitleRootLayout();
             // 获取内容布局
             mContentLayout = mTitleBar.getContentLayout();
-
-            // 添加实际的activity
-            int titleLayout = getTitleLayout();
-            if (titleLayout != 0) {
-                // 把真实的布局添加到 mFlActivityContent 中去
-                if (mContentLayout != null) {
-                    LayoutInflater.from(this).inflate(titleLayout, mContentLayout, true);
-                }
-
-                // 设置布局
-                if (mTitleRootLayout != null) {
-                    setContentView(mTitleRootLayout);
-                }
-            }
 
             // 返回的父类布局
             ViewGroup leftBackLayout = mTitleBar.getLeftBackLayout();
@@ -127,14 +115,26 @@ public abstract class BaseTitleActivity extends BaseActivity {
                 TextView title = mTitleBar.getTitleView(); // 标题的内容
                 TextViewUtil.setText(title, titleContent);
             }
+
+            // 添加实际的activity
+            int titleLayout = getTitleLayout();
+            if (titleLayout != 0) {
+                // 把真实的布局添加到 mFlActivityContent 中去
+                if (mContentLayout != null) {
+                    LayoutInflater.from(this).inflate(titleLayout, mContentLayout, true);
+                }
+
+                // 设置布局
+                if (mTitleRootLayout != null) {
+                    setContentView(mTitleRootLayout);
+
+                    // 只有设置完了布局，才会去走初始化方法，避免加载顺序异常
+                    initView();
+                    initListener();
+                    initData(savedInstanceState);
+                }
+            }
         }
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void initView() {
-        super.initView();
-
     }
 
     @Override
@@ -195,7 +195,6 @@ public abstract class BaseTitleActivity extends BaseActivity {
             if (color != 0) {
                 mRightText.setTextColor(color);
             }
-
             if (size > 0) {
                 mRightText.setTextSize(size);
             }
@@ -246,7 +245,7 @@ public abstract class BaseTitleActivity extends BaseActivity {
     }
 
     /**
-     * @param view 返回的父布局
+     * @param view 返回的的监听
      * @return 返回true, 可以直接结束页面，false:只相应事件，不结束页面，默认可以结束页面
      */
     protected boolean setBackClickListener(View view) {
@@ -266,4 +265,9 @@ public abstract class BaseTitleActivity extends BaseActivity {
         this.mTitleBar = titleBar;
     }
 
+    @Override
+    public void onBackPressed() {
+        setBackClickListener(null);
+        super.onBackPressed();
+    }
 }
