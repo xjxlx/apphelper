@@ -65,6 +65,7 @@
 2.  码云的地址为： { 'https://gitee.com/xjxlx/apphelper' } 
 
 
+
 # appphlper 使用步骤
 
 # 第一步：把项目代码更新到最新，这一步不是必须，具体要看现有的代码中有没有apphelper这个库的对象，如果没有就需要拉一下最新的代码，获取apphelper的对象。
@@ -77,7 +78,7 @@
 ##       1:进入apphelper库中[ cd apphelper ]
 ##       2：切换到主分支 [ git checkout master ]
 
-# 第四步：执行命令 [ File ---> Sync Project with Gradle files ]  
+# 第四步：重新Build 一下，点击[Sync Project with Gradle files] 按钮一下，或者点击 路径 [File ---> Sync Project with Gradle files]  
 
 # PullListRvUtil 和 RvUtil 的工具类替换为 RefreshUtil  +  RecycleViewFrameWork 联合使用，具体的使用方式，请查看工具类说明
 ## PullListRvUtil 和 RvUtil 的占位图 替换 为 EmptyPlaceholder 使用，具体的使用方式，请查看工具类说明
