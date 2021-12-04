@@ -59,8 +59,9 @@ public class BaseApplication {
         initData();
     }
 
-    //<editor-fold desc="具体的逻辑代码">
+    // <editor-fold desc="initData" defaultstate="collapsed">
     private void initData() {
+
         try {
             // 捕获所有的异常，存入到app目录下
             Thread.setDefaultUncaughtExceptionHandler(AppException.getAppExceptionHandler());
@@ -71,6 +72,7 @@ public class BaseApplication {
         ScreenUtil.getScreenHeight(getApplication());
         initLogger();
     }
+    //</editor-fold>
 
     private void initLogger() {
         FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder()
