@@ -87,7 +87,7 @@ public abstract class BaseBindingRecycleAdapter<T, V extends ViewBinding> extend
         return super.onCreateViewHolder(parent, viewType);
     }
 
-    public abstract void onBindHolder(@NonNull @NotNull BaseBindingVH<V> holder, int position);
+    public abstract void onBindHolder(@NonNull @NotNull BaseBindingVH<V> holder, V mBinding, int position);
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull RecyclerView.ViewHolder holder, int position) {
@@ -98,7 +98,8 @@ public abstract class BaseBindingRecycleAdapter<T, V extends ViewBinding> extend
                 // 只返回正常的布局，不返回空布局的holder
                 if (holder instanceof BaseBindingVH) {
                     mBaseBindingVH = (BaseBindingVH<V>) holder;
-                    onBindHolder(mBaseBindingVH, position);
+                    V mBinding = mBaseBindingVH.mBinding;
+                    onBindHolder(mBaseBindingVH, mBinding, position);
                 }
             }
         }
