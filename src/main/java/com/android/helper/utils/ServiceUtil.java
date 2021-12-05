@@ -1,13 +1,17 @@
 package com.android.helper.utils;
 
 import android.app.ActivityManager;
+import android.app.Application;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.provider.Settings;
 import android.text.TextUtils;
+
+import com.android.helper.app.BaseApplication;
 
 import java.util.List;
 
@@ -120,4 +124,28 @@ public class ServiceUtil {
         }
         return hasBeenScheduled;
     }
+
+    /**
+     * @return 判断 Notification access 是否开启
+     */
+    public static boolean notificationEnabled() {
+        Application application = BaseApplication.getApplication();
+        if (application != null) {
+            String pkgName = application.getPackageName();
+            final String flat = Settings.Secure.getString(application.getContentResolver(), "enabled_notification_listeners");
+            if (!TextUtils.isEmpty(flat)) {
+                final String[] names = flat.split(":");
+                for (String name : names) {
+                    final ComponentName cn = ComponentName.unflattenFromString(name);
+                    if (cn != null) {
+                        if (TextUtils.equals(pkgName, cn.getPackageName())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 }

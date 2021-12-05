@@ -14,16 +14,23 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.CoordinateConverter;
 import com.amap.api.location.DPoint;
+import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.geocoder.GeocodeQuery;
 import com.amap.api.services.geocoder.GeocodeResult;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
+import com.amap.api.services.route.DistanceItem;
+import com.amap.api.services.route.DistanceResult;
+import com.amap.api.services.route.DistanceSearch;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.permission.FilterPerMission;
 import com.android.helper.utils.permission.RxPermissionsUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 定位的工具类
@@ -269,12 +276,44 @@ public class LocationUtil implements BaseLifecycleObserver {
 
     /**
      * 计算两个地方之间的距离，这个是直线距离
-     *
-     * @param startLat 开始的位置
-     * @param endLat   结束的位置
      */
-    public float CalculationDistance(Context context, DPoint startLat, DPoint endLat) {
-        return CoordinateConverter.calculateLineDistance(startLat, endLat);
+    public void calculationDistance(Context context, LatLonPoint start, LatLonPoint end) {
+        try {
+            // 1:构建搜索对象
+            DistanceSearch distanceSearch = new DistanceSearch(context);
+            // 2：设置搜索监听
+            distanceSearch.setDistanceSearchListener(new DistanceSearch.OnDistanceSearchListener() {
+                @Override
+                public void onDistanceSearched(DistanceResult distanceResult, int errorCode) {
+                    if (errorCode == 1000) {
+                        List<DistanceItem> distanceResults = distanceResult.getDistanceResults();
+                        if (distanceResults.size() > 0) {
+                            DistanceItem distanceItem = distanceResults.get(0);
+                            // 获取距离 单位：米
+                            float distance = distanceItem.getDistance();
+                            // 行驶时间 单位：秒
+                            float duration = distanceItem.getDuration();
+
+                        }
+                    }
+                }
+            });
+            // 3:构建搜索参数的对象
+            DistanceSearch.DistanceQuery distanceQuery = new DistanceSearch.DistanceQuery();
+            // 4：设置距离测量起点数据集合
+            ArrayList<LatLonPoint> startList = new ArrayList<>();
+            startList.add(start);
+            distanceQuery.setOrigins(startList);
+            // 5: 设置终点
+            distanceQuery.setDestination(end);
+            // 5：设置测量方式，支持直线和驾车 直线：TYPE_DISTANCE：驾车：TYPE_DRIVING_DISTANCE 步行：	TYPE_WALK_DISTANCE
+            distanceQuery.setType(DistanceSearch.TYPE_WALK_DISTANCE);
+            // 6:测量距离请求接口，调用后会发起距离测量请求。
+            distanceSearch.calculateRouteDistanceAsyn(distanceQuery);
+
+        } catch (AMapException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
