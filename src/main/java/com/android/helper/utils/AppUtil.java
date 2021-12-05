@@ -4,10 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.StateSet;
 
 import com.android.helper.app.BaseApplication;
 
@@ -22,18 +25,30 @@ public class AppUtil {
 
     private PackageInfo packageInfo;
     private final String TAG = "AppUtil";
-    private final Context mContext;
     private final String enCode = StandardCharsets.UTF_8.name();
+    private static AppUtil INSTANCE;
 
-    public AppUtil(Context mContext) {
-        this.mContext = mContext;
+    private AppUtil() {
+
+    }
+
+    public static AppUtil getInstance() {
+        if (INSTANCE == null) {
+            synchronized (AppUtil.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new AppUtil();
+                }
+            }
+        }
+        return INSTANCE;
     }
 
     public PackageInfo getPackageInfo() {
         try {
             if (packageInfo == null) {
-                if (mContext != null) {
-                    packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+                if (BaseApplication.getApplication() != null) {
+                    Application application = BaseApplication.getApplication();
+                    packageInfo = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
@@ -66,6 +81,24 @@ public class AppUtil {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    /**
+     * @return 获取项目的目标版本
+     */
+    public int getTargetSdkVersion() {
+        int mTargetSdkVersion = Build.VERSION.SDK_INT;
+        try {
+            if (BaseApplication.getApplication() != null) {
+                ApplicationInfo applicationInfo = BaseApplication.getApplication().getApplicationInfo();
+                if (applicationInfo != null) {
+                    mTargetSdkVersion = applicationInfo.targetSdkVersion;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return mTargetSdkVersion;
     }
 
     /**
@@ -142,7 +175,6 @@ public class AppUtil {
         return "";
     }
 
-
     /**
      * 获取已经安装的应用包列表，在某些手机上，会获取不到，因为某些手机的权限比较高，自动屏蔽了获取信息的功能，如果手动打开了就可以，否则就不可以
      * <p>
@@ -217,6 +249,5 @@ public class AppUtil {
         }
         return hasApp;
     }
-
 
 }

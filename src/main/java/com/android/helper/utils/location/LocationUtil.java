@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.os.Build;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
@@ -23,6 +22,10 @@ import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.permission.FilterPerMission;
+import com.android.helper.utils.permission.PermissionsCallBackListener;
+import com.android.helper.utils.permission.RxPermissionsUtil;
+import com.android.helper.utils.permission.SinglePermissionsCallBackListener;
 
 /**
  * 定位的工具类
@@ -45,6 +48,8 @@ public class LocationUtil implements BaseLifecycleObserver {
 
     // 定位请求的对象
     public AMapLocationClient mClient;
+    private int mType;
+    private RxPermissionsUtil.Builder mPermissionBuilder;
 
     public LocationUtil(Builder builder) {
         if (builder != null) {
@@ -52,14 +57,13 @@ public class LocationUtil implements BaseLifecycleObserver {
             this.isLoop = builder.isLoop;
             this.mFragmentActivity = builder.mFragmentActivity;
             this.mFragment = builder.mFragment;
-            this.mContext = builder.mContext;
             this.mLocationListener = builder.mLocationListener;
             // 1:Activity  2:fragment  3：context
-            int type = builder.type;
+            mType = builder.type;
 
             if (mLocationListener != null) {
                 // 区分设置的类型
-                switchType(type);
+                switchType(mType);
             }
         }
     }
@@ -277,9 +281,54 @@ public class LocationUtil implements BaseLifecycleObserver {
      * @return 检测权限，true:拥有定位的权限，false:没有定位的权限
      */
     private boolean checkPermission() {
+        final boolean[] havePermission = {false};
 
+//    <!--用于进行网络定位-->
+//    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+//    <!--用于访问GPS定位-->
+//    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+//    <!--用于获取运营商信息，用于支持提供运营商信息相关的接口-->
+//    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+//    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+//    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+//    <!--用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+//    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+//    <!--用于访问网络，网络定位需要上网-->
+//    <uses-permission android:name="android.permission.INTERNET" />
+//    <!--用于读取手机当前的状态-->
+//    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+//    <!--用于写入缓存数据到扩展存储卡-->
+//    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+//    <!--用于申请调用A-GPS模块-->
+//    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+//    <!--如果设置了target >= 28 如果需要启动后台定位则必须声明这个权限-->
+//    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+//    <!--如果您的应用需要后台定位权限，且有可能运行在Android Q设备上,并且设置了target>28，必须增加这个权限声明-->
+//    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
-        return true;
+        String[] permission = {
+                Manifest.permission.ACCESS_COARSE_LOCATION,// 用于进行网络定位
+                Manifest.permission.ACCESS_FINE_LOCATION, // 用于访问GPS定位
+                "android.permission.FOREGROUND_SERVICE", //  后台定位权限
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION //  后台定位权限
+        };
+
+        if (mType == 1) {
+            mPermissionBuilder = new RxPermissionsUtil.Builder(mFragmentActivity, permission);
+        } else if (mType == 2) {
+            mPermissionBuilder = new RxPermissionsUtil.Builder(mFragment, permission);
+        }
+        mPermissionBuilder.setAllPerMissionListener(haveAllPermission -> {
+            LogUtil.e("定位的权限为：" + haveAllPermission);
+            havePermission[0] = haveAllPermission;
+        })
+                .setFilterPermission(
+                        new FilterPerMission("android.permission.FOREGROUND_SERVICE", 28),
+                        new FilterPerMission(Manifest.permission.ACCESS_BACKGROUND_LOCATION, Build.VERSION_CODES.Q))
+                .build()
+                .startRequestPermission();
+
+        return havePermission[0];
     }
 
     /**
@@ -320,13 +369,6 @@ public class LocationUtil implements BaseLifecycleObserver {
                     }
                 }
                 break;
-
-            case 3: // context类型
-                try {
-                    mClient = new AMapLocationClient(mContext);
-                } catch (Exception ignored) {
-                }
-                break;
         }
     }
     //</editor-fold>
@@ -337,47 +379,52 @@ public class LocationUtil implements BaseLifecycleObserver {
      * 开启定位信息
      */
     public void startLocation() {
-        //初始化定位参数
-        AMapLocationClientOption locationOption = new AMapLocationClientOption();
+        boolean checkPermission = checkPermission();
+        LogUtil.e("checkPermission:" + checkPermission);
+        if (checkPermission) {
 
-        //设置返回地址信息，默认为true
-        locationOption.setNeedAddress(true);
-        //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
-        locationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+            //初始化定位参数
+            AMapLocationClientOption locationOption = new AMapLocationClientOption();
 
-        if (isLoop) {
-            // 单次定位--->获取一次定位结果
-            locationOption.setOnceLocation(false);
+            //设置返回地址信息，默认为true
+            locationOption.setNeedAddress(true);
+            //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+            locationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
 
-            //设置定位间隔,单位毫秒,默认为2000ms
-            if (interval == 0) {
-                locationOption.setInterval(2000);
+            if (isLoop) {
+                // 单次定位--->获取一次定位结果
+                locationOption.setOnceLocation(false);
+
+                //设置定位间隔,单位毫秒,默认为2000ms
+                if (interval == 0) {
+                    locationOption.setInterval(2000);
+                } else {
+                    locationOption.setInterval(interval);
+                }
             } else {
-                locationOption.setInterval(interval);
+                // 单次定位--->获取一次定位结果
+                locationOption.setOnceLocation(true);
             }
-        } else {
-            // 单次定位--->获取一次定位结果
-            locationOption.setOnceLocation(true);
+
+            //设置是否允许模拟位置,默认为true，允许模拟位置
+            locationOption.setMockEnable(true);
+
+            //单位是毫秒，默认30000毫秒，建议超时时间不要低于8000毫秒。
+            locationOption.setHttpTimeOut(20000);
+
+            //设置定位参数
+            mClient.setLocationOption(locationOption);
+
+            //设置定位监听
+            mClient.setLocationListener(mAMapLocationListener);
+
+            // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
+            // 注意设置合适的定位时间的间隔（最小间隔支持为1000ms），并且在合适时间调用stopLocation()方法来取消定位请求
+            // 在定位结束后，在合适的生命周期调用onDestroy()方法
+            // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
+            //启动定位
+            onResume();
         }
-
-        //设置是否允许模拟位置,默认为true，允许模拟位置
-        locationOption.setMockEnable(true);
-
-        //单位是毫秒，默认30000毫秒，建议超时时间不要低于8000毫秒。
-        locationOption.setHttpTimeOut(20000);
-
-        //设置定位参数
-        mClient.setLocationOption(locationOption);
-
-        //设置定位监听
-        mClient.setLocationListener(mAMapLocationListener);
-
-        // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
-        // 注意设置合适的定位时间的间隔（最小间隔支持为1000ms），并且在合适时间调用stopLocation()方法来取消定位请求
-        // 在定位结束后，在合适的生命周期调用onDestroy()方法
-        // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
-        //启动定位
-        onResume();
     }
     //</editor-fold>
 
@@ -389,14 +436,8 @@ public class LocationUtil implements BaseLifecycleObserver {
         private int interval;   // 间隔的时间
         private FragmentActivity mFragmentActivity;
         private Fragment mFragment;
-        private Context mContext;
         private LocationListener mLocationListener;
-        private final int type; // 1:Activity  2:fragment  3：context
-
-        public Builder(Context context) {
-            mContext = context;
-            type = 3;
-        }
+        private final int type; // 1:Activity  2:fragment
 
         public Builder(FragmentActivity fragmentActivity) {
             mFragmentActivity = fragmentActivity;
