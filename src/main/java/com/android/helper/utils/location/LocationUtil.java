@@ -23,9 +23,7 @@ import com.amap.api.services.geocoder.RegeocodeResult;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.permission.FilterPerMission;
-import com.android.helper.utils.permission.PermissionsCallBackListener;
 import com.android.helper.utils.permission.RxPermissionsUtil;
-import com.android.helper.utils.permission.SinglePermissionsCallBackListener;
 
 /**
  * 定位的工具类
@@ -45,6 +43,7 @@ public class LocationUtil implements BaseLifecycleObserver {
     private Fragment mFragment;
     private Context mContext;
     private LocationListener mLocationListener;
+    private boolean isBackgroundRunning;// 后台更新
 
     // 定位请求的对象
     public AMapLocationClient mClient;
@@ -58,6 +57,7 @@ public class LocationUtil implements BaseLifecycleObserver {
             this.mFragmentActivity = builder.mFragmentActivity;
             this.mFragment = builder.mFragment;
             this.mLocationListener = builder.mLocationListener;
+            this.isBackgroundRunning = builder.isBackgroundRunning;
             // 1:Activity  2:fragment  3：context
             mType = builder.type;
 
@@ -438,6 +438,7 @@ public class LocationUtil implements BaseLifecycleObserver {
         private Fragment mFragment;
         private LocationListener mLocationListener;
         private final int type; // 1:Activity  2:fragment
+        private boolean isBackgroundRunning;// 后台更新
 
         public Builder(FragmentActivity fragmentActivity) {
             mFragmentActivity = fragmentActivity;
@@ -469,6 +470,15 @@ public class LocationUtil implements BaseLifecycleObserver {
          */
         public Builder setInterval(int interval) {
             this.interval = interval;
+            return this;
+        }
+
+        /**
+         * @param backgroundRunning true:后台更新，false:不允许后台更新
+         * @return 设置是否允许后台更新位置，默认不允许
+         */
+        public Builder setBackgroundRunning(boolean backgroundRunning) {
+            isBackgroundRunning = backgroundRunning;
             return this;
         }
 
@@ -514,12 +524,14 @@ public class LocationUtil implements BaseLifecycleObserver {
     @Override
     public void onPause() {
         LogUtil.e("LocationUtil---onPause");
-        if (mClient != null) {
-            mClient.stopLocation();
+        if (!isBackgroundRunning) {
+            if (mClient != null) {
+                mClient.stopLocation();
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                // 关闭后台定位功能
-                mClient.disableBackgroundLocation(true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    // 关闭后台定位功能
+                    mClient.disableBackgroundLocation(true);
+                }
             }
         }
     }
