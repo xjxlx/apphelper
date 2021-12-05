@@ -254,7 +254,7 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
         private FilterPerMission[] mFilterMission;
         private PermissionsCallBackListener mAllPermissionsListener;
         private SinglePermissionsCallBackListener mSinglePermissionsListener;
-        private int type; //1:activity  2:Fragment
+        private final int type; //1:activity  2:Fragment
 
         /**
          * @param permissions 举例：Manifest.permission.ACCESS_FINE_LOCATION
