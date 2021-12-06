@@ -108,9 +108,14 @@ public class LocationUtil implements BaseLifecycleObserver {
                     }
                 } else {
                     //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
-                    LogUtil.e("获取定位信息错误：AmapError", "location Error, ErrCode:"
-                            + amapLocation.getErrorCode() + ", errInfo:"
-                            + amapLocation.getErrorInfo());
+                    LogUtil.e("获取定位信息错误：AmapError", "location Error, ErrCode:" + amapLocation.getErrorCode() + ", errInfo:" + amapLocation.getErrorInfo());
+                    if (mLocationListener != null) {
+                        mLocationListener.onLocationChanged(null);
+                    }
+                }
+            } else {
+                if (mLocationListener != null) {
+                    mLocationListener.onLocationChanged(null);
                 }
             }
         }
@@ -125,9 +130,9 @@ public class LocationUtil implements BaseLifecycleObserver {
      * @param searchType              传入坐标系的类型，参数表示是火系坐标系还是GPS原生坐标系，，固定只能选择这两种类型
      *                                {@link GeocodeSearch#AMAP }代表传入的是火星（高德）坐标系
      *                                {@link GeocodeSearch#GPS}代表传入的是GPS原生坐标系
-     * @param reGeocodeResultListener 解析出来的事件回调
+     * @param reGeCodeResultListener 解析出来的事件回调
      */
-    public static void getAddressForLatitude(Context context, double latitude, double longitude, String searchType, ReGeocodeResultListener reGeocodeResultListener) {
+    public static void getAddressForLatitude(Context context, double latitude, double longitude, String searchType, ReGeocodeResultListener reGeCodeResultListener) {
         try {
             // 设置地理编码（正向和逆向）查询监听
             GeocodeSearch geocodeSearch = new GeocodeSearch(context);
@@ -140,8 +145,8 @@ public class LocationUtil implements BaseLifecycleObserver {
                 public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int rCode) {
                     // 返回结果成功或者失败的响应码。1000为成功，其他为失败
                     if (rCode == 1000) {
-                        if (reGeocodeResultListener != null) {
-                            reGeocodeResultListener.onReGeocodeSearched(regeocodeResult);
+                        if (reGeCodeResultListener != null) {
+                            reGeCodeResultListener.onReGeocodeSearched(regeocodeResult);
                         }
                     } else {
                         LogUtil.e("逆地理编码获取地址失败：code:" + rCode);
@@ -417,7 +422,7 @@ public class LocationUtil implements BaseLifecycleObserver {
     /**
      * 开启定位信息
      */
-    public void startLocation() {
+    public LocationUtil startLocation() {
         boolean checkPermission = checkPermission();
         LogUtil.e("checkPermission:" + checkPermission);
         if (checkPermission) {
@@ -464,6 +469,7 @@ public class LocationUtil implements BaseLifecycleObserver {
             //启动定位
             onResume();
         }
+        return this;
     }
     //</editor-fold>
 
