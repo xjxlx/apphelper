@@ -25,21 +25,27 @@ import com.amap.api.services.route.DistanceItem;
 import com.amap.api.services.route.DistanceResult;
 import com.amap.api.services.route.DistanceSearch;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
+import com.android.helper.utils.AppUtil;
 import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.permission.FilterPerMission;
 import com.android.helper.utils.permission.RxPermissionsUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * 定位的工具类
  * <ol>
  *     注意:
- *          1:如果您设置了target>=28,需要增加android.permission.FOREGROUND_SERVICE权限,
- *          2:如果您的app需要运行在Android Q版本的手机上，需要为ApsService增加android:foregroundServiceType="location"属性，
- *            例：<service android:name="com.amap.api.location.APSService" android:foregroundServiceType="location"/>
- *            主要是为了解决Android 8.0以上版本对后台定位的限制，开启后会显示通知栏,如果您的应用本身已经存在一个前台服务通知，则无需再开启此接口
+ *          1：在android 8.0<28></28>以下，只使用两个权限 [ Manifest.permission.ACCESS_COARSE_LOCATION ] 和 [ Manifest.permission.ACCESS_FINE_LOCATION ]
+ *             就足够了。
+ *          2：在Android 8.0 <27>的时候，为了避免后台无法使用定位，需要 开启一个前台服务，避免定位频率降低
+ *          3：在Android 9.0 <28>的时候，为了避免后台无法使用定位，需要使用 [ android.permission.FOREGROUND_SERVICE ],
+ *             并且为服务增加属性【 android:foregroundServiceType="location" 】
+ *          4：在Android 10 <29> 的时候，增加了后台的权限[ Manifest.permission.ACCESS_BACKGROUND_LOCATION ],这个权限比较的特殊，
+ *             需要在选中始终同意的时候，才可以正常使用，否则就会出现异常，不知道是不是权限框架的问题，这个需要后续的验证，在使用的时候，
+ *             如果要开始后台定位的功能，需要调用方法{@link Builder#setBackgroundRunning(boolean)}方法
+ *
  * </ol>
  */
 public class LocationUtil implements BaseLifecycleObserver {
@@ -56,6 +62,17 @@ public class LocationUtil implements BaseLifecycleObserver {
     public AMapLocationClient mClient;
     private int mType;
     private RxPermissionsUtil.Builder mPermissionBuilder;
+    private final List<String> mListPermission = new ArrayList<>();
+
+    /**
+     * 开发的目标版本
+     */
+    private final int TARGET_VERSION = AppUtil.getInstance().getTargetSdkVersion();
+
+    /**
+     * 手机系统的当前版本
+     */
+    private final int SDK_INT = Build.VERSION.SDK_INT;
 
     public LocationUtil(Builder builder) {
         if (builder != null) {
@@ -72,6 +89,9 @@ public class LocationUtil implements BaseLifecycleObserver {
                 // 区分设置的类型
                 switchType(mType);
             }
+
+            // 直接去检测权限，有有限，就开始定位
+            checkPermission();
         }
     }
 
@@ -124,12 +144,12 @@ public class LocationUtil implements BaseLifecycleObserver {
     /**
      * 逆地理编码（坐标转地址）
      *
-     * @param context                 上下文
-     * @param latitude                纬度
-     * @param longitude               经度
-     * @param searchType              传入坐标系的类型，参数表示是火系坐标系还是GPS原生坐标系，，固定只能选择这两种类型
-     *                                {@link GeocodeSearch#AMAP }代表传入的是火星（高德）坐标系
-     *                                {@link GeocodeSearch#GPS}代表传入的是GPS原生坐标系
+     * @param context                上下文
+     * @param latitude               纬度
+     * @param longitude              经度
+     * @param searchType             传入坐标系的类型，参数表示是火系坐标系还是GPS原生坐标系，，固定只能选择这两种类型
+     *                               {@link GeocodeSearch#AMAP }代表传入的是火星（高德）坐标系
+     *                               {@link GeocodeSearch#GPS}代表传入的是GPS原生坐标系
      * @param reGeCodeResultListener 解析出来的事件回调
      */
     public static void getAddressForLatitude(Context context, double latitude, double longitude, String searchType, ReGeocodeResultListener reGeCodeResultListener) {
@@ -324,55 +344,85 @@ public class LocationUtil implements BaseLifecycleObserver {
     /**
      * @return 检测权限，true:拥有定位的权限，false:没有定位的权限
      */
-    private boolean checkPermission() {
-        final boolean[] havePermission = {false};
+    private void checkPermission() {
+        //    <!--用于进行网络定位-->
+        //    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+        //    <!--用于访问GPS定位-->
+        //    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+        //    <!--用于获取运营商信息，用于支持提供运营商信息相关的接口-->
+        //    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        //    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+        //    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+        //    <!--用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+        //    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+        //    <!--用于访问网络，网络定位需要上网-->
+        //    <uses-permission android:name="android.permission.INTERNET" />
+        //    <!--用于读取手机当前的状态-->
+        //    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+        //    <!--用于写入缓存数据到扩展存储卡-->
+        //    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        //    <!--用于申请调用A-GPS模块-->
+        //    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+        //    <!--如果设置了target >= 28 如果需要启动后台定位则必须声明这个权限-->
+        //    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+        //    <!--如果您的应用需要后台定位权限，且有可能运行在Android Q设备上,并且设置了target>28，必须增加这个权限声明-->
+        //    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
-//    <!--用于进行网络定位-->
-//    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-//    <!--用于访问GPS定位-->
-//    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-//    <!--用于获取运营商信息，用于支持提供运营商信息相关的接口-->
-//    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-//    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
-//    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-//    <!--用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
-//    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-//    <!--用于访问网络，网络定位需要上网-->
-//    <uses-permission android:name="android.permission.INTERNET" />
-//    <!--用于读取手机当前的状态-->
-//    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-//    <!--用于写入缓存数据到扩展存储卡-->
-//    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-//    <!--用于申请调用A-GPS模块-->
-//    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-//    <!--如果设置了target >= 28 如果需要启动后台定位则必须声明这个权限-->
-//    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-//    <!--如果您的应用需要后台定位权限，且有可能运行在Android Q设备上,并且设置了target>28，必须增加这个权限声明-->
-//    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+        if (!mListPermission.contains(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            mListPermission.add(Manifest.permission.ACCESS_COARSE_LOCATION);// 用于进行网络定位
+        }
 
-        String[] permission = {
-                Manifest.permission.ACCESS_COARSE_LOCATION,// 用于进行网络定位
-                Manifest.permission.ACCESS_FINE_LOCATION, // 用于访问GPS定位
-                "android.permission.FOREGROUND_SERVICE", //  后台定位权限
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION //  后台定位权限
-        };
+        if (!mListPermission.contains(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            mListPermission.add(Manifest.permission.ACCESS_FINE_LOCATION);// 用于访问GPS定位
+        }
+
+        // 避免重复添加
+        if (!mListPermission.contains(Manifest.permission.FOREGROUND_SERVICE)) {
+            // android 28
+            int P = Build.VERSION_CODES.P;
+            // 开发版本大于等于28，SDK版本也大于等于28，才会去添加服务权限
+            if ((TARGET_VERSION >= P) && (SDK_INT >= P)) {
+                mListPermission.add(Manifest.permission.FOREGROUND_SERVICE);// 服务定位权限
+            }
+        }
+
+        if (isBackgroundRunning) {
+            // 避免重复添加
+            if (!mListPermission.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                // android 30 后台定位
+                int Q = Build.VERSION_CODES.Q;
+                // 开发版本大于等于30 && SDK版本 大于等于30
+                if ((TARGET_VERSION >= Q) && (SDK_INT >= Q)) {
+                    mListPermission.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);// 后台定位权限
+                }
+            }
+        }
+
+        // 转换数组
+        String[] permissionArray = new String[mListPermission.size()];
+        for (int i = 0; i < mListPermission.size(); i++) {
+            String permission = mListPermission.get(i);
+            permissionArray[i] = permission;
+        }
+
+        LogUtil.e("请求的定位权限：" + Arrays.toString(permissionArray));
 
         if (mType == 1) {
-            mPermissionBuilder = new RxPermissionsUtil.Builder(mFragmentActivity, permission);
+            mPermissionBuilder = new RxPermissionsUtil.Builder(mFragmentActivity, permissionArray);
         } else if (mType == 2) {
-            mPermissionBuilder = new RxPermissionsUtil.Builder(mFragment, permission);
+            mPermissionBuilder = new RxPermissionsUtil.Builder(mFragment, permissionArray);
         }
+
         mPermissionBuilder.setAllPerMissionListener(haveAllPermission -> {
-            LogUtil.e("定位的权限为：" + haveAllPermission);
-            havePermission[0] = haveAllPermission;
+            LogUtil.e("定位权限的结果为：" + haveAllPermission);
+            // 有权限，就去开始定位
+            if (haveAllPermission) {
+                startLocation();
+            }
         })
-                .setFilterPermission(
-                        new FilterPerMission("android.permission.FOREGROUND_SERVICE", 28),
-                        new FilterPerMission(Manifest.permission.ACCESS_BACKGROUND_LOCATION, Build.VERSION_CODES.Q))
                 .build()
                 .startRequestPermission();
 
-        return havePermission[0];
     }
 
     /**
@@ -422,54 +472,48 @@ public class LocationUtil implements BaseLifecycleObserver {
     /**
      * 开启定位信息
      */
-    public LocationUtil startLocation() {
-        boolean checkPermission = checkPermission();
-        LogUtil.e("checkPermission:" + checkPermission);
-        if (checkPermission) {
+    private void startLocation() {
+        //初始化定位参数
+        AMapLocationClientOption locationOption = new AMapLocationClientOption();
 
-            //初始化定位参数
-            AMapLocationClientOption locationOption = new AMapLocationClientOption();
+        //设置返回地址信息，默认为true
+        locationOption.setNeedAddress(true);
+        //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+        locationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
 
-            //设置返回地址信息，默认为true
-            locationOption.setNeedAddress(true);
-            //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
-            locationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        if (isLoop) {
+            // 单次定位--->获取一次定位结果
+            locationOption.setOnceLocation(false);
 
-            if (isLoop) {
-                // 单次定位--->获取一次定位结果
-                locationOption.setOnceLocation(false);
-
-                //设置定位间隔,单位毫秒,默认为2000ms
-                if (interval == 0) {
-                    locationOption.setInterval(2000);
-                } else {
-                    locationOption.setInterval(interval);
-                }
+            //设置定位间隔,单位毫秒,默认为2000ms
+            if (interval == 0) {
+                locationOption.setInterval(2000);
             } else {
-                // 单次定位--->获取一次定位结果
-                locationOption.setOnceLocation(true);
+                locationOption.setInterval(interval);
             }
-
-            //设置是否允许模拟位置,默认为true，允许模拟位置
-            locationOption.setMockEnable(true);
-
-            //单位是毫秒，默认30000毫秒，建议超时时间不要低于8000毫秒。
-            locationOption.setHttpTimeOut(20000);
-
-            //设置定位参数
-            mClient.setLocationOption(locationOption);
-
-            //设置定位监听
-            mClient.setLocationListener(mAMapLocationListener);
-
-            // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
-            // 注意设置合适的定位时间的间隔（最小间隔支持为1000ms），并且在合适时间调用stopLocation()方法来取消定位请求
-            // 在定位结束后，在合适的生命周期调用onDestroy()方法
-            // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
-            //启动定位
-            onResume();
+        } else {
+            // 单次定位--->获取一次定位结果
+            locationOption.setOnceLocation(true);
         }
-        return this;
+
+        //设置是否允许模拟位置,默认为true，允许模拟位置
+        locationOption.setMockEnable(true);
+
+        //单位是毫秒，默认30000毫秒，建议超时时间不要低于8000毫秒。
+        locationOption.setHttpTimeOut(20000);
+
+        //设置定位参数
+        mClient.setLocationOption(locationOption);
+
+        //设置定位监听
+        mClient.setLocationListener(mAMapLocationListener);
+
+        // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
+        // 注意设置合适的定位时间的间隔（最小间隔支持为1000ms），并且在合适时间调用stopLocation()方法来取消定位请求
+        // 在定位结束后，在合适的生命周期调用onDestroy()方法
+        // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
+        //启动定位
+        onResume();
     }
     //</editor-fold>
 
