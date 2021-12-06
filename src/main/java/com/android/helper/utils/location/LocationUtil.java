@@ -564,7 +564,8 @@ public class LocationUtil implements BaseLifecycleObserver {
 
         /**
          * @param backgroundRunning true:后台更新，false:不允许后台更新
-         * @return 设置是否允许后台更新位置，默认不允许
+         * @return 设置是否允许后台更新位置，默认不允许，如果要使用这个权限，需要在配置清单文件上加上权限：
+         * "<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />"
          */
         public Builder setBackgroundRunning(boolean backgroundRunning) {
             isBackgroundRunning = backgroundRunning;
