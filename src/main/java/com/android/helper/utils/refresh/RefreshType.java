@@ -8,5 +8,6 @@ package com.android.helper.utils.refresh;
 public enum RefreshType {
     TYPE_NONE, // 不执行任何的操作
     TYPE_REFRESH,// 只能刷新
+    TYPE_LOAD_MORE,// 只能加载更多
     TYPE_REFRESH_LOAD_MORE// 既能刷新也能加载更多
 }

@@ -315,16 +315,19 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     private void initRefreshListener() {
         // 刷新布局
         if (mRefreshLayout != null) {
-            if (mRefreshType == RefreshType.TYPE_REFRESH) {
+            if (mRefreshType == RefreshType.TYPE_REFRESH) { // 只能刷新
                 mRefreshLayout.setEnableRefresh(true);
                 mRefreshLayout.setEnableLoadMore(false);
                 mRefreshLayout.setOnRefreshListener(this);
-            } else if (mRefreshType == RefreshType.TYPE_REFRESH_LOAD_MORE) {
+            } else if (mRefreshType == RefreshType.TYPE_REFRESH_LOAD_MORE) { // 可以刷新，也可以加载
                 mRefreshLayout.setEnableRefresh(true);
                 mRefreshLayout.setEnableLoadMore(true);
                 mRefreshLayout.setOnRefreshListener(this);
                 mRefreshLayout.setOnLoadMoreListener(this);
-            } else if (mRefreshType == RefreshType.TYPE_NONE) {
+            } else if (mRefreshType == RefreshType.TYPE_LOAD_MORE) { // 只能加载跟多
+                mRefreshLayout.setEnableRefresh(false);
+                mRefreshLayout.setEnableLoadMore(true);
+            } else if (mRefreshType == RefreshType.TYPE_NONE) { // 不能加载也不能刷新
                 mRefreshLayout.setEnableRefresh(false);
                 mRefreshLayout.setEnableLoadMore(false);
             }
@@ -340,73 +343,40 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
      * 网络请求
      */
     private void clientHttp() {
-        getObservable()
-                .compose(RxUtil.getSchedulerObservable())
-                .subscribe(new Observer<T>() {
-                    @Override
-                    public void onSubscribe(@NotNull Disposable d) {
-                        mDisposable = d;
+        Observable<T> observable = getObservable();
+        if (observable != null) {
+            observable
+                    .compose(RxUtil.getSchedulerObservable())
+                    .subscribe(new Observer<T>() {
+                        @Override
+                        public void onSubscribe(@NotNull Disposable d) {
+                            mDisposable = d;
 
-                        isFirstLoad = false;
+                            isFirstLoad = false;
 
-                        if (mCallBack != null) {
-                            mCallBack.onStart();
-                        }
-                    }
-
-                    @Override
-                    public void onNext(@NotNull T t) {
-                        if (mRefreshLayout != null) {
-                            mRefreshLayout.finishRefresh();
-                            mRefreshLayout.finishLoadMore();
-                        }
-
-                        /*
-                         * 这里可以做更多的事情，例如：是否是最后一页，如果是最后一页，
-                         * 需要调用{@link RefreshUtil#finishLoadMoreWithNoMoreData()}
-                         * 去通知刷新对象，停止刷新的操作
-                         */
-
-                        // 设置当前页面请求下来的数据
-                        setCurrentData(t);
-
-                        if (mRefreshType == RefreshType.TYPE_REFRESH_LOAD_MORE) {
-                            boolean noMoreData = isNoMoreData();
-                            LogUtil.e("加载更多：" + noMoreData);
-                            if (noMoreData) {
-                                finishLoadMoreWithNoMoreData();
+                            if (mCallBack != null) {
+                                mCallBack.onStart();
                             }
                         }
 
-                        if (mCallBack != null) {
-                            mCallBack.onSuccess(t);
-                        }
-                    }
-
-                    @Override
-                    public void onError(@NotNull Throwable e) {
-                        if (mRefreshLayout != null) {
-                            mRefreshLayout.finishRefresh();
-                            mRefreshLayout.finishLoadMore();
+                        @Override
+                        public void onNext(@NotNull T t) {
+                            setDataSuccess(t);
                         }
 
-                        if (mCallBack != null) {
-                            mCallBack.onError(e);
+                        @Override
+                        public void onError(@NotNull Throwable e) {
+                            setDataError(e);
                         }
 
-                        // 接口错误的回调
-                        if (mAdapter != null) {
-                            mAdapter.setErrorHttpClient(RefreshUtil.this);
+                        @Override
+                        public void onComplete() {
+                            if (mCallBack != null) {
+                                mCallBack.onComplete();
+                            }
                         }
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        if (mCallBack != null) {
-                            mCallBack.onComplete();
-                        }
-                    }
-                });
+                    });
+        }
     }
 
     /**
@@ -461,6 +431,61 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
 
         // 自动加载
         clientHttp();
+    }
+
+    /**
+     * 数据成功的操作
+     *
+     * @param t 请求的数据
+     */
+    public void setDataSuccess(T t) {
+
+        if (mRefreshLayout != null) {
+            mRefreshLayout.finishRefresh();
+            mRefreshLayout.finishLoadMore();
+        }
+
+        /*
+         * 这里可以做更多的事情，例如：是否是最后一页，如果是最后一页，
+         * 需要调用{@link RefreshUtil#finishLoadMoreWithNoMoreData()}
+         * 去通知刷新对象，停止刷新的操作
+         */
+
+        // 设置当前页面请求下来的数据
+        setCurrentData(t);
+
+        if (mRefreshType == RefreshType.TYPE_REFRESH_LOAD_MORE || mRefreshType == RefreshType.TYPE_LOAD_MORE) {
+            boolean noMoreData = isNoMoreData();
+            LogUtil.e("加载更多：" + noMoreData);
+            if (noMoreData) {
+                finishLoadMoreWithNoMoreData();
+            }
+        }
+
+        if (mCallBack != null) {
+            mCallBack.onSuccess(t);
+        }
+    }
+
+    /**
+     * 数据异常的操作
+     *
+     * @param throwable 异常的对象
+     */
+    public void setDataError(Throwable throwable) {
+        if (mRefreshLayout != null) {
+            mRefreshLayout.finishRefresh();
+            mRefreshLayout.finishLoadMore();
+        }
+
+        if (mCallBack != null) {
+            mCallBack.onError(throwable);
+        }
+
+        // 接口错误的回调
+        if (mAdapter != null) {
+            mAdapter.setErrorHttpClient(RefreshUtil.this);
+        }
     }
 
     @Override
