@@ -33,7 +33,9 @@ import com.android.helper.utils.ViewUtil;
  *             ②：中间的是一个title的具体布局的内容，可以手动去设置
  *             ③：右侧的是一个 RelativeLayout 布局，里面包含了一个textView,一般是用来设置设置文字，如果有其他的自定义需求的话，可以隐藏文字布局，
  *                然后给RelativeLayout 添加一个需要的布局，并去具体的设置以及使用。
- *       4：具体的Api设置方法，都在{@link TitleBuilder }的方法中有具体的说明，可以去按需求使用
+ *       4: 左侧的点击事件，会回调方法{@link #onTitleLeftClick(View)}
+ *       5: 右侧的点击事件，会回调方法{@link #onTitleRightClick(View)}
+ *       6：具体的Api设置方法，都在{@link TitleBuilder }的方法中有具体的说明，可以去按需求使用
  */
 public abstract class BaseTitleActivity extends BaseActivity {
 
@@ -48,9 +50,9 @@ public abstract class BaseTitleActivity extends BaseActivity {
      */
     protected View mTitleRootLayout;
     private TextView mLeftBackTextView;
+    private ViewGroup mRightLayout;
 
     @SuppressLint("InflateParams")
-    @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -69,10 +71,10 @@ public abstract class BaseTitleActivity extends BaseActivity {
             mContentLayout = mTitleBar.getContentLayout();
 
             // 返回的父类布局
-            ViewGroup leftBackLayout = mTitleBar.getLeftBackLayout();
+            View leftBackLayout = mTitleBar.getLeftBackLayout();
             // 左侧返回键的点击事件
             leftBackLayout.setOnClickListener(v -> {
-                boolean back = setBackClickListener(v);
+                boolean back = onTitleLeftClick(v);
                 if (back) {
                     finish();
                 }
@@ -91,23 +93,9 @@ public abstract class BaseTitleActivity extends BaseActivity {
             }
 
             // 右侧标题的父布局
-            ViewGroup rightLayout = mTitleBar.getRightLayout();
-            // 右侧布局可见性
-            boolean rightLayoutShow = mTitleBar.getRightLayoutShow();
-            ViewUtil.setViewVisible(rightLayout, rightLayoutShow);
-
-            // 右侧文字描述
-            if (rightLayoutShow) {
-                // 右侧标题的textView
-                mRightText = mTitleBar.getRightTextView();
-                boolean rightTextShow = mTitleBar.getRightTextShow();
-                ViewUtil.setViewVisible(mRightText, rightTextShow);
-
-                // 右侧的文字点击事件
-                if (rightTextShow && mRightText != null) {
-                    mRightText.setOnClickListener(this::setRightTitleClickListener);
-                }
-            }
+            mRightLayout = mTitleBar.getRightLayout();
+            // 右侧标题的textView
+            mRightText = mTitleBar.getRightTextView();
 
             // 设置标题
             String titleContent = setTitleContent();
@@ -172,10 +160,43 @@ public abstract class BaseTitleActivity extends BaseActivity {
             return false;
         } else {
             if (mRightText != null) {
-                // 设置可见
+                // 设置父布局可见
+                ViewUtil.setViewVisible(mRightLayout, true);
+                // 设置右侧标题可见
                 ViewUtil.setViewVisible(mRightText, true);
                 // 设置内容
                 TextViewUtil.setText(mRightText, rightTitle);
+
+                // 点击事件
+                mRightText.setOnClickListener(this::onTitleRightClick);
+                success = true;
+            }
+        }
+        return success;
+    }
+
+    /**
+     * 设置右侧的标题
+     *
+     * @param rightTitle 右侧的title
+     */
+    protected boolean setRightTitle(String rightTitle, View.OnClickListener listener) {
+        boolean success = false;
+        if (TextUtils.isEmpty(rightTitle)) {
+            return false;
+        } else {
+            if (mRightText != null) {
+                // 设置父布局可见
+                ViewUtil.setViewVisible(mRightLayout, true);
+                // 设置右侧标题可见
+                ViewUtil.setViewVisible(mRightText, true);
+                // 设置内容
+                TextViewUtil.setText(mRightText, rightTitle);
+
+                // 点击事件
+                if (listener != null) {
+                    mRightText.setOnClickListener(listener);
+                }
                 success = true;
             }
         }
@@ -248,14 +269,15 @@ public abstract class BaseTitleActivity extends BaseActivity {
      * @param view 返回的的监听
      * @return 返回true, 可以直接结束页面，false:只相应事件，不结束页面，默认可以结束页面
      */
-    protected boolean setBackClickListener(View view) {
+    protected boolean onTitleLeftClick(View view) {
         return true;
     }
 
     /**
      * 设置右侧的点击事件
      */
-    protected void setRightTitleClickListener(View view) {
+    protected void onTitleRightClick(View view) {
+
     }
 
     /**
@@ -267,7 +289,7 @@ public abstract class BaseTitleActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        setBackClickListener(null);
+        onTitleLeftClick(null);
         super.onBackPressed();
     }
 

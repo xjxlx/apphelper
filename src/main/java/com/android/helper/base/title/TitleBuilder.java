@@ -47,18 +47,9 @@ public class TitleBuilder {
     protected int mRightLayoutId;
 
     /**
-     * 右侧布局是否可见
-     */
-    protected boolean mShowRightLayout;
-    /**
      * 右侧标题中的文字id
      */
     protected int mRightTextId;
-
-    /**
-     * 右侧文字是否可见
-     */
-    protected boolean mShowRightText;
 
     /**
      * title的类型
@@ -137,29 +128,11 @@ public class TitleBuilder {
     }
 
     /**
-     * @param showRightLayout true:可见，false:不可见
-     * @return 右侧布局是否可见
-     */
-    public TitleBuilder setShowRightLayout(boolean showRightLayout) {
-        mShowRightLayout = showRightLayout;
-        return this;
-    }
-
-    /**
      * @param rightTextId R.id.xx
      * @return 设置右侧文字的id
      */
     public TitleBuilder setRightTextId(int rightTextId) {
         mRightTextId = rightTextId;
-        return this;
-    }
-
-    /**
-     * @param showRightText true:可见，false:不可见
-     * @return 右侧文字是否可见
-     */
-    public TitleBuilder setShowRightText(boolean showRightText) {
-        mShowRightText = showRightText;
         return this;
     }
 

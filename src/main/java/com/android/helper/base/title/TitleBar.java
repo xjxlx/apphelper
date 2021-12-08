@@ -23,8 +23,6 @@ public class TitleBar {
     private int mTitleId; // 中间标题的id
     private int mRightLayoutId; // 右侧标题的父布局
     private int mRightTextId; // 右侧标题中的文字id
-    private boolean mShowRightText; // 右侧文字是否可见
-    private boolean mShowRightLayout; // 右侧布局是否可见
     private int mContentLayoutId; // 布局下面真实使用到的布局，这个对象可用可不用
 
     /**
@@ -42,9 +40,7 @@ public class TitleBar {
             this.mShowBackText = builder.mShowBackText;
             this.mTitleId = builder.mTitleId;
             this.mRightLayoutId = builder.mRightLayoutId;
-            this.mShowRightLayout = builder.mShowRightLayout;
             this.mRightTextId = builder.mRightTextId;
-            this.mShowRightText = builder.mShowRightText;
             this.mContentLayoutId = builder.mContentLayoutId;
         }
     }
@@ -65,17 +61,14 @@ public class TitleBar {
     /**
      * @return 获取左侧返回键的根布局
      */
-    public ViewGroup getLeftBackLayout() {
-        ViewGroup mLeftBackLayout = null;
+    public View getLeftBackLayout() {
+        View view = null;
         if (mTitleLayout != null) {
             if (mLeftBackLayoutId != 0) {
-                View view = mTitleLayout.findViewById(mLeftBackLayoutId);
-                if (view instanceof ViewGroup) {
-                    mLeftBackLayout = (ViewGroup) view;
-                }
+                view = mTitleLayout.findViewById(mLeftBackLayoutId);
             }
         }
-        return mLeftBackLayout;
+        return view;
     }
 
     /**
@@ -138,13 +131,6 @@ public class TitleBar {
     }
 
     /**
-     * @return 右侧的布局是否可见
-     */
-    public boolean getRightLayoutShow() {
-        return mShowRightLayout;
-    }
-
-    /**
      * 右侧标题中的文字id
      */
     public TextView getRightTextView() {
@@ -158,13 +144,6 @@ public class TitleBar {
             }
         }
         return mRightText;
-    }
-
-    /**
-     * @return 右侧的文字描述是否可见
-     */
-    public boolean getRightTextShow() {
-        return mShowRightText;
     }
 
     /**
