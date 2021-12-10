@@ -276,4 +276,18 @@ public class ShoppingNumber extends FrameLayout {
         }
     }
 
+    /**
+     * @return 获取减号的父布局，用于点击
+     */
+    public View getMinusSign() {
+        return mFlMinusSign;
+    }
+
+    /**
+     * @return 获取加号的布局，用于点击
+     */
+    public View getPlusSign() {
+        return mFlPlusSign;
+    }
+
 }
