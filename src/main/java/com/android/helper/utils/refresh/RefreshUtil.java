@@ -51,7 +51,7 @@ import io.reactivex.disposables.Disposable;
  *       八：调用刷新流程：使用方法{@link RefreshUtil#execute()}
  * <p>
  *   使用例子：
- *   RefreshUtil mRefreshUtil = new RefreshUtil<Page<List<UserCollection>>>(this, sr, adapter) {
+ *   RefreshUtil mRefreshUtil = new RefreshUtil<Page<List<UserCollection>>>(this, sr) {
  *             @Override
  *             public Observable<Page<List<UserCollection>>> getObservable() {
  *                 return RetrofitUtils.getAPIInstance().create(TipAPI.class).getCollectListV2(id, getCurrentPage());
@@ -127,26 +127,9 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
         this.mRefreshLayout = refreshLayout;
     }
 
-    /**
-     * @param fragment      fragment的对象
-     * @param refreshLayout 刷新布局的对象
-     */
-    public RefreshUtil(Fragment fragment, SmartRefreshLayout refreshLayout, RecycleViewFrameWork<?, ?> adapter) {
-        if (fragment != null) {
-            Lifecycle lifecycle = fragment.getLifecycle();
-            lifecycle.addObserver(this);
-        }
-        this.mRefreshLayout = refreshLayout;
+    public RefreshUtil<T> setAdapter(RecycleViewFrameWork<?, ?> adapter) {
         this.mAdapter = adapter;
-    }
-
-    public RefreshUtil(FragmentActivity activity, SmartRefreshLayout refreshLayout, RecycleViewFrameWork<?, ?> adapter) {
-        if (activity != null) {
-            Lifecycle lifecycle = activity.getLifecycle();
-            lifecycle.addObserver(this);
-        }
-        this.mRefreshLayout = refreshLayout;
-        this.mAdapter = adapter;
+        return this;
     }
 
     /**
@@ -155,6 +138,9 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
      */
     public RefreshUtil<T> setRefreshHeader(RefreshHeader refreshHeader) {
         this.mRefreshHeader = refreshHeader;
+        if (mRefreshLayout != null && mRefreshHeader != null) {
+            mRefreshLayout.setRefreshHeader(mRefreshHeader);
+        }
         return this;
     }
 
@@ -164,6 +150,9 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
      */
     public RefreshUtil<T> setRefreshFooter(RefreshFooter refreshFooter) {
         this.mRefreshFooter = refreshFooter;
+        if (mRefreshLayout != null && mRefreshFooter != null) {
+            mRefreshLayout.setRefreshFooter(mRefreshFooter);
+        }
         return this;
     }
 
@@ -172,15 +161,6 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
      */
     public RefreshUtil<T> setAutoRefresh(boolean autoLoad) {
         this.mAutoLoad = autoLoad;
-        return this;
-    }
-
-    /**
-     * @param currentPage 从第几页开始刷新
-     * @return 设置从第几页开始请求数据，这个是为了有些傻逼后台，不从0页开始查数据，非要从指定的页面去查数据，默认是从0页开始查数据
-     */
-    public RefreshUtil<T> setFromPage(int currentPage) {
-        mPage = currentPage;
         return this;
     }
 
@@ -210,7 +190,8 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
      */
     private boolean isNoMoreData() {
         boolean isNoMoreData = false;   // 是否还有跟多的数据
-        if (mRefreshType == RefreshType.TYPE_REFRESH_LOAD_MORE) { // 只有在上拉加载的时候，判断这个才有意义，避免数据的繁琐逻辑
+        if ((mRefreshType == RefreshType.TYPE_REFRESH_LOAD_MORE) || (mRefreshType == RefreshType.TYPE_LOAD_MORE)) {
+            // 只有在上拉加载的时候，判断这个才有意义，避免数据的繁琐逻辑
             List<?> list = setNoMoreData(mData);
             if (list == null) {
                 /*
@@ -250,6 +231,15 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
      */
     private void setCurrentData(T data) {
         mData = data;
+    }
+
+    /**
+     * @param currentPage 从第几页开始刷新
+     * @return 设置从第几页开始请求数据，这个是为了有些傻逼后台，不从0页开始查数据，非要从指定的页面去查数据，默认是从0页开始查数据
+     */
+    public RefreshUtil<T> setFromPage(int currentPage) {
+        mPage = currentPage;
+        return this;
     }
 
     /**
@@ -409,8 +399,8 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
 
     @Override
     public void onRefresh(@NonNull @NotNull RefreshLayout refreshLayout) {
-        mPage = 0;
         isRefresh = true;
+        mPage = getCurrentPage();
 
         // 只有在没有跟多数据的情况下，才回去判断重置状态
         if (isNoMoreData()) {
