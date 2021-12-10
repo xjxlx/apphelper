@@ -83,16 +83,13 @@ import io.reactivex.disposables.Disposable;
  */
 public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreListener, BaseLifecycleObserver {
 
-    private int mPage = 0;// 数据查询的页数
-    private int mPageSiZe = 20;// 每页查询的数量，默认是20条数据
-    private T mData;// 当前页面的数据
-
-    // 数据请求的对象
-    public abstract Observable<T> getObservable();
+    private int mPage = 0;                      // 当前数据查询的页数
+    private int mOriginalPage = mPage;          // 最开始的页数，默认和当前查询的页数相同
+    private int mPageSiZe = 20;                 // 每页查询的数量，默认是20条数据
+    private T mData;                            // 当前页面的数据
 
     // 接口回调的数据
     private RefreshCallBack<T> mCallBack;
-
     private SmartRefreshLayout mRefreshLayout;
     private RefreshHeader mRefreshHeader;
     private RefreshFooter mRefreshFooter;
@@ -217,6 +214,9 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
      */
     public abstract List<?> setNoMoreData(T t);
 
+    // 数据请求的对象
+    public abstract Observable<T> getObservable();
+
     /**
      * @return 获取当前页面的数据
      */
@@ -234,11 +234,12 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     }
 
     /**
-     * @param currentPage 从第几页开始刷新
+     * @param fromPage 从第几页开始刷新
      * @return 设置从第几页开始请求数据，这个是为了有些傻逼后台，不从0页开始查数据，非要从指定的页面去查数据，默认是从0页开始查数据
      */
-    public RefreshUtil<T> setFromPage(int currentPage) {
-        mPage = currentPage;
+    public RefreshUtil<T> setFromPage(int fromPage) {
+        mPage = fromPage;
+        mOriginalPage = fromPage;
         return this;
     }
 
@@ -400,7 +401,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     @Override
     public void onRefresh(@NonNull @NotNull RefreshLayout refreshLayout) {
         isRefresh = true;
-        mPage = getCurrentPage();
+        mPage = mOriginalPage;
 
         // 只有在没有跟多数据的情况下，才回去判断重置状态
         if (isNoMoreData()) {
