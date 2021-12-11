@@ -4,6 +4,7 @@
     android:id="@+id/rl_base_title_root"
     android:layout_width="match_parent"
     android:layout_height="@dimen/dp_50"
+    tools:viewBindingIgnore="true"
     android:background="@color/base_title_background_color">
 
     <LinearLayout
