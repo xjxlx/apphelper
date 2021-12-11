@@ -3,9 +3,14 @@ package com.android.helper.utils;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.luck.picture.lib.tools.SPUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class JsonUtil {
@@ -95,6 +100,50 @@ public class JsonUtil {
             SPUtils.getInstance().put(spKey, "");
             LogUtil.e("清空了sp中存储的key对应的值");
         }
+    }
+
+    /**
+     * @param json 必须是一个Gson的字符串
+     * @param cls  类型对象
+     * @param <T>  指定的类型
+     * @return 把一个json转换成一个集合
+     */
+    public static <T> List<T> convertList(String json, Class<T> cls) {
+        List<T> list = null;
+        if (!TextUtils.isEmpty(json)) {
+            try {
+                Gson gson = new Gson();
+                list = new ArrayList<>();
+                JsonElement jsonElement = JsonParser.parseString(json);
+                if (jsonElement != null) {
+                    // 如果对象不为空，说明是一个正常的json
+                    boolean jsonArray = jsonElement.isJsonArray();
+                    if (jsonArray) {
+                        JsonArray asJsonArray = jsonElement.getAsJsonArray();
+                        for (JsonElement element : asJsonArray) {
+                            T t = gson.fromJson(element, cls);
+                            list.add(t);
+                        }
+                    }
+                } else {
+                    // 说明不是一个正常的JSON，可以尝试转换为一个正常的JSON,再次去尝试一下
+                    String jsonValue = gson.toJson(json);
+                    JsonElement jsonElementValue = JsonParser.parseString(jsonValue);
+                    if (jsonElementValue != null) {
+                        boolean jsonArray = jsonElementValue.isJsonArray();
+                        if (jsonArray) {
+                            JsonArray asJsonArray = jsonElementValue.getAsJsonArray();
+                            for (JsonElement element : asJsonArray) {
+                                T t = gson.fromJson(element, cls);
+                                list.add(t);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return list;
     }
 
 }
