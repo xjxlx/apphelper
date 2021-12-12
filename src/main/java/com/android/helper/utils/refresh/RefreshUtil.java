@@ -343,8 +343,6 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
                         public void onSubscribe(@NotNull Disposable d) {
                             mDisposable = d;
 
-                            isFirstLoad = false;
-
                             if (mCallBack != null) {
                                 mCallBack.onStart();
                             }
@@ -365,6 +363,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
                             if (mCallBack != null) {
                                 mCallBack.onComplete();
                             }
+                            isFirstLoad = false;
                         }
                     });
         }
