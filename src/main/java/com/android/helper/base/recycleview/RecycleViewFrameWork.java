@@ -64,6 +64,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     private View mEmptyView;
     private int mErrorType;  // 1:空数据  2：错误数据
     private RefreshUtil<?> mRefreshUtil; // 刷新工具类
+    private RecyclerView mRecycleView;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.TYPE_EMPTY, ViewType.TYPE_HEAD, ViewType.TYPE_FOOT})
@@ -479,6 +480,12 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
             mTvMsg = itemView.findViewById(R.id.tv_base_placeholder_msg);
             mIvButton = itemView.findViewById(R.id.iv_base_error_placeholder);
         }
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull @NotNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.mRecycleView = recyclerView;
     }
 
     @Override
