@@ -217,6 +217,49 @@ public class NumberUtil {
     }
 
     /**
+     * @param value1 必须是 小数或者整数 ，不能乱传，否则会异常
+     * @param value2 必须是 小数或者整数 ，不能乱传，否则会异常
+     * @return 加法的操作
+     */
+    public static String DecimalAdd(Object value1, Object value2) {
+        String result = "";
+        BigDecimal decimal1 = null;
+        BigDecimal decimal2 = null;
+
+        if (value1 != null) {
+            if (value1 instanceof Double) {
+                decimal1 = BigDecimal.valueOf((Double) value1);
+            } else if (value1 instanceof Float) {
+                decimal1 = BigDecimal.valueOf((Float) value1);
+            } else if (value1 instanceof String) {
+                decimal1 = new BigDecimal((String) value1);
+            } else if (value1 instanceof Long) {
+                decimal1 = BigDecimal.valueOf((Long) value1);
+            }
+        }
+
+        if (value2 != null) {
+            if (value2 instanceof Double) {
+                decimal2 = BigDecimal.valueOf((Double) value2);
+            } else if (value2 instanceof Float) {
+                decimal2 = BigDecimal.valueOf((Float) value2);
+            } else if (value2 instanceof String) {
+                decimal2 = new BigDecimal((String) value2);
+            } else if (value2 instanceof Long) {
+                decimal2 = BigDecimal.valueOf((Long) value2);
+            }
+        }
+
+        if (decimal1 != null && decimal2 != null) {
+            // 转换为大整形运算
+            result = decimal1
+                    .add(decimal2)// 加法操作
+                    .toPlainString();// 转换为科学计数法
+        }
+        return result;
+    }
+
+    /**
      * @param value 需要转换的字符串
      * @return 把指定的字符转换成小写字符
      */
