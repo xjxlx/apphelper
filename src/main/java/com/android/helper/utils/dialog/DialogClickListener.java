@@ -1,6 +1,5 @@
 package com.android.helper.utils.dialog;
 
-import android.app.Dialog;
 import android.view.View;
 
 /**
