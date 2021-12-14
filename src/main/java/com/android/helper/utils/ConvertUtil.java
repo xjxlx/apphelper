@@ -69,6 +69,17 @@ public class ConvertUtil {
         return arr;
     }
 
+    public static int[] ListToIntArray(List<Integer> list) {
+        int[] arr = new int[0];
+        if ((list != null) && (list.size() > 0)) {
+            arr = new int[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                arr[i] = list.get(i);
+            }
+        }
+        return arr;
+    }
+
     /**
      * @param <T> 数组的泛型，各种的类型都可以转换,测试
      * @return 把一个数组转换成集合
