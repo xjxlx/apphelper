@@ -28,6 +28,7 @@ public class ShoppingNumber extends FrameLayout {
     private TextView mTvPlusSign;   // 加号
     private View mInflate;
     private boolean mAutoChange = true; // 点击加减号的时候，自动变化数量
+    private boolean isHint;        // 是否主动提示，如果使用了这个控制，则必须去设置提示的内容
     private String mMinNumberHint; // 数量最少的提示
     private String mMaxNumberHint; // 数量最多的提示
     private int mMinNumber = 1; // 最少的数量
@@ -72,6 +73,14 @@ public class ShoppingNumber extends FrameLayout {
         if (mInflate != null) {
             mInflate.setBackgroundResource(resId);
         }
+    }
+
+    public boolean isHint() {
+        return isHint;
+    }
+
+    public void setHint(boolean hint) {
+        isHint = hint;
     }
 
     /**
@@ -184,23 +193,35 @@ public class ShoppingNumber extends FrameLayout {
     public void setMinusSignClick(OnClickListener listener) {
         if (mFlMinusSign != null) {
             mFlMinusSign.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onClick(v);
-                }
-                if (mAutoChange) {
-                    try {
-                        String number = mTvNumber.getText().toString();
-                        int numberValue = Integer.parseInt(number);
-                        if (numberValue > mMinNumber) {
-                            numberValue--;
-                            mTvNumber.setText(String.valueOf(numberValue));
-                        } else {
+                try {
+                    // 获取当前的数据
+                    String number = mTvNumber.getText().toString();
+                    int numberValue = Integer.parseInt(number);
+                    // 如果当前数据小于指定的最小值
+                    if (numberValue <= mMinNumber) {
+                        // 如果提示则进行数据的校验，默认不提示
+                        if (isHint()) {
                             if (!TextUtils.isEmpty(mMinNumberHint)) {
                                 ToastUtil.show(mMinNumberHint);
                             }
+                        } else {
+                            // 如果不提示的话，就继续点击事件的处理
+                            if (listener != null) {
+                                listener.onClick(v);
+                            }
                         }
-                    } catch (Exception ignored) {
+                    } else {
+                        // 自动变化数据
+                        if (mAutoChange) {
+                            numberValue--;
+                            mTvNumber.setText(String.valueOf(numberValue));
+                        }
+
+                        if (listener != null) {
+                            listener.onClick(v);
+                        }
                     }
+                } catch (Exception ignored) {
                 }
             });
         }
@@ -212,28 +233,33 @@ public class ShoppingNumber extends FrameLayout {
     public void setPlusSignClick(OnClickListener listener) {
         if (mFlPlusSign != null) {
             mFlPlusSign.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onClick(v);
-                }
-
-                if (mAutoChange) {
-                    try {
-                        String number = mTvNumber.getText().toString();
-                        int numberValue = Integer.parseInt(number);
-
-                        if (numberValue > mMaxNumber) {
+                try {
+                    // 转换当前值
+                    String number = mTvNumber.getText().toString();
+                    int numberValue = Integer.parseInt(number);
+                    // 当前值大于最大值
+                    if (numberValue >= mMaxNumber) {
+                        if (isHint()) {
                             // 大于这个数量，则进行提示
                             if (!TextUtils.isEmpty(mMaxNumberHint)) {
                                 ToastUtil.show(mMaxNumberHint);
                             }
                         } else {
+                            if (listener != null) {
+                                listener.onClick(v);
+                            }
+                        }
+                    } else {
+                        if (mAutoChange) {
                             numberValue++;
                             mTvNumber.setText(String.valueOf(numberValue));
                         }
-                    } catch (Exception ignored) {
+                        if (listener != null) {
+                            listener.onClick(v);
+                        }
                     }
+                } catch (Exception ignored) {
                 }
-
             });
         }
     }
