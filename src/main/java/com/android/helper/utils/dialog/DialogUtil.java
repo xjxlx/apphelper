@@ -30,6 +30,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashSet;
 
 /**
  * Dialog的工具类
@@ -202,7 +203,7 @@ public class DialogUtil implements BaseLifecycleObserver {
         private View mLayoutView;       // dialog的布局
         private FragmentActivity mActivity;     // dialog依赖的activity对象
         private Fragment mFragment;     // dialog依赖的activity对象
-        private View mCloseView; // 关闭dialog的对象
+        private HashSet<View> mListCloseView; // 关闭dialog的对象
         private int mGravity = Gravity.CENTER;// 默认居中显示
         private boolean mCanceledOnTouchOutside = true; // 点击dialog外界是否可以取消dialog ，默认可以
         private boolean mCancelable = true;// 按下返回键的时候，是否可以取消dialog,默认可以
@@ -301,7 +302,10 @@ public class DialogUtil implements BaseLifecycleObserver {
             if (mLayoutView != null) {
                 View view = this.mLayoutView.findViewById(id);
                 if (view != null) {
-                    mCloseView = view;
+                    if (mListCloseView == null) {
+                        mListCloseView = new HashSet<>();
+                    }
+                    mListCloseView.add(view);
                 }
             }
             return this;
@@ -313,7 +317,10 @@ public class DialogUtil implements BaseLifecycleObserver {
          */
         public Builder setClose(View view) {
             if (view != null) {
-                mCloseView = view;
+                if (mListCloseView == null) {
+                    mListCloseView = new HashSet<>();
+                }
+                mListCloseView.add(view);
             }
             return this;
         }
@@ -537,8 +544,10 @@ public class DialogUtil implements BaseLifecycleObserver {
                     mDialog.setCanceledOnTouchOutside(mCanceledOnTouchOutside);
 
                     // 点击关闭dialog
-                    if (mCloseView != null) {
-                        mCloseView.setOnClickListener(v -> dismiss());
+                    if (mListCloseView != null && mListCloseView.size() > 0) {
+                        for (View next : mListCloseView) {
+                            next.setOnClickListener(v -> dismiss());
+                        }
                     }
 
                     // 设置属性
@@ -626,8 +635,8 @@ public class DialogUtil implements BaseLifecycleObserver {
             if (mBuilder.mLayoutView != null) {
                 mBuilder.mLayoutView = null;
             }
-            if (mBuilder.mCloseView != null) {
-                mBuilder.mCloseView = null;
+            if (mBuilder.mListCloseView != null) {
+                mBuilder.mListCloseView = null;
             }
             if (mBuilder.mShowListener != null) {
                 mBuilder.mShowListener = null;
