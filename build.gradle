@@ -21,6 +21,9 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+
+        // 初始化系统设置
+        initSystemInfo()
     }
 
     buildTypes {
@@ -48,6 +51,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+}
+
+void initSystemInfo() {
+    def system = System.getenv("USERDOMAIN_ROAMINGPROFILE")
+    project.extensions.findByName('android')?.defaultConfig?.buildConfigField("String", "SYSTEM_NAME", "\"" + system + "\"")
+    println "${"SYSTEM_NAME:" + system}"
 }
 
 dependencies {
