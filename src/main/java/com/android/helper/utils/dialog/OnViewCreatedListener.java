@@ -7,6 +7,6 @@ import android.view.View;
  * @CreateDate: 2021/11/16-2:57 下午
  * @Description:
  */
-public interface OnViewCreateListener {
+public interface OnViewCreatedListener {
     void onViewCreated(View rootView);
 }
