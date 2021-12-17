@@ -211,7 +211,7 @@ public class DialogUtil implements BaseLifecycleObserver {
         private int mHeight = WindowManager.LayoutParams.WRAP_CONTENT; // 高
         private DialogInterface.OnShowListener mShowListener;
         private DialogInterface.OnDismissListener mDismissListener;
-        private OnViewCreateListener mOnViewCreateListener;
+        private OnViewCreatedListener mOnViewCreateListener;
         private boolean stopDialog;// 在stop的时候，关闭dialog
         private int mOffsetX; // 偏移的X轴
         private int mOffsetY; // 偏移的Y轴
@@ -487,7 +487,7 @@ public class DialogUtil implements BaseLifecycleObserver {
             return this;
         }
 
-        public Builder setOnViewCreateListener(OnViewCreateListener listener) {
+        public Builder setOnViewCreatedListener(OnViewCreatedListener listener) {
             mOnViewCreateListener = listener;
             return this;
         }
