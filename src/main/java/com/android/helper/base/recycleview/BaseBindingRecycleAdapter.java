@@ -30,36 +30,20 @@ public abstract class BaseBindingRecycleAdapter<T, V extends ViewBinding> extend
     protected ItemClickListener<V, T> mItemBindingClickListener;
     private BaseBindingVH<V> mBaseBindingVH;
 
-    public BaseBindingRecycleAdapter(Fragment fragment) {
-        super(fragment);
-    }
-
-    public BaseBindingRecycleAdapter(Fragment fragment, List<T> list) {
-        super(fragment, list);
-    }
-
-    public BaseBindingRecycleAdapter(Fragment fragment, Placeholder placeholder) {
-        super(fragment, placeholder);
-    }
-
-    public BaseBindingRecycleAdapter(Fragment fragment, List<T> list, Placeholder placeholder) {
-        super(fragment, list, placeholder);
-    }
-
     public BaseBindingRecycleAdapter(FragmentActivity activity) {
         super(activity);
-    }
-
-    public BaseBindingRecycleAdapter(FragmentActivity activity, Placeholder placeholder) {
-        super(activity, placeholder);
     }
 
     public BaseBindingRecycleAdapter(FragmentActivity activity, List<T> list) {
         super(activity, list);
     }
 
-    public BaseBindingRecycleAdapter(FragmentActivity activity, List<T> list, Placeholder placeholder) {
-        super(activity, list, placeholder);
+    public BaseBindingRecycleAdapter(Fragment fragment) {
+        super(fragment);
+    }
+
+    public BaseBindingRecycleAdapter(Fragment fragment, List<T> list) {
+        super(fragment, list);
     }
 
     @NonNull

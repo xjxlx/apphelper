@@ -83,42 +83,25 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         int TYPE_FOOT = -33;
     }
 
-    public RecycleViewFrameWork(Fragment fragment) {
-        addObserverFragment(fragment, null, null);
-    }
-
-    public RecycleViewFrameWork(Fragment fragment, List<T> list) {
-        addObserverFragment(fragment, list, null);
-    }
-
-    public RecycleViewFrameWork(Fragment fragment, Placeholder placeholder) {
-        addObserverFragment(fragment, null, placeholder);
-    }
-
-    public RecycleViewFrameWork(Fragment fragment, List<T> list, Placeholder placeholder) {
-        addObserverFragment(fragment, list, placeholder);
-    }
-
     public RecycleViewFrameWork(FragmentActivity activity) {
-        addObserverActivity(activity, null, null);
-    }
-
-    public RecycleViewFrameWork(FragmentActivity activity, Placeholder placeholder) {
-        addObserverActivity(activity, null, placeholder);
+        addObserverActivity(activity, null);
     }
 
     public RecycleViewFrameWork(FragmentActivity activity, List<T> list) {
-        addObserverActivity(activity, list, null);
+        addObserverActivity(activity, list);
     }
 
-    public RecycleViewFrameWork(FragmentActivity activity, List<T> list, Placeholder placeholder) {
-        addObserverActivity(activity, list, placeholder);
+    public RecycleViewFrameWork(Fragment fragment) {
+        addObserverFragment(fragment, null);
     }
 
-    private void addObserverFragment(Fragment fragment, List<T> list, Placeholder placeholder) {
+    public RecycleViewFrameWork(Fragment fragment, List<T> list) {
+        addObserverFragment(fragment, list);
+    }
+
+    private void addObserverFragment(Fragment fragment, List<T> list) {
         this.mFragment = fragment;
         this.mList = list;
-        this.mPlaceHolder = placeholder;
         if (fragment != null) {
             Lifecycle lifecycle = fragment.getLifecycle();
             lifecycle.addObserver(this);
@@ -128,10 +111,9 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         mGlobalPlaceholder = Placeholder.getGlobalPlaceholder();
     }
 
-    private void addObserverActivity(FragmentActivity activity, List<T> list, Placeholder placeholder) {
+    private void addObserverActivity(FragmentActivity activity, List<T> list) {
         this.mActivity = activity;
         this.mList = list;
-        this.mPlaceHolder = placeholder;
         if (activity != null) {
             Lifecycle lifecycle = activity.getLifecycle();
             lifecycle.addObserver(this);

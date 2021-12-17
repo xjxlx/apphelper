@@ -28,36 +28,20 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
      */
     protected OnItemClickListener<T> mItemClickListener;
 
-    public BaseRecycleAdapter(Fragment fragment) {
-        super(fragment);
-    }
-
-    public BaseRecycleAdapter(Fragment fragment, List<T> list) {
-        super(fragment, list);
-    }
-
-    public BaseRecycleAdapter(Fragment fragment, Placeholder placeholder) {
-        super(fragment, placeholder);
-    }
-
-    public BaseRecycleAdapter(Fragment fragment, List<T> list, Placeholder placeholder) {
-        super(fragment, list, placeholder);
-    }
-
     public BaseRecycleAdapter(FragmentActivity activity) {
         super(activity);
-    }
-
-    public BaseRecycleAdapter(FragmentActivity activity, Placeholder placeholder) {
-        super(activity, placeholder);
     }
 
     public BaseRecycleAdapter(FragmentActivity activity, List<T> list) {
         super(activity, list);
     }
 
-    public BaseRecycleAdapter(FragmentActivity activity, List<T> list, Placeholder placeholder) {
-        super(activity, list, placeholder);
+    public BaseRecycleAdapter(Fragment fragment) {
+        super(fragment);
+    }
+
+    public BaseRecycleAdapter(Fragment fragment, List<T> list) {
+        super(fragment, list);
     }
 
     /**
