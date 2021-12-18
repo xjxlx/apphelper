@@ -56,7 +56,7 @@ android {
 void initSystemInfo() {
     def system = null
     system = System.getenv("USERDOMAIN_ROAMINGPROFILE") // windows
-    if (system ==null){
+    if (system == null) {
         system = System.getenv("USER")// mac
     }
     project.extensions.findByName('android')?.defaultConfig?.buildConfigField("String", "SYSTEM_NAME", "\"" + system + "\"")
@@ -90,7 +90,7 @@ dependencies {
     api 'org.greenrobot:eventbus:3.2.0'
     // api 'com.tbruyelle.rxpermissions:rxpermissions:0.9.4'  rxjava1版本
     // api 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.4@aar' // rxjava2 版本
-    api 'com.github.tbruyelle:rxpermissions:0.12' // rxjava3 版本
+    implementation 'com.github.tbruyelle:rxpermissions:0.12'  // rxjava3 版本
 
     api 'com.google.code.gson:gson:2.8.6'
     api 'com.scwang.smart:refresh-layout-kernel:2.0.1'      //刷新的核心须依赖
@@ -100,7 +100,9 @@ dependencies {
     api 'com.squareup.retrofit2:converter-scalars:2.9.0'// 必要依赖，把数据转产成字符串使用
     api("com.squareup.okhttp3:okhttp:4.9.0") // okHttp的依赖
     api 'io.reactivex.rxjava2:rxjava:2.2.21'// 必要rxjava2依赖
-    implementation "io.reactivex.rxjava3:rxjava:3.0.4"
+    implementation("io.reactivex.rxjava3:rxjava:3.0.4") { // 禁止依赖的传递
+        transitive = false
+    }
 
     api 'io.reactivex.rxjava2:rxandroid:2.1.1'// 必要rxAndroid依赖，切线程时需要用到
     api 'com.github.bumptech.glide:glide:4.12.0' // glide 图片加载库 ，尽量自己使用，避免版本冲突
