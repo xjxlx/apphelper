@@ -44,10 +44,10 @@ public class TextViewUtil {
 
     public static void setText(TextView textView, String value, String defaultValue) {
         if (textView != null) {
-            if (!TextUtils.isEmpty(value)) {
+            if (value != null) {
                 textView.setText(value);
             } else {
-                if (!TextUtils.isEmpty(defaultValue)) {
+                if (defaultValue != null) {
                     textView.setText(defaultValue);
                 } else {
                     textView.setText("");
