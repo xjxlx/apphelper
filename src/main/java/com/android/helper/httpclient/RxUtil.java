@@ -5,7 +5,11 @@ package com.android.helper.httpclient;
 //import io.reactivex.android.schedulers.AndroidSchedulers;
 //import io.reactivex.schedulers.Schedulers;
 
-import org.jetbrains.annotations.NotNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
+import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
+import com.android.helper.utils.LogUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,11 +18,13 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
-public class RxUtil {
+public class RxUtil implements BaseLifecycleObserver {
+
+    private FragmentActivity mActivity;
+    private Fragment mFragment;
+    private Disposable mSubscribeCountdown;
 
     /**
      * @param <T>
@@ -41,33 +47,124 @@ public class RxUtil {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public RxUtil(Builder builder) {
+        if (builder != null) {
+            mActivity = builder.mActivity;
+            mFragment = builder.mFragment;
+
+            if (mActivity != null) {
+                mActivity.getLifecycle().addObserver(this);
+            }
+
+            if (mFragment != null) {
+                mFragment.getLifecycle().addObserver(this);
+            }
+        }
+    }
+
     /**
-     * @param initialDelay 第一次发送的延迟时间
-     * @param period       间隔的时间，单位由unit来确认，这里只是指定数值
-     * @param unit         间隔时间的单位，TimeUnit是一个枚举类型，直接调用需要使用的单位即可，如：TimeUnit.MINUTES
+     * <ol>
+     *     倒计时的工具
+     * </ol>
+     *
+     * @param totalTime    总的时长，单位是毫秒
+     * @param initialDelay 第一次发送的延迟时间，单位是毫秒
+     * @param period       间隔的时间，单位是毫秒，这里只是指定数值
+     *                     <ui>
+     *                     间隔时间的单位，TimeUnit是一个枚举类型，直接调用需要使用的单位即可，如：TimeUnit.MINUTES
      *                     1毫秒 ： {@link TimeUnit#MILLISECONDS}
      *                     1秒   ： {@link TimeUnit#SECONDS}
      *                     1分钟 ：{@link TimeUnit#MINUTES}
      *                     1小时 ：{@link TimeUnit#HOURS}
      *                     1天   ：{@link TimeUnit#DAYS}
+     *                     </ui>
      */
-    public static void countdown(long initialDelay, long period, TimeUnit unit) {
-        Disposable subscribe = Observable.interval(initialDelay, period, unit)
+    public void countdown(long totalTime, long initialDelay, long period, CountdownListener countdownListener) {
+        /*
+         * 第一个参数：总的倒计时数据
+         * 第二个参数：当前的计数器
+         * 第三个参数：当前的倒计时
+         */
+        long[] countdown = {totalTime, 0, 0};
+
+        mSubscribeCountdown = Observable
+                .interval(initialDelay, period, TimeUnit.MILLISECONDS)
                 .compose(RxUtil.getSchedulerObservable())
-                .takeUntil(new Predicate<Long>() {
-                    @Override
-                    public boolean test(@NotNull Long aLong) throws Exception {
 
-                        return false;
-                    }
+                .map(aLong -> { // 转换数据，把倒计时的数据发送出去
+                    // 当前的计数器
+                    countdown[1] = aLong + 1;
+
+                    // 总计数每次减一秒
+                    countdown[0] -= 1000;
+
+                    return countdown[0];
                 })
-                .subscribe(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) throws Exception {
-
+                .takeUntil(aLong -> { // 条件处理器，用来中断倒计时
+                    boolean take = (countdown[0]) > 0;
+                    return !take;
+                })
+                .subscribe(aLong -> {  // 发送结果
+                    countdown[2] = aLong;
+                    if (countdownListener != null) {
+                        countdownListener.countdown(mSubscribeCountdown, countdown[1], countdown[2]);
                     }
                 });
+    }
 
+    @Override
+    public void onCreate() {
+        LogUtil.e("rxUtil ---> onCreate");
+    }
+
+    @Override
+    public void onStart() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        LogUtil.e("rxUtil ---> onDestroy");
+        // 中断的操作
+        if (mSubscribeCountdown != null) {
+            if (!mSubscribeCountdown.isDisposed()) {
+                mSubscribeCountdown.dispose();
+            }
+        }
+    }
+
+    public static class Builder {
+        private final FragmentActivity mActivity;
+        private final Fragment mFragment;
+
+        public Builder(FragmentActivity activity) {
+            mActivity = activity;
+            mFragment = null;
+        }
+
+        public Builder(Fragment fragment) {
+            mFragment = fragment;
+            mActivity = null;
+        }
+
+        public RxUtil build() {
+            return new RxUtil(this);
+        }
     }
 
 }
