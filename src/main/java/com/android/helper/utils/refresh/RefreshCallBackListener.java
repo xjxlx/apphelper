@@ -8,9 +8,10 @@ import org.jetbrains.annotations.NotNull;
  * @Description:
  */
 public interface RefreshCallBackListener<T> {
+
     void onStart();
 
-    void onSuccess(@NotNull T t);
+    void onSuccess(RefreshUtil<T> refreshUtil, @NotNull T t);
 
     void onError(@NotNull Throwable e);
 

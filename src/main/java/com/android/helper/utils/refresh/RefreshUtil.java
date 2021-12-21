@@ -189,19 +189,21 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
         boolean isNoMoreData = false;   // 是否还有跟多的数据
         if ((mRefreshType == RefreshType.TYPE_REFRESH_LOAD_MORE) || (mRefreshType == RefreshType.TYPE_LOAD_MORE)) {
             // 只有在上拉加载的时候，判断这个才有意义，避免数据的繁琐逻辑
-            List<?> list = setNoMoreData(mData);
-            if (list == null) {
-                /*
-                 * 数据为空的时候，设置为没有更多数据了
-                 */
-                isNoMoreData = true;
-            } else {
-                /*
-                 * 1:数据不为空，数据为0的时候，设置为没有更多数据
-                 * 2:数据不为空，数据长度小于每页查询页数长度的时候，设置为没有更多数据
-                 */
-                if ((list.size() == 0) || (list.size() < getPageSiZe())) { //
+            if (mData != null) {
+                List<?> list = setNoMoreData(mData);
+                if (list == null) {
+                    /*
+                     * 数据为空的时候，设置为没有更多数据了
+                     */
                     isNoMoreData = true;
+                } else {
+                    /*
+                     * 1:数据不为空，数据为0的时候，设置为没有更多数据
+                     * 2:数据不为空，数据长度小于每页查询页数长度的时候，设置为没有更多数据
+                     */
+                    if ((list.size() == 0) || (list.size() < getPageSiZe())) { //
+                        isNoMoreData = true;
+                    }
                 }
             }
         }
@@ -453,7 +455,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
         }
 
         if (mCallBack != null) {
-            mCallBack.onSuccess(t);
+            mCallBack.onSuccess(this, t);
         }
     }
 

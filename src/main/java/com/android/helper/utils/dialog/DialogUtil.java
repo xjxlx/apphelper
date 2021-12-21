@@ -467,6 +467,30 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
+         * @param id              控件的资源id
+         * @param visibilityValue true:可见  false:不可见
+         * @return 设置view可见与不可见
+         */
+        public Builder setVisibility(@IdRes int id, boolean visibilityValue) {
+            if (mLayoutView != null) {
+                View view = mLayoutView.findViewById(id);
+                if (view != null) {
+                    int visibility = view.getVisibility();
+                    if (visibilityValue) {
+                        if (visibility != View.VISIBLE) {
+                            view.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        if (visibility != View.GONE) {
+                            view.setVisibility(View.GONE);
+                        }
+                    }
+                }
+            }
+            return this;
+        }
+
+        /**
          * @param text 内容
          * @return 设置title内容，title的id必须是：R.id.tv_title
          */
