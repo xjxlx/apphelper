@@ -74,4 +74,22 @@ public class DateUtil {
         return time;
     }
 
+    /**
+     * @param longTime 具体的时间戳
+     * @param pattern  转换规则，例如：yyyy-MM-dd HH:mm:ss
+     * @return 把一个时间戳转换成一个格式化后的时间
+     */
+    public static String longTimeToDate(long longTime, String pattern) {
+        String time = "";
+        try {
+            if ((longTime > 0) && (!TextUtils.isEmpty(pattern))) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+                Date date = new Date(longTime);
+                time = simpleDateFormat.format(date);
+            }
+        } catch (Exception ignored) {
+        }
+        return time;
+    }
+
 }
