@@ -51,4 +51,27 @@ public class DateUtil {
         CharSequence pattern = hasHour ? "kk:mm:ss" : "mm:ss";
         return DateFormat.format(pattern, calendar);
     }
+
+    /**
+     * @param stringValue 时间字符串：例如：2021-12-21 15:26:32
+     * @param pattern     指定格式，例如：yyyy-MM-dd HH:mm:ss
+     * @return 把字符串转换成时间戳
+     */
+    public static long stringToMillis(String stringValue, String pattern) {
+        long time = 0;
+        try {
+            if ((!TextUtils.isEmpty(pattern)) && (!TextUtils.isEmpty(stringValue))) {
+                SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+                Date date = formatter.parse(stringValue);
+                //日期转时间戳（毫秒）
+                if (date != null) {
+                    time = date.getTime();
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.e("转换失败！");
+        }
+        return time;
+    }
+
 }
