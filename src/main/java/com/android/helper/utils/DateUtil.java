@@ -118,9 +118,6 @@ public class DateUtil {
      */
     public static String getTimeToTimeMillis(Long timeMillis, DataEnum anEnum) {
         String result = "";
-        String hours;
-        String minutes;
-        String seconds;
         //获取天数
         long day = timeMillis / 24 / 60 / 60 / 1000;
         //获取小时值
@@ -131,7 +128,6 @@ public class DateUtil {
         long second = (timeMillis - day * (1000 * 60 * 60 * 24) - hour * (1000 * 60 * 60) - minute * (1000 * 60)) / 1000;
 
         if (anEnum == DataEnum.DAY_HOURS_MINUTES_SECONDS) { // 显示固定的 天、小时、分钟、秒，如果没有就使用00：补全
-
             if (day < 10) {
                 result += ("0" + day + ":");
             } else {
@@ -151,9 +147,9 @@ public class DateUtil {
             }
 
             if (second < 10) {
-                result += ("0" + second + ":");
+                result += ("0" + second);
             } else {
-                result += (second + ":");
+                result += second;
             }
 
         } else if (anEnum == DataEnum.HOURS_MINUTES_SECONDS) { // 固定显示 小时、分钟、秒，数据不够就使用00：补全
@@ -170,9 +166,9 @@ public class DateUtil {
             }
 
             if (second < 10) {
-                result += ("0" + second + ":");
+                result += ("0" + second);
             } else {
-                result += (second + ":");
+                result += second;
             }
 
         } else if (anEnum == DataEnum.MINUTES_SECONDS) { // 固定显示 分钟、秒，数据不够就使用00：补全
@@ -183,9 +179,9 @@ public class DateUtil {
             }
 
             if (second < 10) {
-                result += ("0" + second + ":");
+                result += ("0" + second);
             } else {
-                result += (second + ":");
+                result += second;
             }
 
         } else if (anEnum == DataEnum.AUTO_DIGITS) { // 动态显示 天、小时、分钟、秒、 如果没有，前面的数据，就使用00：去补全，最低的限制要显示分钟和秒
@@ -213,9 +209,9 @@ public class DateUtil {
             }
 
             if (second < 10) {
-                result += ("0" + second + ":");
+                result += ("0" + second);
             } else {
-                result += (second + ":");
+                result += second;
             }
         }
         return result;
