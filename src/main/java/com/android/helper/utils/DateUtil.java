@@ -92,4 +92,58 @@ public class DateUtil {
         return time;
     }
 
+    public static String parse(long longTime) {
+        String result = "";
+
+        long hh = longTime / 60 / 60 % 60;
+        long mm = longTime / 60 % 60;
+        long ss = longTime % 60;
+
+        LogUtil.e("hh:" + hh + "  mm:" + mm + "   ss:" + ss);
+        if (hh > 0) {
+            result = hh + ":" + mm + ":" + ss;
+        } else {
+            result = "00:" + mm + ":" + ss;
+        }
+
+        return result;
+    }
+
+    /**
+     * @param newTime 当前的时间戳，这个时间戳不是年月日时分秒的，是相差的时间戳
+     * @return 返回：小时，分钟，秒的对象
+     */
+    public static String getTimeToTimeMillis(Long newTime) {
+        String hours;
+        String minutes;
+        String seconds;
+        //获取天数
+        long day = newTime / 24 / 60 / 60 / 1000;
+        //获取小时值
+        long hour = (newTime - day * (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);
+        //获取分值
+        long minute = (newTime - day * (1000 * 60 * 60 * 24) - hour * (1000 * 60 * 60)) / (1000 * 60);
+        //获取秒数
+        long second = (newTime - day * (1000 * 60 * 60 * 24) - hour * (1000 * 60 * 60) - minute * (1000 * 60)) / 1000;
+
+        if (hour < 10) {
+            hours = "0" + hour;
+        } else {
+            hours = String.valueOf(hour);
+        }
+
+        if (minute < 10) {
+            minutes = "0" + minute;
+        } else {
+            minutes = String.valueOf(minute);
+        }
+
+        if (second < 10) {
+            seconds = "0" + second;
+        } else {
+            seconds = String.valueOf(second);
+        }
+        return hours + ":" + minutes + ":" + seconds;
+    }
+
 }
