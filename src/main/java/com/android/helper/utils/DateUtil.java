@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 
+import com.android.helper.enums.DataEnum;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -110,40 +112,113 @@ public class DateUtil {
     }
 
     /**
-     * @param newTime 当前的时间戳，这个时间戳不是年月日时分秒的，是相差的时间戳
-     * @return 返回：小时，分钟，秒的对象
+     * @param timeMillis 当前的时间戳，这个时间戳不是年月日时分秒的，是相差的时间戳
+     * @param anEnum     显示的位数，如果是两位，则显示分钟:秒，例如：09：34，如果是三位数：则显示小时：分钟：秒
+     * @return 把指定的时间戳转换成固定的格式，例如：xxxxxxxx -->  03:34
      */
-    public static String getTimeToTimeMillis(Long newTime) {
+    public static String getTimeToTimeMillis(Long timeMillis, DataEnum anEnum) {
+        String result = "";
         String hours;
         String minutes;
         String seconds;
         //获取天数
-        long day = newTime / 24 / 60 / 60 / 1000;
+        long day = timeMillis / 24 / 60 / 60 / 1000;
         //获取小时值
-        long hour = (newTime - day * (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);
+        long hour = (timeMillis - day * (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);
         //获取分值
-        long minute = (newTime - day * (1000 * 60 * 60 * 24) - hour * (1000 * 60 * 60)) / (1000 * 60);
+        long minute = (timeMillis - day * (1000 * 60 * 60 * 24) - hour * (1000 * 60 * 60)) / (1000 * 60);
         //获取秒数
-        long second = (newTime - day * (1000 * 60 * 60 * 24) - hour * (1000 * 60 * 60) - minute * (1000 * 60)) / 1000;
+        long second = (timeMillis - day * (1000 * 60 * 60 * 24) - hour * (1000 * 60 * 60) - minute * (1000 * 60)) / 1000;
 
-        if (hour < 10) {
-            hours = "0" + hour;
-        } else {
-            hours = String.valueOf(hour);
-        }
+        if (anEnum == DataEnum.DAY_HOURS_MINUTES_SECONDS) { // 显示固定的 天、小时、分钟、秒，如果没有就使用00：补全
 
-        if (minute < 10) {
-            minutes = "0" + minute;
-        } else {
-            minutes = String.valueOf(minute);
-        }
+            if (day < 10) {
+                result += ("0" + day + ":");
+            } else {
+                result += (day + ":");
+            }
 
-        if (second < 10) {
-            seconds = "0" + second;
-        } else {
-            seconds = String.valueOf(second);
+            if (hour < 10) {
+                result += ("0" + hour + ":");
+            } else {
+                result += (hour + ":");
+            }
+
+            if (minute < 10) {
+                result += ("0" + minute + ":");
+            } else {
+                result += (minute + ":");
+            }
+
+            if (second < 10) {
+                result += ("0" + second + ":");
+            } else {
+                result += (second + ":");
+            }
+
+        } else if (anEnum == DataEnum.HOURS_MINUTES_SECONDS) { // 固定显示 小时、分钟、秒，数据不够就使用00：补全
+            if (hour < 10) {
+                result += ("0" + hour + ":");
+            } else {
+                result += (hour + ":");
+            }
+
+            if (minute < 10) {
+                result += ("0" + minute + ":");
+            } else {
+                result += (minute + ":");
+            }
+
+            if (second < 10) {
+                result += ("0" + second + ":");
+            } else {
+                result += (second + ":");
+            }
+
+        } else if (anEnum == DataEnum.MINUTES_SECONDS) { // 固定显示 分钟、秒，数据不够就使用00：补全
+            if (minute < 10) {
+                result += ("0" + minute + ":");
+            } else {
+                result += (minute + ":");
+            }
+
+            if (second < 10) {
+                result += ("0" + second + ":");
+            } else {
+                result += (second + ":");
+            }
+
+        } else if (anEnum == DataEnum.AUTO_DIGITS) { // 动态显示 天、小时、分钟、秒、 如果没有，前面的数据，就使用00：去补全，最低的限制要显示分钟和秒
+
+            if (day > 0) {
+                if (day < 10) {
+                    result += ("0" + day + ":");
+                } else {
+                    result += (day + ":");
+                }
+            }
+
+            if (hour > 0) {
+                if (hour < 10) {
+                    result += ("0" + hour + ":");
+                } else {
+                    result += (hour + ":");
+                }
+            }
+
+            if (minute < 10) {
+                result += ("0" + minute + ":");
+            } else {
+                result += (minute + ":");
+            }
+
+            if (second < 10) {
+                result += ("0" + second + ":");
+            } else {
+                result += (second + ":");
+            }
         }
-        return hours + ":" + minutes + ":" + seconds;
+        return result;
     }
 
 }
