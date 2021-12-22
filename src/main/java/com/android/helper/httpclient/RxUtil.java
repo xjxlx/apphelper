@@ -101,8 +101,8 @@ public class RxUtil implements BaseLifecycleObserver {
                     return countdown[0];
                 })
                 .takeUntil(aLong -> { // 条件处理器，用来中断倒计时
-                    boolean take = (countdown[0]) > 0;
-                    return !take;
+                    //  takeUntil takeUntil
+                    return countdown[0] < 0;
                 })
                 .subscribe(aLong -> {  // 发送结果
                     countdown[2] = aLong;
