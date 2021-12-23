@@ -61,10 +61,6 @@ public class DialogUtil implements BaseLifecycleObserver {
     private int mOffsetY; // 偏移的Y轴
     private Dialog mDialog;
     private boolean isAutoDismiss;// 在点击按钮的时候，是否自定关闭dialog
-    /**
-     * 1：来源于activity，2：来源于fragment
-     */
-    private int mTypeFrom;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({DialogType.DEFAULT_DIALOG, DialogType.HINT_DIALOG})
@@ -76,7 +72,10 @@ public class DialogUtil implements BaseLifecycleObserver {
     private DialogUtil(Builder builder) {
         if (builder != null) {
             this.mBuilder = builder;
-            mTypeFrom = mBuilder.mTypeFrom;
+            /*
+             * 1：来源于activity，2：来源于fragment
+             */
+            int typeFrom = mBuilder.mTypeFrom;
             mAnimation = mBuilder.mAnimation;
             mDialogType = mBuilder.mDialogType;
             mLayoutView = mBuilder.mLayoutView;
@@ -92,7 +91,7 @@ public class DialogUtil implements BaseLifecycleObserver {
             isAutoDismiss = mBuilder.isAutoDismiss;
 
             // 添加生命周期的控制
-            if (mTypeFrom == 1) {
+            if (typeFrom == 1) {
                 mActivity = mBuilder.mActivity;
                 if (mActivity != null) {
                     Lifecycle lifecycle = mActivity.getLifecycle();
@@ -105,10 +104,8 @@ public class DialogUtil implements BaseLifecycleObserver {
                     lifecycle.addObserver(this);
                 }
             }
-
+            initDialog();
         }
-
-        initDialog();
     }
 
     public DialogUtil show() {
@@ -116,12 +113,7 @@ public class DialogUtil implements BaseLifecycleObserver {
             if ((!mActivity.isFinishing()) && (!mActivity.isDestroyed()) && (mDialog != null) && (!mDialog.isShowing())) {
                 mDialog.show();
             } else {
-                LogUtil.e("dialog打开失败：activity:"
-                        + mActivity + " isFinishing:"
-                        + (mActivity.isFinishing())
-                        + " dialog:" + mDialog
-                        + " isShowing:" + (mDialog.isShowing())
-                );
+                LogUtil.e("dialog打开失败：activity:" + mActivity + " isFinishing:" + (mActivity.isFinishing()) + " dialog:" + mDialog + " isShowing:" + (mDialog.isShowing()));
             }
         }
         return this;
@@ -136,6 +128,9 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
     }
 
+    /**
+     * 关闭弹窗
+     */
     public void dismiss() {
         if (mDialog != null) {
             mDialog.dismiss();
@@ -405,11 +400,8 @@ public class DialogUtil implements BaseLifecycleObserver {
                 // 设置布局
                 mDialog.setContentView(mLayoutView);
 
-                // 按下返回键是否可以取消dialog
-                mDialog.setCancelable(mCancelable);
-
-                // dialog点击区域外的时候，是否可以取消dialog
-                mDialog.setCanceledOnTouchOutside(mCanceledOnTouchOutside);
+                // 设置属性，如果没有猜错，这个设置的属性，必须要在设置布局之前才可以，否则可能会卡死，出现异常
+                setWindowAttributes();
 
                 // 点击关闭dialog
                 if (mListCloseView != null && mListCloseView.size() > 0) {
@@ -418,13 +410,28 @@ public class DialogUtil implements BaseLifecycleObserver {
                     }
                 }
 
-                // 设置属性
-                setWindowAttributes();
-
                 // view布局设置之后的回调
                 if (mOnViewCreateListener != null) {
                     mOnViewCreateListener.onViewCreated(mLayoutView);
                 }
+
+                // dialog展示时候的监听
+                mDialog.setOnShowListener(dialog -> {
+                            if (mShowListener != null) {
+                                mShowListener.onShow(dialog);
+                            }
+                            EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_SHOW));
+                        }
+                );
+
+                // dialog 关闭时候的监听
+                mDialog.setOnDismissListener(dialog -> {
+                            if (mDismissListener != null) {
+                                mDismissListener.onDismiss(dialog);
+                            }
+                            EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_DISMISS));
+                        }
+                );
             }
         }
     }
@@ -434,6 +441,13 @@ public class DialogUtil implements BaseLifecycleObserver {
      */
     private void setWindowAttributes() {
         if (mDialog != null) {
+
+            // 按下返回键是否可以取消dialog
+            mDialog.setCancelable(mCancelable);
+
+            // dialog点击区域外的时候，是否可以取消dialog
+            mDialog.setCanceledOnTouchOutside(mCanceledOnTouchOutside);
+
             Window window = mDialog.getWindow();
             if (window != null) {
                 window.setGravity(mGravity);
@@ -457,24 +471,6 @@ public class DialogUtil implements BaseLifecycleObserver {
                 // 设置属性
                 window.setAttributes(attributes);
             }
-
-            // dialog展示时候的监听
-            mDialog.setOnShowListener(dialog -> {
-                        if (mShowListener != null) {
-                            mShowListener.onShow(dialog);
-                        }
-                        EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_SHOW));
-                    }
-            );
-
-            // dialog 关闭时候的监听
-            mDialog.setOnDismissListener(dialog -> {
-                        if (mDismissListener != null) {
-                            mDismissListener.onDismiss(dialog);
-                        }
-                        EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_DISMISS));
-                    }
-            );
         }
     }
 
