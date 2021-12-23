@@ -8,5 +8,5 @@ import android.view.View;
  * @Description:
  */
 public interface DialogClickListener {
-    void onClick(View v, DialogUtil.Builder builder);
+    void onClick(View v, DialogUtil dialogUtil);
 }

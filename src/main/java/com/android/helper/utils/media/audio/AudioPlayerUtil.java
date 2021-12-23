@@ -248,13 +248,13 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
                             boolean openNotify = mNotificationUtil.checkOpenNotify(mContext);
                             if (!openNotify) {
                                 mDialogUtil = new DialogUtil.Builder(mContext, R.layout.base_default_dialog)
+                                        .setClose(R.id.tv_qx)
+                                        .Build()
                                         .setText(R.id.tv_title, "是否打开通知权限？")
                                         .setText(R.id.tv_msg, "如果不打开通知权限，则可能后台播放的时候会断开连接！")
-                                        .setClose(R.id.tv_qx)
                                         .setOnClickListener(R.id.tv_qd, (v, builder) -> {
                                             mNotificationUtil.goToSetNotify(mContext);
-                                        })
-                                        .Build();
+                                        });
                             }
                         }
                     } catch (Exception e) {
