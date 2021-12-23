@@ -290,8 +290,34 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
             if (holder instanceof EmptyVH) {
                 EmptyVH emptyVH = (EmptyVH) holder;
 
-                if (mPlaceHolder == null) { // 如果没有设置，就是用全局的站位图信息
-                    if (mGlobalPlaceholder != null) {
+                if (mErrorType != 2) { // 这里说明接口是正常的，单纯去处理无数据的占位图
+                    if (mPlaceHolder != null) { // 设置了指定的占位图
+                        String emptyContent = mPlaceHolder.getEmptyContent();
+                        int emptyContentColor = mPlaceHolder.getEmptyContentColor();
+                        int emptyContentSize = mPlaceHolder.getEmptyContentSize();
+                        int emptyResource = mPlaceHolder.getEmptyResource();
+
+                        // 文字的描述
+                        if (!TextUtils.isEmpty(emptyContent)) {
+                            emptyVH.mTvMsg.setText(emptyContent);
+                        }
+
+                        // 描述文字的大小
+                        if (emptyContentSize != 0) {
+                            emptyVH.mTvMsg.setTextSize(emptyContentSize);
+                        }
+
+                        // 文字的颜色
+                        if (emptyContentColor != 0) {
+                            emptyVH.mTvMsg.setTextColor(emptyContentColor);
+                        }
+
+                        // 图片
+                        if (emptyResource != 0) {
+                            emptyVH.mIvImage.setImageResource(emptyResource);
+                        }
+
+                    } else if (mGlobalPlaceholder != null) { // 使用公用的占位图
                         String emptyContent = mGlobalPlaceholder.getEmptyContent();
                         int emptyContentColor = mGlobalPlaceholder.getEmptyContentColor();
                         int emptyContentSize = mGlobalPlaceholder.getEmptyContentSize();
@@ -317,109 +343,75 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                             emptyVH.mIvImage.setImageResource(emptyResource);
                         }
                     }
-                } else {  // 设置了指定的占位图信息
-                    if (mPlaceHolder.getTypeForView() == 2) { // 默认的占位图
+                } else { // 这里说明接口异常了，不去处理无数据的占位图，直接处理断网的操作
+                    /*
+                     * 错误的占位图，此占位图因为要从新刷新说句，所以需要传入刷新工具的对象
+                     */
+                    emptyVH.mIvButton.setVisibility(View.VISIBLE);
 
-                        switch (mErrorType) {
-                            case 1: // 空数据布局
-                                // 刷新按钮不可见
-                                emptyVH.mIvButton.setVisibility(View.GONE);
+                    int mGlobalErrorImage = 0;
+                    String mGlobalErrorContent = null;
+                    String mGlobalErrorButtonContent = null;
+                    int mGlobalErrorButtonBackground = 0;
 
-                                // 空布局提示
-                                String emptyContent = mPlaceHolder.getEmptyContent();
-                                if (!TextUtils.isEmpty(emptyContent)) {
-                                    TextViewUtil.setText(emptyVH.mTvMsg, emptyContent);
-                                }
-
-                                // 描述文字的大小
-                                int contentSize = mPlaceHolder.getEmptyContentSize();
-                                if (contentSize != 0) {
-                                    emptyVH.mTvMsg.setTextSize(contentSize);
-                                }
-
-                                // 提示信息的颜色
-                                int contentColor = mPlaceHolder.getEmptyContentColor();
-                                if (contentColor != 0) {
-                                    emptyVH.mTvMsg.setTextColor(contentColor);
-                                }
-
-                                // 空布局资源
-                                int emptyResource = mPlaceHolder.getEmptyResource();
-                                if (emptyResource != 0) {
-                                    emptyVH.mIvImage.setImageResource(emptyResource);
-                                }
-
-                                break;
-                            case 2: // 错误的布局可见
-                                emptyVH.mIvButton.setVisibility(View.VISIBLE);
-
-                                int mGlobalErrorImage = 0;
-                                String mGlobalErrorContent = null;
-                                String mGlobalErrorButtonContent = null;
-                                int mGlobalErrorButtonBackground = 0;
-
-                                if (mGlobalPlaceholder != null) {
-                                    mGlobalErrorImage = mGlobalPlaceholder.getErrorImage();
-                                    mGlobalErrorContent = mGlobalPlaceholder.getErrorContent();
-                                    mGlobalErrorButtonContent = mGlobalPlaceholder.getErrorButtonContent();
-                                    mGlobalErrorButtonBackground = mGlobalPlaceholder.getErrorButtonBackground();
-                                }
-
-                                // 错误布局资源
-                                int errorImageResource = mPlaceHolder.getErrorImage();
-                                if (errorImageResource != 0) {
-                                    emptyVH.mIvImage.setImageResource(errorImageResource);
-                                } else {
-                                    // 设置全局的异常图片资源
-                                    if (mGlobalErrorImage != 0) {
-                                        emptyVH.mIvImage.setImageResource(mGlobalErrorImage);
-                                    }
-                                }
-
-                                // 错误布局提示
-                                String errorContent = mPlaceHolder.getErrorContent();
-                                if (!TextUtils.isEmpty(errorContent)) {
-                                    TextViewUtil.setText(emptyVH.mTvMsg, errorContent);
-                                } else {
-                                    // 全局的错误提示
-                                    if (!TextUtils.isEmpty(mGlobalErrorContent)) {
-                                        TextViewUtil.setText(emptyVH.mTvMsg, mGlobalErrorContent);
-                                    }
-                                }
-
-                                // 错误布局按钮的文字
-                                String errorButtonContent = mPlaceHolder.getErrorButtonContent();
-                                if (!TextUtils.isEmpty(errorButtonContent)) {
-                                    TextViewUtil.setText(emptyVH.mIvButton, errorButtonContent);
-                                } else {
-                                    // 全局的异常Button文字
-                                    if (!TextUtils.isEmpty(mGlobalErrorButtonContent)) {
-                                        TextViewUtil.setText(emptyVH.mIvButton, mGlobalErrorButtonContent);
-                                    }
-                                }
-
-                                // 错误布局的背景
-                                int errorButtonBackground = mPlaceHolder.getErrorButtonBackground();
-                                if (errorButtonBackground != 0) {
-                                    emptyVH.mIvButton.setBackgroundResource(errorButtonBackground);
-                                } else {
-                                    // 全局的异常背景
-                                    if (mGlobalErrorButtonBackground != 0) {
-                                        emptyVH.mIvButton.setBackgroundResource(mGlobalErrorButtonBackground);
-                                    }
-                                }
-
-                                emptyVH.mIvButton.setOnClickListener(v -> {
-                                    if (mRefreshUtil != null) {
-                                        mRefreshUtil.refresh();
-                                    }
-                                });
-
-                                break;
-                        }
-
+                    if (mGlobalPlaceholder != null) {
+                        mGlobalErrorImage = mGlobalPlaceholder.getErrorImage();
+                        mGlobalErrorContent = mGlobalPlaceholder.getErrorContent();
+                        mGlobalErrorButtonContent = mGlobalPlaceholder.getErrorButtonContent();
+                        mGlobalErrorButtonBackground = mGlobalPlaceholder.getErrorButtonBackground();
                     }
+
+                    // 错误布局资源
+                    int errorImageResource = mPlaceHolder.getErrorImage();
+                    if (errorImageResource != 0) {
+                        emptyVH.mIvImage.setImageResource(errorImageResource);
+                    } else {
+                        // 设置全局的异常图片资源
+                        if (mGlobalErrorImage != 0) {
+                            emptyVH.mIvImage.setImageResource(mGlobalErrorImage);
+                        }
+                    }
+
+                    // 错误布局提示
+                    String errorContent = mPlaceHolder.getErrorContent();
+                    if (!TextUtils.isEmpty(errorContent)) {
+                        TextViewUtil.setText(emptyVH.mTvMsg, errorContent);
+                    } else {
+                        // 全局的错误提示
+                        if (!TextUtils.isEmpty(mGlobalErrorContent)) {
+                            TextViewUtil.setText(emptyVH.mTvMsg, mGlobalErrorContent);
+                        }
+                    }
+
+                    // 错误布局按钮的文字
+                    String errorButtonContent = mPlaceHolder.getErrorButtonContent();
+                    if (!TextUtils.isEmpty(errorButtonContent)) {
+                        TextViewUtil.setText(emptyVH.mIvButton, errorButtonContent);
+                    } else {
+                        // 全局的异常Button文字
+                        if (!TextUtils.isEmpty(mGlobalErrorButtonContent)) {
+                            TextViewUtil.setText(emptyVH.mIvButton, mGlobalErrorButtonContent);
+                        }
+                    }
+
+                    // 错误布局的背景
+                    int errorButtonBackground = mPlaceHolder.getErrorButtonBackground();
+                    if (errorButtonBackground != 0) {
+                        emptyVH.mIvButton.setBackgroundResource(errorButtonBackground);
+                    } else {
+                        // 全局的异常背景
+                        if (mGlobalErrorButtonBackground != 0) {
+                            emptyVH.mIvButton.setBackgroundResource(mGlobalErrorButtonBackground);
+                        }
+                    }
+
+                    emptyVH.mIvButton.setOnClickListener(v -> {
+                        if (mRefreshUtil != null) {
+                            mRefreshUtil.refresh();
+                        }
+                    });
                 }
+
             }
         }
     }
