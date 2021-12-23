@@ -271,61 +271,59 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     }
 
     private void initNotification() {
-        if (mNotificationUtil != null) {
-            mNotificationUtil = new NotificationUtil.Builder(mContext)
-                    .setSmallIcon(mNotificationSmallIcon)
-                    .setNotificationLevel(Notification.PRIORITY_DEFAULT)
-                    .setActivity(mPendingIntentActivity)
-                    .setVibrate(true)
-                    .setChannelImportance(IMPORTANCE_LOW)
-                    .setRemoteView(R.layout.notification_audio, (remoteViews) -> {
-                        if (remoteViews != null) {
-                            AudioPlayerUtil.this.mRemoteViews = remoteViews;
+        mNotificationUtil = new NotificationUtil.Builder(mContext)
+                .setSmallIcon(mNotificationSmallIcon)
+                .setNotificationLevel(Notification.PRIORITY_DEFAULT)
+                .setActivity(mPendingIntentActivity)
+                .setVibrate(true)
+                .setChannelImportance(IMPORTANCE_LOW)
+                .setRemoteView(R.layout.notification_audio, (remoteViews) -> {
+                    if (remoteViews != null) {
+                        AudioPlayerUtil.this.mRemoteViews = remoteViews;
 
-                            // 左侧的按钮
-                            if (mNotificationLeft != 0) {
-                                remoteViews.setImageViewResource(R.id.iv_to_left, mNotificationLeft);
-                            }
-
-                            // 中间的按钮
-                            if (mAudioBinder.isPlaying()) {
-                                if (mNotificationPause != 0) {
-                                    remoteViews.setImageViewResource(R.id.iv_start, mNotificationPause);
-                                }
-                            } else {
-                                if (mNotificationStart != 0) {
-                                    remoteViews.setImageViewResource(R.id.iv_start, mNotificationStart);
-                                }
-                            }
-
-                            // 右侧的按钮
-                            if (mNotificationRight != 0) {
-                                remoteViews.setImageViewResource(R.id.iv_to_right, mNotificationRight);
-                            }
-
-                            // 播放按钮点击事件的处理
-                            Intent intentStart = new Intent();
-                            intentStart.setAction(ACTION_PAUSE);
-                            intentStart.setAction(ACTION_START);
-                            PendingIntent btPendingIntentStart = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentStart, PendingIntent.FLAG_UPDATE_CURRENT);
-                            remoteViews.setOnClickPendingIntent(R.id.iv_start, btPendingIntentStart);
-
-                            // 左侧按钮点击事件的处理
-                            Intent intentLeft = new Intent();
-                            intentLeft.setAction(ACTION_LEFT);
-                            PendingIntent btPendingIntentLeft = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentLeft, PendingIntent.FLAG_UPDATE_CURRENT);
-                            remoteViews.setOnClickPendingIntent(R.id.iv_to_left, btPendingIntentLeft);
-
-                            // 左侧按钮点击事件的处理
-                            Intent intentRight = new Intent();
-                            intentRight.setAction(ACTION_RIGHT);
-                            PendingIntent btPendingIntentRight = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentRight, PendingIntent.FLAG_UPDATE_CURRENT);
-                            remoteViews.setOnClickPendingIntent(R.id.iv_to_right, btPendingIntentRight);
+                        // 左侧的按钮
+                        if (mNotificationLeft != 0) {
+                            remoteViews.setImageViewResource(R.id.iv_to_left, mNotificationLeft);
                         }
-                    }).build()
-                    .sendNotification(1)
-                    .startForeground(1, mAudioService);
-        }
+
+                        // 中间的按钮
+                        if (mAudioBinder.isPlaying()) {
+                            if (mNotificationPause != 0) {
+                                remoteViews.setImageViewResource(R.id.iv_start, mNotificationPause);
+                            }
+                        } else {
+                            if (mNotificationStart != 0) {
+                                remoteViews.setImageViewResource(R.id.iv_start, mNotificationStart);
+                            }
+                        }
+
+                        // 右侧的按钮
+                        if (mNotificationRight != 0) {
+                            remoteViews.setImageViewResource(R.id.iv_to_right, mNotificationRight);
+                        }
+
+                        // 播放按钮点击事件的处理
+                        Intent intentStart = new Intent();
+                        intentStart.setAction(ACTION_PAUSE);
+                        intentStart.setAction(ACTION_START);
+                        PendingIntent btPendingIntentStart = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentStart, PendingIntent.FLAG_UPDATE_CURRENT);
+                        remoteViews.setOnClickPendingIntent(R.id.iv_start, btPendingIntentStart);
+
+                        // 左侧按钮点击事件的处理
+                        Intent intentLeft = new Intent();
+                        intentLeft.setAction(ACTION_LEFT);
+                        PendingIntent btPendingIntentLeft = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentLeft, PendingIntent.FLAG_UPDATE_CURRENT);
+                        remoteViews.setOnClickPendingIntent(R.id.iv_to_left, btPendingIntentLeft);
+
+                        // 左侧按钮点击事件的处理
+                        Intent intentRight = new Intent();
+                        intentRight.setAction(ACTION_RIGHT);
+                        PendingIntent btPendingIntentRight = PendingIntent.getBroadcast(mContext, CODE_SEND_BROADCAST_RECEIVER, intentRight, PendingIntent.FLAG_UPDATE_CURRENT);
+                        remoteViews.setOnClickPendingIntent(R.id.iv_to_right, btPendingIntentRight);
+                    }
+                }).build()
+                .sendNotification(1)
+                .startForeground(1, mAudioService);
     }
 
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

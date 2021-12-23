@@ -300,12 +300,12 @@ public class AudioService extends Service {
     public boolean isPlaying() {
         mediaPlayer = getMediaPlayer();
         boolean playing = false;
-        LogUtil.e(AudioConstant.TAG, "isPlaying--->走入了isPlaying的方法中，initialized:" + initialized);
+        // LogUtil.e(AudioConstant.TAG, "isPlaying--->走入了isPlaying的方法中，initialized:" + initialized);
         try {
             if (mediaPlayer != null) {
                 if (initialized) {
                     playing = mediaPlayer.isPlaying();
-                    LogUtil.e(AudioConstant.TAG, "isPlaying--->正常获取了播放的状态，状态为：" + playing);
+                    // LogUtil.e(AudioConstant.TAG, "isPlaying--->正常获取了播放的状态，状态为：" + playing);
                 }
             }
         } catch (Exception e) {
@@ -325,7 +325,7 @@ public class AudioService extends Service {
         clear();
     }
 
-    class AudioBinder extends Binder implements AudioControlInterface {
+    public class AudioBinder extends Binder implements AudioControlInterface {
         @Override
         public MediaPlayer getMediaPlayer() {
             return AudioService.this.getMediaPlayer();
