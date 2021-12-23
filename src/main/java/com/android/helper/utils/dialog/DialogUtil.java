@@ -55,7 +55,6 @@ public class DialogUtil implements BaseLifecycleObserver {
     private int mHeight; // 高
     private DialogInterface.OnShowListener mShowListener;
     private DialogInterface.OnDismissListener mDismissListener;
-    private OnViewCreatedListener mOnViewCreateListener;
     private boolean stopDialog;// 在stop的时候，关闭dialog
     private int mOffsetX; // 偏移的X轴
     private int mOffsetY; // 偏移的Y轴
@@ -89,6 +88,8 @@ public class DialogUtil implements BaseLifecycleObserver {
             mOffsetX = mBuilder.mOffsetX;
             mOffsetY = mBuilder.mOffsetY;
             isAutoDismiss = mBuilder.isAutoDismiss;
+            mShowListener = mBuilder.mShowListener;
+            mDismissListener = mBuilder.mDismissListener;
 
             // 添加生命周期的控制
             if (typeFrom == 1) {
@@ -98,8 +99,9 @@ public class DialogUtil implements BaseLifecycleObserver {
                     lifecycle.addObserver(this);
                 }
             } else if (builder.mTypeFrom == 2) {
-                if (builder.mFragment != null) {
-                    mFragment = builder.mFragment;
+                mFragment = builder.mFragment;
+                mActivity = mFragment.getActivity();
+                if (mFragment != null) {
                     Lifecycle lifecycle = mFragment.getLifecycle();
                     lifecycle.addObserver(this);
                 }
@@ -175,6 +177,9 @@ public class DialogUtil implements BaseLifecycleObserver {
         private int mOffsetX; // 偏移的X轴
         private int mOffsetY; // 偏移的Y轴
         private boolean isAutoDismiss = true;// 在点击按钮的时候，是否自定关闭dialog
+        private DialogInterface.OnShowListener mShowListener;
+        private DialogInterface.OnDismissListener mDismissListener;
+
         /**
          * 1：来源于activity，2：来源于fragment
          */
@@ -232,12 +237,13 @@ public class DialogUtil implements BaseLifecycleObserver {
             mTypeFrom = 2;
             if (fragment != null) {
                 mFragment = fragment;
-                mActivity = fragment.getActivity();
-            }
-            if (resource != 0) {
-                View inflate = LayoutInflater.from(mActivity).inflate(resource, null, false);
-                if (inflate != null) {
-                    mLayoutView = inflate;
+                FragmentActivity activity = fragment.getActivity();
+
+                if ((resource != 0) && (activity != null)) {
+                    View inflate = LayoutInflater.from(activity).inflate(resource, null, false);
+                    if (inflate != null) {
+                        mLayoutView = inflate;
+                    }
                 }
             }
         }
@@ -363,10 +369,25 @@ public class DialogUtil implements BaseLifecycleObserver {
             return this;
         }
 
+        /**
+         * @return 设置打开的监听
+         */
+        public Builder setOnShowListener(DialogInterface.OnShowListener showListener) {
+            mShowListener = showListener;
+            return this;
+        }
+
+        /**
+         * @return 设置关闭的监听
+         */
+        public Builder setOnDismissListener(DialogInterface.OnDismissListener dismissListener) {
+            mDismissListener = dismissListener;
+            return this;
+        }
+
         public DialogUtil Build() {
             return new DialogUtil(this);
         }
-
     }
 
     /**
@@ -408,11 +429,6 @@ public class DialogUtil implements BaseLifecycleObserver {
                     for (View next : mListCloseView) {
                         next.setOnClickListener(v -> dismiss());
                     }
-                }
-
-                // view布局设置之后的回调
-                if (mOnViewCreateListener != null) {
-                    mOnViewCreateListener.onViewCreated(mLayoutView);
                 }
 
                 // dialog展示时候的监听
@@ -578,18 +594,14 @@ public class DialogUtil implements BaseLifecycleObserver {
         return this;
     }
 
-    public DialogUtil setOnShowListener(DialogInterface.OnShowListener showListener) {
-        mShowListener = showListener;
-        return this;
-    }
-
-    public DialogUtil setOnDismissListener(DialogInterface.OnDismissListener dismissListener) {
-        mDismissListener = dismissListener;
-        return this;
-    }
-
+    /**
+     * @return 设置加载view成功的监听
+     */
     public DialogUtil setOnViewCreatedListener(OnViewCreatedListener listener) {
-        mOnViewCreateListener = listener;
+        // view布局设置之后的回调
+        if (mLayoutView != null && listener != null) {
+            listener.onViewCreated(mLayoutView);
+        }
         return this;
     }
 
@@ -597,33 +609,33 @@ public class DialogUtil implements BaseLifecycleObserver {
      * 释放掉dialog，
      */
     public void release() {
-        if (mBuilder != null) {
-            dismiss();
-            if (mLayoutView != null) {
-                mLayoutView = null;
-            }
-            if (mListCloseView != null) {
-                mListCloseView = null;
-            }
-            if (mShowListener != null) {
-                mShowListener = null;
-            }
-            if (mDismissListener != null) {
-                mDismissListener = null;
-            }
-            if (mOnViewCreateListener != null) {
-                mOnViewCreateListener = null;
-            }
-            if (mDialog != null) {
-                mDialog = null;
-            }
+        dismiss();
 
-            if (mFragment != null) {
-                mFragment = null;
-            }
-            if (mActivity != null) {
-                mActivity = null;
-            }
+        if (mLayoutView != null) {
+            mLayoutView = null;
+        }
+        if (mListCloseView != null) {
+            mListCloseView = null;
+        }
+        if (mShowListener != null) {
+            mShowListener = null;
+        }
+        if (mDismissListener != null) {
+            mDismissListener = null;
+        }
+
+        if (mDialog != null) {
+            mDialog = null;
+        }
+
+        if (mFragment != null) {
+            mFragment = null;
+        }
+        if (mActivity != null) {
+            mActivity = null;
+        }
+
+        if (mBuilder != null) {
             mBuilder = null;
         }
     }
