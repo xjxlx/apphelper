@@ -723,7 +723,7 @@ public class PageWidget extends FrameLayout {
         if (mCornerY > 0) {
             dy = (int) (mHeight - mTouch.y - 1);
         } else {
-            // TODO 这为了滑动的效果，所以把1改为10，为了滑动的平滑性
+            // 这为了滑动的效果，所以把1改为10，为了滑动的平滑性
             dy = (int) (10 - mTouch.y); // 防止mTouch.y最终变为0
         }
         mScroller.startScroll((int) mTouch.x, (int) mTouch.y, dx, dy, delayMillis);
