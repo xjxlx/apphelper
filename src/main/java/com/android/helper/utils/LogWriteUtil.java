@@ -34,7 +34,7 @@ public class LogWriteUtil {
     private final static String WRITE_LOG_FILE_PARENT =
             FileUtil.getInstance().getCommonTagPath()
                     + File.separator
-                    + BaseApplication.getLogTag()  // 写入文件的目标路径
+                    + BaseApplication.getInstance().logTag()  // 写入文件的目标路径
                     + File.separator;
 
     public LogWriteUtil() {

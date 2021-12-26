@@ -67,7 +67,7 @@ public class RetrofitHelper {
                 .connectTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS);//设置连接超时时间
 
         // 获取拦截器
-        Interceptor[] interceptors = BaseApplication.getInterceptors();
+        Interceptor[] interceptors = BaseApplication.getInstance().getInterceptors();
         if (interceptors != null && interceptors.length > 0) {
             for (Interceptor interceptor : interceptors) {
                 httpBuilder.addInterceptor(interceptor);
@@ -78,7 +78,7 @@ public class RetrofitHelper {
         setSSLFactory(httpBuilder);
 
         return new Retrofit.Builder().client(httpBuilder.build())
-                .baseUrl(BaseApplication.getBaseUrl())
+                .baseUrl(BaseApplication.getInstance().getBaseUrl())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -95,7 +95,7 @@ public class RetrofitHelper {
 
         return new Retrofit.Builder()
                 .client(timeOutClient)
-                .baseUrl(BaseApplication.getBaseUrl())
+                .baseUrl(BaseApplication.getInstance().getBaseUrl())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -196,7 +196,7 @@ public class RetrofitHelper {
         OkHttpClient.Builder httpBuilder = getHttpBuilder();
 
         // 获取拦截器
-        Interceptor[] interceptors = BaseApplication.getInterceptors();
+        Interceptor[] interceptors = BaseApplication.getInstance().getInterceptors();
         // 避免重复添加拦截器
         if (interceptors != null && interceptors.length > 0) {
             for (Interceptor interceptor : interceptors) {
@@ -222,7 +222,7 @@ public class RetrofitHelper {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         // 添加日志的log
-        if (BaseApplication.isDebug()) {
+        if (BaseApplication.getInstance().isDebug()) {
             builder.addInterceptor(new HttpLogInterceptor());
         }
 
@@ -287,7 +287,7 @@ public class RetrofitHelper {
                 .connectTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS);//设置连接超时时间
 
         // 获取拦截器
-        Interceptor[] interceptors = BaseApplication.getInterceptors();
+        Interceptor[] interceptors = BaseApplication.getInstance().getInterceptors();
         if (interceptors != null && interceptors.length > 0) {
             for (Interceptor interceptor : interceptors) {
                 httpBuilder.addInterceptor(interceptor);

@@ -236,7 +236,7 @@ public class FileUtil implements BaseLifecycleObserver {
      */
     public String getAppFilesPath() {
         String path = "";
-        Application application = BaseApplication.getApplication();
+        Application application = BaseApplication.getInstance().getApplication();
         if (application != null) {
             File filesDir = application.getFilesDir();
             if (filesDir != null) {
@@ -266,8 +266,8 @@ public class FileUtil implements BaseLifecycleObserver {
      */
     public String getAppTypePath(String type) {
         String path = "";
-        if ((BaseApplication.getApplication() != null) && (!TextUtils.isEmpty(type))) {
-            path = BaseApplication.getApplication().getExternalFilesDir(type).getPath();
+        if ((BaseApplication.getInstance().getApplication() != null) && (!TextUtils.isEmpty(type))) {
+            path = BaseApplication.getInstance().getApplication().getExternalFilesDir(type).getPath();
         }
         return path;
     }
@@ -518,8 +518,8 @@ public class FileUtil implements BaseLifecycleObserver {
         String path = "";
         path = getCommonPath();
         if (!TextUtils.isEmpty(path)) {
-            if (BaseApplication.getLogTag() != null) {
-                path = path + "/" + BaseApplication.getLogTag();
+            if (BaseApplication.getInstance().logTag() != null) {
+                path = path + "/" + BaseApplication.getInstance().logTag();
             }
         }
         LogUtil.e("获取App指定存储路径为：" + path);

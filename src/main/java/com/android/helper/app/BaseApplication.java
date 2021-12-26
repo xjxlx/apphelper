@@ -2,15 +2,14 @@ package com.android.helper.app;
 
 import android.app.Application;
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import com.android.helper.base.refresh.BaseRefreshFooter;
 import com.android.helper.base.refresh.BaseRefreshHeader;
-import com.android.helper.interfaces.ICommonApplication;
 import com.android.helper.utils.ScreenUtil;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.FormatStrategy;
@@ -35,33 +34,35 @@ import okhttp3.Interceptor;
  */
 public class BaseApplication {
 
-    private static ICommonApplication mICommonApplication;
-    private static BaseApplication mBaseApplication;
-    private static String mBaseUrl;
+    private static ApplicationInterface mApplication;
+    private static BaseApplication INSTANCE;
+    /**
+     * 一个项目中通用的对象，该对象一般情况杨下不会被销毁，因为加载的时机比较特殊，只能写成这种方式
+     */
+    private FragmentActivity mFragmentActivity;
 
     public static BaseApplication getInstance() {
-        if (mBaseApplication == null) {
-            mBaseApplication = new BaseApplication();
+        if (INSTANCE == null) {
+            synchronized (BaseApplication.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new BaseApplication();
+                }
+            }
         }
-        return mBaseApplication;
+        return INSTANCE;
     }
 
-    public void setICommonApplication(ICommonApplication iCommonApplication) {
-        mICommonApplication = iCommonApplication;
-        onCreate();
-    }
-
-    private void onCreate() {
-        // 手动调用初始化方法，让初始化方法得到执行
-        if (mICommonApplication != null) {
-            mICommonApplication.initApp();
+    public void setApplication(ApplicationInterface iCommonApplication) {
+        mApplication = iCommonApplication;
+        if (mApplication != null) {
+            // 加载公共的逻辑
+            mApplication.initApp();
         }
-        initData();
     }
 
     // <editor-fold desc="initData" defaultstate="collapsed">
-    private void initData() {
 
+    public void initApp() {
         try {
             // 捕获所有的异常，存入到app目录下
             Thread.setDefaultUncaughtExceptionHandler(AppException.getAppExceptionHandler());
@@ -71,15 +72,40 @@ public class BaseApplication {
 
         ScreenUtil.getScreenHeight(getApplication());
         initLogger();
+        initSmartRefreshLayout();
     }
     //</editor-fold>
+
+    public Application getApplication() {
+        return mApplication.getApplication();
+    }
+
+    public boolean isDebug() {
+        return mApplication.isDebug();
+    }
+
+    public String logTag() {
+        return mApplication.logTag();
+    }
+
+    public String getAppName() {
+        return mApplication.getAppName();
+    }
+
+    public String getBaseUrl() {
+        return mApplication.getBaseUrl();
+    }
+
+    public Interceptor[] getInterceptors() {
+        return mApplication.getInterceptors();
+    }
 
     private void initLogger() {
         FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder()
                 .showThreadInfo(false)      //（可选）是否显示线程信息。 默认值为true
                 .methodCount(0)               // （可选）要显示的方法行数。 默认2
                 .methodOffset(0)               // （可选）设置调用堆栈的函数偏移值，0的话则从打印该Log的函数开始输出堆栈信息，默认是0
-                .tag(getLogTag())                  //（可选）每个日志的全局标记。 默认PRETTY_LOGGER（如上图）
+                .tag(mApplication.logTag())                  //（可选）每个日志的全局标记。 默认PRETTY_LOGGER（如上图）
                 .build();
         Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy) {
             @Override
@@ -89,83 +115,8 @@ public class BaseApplication {
         });
     }
 
-    public static Application getApplication() {
-        if (mICommonApplication != null) {
-            return mICommonApplication.getApplication();
-        } else {
-            return null;
-        }
-    }
+    public void initSmartRefreshLayout() {
 
-    /**
-     * @return 返回debug的状态，默认为打开的状态
-     */
-    public static boolean isDebug() {
-        if (mICommonApplication != null) {
-            return mICommonApplication.isDebug();
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * @return 返回log的Tag
-     */
-    public static String getLogTag() {
-        if (mICommonApplication != null) {
-            return mICommonApplication.logTag();
-        } else {
-            return "AppHelper";
-        }
-    }
-
-    /**
-     * @return 返回App的包名，默认返回为空字符串
-     */
-    public static String getAppName() {
-        if (mICommonApplication != null) {
-            return mICommonApplication.getAppName();
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * @return 返回基类的url
-     */
-    public static String getBaseUrl() {
-        if (!TextUtils.isEmpty(mBaseUrl)) {
-            return mBaseUrl;
-        } else {
-            if (mICommonApplication != null) {
-                return mICommonApplication.getBaseUrl();
-            } else {
-                return "";
-            }
-        }
-    }
-
-    /**
-     * 动态设置url
-     *
-     * @param baseUrl 指定的BaseUrl
-     */
-    public static void setBaseUrl(String baseUrl) {
-        mBaseUrl = baseUrl;
-    }
-
-    /**
-     * @return 返回拦截器对象
-     */
-    public static Interceptor[] getInterceptors() {
-        if (mICommonApplication != null) {
-            return mICommonApplication.getInterceptors();
-        } else {
-            return null;
-        }
-    }
-
-    static {
         //SmartReRefreshLayout的初始化，static 代码段可以防止内存泄露
         //设置全局默认配置（优先级最低，会被其他设置覆盖）
         SmartRefreshLayout.setDefaultRefreshInitializer(new DefaultRefreshInitializer() {
@@ -234,4 +185,11 @@ public class BaseApplication {
         });
     }
 
+    public FragmentActivity getCommonLivedata() {
+        return mFragmentActivity;
+    }
+
+    public void setCommonLivedata(FragmentActivity fragmentActivity) {
+        mFragmentActivity = fragmentActivity;
+    }
 }

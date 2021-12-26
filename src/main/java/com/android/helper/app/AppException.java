@@ -1,5 +1,6 @@
 package com.android.helper.app;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -125,7 +126,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         if (!handleException(ex) && mDefaultHandler != null) {
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
-            if (BaseApplication.isDebug()) {
+            if (BaseApplication.getInstance().isDebug()) {
                 // Sleep一会后结束程序
                 try {
                     Thread.sleep(3000);
@@ -145,7 +146,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         String logFilePath = "";
         FileWriter fw = null;
         PrintWriter pw = null;
-        Context context = BaseApplication.getApplication();
+        Context context = BaseApplication.getInstance().getApplication();
         try {
             //判断是否挂载了SD卡
             String storageState = Environment.getExternalStorageState();
@@ -252,7 +253,8 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
     public PackageInfo getPackageInfo() {
         PackageInfo info = null;
         try {
-            info = BaseApplication.getApplication().getPackageManager().getPackageInfo(BaseApplication.getApplication().getPackageName(), 0);
+            Application application = BaseApplication.getInstance().getApplication();
+            info = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace(System.err);
         }

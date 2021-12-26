@@ -169,7 +169,7 @@ public class UploadManagerRetrofit {
             retrofit = new Retrofit
                     .Builder()
                     .client(httpBuilder.build())
-                    .baseUrl(BaseApplication.getBaseUrl())
+                    .baseUrl(BaseApplication.getInstance().getBaseUrl())
                     .addConverterFactory(ScalarsConverterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
@@ -178,7 +178,7 @@ public class UploadManagerRetrofit {
                 retrofit = new Retrofit
                         .Builder()
                         .client(httpBuilder.build())
-                        .baseUrl(BaseApplication.getBaseUrl())
+                        .baseUrl(BaseApplication.getInstance().getBaseUrl())
                         .addConverterFactory(ScalarsConverterFactory.create())
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();

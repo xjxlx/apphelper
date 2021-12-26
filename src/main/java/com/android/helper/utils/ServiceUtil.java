@@ -129,7 +129,7 @@ public class ServiceUtil {
      * @return 判断 Notification access 是否开启
      */
     public static boolean notificationEnabled() {
-        Application application = BaseApplication.getApplication();
+        Application application = BaseApplication.getInstance().getApplication();
         if (application != null) {
             String pkgName = application.getPackageName();
             final String flat = Settings.Secure.getString(application.getContentResolver(), "enabled_notification_listeners");

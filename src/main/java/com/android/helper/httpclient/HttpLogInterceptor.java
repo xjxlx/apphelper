@@ -52,7 +52,7 @@ public class HttpLogInterceptor implements Interceptor {
         HttpUrl url = request.url();
         String path = url.encodedPath();
         if (!TextUtils.isEmpty(path)) {
-            String baseUrl = BaseApplication.getBaseUrl();
+            String baseUrl = BaseApplication.getInstance().getBaseUrl();
             if (path.contains(baseUrl)) {
                 mPath = path.replace(baseUrl, "");
             } else {

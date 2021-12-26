@@ -46,8 +46,8 @@ public class AppUtil {
     public PackageInfo getPackageInfo() {
         try {
             if (packageInfo == null) {
-                if (BaseApplication.getApplication() != null) {
-                    Application application = BaseApplication.getApplication();
+                if (BaseApplication.getInstance().getApplication() != null) {
+                    Application application = BaseApplication.getInstance().getApplication();
                     packageInfo = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
                 }
             }
@@ -89,8 +89,8 @@ public class AppUtil {
     public int getTargetSdkVersion() {
         int mTargetSdkVersion = Build.VERSION.SDK_INT;
         try {
-            if (BaseApplication.getApplication() != null) {
-                ApplicationInfo applicationInfo = BaseApplication.getApplication().getApplicationInfo();
+            if (BaseApplication.getInstance().getApplication() != null) {
+                ApplicationInfo applicationInfo = BaseApplication.getInstance().getApplication().getApplicationInfo();
                 if (applicationInfo != null) {
                     mTargetSdkVersion = applicationInfo.targetSdkVersion;
                 }
@@ -197,7 +197,7 @@ public class AppUtil {
     public static List<PackageInfo> getInstalledAppList() {
         List<PackageInfo> packages = new ArrayList<>();
 
-        Application application = BaseApplication.getApplication();
+        Application application = BaseApplication.getInstance().getApplication();
         if (application != null) {
             PackageManager pm = application.getPackageManager();
             // 目前只查看已经安装的activity，不考虑后台的Service的应用

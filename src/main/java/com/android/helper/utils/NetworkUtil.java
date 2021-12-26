@@ -19,7 +19,7 @@ public class NetworkUtil {
     private NetworkUtil() {
         if (connectivityManager == null) {
             if (application == null) {
-                application = BaseApplication.getApplication();
+                application = BaseApplication.getInstance().getApplication();
             }
             if (application != null) {
                 connectivityManager = (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE);

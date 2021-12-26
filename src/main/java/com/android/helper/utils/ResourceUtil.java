@@ -21,7 +21,7 @@ import com.android.helper.app.BaseApplication;
 public class ResourceUtil {
 
     @SuppressLint("StaticFieldLeak")
-    public static Context mContext = BaseApplication.getApplication();
+    public static Context mContext = BaseApplication.getInstance().getApplication();
 
     public static int getColor(@ColorRes int id) {
         int color = 0;
@@ -57,7 +57,7 @@ public class ResourceUtil {
      */
     public static float getDimension(@DimenRes int id) {
         float dimension = 0.0f;
-        Application application = BaseApplication.getApplication();
+        Application application = BaseApplication.getInstance().getApplication();
         if (application != null) {
             Resources resources = application.getResources();
             if (resources != null) {
