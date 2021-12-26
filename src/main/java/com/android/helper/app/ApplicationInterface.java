@@ -2,8 +2,6 @@ package com.android.helper.app;
 
 import android.app.Application;
 
-import androidx.fragment.app.FragmentActivity;
-
 import okhttp3.Interceptor;
 
 /**
