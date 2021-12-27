@@ -15,7 +15,7 @@ public class LogUtil {
 
     public static void e(String value) {
         if (!TextUtils.isEmpty(value)) {
-            if (BaseApplication.getInstance().getInstance().isDebug()) {
+            if (BaseApplication.getInstance().isDebug()) {
                 Logger.e(value);
             }
         }
