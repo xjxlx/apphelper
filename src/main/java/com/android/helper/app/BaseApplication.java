@@ -55,6 +55,7 @@ public class BaseApplication {
     public void setApplication(ApplicationInterface iCommonApplication) {
         mApplication = iCommonApplication;
         if (mApplication != null) {
+            initApp();
             // 加载公共的逻辑
             mApplication.initApp();
         }
