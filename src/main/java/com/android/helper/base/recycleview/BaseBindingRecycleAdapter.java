@@ -85,6 +85,21 @@ public abstract class BaseBindingRecycleAdapter<T, V extends ViewBinding> extend
                     V mBinding = mBaseBindingVH.mBinding;
                     onBindHolder(mBaseBindingVH, mBinding, position);
                 }
+            } else {
+                /*
+                 * 空数据点击item的事件回调
+                 * <ol>
+                 *     1:如果是默认的布局的话，回调的时候，会回调id{ R.id.base_placeholder }
+                 *     2:如果是指定的布局的话，肯定自己写的布局，自己会知道
+                 * </ol>
+                 */
+                if (mEmptyView != null) {
+                    mEmptyView.setOnClickListener(v -> {
+                        if (mItemBindingClickListener != null) {
+                            mItemBindingClickListener.onItemClick(mEmptyView, null, 0, null);
+                        }
+                    });
+                }
             }
         }
     }

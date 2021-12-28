@@ -61,7 +61,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     protected int mItemType;
     private Placeholder mPlaceHolder;       // 单个的占位图
     private Placeholder mGlobalPlaceholder; // 全局的占位图
-    private View mEmptyView;
+    protected View mEmptyView;
     private int mErrorType;  // 1:空数据  2：错误数据
     private RefreshUtil<?> mRefreshUtil; // 刷新工具类
     private RecyclerView mRecycleView;
