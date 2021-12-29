@@ -53,6 +53,7 @@ public class Placeholder {
     private String mErrorButtonContent;                 // 错误布局的按钮文字
     private boolean isFromGlobal;                       // 数据是否是全局设置的
     private View mBottomView;                           // 空布局提示文字下的布局，一般为按钮，可以是其他
+    private boolean mShowPlaceHolder;                   // 是否自动显示占位图，默认为true
 
     @SuppressLint("StaticFieldLeak")
     private static Placeholder GlobalPlaceholder; // 静态的对象
@@ -82,6 +83,7 @@ public class Placeholder {
             this.mErrorButtonContent = builder.mErrorButtonContent;
             this.isFromGlobal = builder.isFromGlobal;
             this.mBottomView = builder.mBottomView;
+            this.mShowPlaceHolder = builder.mShowPlaceHolder;
         }
     }
 
@@ -152,6 +154,13 @@ public class Placeholder {
     }
 
     /**
+     * @return 获取是否默认展示占位图
+     */
+    public boolean autoShowPlaceHolder() {
+        return mShowPlaceHolder;
+    }
+
+    /**
      * @return view的来源, 1:指定的view ，2：默认的view
      */
     public int getTypeForView() {
@@ -175,6 +184,7 @@ public class Placeholder {
         private String mErrorButtonContent;                 // 错误布局的按钮文字
         private boolean isFromGlobal;                       // 数据是否是全局设置的
         private View mBottomView;                           // 空布局提示文字下的布局，一般为按钮，可以是其他
+        private boolean mShowPlaceHolder;                   // 是否自动显示占位图，默认为true
 
         /**
          * 设置空布局的view
@@ -256,6 +266,15 @@ public class Placeholder {
          */
         public Builder setBottomView(View bottomView) {
             mBottomView = bottomView;
+            return this;
+        }
+
+        /**
+         * @param showPlaceHolder true:默认显示，false:默认不展示
+         * @return 设置是否显示默认的占位图
+         */
+        public Builder autoShowPlaceHolder(boolean showPlaceHolder) {
+            mShowPlaceHolder = showPlaceHolder;
             return this;
         }
 

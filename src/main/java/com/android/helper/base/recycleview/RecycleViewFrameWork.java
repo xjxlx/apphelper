@@ -66,6 +66,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     private RefreshUtil<?> mRefreshUtil; // 刷新工具类
     private RecyclerView mRecycleView;
     protected ViewGroup mBottomResourceParent;
+    private int showPlaceHolder = -1;// 是否自动显示占位图，默认自动不显示 -1：默认值，不展示 1：展示 2：不展示
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.TYPE_EMPTY, ViewType.TYPE_HEAD, ViewType.TYPE_FOOT})
@@ -137,6 +138,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      */
     public void setList(List<T> list) {
         mErrorType = 1; // 普通数据的设置
+        showPlaceHolder = 1;// 只要设置完数据了，就要展示默认的占位图
         this.mList = list;
         if (mList != null) {
             LogUtil.e("------------------------------------------------size: " + mList.size() + " ----------------------------------");
@@ -154,6 +156,8 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      */
     public void setList(List<T> list, boolean isRefresh) {
         mErrorType = 1; // 普通数据的设置
+        showPlaceHolder = 1;// 只要设置完数据了，就要展示默认的占位图
+
         if (list != null) {
             LogUtil.e("------------------------------------------------size: " + list.size() + " ----------------------------------");
             // 首次加载数据，刷新全部的数据源
@@ -190,6 +194,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      * @param list 插入的数据
      */
     public void insertedList(List<T> list) {
+        showPlaceHolder = 1;// 只要设置完数据了，就要展示默认的占位图
         if ((list != null) && (list.size() > 0)) {
             if (mList == null) {
                 mList = new ArrayList<>();
@@ -207,6 +212,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      * @param t 具体的数据
      */
     public void insertedItem(T t) {
+        showPlaceHolder = 1;// 只要设置完数据了，就要展示默认的占位图
         if (t != null) {
             if (mList == null) {
                 mList = new ArrayList<>();
@@ -255,7 +261,30 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
 
         // 空布局的条目
         if (isEmpty && ((mPlaceHolder != null || (mGlobalPlaceholder != null && mGlobalPlaceholder.isFromGlobal())))) {
-            count = 1;
+            // 这里是为了控制是否要显示默认的占位图，大多数都是加载数据才去展示的，如果有需要数据加载前就展示，设默认设置为true
+            if (mPlaceHolder != null) { // 指定的
+
+                if (showPlaceHolder == -1) { // 默认的时候，请求一下
+                    boolean autoShowPlaceHolder = mPlaceHolder.autoShowPlaceHolder();
+                    if (autoShowPlaceHolder) {
+                        showPlaceHolder = 1;
+                    }
+                }
+                if (showPlaceHolder == 1) { // 如果数据为1，则展示占位图
+                    count = 1;
+                }
+            } else if (mGlobalPlaceholder != null) { // 通用的
+
+                if (showPlaceHolder == -1) { // 默认的时候，请求一下
+                    boolean autoShowPlaceHolder = mGlobalPlaceholder.autoShowPlaceHolder();
+                    if (autoShowPlaceHolder) {
+                        showPlaceHolder = 1;
+                    }
+                }
+                if (showPlaceHolder == 1) { // 如果数据为1，则展示占位图
+                    count = 1;
+                }
+            }
         }
         return count;
     }
@@ -498,6 +527,9 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      */
     public void setErrorHttpClient(RefreshUtil<?> refreshUtil) {
         this.mRefreshUtil = refreshUtil;
+        // 设置错误的空数据
+        setList(null);
+
         mErrorType = 2;
         notifyDataSetChanged();
     }
