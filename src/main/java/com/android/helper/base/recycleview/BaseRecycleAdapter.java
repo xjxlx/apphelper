@@ -88,10 +88,10 @@ public abstract class BaseRecycleAdapter<T, E extends RecyclerView.ViewHolder> e
                  *     2:如果是指定的布局的话，肯定自己写的布局，自己会知道
                  * </ol>
                  */
-                if (mEmptyView != null) {
-                    mEmptyView.setOnClickListener(v -> {
+                if (mBottomResourceParent != null) {
+                    mBottomResourceParent.setOnClickListener(v -> {
                         if (mItemClickListener != null) {
-                            mItemClickListener.onItemClick(mEmptyView, 0, null);
+                            mItemClickListener.onItemClick(mBottomResourceParent, 0, null);
                         }
                     });
                 }

@@ -61,10 +61,11 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     protected int mItemType;
     private Placeholder mPlaceHolder;       // 单个的占位图
     private Placeholder mGlobalPlaceholder; // 全局的占位图
-    protected View mEmptyView;
+    private View mEmptyView;
     private int mErrorType;  // 1:空数据  2：错误数据
     private RefreshUtil<?> mRefreshUtil; // 刷新工具类
     private RecyclerView mRecycleView;
+    protected ViewGroup mBottomResourceParent;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.TYPE_EMPTY, ViewType.TYPE_HEAD, ViewType.TYPE_FOOT})
@@ -317,6 +318,22 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                             emptyVH.mIvImage.setImageResource(emptyResource);
                         }
 
+                        // 获取底部的资源
+                        View bottomView = mPlaceHolder.getBottomView();
+                        if (bottomView != null) {
+                            if (mBottomResourceParent == null) {
+                                mBottomResourceParent = mEmptyView.findViewById(R.id.fl_bottom_placeholder);
+                            }
+                            mBottomResourceParent.setVisibility(View.VISIBLE);
+
+                            // 先删除，后添加，不然会崩溃
+                            int childCount = mBottomResourceParent.getChildCount();
+                            if (childCount > 0) {
+                                mBottomResourceParent.removeAllViews();
+                            }
+                            mBottomResourceParent.addView(bottomView);
+                        }
+
                     } else if (mGlobalPlaceholder != null) { // 使用公用的占位图
                         String emptyContent = mGlobalPlaceholder.getEmptyContent();
                         int emptyContentColor = mGlobalPlaceholder.getEmptyContentColor();
@@ -342,6 +359,22 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                         if (emptyResource != 0) {
                             emptyVH.mIvImage.setImageResource(emptyResource);
                         }
+
+                        // 获取底部的资源
+                        View bottomView = mGlobalPlaceholder.getBottomView();
+                        if (bottomView != null) {
+                            if (mBottomResourceParent == null) {
+                                mBottomResourceParent = mEmptyView.findViewById(R.id.fl_bottom_placeholder);
+                            }
+                            mBottomResourceParent.setVisibility(View.VISIBLE);
+
+                            // 先删除，后添加，不然会崩溃
+                            int childCount = mBottomResourceParent.getChildCount();
+                            if (childCount > 0) {
+                                mBottomResourceParent.removeAllViews();
+                            }
+                            mBottomResourceParent.addView(bottomView);
+                        }
                     }
                 } else { // 这里说明接口异常了，不去处理无数据的占位图，直接处理断网的操作
                     /*
@@ -353,6 +386,11 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                     String mGlobalErrorContent = null;
                     String mGlobalErrorButtonContent = null;
                     int mGlobalErrorButtonBackground = 0;
+
+                    // 底部资源按钮不可见
+                    if (mBottomResourceParent != null) {
+                        mBottomResourceParent.setVisibility(View.GONE);
+                    }
 
                     if (mGlobalPlaceholder != null) {
                         mGlobalErrorImage = mGlobalPlaceholder.getErrorImage();

@@ -52,6 +52,7 @@ public class Placeholder {
     private int mErrorButtonBackground;                 // 错误布局的按钮背景
     private String mErrorButtonContent;                 // 错误布局的按钮文字
     private boolean isFromGlobal;                       // 数据是否是全局设置的
+    private View mBottomView;                           // 空布局提示文字下的布局，一般为按钮，可以是其他
 
     @SuppressLint("StaticFieldLeak")
     private static Placeholder GlobalPlaceholder; // 静态的对象
@@ -80,6 +81,7 @@ public class Placeholder {
             this.mErrorButtonBackground = builder.mErrorButtonBackground;
             this.mErrorButtonContent = builder.mErrorButtonContent;
             this.isFromGlobal = builder.isFromGlobal;
+            this.mBottomView = builder.mBottomView;
         }
     }
 
@@ -143,6 +145,13 @@ public class Placeholder {
     }
 
     /**
+     * @return 获取说明消息底部的布局资源
+     */
+    public View getBottomView() {
+        return mBottomView;
+    }
+
+    /**
      * @return view的来源, 1:指定的view ，2：默认的view
      */
     public int getTypeForView() {
@@ -165,6 +174,7 @@ public class Placeholder {
         private int mErrorButtonBackground;                 // 错误布局的按钮背景
         private String mErrorButtonContent;                 // 错误布局的按钮文字
         private boolean isFromGlobal;                       // 数据是否是全局设置的
+        private View mBottomView;                           // 空布局提示文字下的布局，一般为按钮，可以是其他
 
         /**
          * 设置空布局的view
@@ -239,6 +249,14 @@ public class Placeholder {
 
         public void setFromGlobal(boolean fromGlobal) {
             isFromGlobal = fromGlobal;
+        }
+
+        /**
+         * @param bottomView 设置空布局说明信息下的资源对象，一般是一个按钮的形式，可以是其他的样式，需要用户去自定义
+         */
+        public Builder setBottomView(View bottomView) {
+            mBottomView = bottomView;
+            return this;
         }
 
         public Placeholder Build() {
