@@ -418,6 +418,11 @@ public class LocationUtil implements BaseLifecycleObserver {
             // 有权限，就去开始定位
             if (haveAllPermission) {
                 startLocation();
+            } else {
+                // 即使没有定位，也要返回一次错误数据
+                if (mLocationListener != null) {
+                    mLocationListener.onLocationChanged(null);
+                }
             }
         })
                 .build()
