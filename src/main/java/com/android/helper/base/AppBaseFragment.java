@@ -17,7 +17,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.android.helper.httpclient.BaseHttpSubscriber;
 import com.android.helper.httpclient.RxUtil;
-import com.android.helper.interfaces.UIListener;
+import com.android.helper.interfaces.FragmentUiInterface;
+import com.android.helper.interfaces.UIInterface;
 import com.android.helper.interfaces.listener.HttpManagerListener;
 import com.android.helper.utils.ClickUtil;
 import com.android.helper.utils.LogUtil;
@@ -31,7 +32,7 @@ import io.reactivex.disposables.Disposable;
 /**
  * fragment的基类，全面使用viewBinding
  */
-public abstract class BaseFragment extends Fragment implements View.OnClickListener, HttpManagerListener, UIListener {
+public abstract class AppBaseFragment extends Fragment implements View.OnClickListener, HttpManagerListener, UIInterface, FragmentUiInterface {
 
     /*
      *此处不能写成静态的，否则就会和使用RxManager一样了
@@ -39,6 +40,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     protected FragmentActivity mContext;
+    protected Fragment mFragment;
     protected View mRootView;
     protected String TAG;
 
@@ -62,22 +64,21 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     public void onStart() {
         super.onStart();
         mContext = getActivity();
+        mFragment = this;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mFragment = this;
         TAG = getClass().getSimpleName();
         LogUtil.e("当前的页面：Fragment：--->  " + TAG);
+
+        onBeforeCreateView();
 
         int layout = getBaseLayout();
         if (layout != 0) {
             mRootView = inflater.inflate(layout, container, false);
-
-            onInitViewBefore(inflater, container);
-
-            onBeforeCreateView();
-
             initView(mRootView);
             initListener();
         }
@@ -88,27 +89,46 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
 
     protected abstract int getBaseLayout();
 
+    /**
+     * 初始化状态栏
+     */
     @Override
-    public void initView() {
-        // 空实现
+    public void initStatusBar() {
+
     }
 
+    /**
+     * 在setContentView之前的调用方法，用于特殊的使用
+     */
+    @Override
+    public void onBeforeCreateView() {
+
+    }
+
+    /**
+     * Fragment初始化view
+     *
+     * @param rootView fragment的根布局
+     */
     @Override
     public void initView(View rootView) {
 
     }
 
+    /**
+     * 初始化点击事件
+     */
     @Override
     public void initListener() {
-        // 空实现
+
     }
 
+    /**
+     * 初始化initData之后的操作，在某些场景中去使用
+     */
     @Override
-    public void onBeforeCreateView() {
-        // 空实现
-    }
+    public void initDataAfter() {
 
-    protected void onInitViewBefore(LayoutInflater inflater, View container) {
     }
 
     @Override
@@ -116,6 +136,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         super.onViewCreated(view, savedInstanceState);
         if (mRootView != null) {
             initData(savedInstanceState);
+            initDataAfter();
         }
     }
 

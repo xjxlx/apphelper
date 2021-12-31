@@ -1,9 +1,8 @@
 package com.android.helper.interfaces;
 
 import android.os.Bundle;
-import android.view.View;
 
-public interface UIListener {
+public interface UIInterface {
 
     /**
      * 初始化状态栏
@@ -16,22 +15,14 @@ public interface UIListener {
     void onBeforeCreateView();
 
     /**
-     * Fragment初始化view
-     */
-    void initView(View rootView);
-
-    /**
-     * Activity初始化view
-     */
-    void initView();
-
-    /**
      * 初始化点击事件
      */
     void initListener();
 
     /**
      * 初始化数据
+     *
+     * @param savedInstanceState 保存的数据对象
      */
     void initData(Bundle savedInstanceState);
 

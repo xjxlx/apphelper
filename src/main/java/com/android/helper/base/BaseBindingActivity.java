@@ -16,7 +16,7 @@ import com.android.helper.utils.TextViewUtil;
  *
  * @param <T> 指定的viewBinding的类型
  */
-public abstract class BaseBindingActivity<T extends ViewBinding> extends BaseActivity implements BindingViewListener<T> {
+public abstract class BaseBindingActivity<T extends ViewBinding> extends AppBaseActivity implements BindingViewListener<T> {
 
     public T mBinding;
     private View mBindingRoot;

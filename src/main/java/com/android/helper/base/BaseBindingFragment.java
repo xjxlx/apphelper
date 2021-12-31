@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param <T> 指定的ViewBinding
  */
-public abstract class BaseBindingFragment<T extends ViewBinding> extends BaseFragment implements BindingViewListener<T> {
+public abstract class BaseBindingFragment<T extends ViewBinding> extends AppBaseFragment implements BindingViewListener<T> {
 
     public T mBinding;
 
@@ -40,15 +40,6 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends BaseFra
             initListener();
         }
         return rootView;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (mRootView != null) {
-            initData(savedInstanceState);
-        }
     }
 
     @Override

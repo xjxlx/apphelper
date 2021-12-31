@@ -13,8 +13,9 @@ import androidx.fragment.app.FragmentActivity;
 import com.android.helper.R;
 import com.android.helper.httpclient.BaseHttpSubscriber;
 import com.android.helper.httpclient.RxUtil;
+import com.android.helper.interfaces.ActivityUiInterface;
 import com.android.helper.interfaces.TagListener;
-import com.android.helper.interfaces.UIListener;
+import com.android.helper.interfaces.UIInterface;
 import com.android.helper.interfaces.listener.HttpManagerListener;
 import com.android.helper.utils.ClassUtil;
 import com.android.helper.utils.ClickUtil;
@@ -29,11 +30,9 @@ import io.reactivex.disposables.Disposable;
 /**
  * 最基层的Activity
  */
-public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, HttpManagerListener, TagListener, UIListener {
+public abstract class AppBaseActivity extends AppCompatActivity implements View.OnClickListener, HttpManagerListener, TagListener, UIInterface, ActivityUiInterface {
 
-    public FragmentActivity mContext;
-    private int mClickInterval = 500;// view的点击事件间隔
-
+    public FragmentActivity mActivity;
     /*
      *此处不能写成静态的，否则就会和使用RxManager一样了
      */
@@ -42,29 +41,23 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = this;
+        mActivity = this;
         LogUtil.e("当前的页面：Activity：--->  " + getClass().getName());
 
         // 在onCreate之前调用的方法
         onBeforeCreateView();
-
-        // 设置状态栏
-        StatusBarUtil.getInstance(this).setStatusColor(R.color.base_title_background_color);
+        // 初始化状态栏
+        initStatusBar();
 
         int baseLayout = getBaseLayout();
         if (baseLayout != 0) {
             setContentView(baseLayout);
-
             // 只有在设置完了布局之后才会去走初始化方法，避免顺序异常
             initView();
             initListener();
             initData(savedInstanceState);
+            initDataAfter();
         }
-    }
-
-    @Override
-    public void onBeforeCreateView() {
-
     }
 
     @SuppressLint("CheckResult")
@@ -83,24 +76,46 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onStart() {
         super.onStart();
-        mContext = this;
+        mActivity = this;
     }
 
     protected abstract int getBaseLayout();
 
+    /**
+     * 在setContentView之前的调用方法，用于特殊的使用
+     */
     @Override
-    public void initView(View rootView) {
-
+    public void onBeforeCreateView() {
     }
 
+    /**
+     * 初始化状态栏
+     */
+    @Override
+    public void initStatusBar() {
+        // 设置状态栏
+        StatusBarUtil.getInstance(this).setStatusColor(R.color.base_title_background_color);
+    }
+
+    /**
+     * Activity初始化view
+     */
     @Override
     public void initView() {
-
     }
 
+    /**
+     * 初始化点击事件
+     */
     @Override
     public void initListener() {
+    }
 
+    /**
+     * 初始化initData之后的操作，在某些场景中去使用
+     */
+    @Override
+    public void initDataAfter() {
     }
 
     /**
@@ -110,7 +125,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      */
     protected void startActivity(Class<? extends Activity> cls) {
         Intent intent = new Intent();
-        intent.setClass(mContext, cls);
+        intent.setClass(mActivity, cls);
         startActivity(intent);
     }
 
@@ -162,7 +177,9 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      */
     private void onViewClick(View v) {
         // 在指定的间隔时间内是否做了双击
-        boolean doubleClick = ClickUtil.isDoubleClick(mClickInterval);
+        // view的点击事件间隔
+        int clickInterval = 500;
+        boolean doubleClick = ClickUtil.isDoubleClick(clickInterval);
         if (doubleClick) {
             LogUtil.e("点击速度过快了！");
         } else {
