@@ -4,8 +4,8 @@
     android:id="@+id/rl_base_title_root"
     android:layout_width="match_parent"
     android:layout_height="@dimen/dp_50"
-    tools:viewBindingIgnore="true"
-    android:background="@color/base_title_background_color">
+    android:background="@color/base_title_background_color"
+    tools:viewBindingIgnore="true">
 
     <LinearLayout
         android:id="@+id/ll_base_title_back"
@@ -25,15 +25,6 @@
             android:tint="@color/white"
             tools:ignore="UseAppTint" />
 
-        <TextView
-            android:id="@+id/tv_base_title_back_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp_16"
-            tools:text="返回" />
     </LinearLayout>
 
     <TextView

@@ -4,14 +4,17 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ParseException;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.helper.utils.FileUtil;
 import com.android.helper.utils.PreferenceHelper;
+import com.google.gson.JsonParseException;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,6 +23,7 @@ import java.io.PrintWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.ConnectException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Date;
 
@@ -260,5 +264,29 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         }
         if (info == null) info = new PackageInfo();
         return info;
+    }
+
+    /**
+     * 处理错误的异常信息
+     */
+    public static String exception(Throwable e) {
+        String msg = "";
+        if (e != null) {
+            String message = e.getMessage();
+            if (e instanceof HttpException) {
+                msg = "Http异常：" + message;
+            } else if (e instanceof JsonParseException || e instanceof JSONException || e instanceof ParseException) {
+                msg = "数据解析异常：" + message;
+            } else if (e instanceof ConnectException) {
+                msg = "服务链接异常：" + message;
+            } else if (e instanceof javax.net.ssl.SSLHandshakeException) {
+                msg = "SSL异常：" + message;
+            } else if (e instanceof SocketTimeoutException) {
+                msg = "读取超时：" + message;
+            } else {
+                msg = "未知异常：" + message;
+            }
+        }
+        return msg;
     }
 }

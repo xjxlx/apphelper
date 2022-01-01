@@ -16,14 +16,13 @@ public class TitleBar {
     private Context mContext;
 
     private int mTitleLayoutId; // title的根布局资源
+    private int mTitleBarLayoutId;// 顶部title的资源id
     private int mLeftBackLayoutId; //左侧返回键父布局id
-    private int mLeftBackTextId; // 左侧返回键文字的id
-    private String mLeftBackText;// 左侧的返回文字内容
-    private boolean mShowBackText; // 返回的文字是否可见
     private int mTitleId; // 中间标题的id
     private int mRightLayoutId; // 右侧标题的父布局
     private int mRightTextId; // 右侧标题中的文字id
     private int mContentLayoutId; // 布局下面真实使用到的布局，这个对象可用可不用
+    private int mPlaceHolderLayoutId;// title布局下面，和真实使用到的activity布局，同一层级的view，用来展示错误数据的布局
 
     /**
      * title的根布局资源
@@ -34,14 +33,13 @@ public class TitleBar {
         if (builder != null) {
             this.mContext = builder.mContext;
             this.mTitleLayoutId = builder.mTitleLayoutId;
+            this.mTitleBarLayoutId = builder.mTitleBarLayoutId;
             this.mLeftBackLayoutId = builder.mLeftBackLayoutId;
-            this.mLeftBackTextId = builder.mLeftBackTextId;
-            this.mLeftBackText = builder.mLeftBackText;
-            this.mShowBackText = builder.mShowBackText;
             this.mTitleId = builder.mTitleId;
             this.mRightLayoutId = builder.mRightLayoutId;
             this.mRightTextId = builder.mRightTextId;
             this.mContentLayoutId = builder.mContentLayoutId;
+            this.mPlaceHolderLayoutId = builder.mPlaceHolderLayoutId;
         }
     }
 
@@ -59,43 +57,29 @@ public class TitleBar {
     }
 
     /**
-     * @return 获取左侧返回键的根布局
+     * @return 获取顶部titleBar的布局
      */
-    public View getLeftBackLayout() {
-        View view = null;
+    public ViewGroup getTitleBarLayout() {
+        ViewGroup view = null;
         if (mTitleLayout != null) {
             if (mLeftBackLayoutId != 0) {
-                view = mTitleLayout.findViewById(mLeftBackLayoutId);
+                view = mTitleLayout.findViewById(mTitleBarLayoutId);
             }
         }
         return view;
     }
 
     /**
-     * @return 获取左侧返回布局中的textView
+     * @return 获取左侧返回键的根布局
      */
-    public TextView getLeftBackTextView() {
-        TextView leftBackText = null;
+    public ViewGroup getLeftBackLayout() {
+        ViewGroup view = null;
         if (mTitleLayout != null) {
-            if (mLeftBackTextId != 0) {
-                View view = mTitleLayout.findViewById(mLeftBackTextId);
-                if (view instanceof TextView) {
-                    leftBackText = (TextView) view;
-                }
+            if (mLeftBackLayoutId != 0) {
+                view = mTitleLayout.findViewById(mLeftBackLayoutId);
             }
         }
-        return leftBackText;
-    }
-
-    public String getLeftBackText() {
-        return mLeftBackText;
-    }
-
-    /**
-     * @return 返回的文字描述是否可见
-     */
-    public boolean getLeftBackTextShow() {
-        return mShowBackText;
+        return view;
     }
 
     /**
@@ -154,6 +138,22 @@ public class TitleBar {
         if (mTitleLayout != null) {
             if (mContentLayoutId != 0) {
                 View view = mTitleLayout.findViewById(mContentLayoutId);
+                if (view instanceof ViewGroup) {
+                    mContentLayout = (ViewGroup) view;
+                }
+            }
+        }
+        return mContentLayout;
+    }
+
+    /**
+     * title 底部真实用到的布局
+     */
+    public ViewGroup getPlaceHolderLayout() {
+        ViewGroup mContentLayout = null;
+        if (mTitleLayout != null) {
+            if (mPlaceHolderLayoutId != 0) {
+                View view = mTitleLayout.findViewById(mPlaceHolderLayoutId);
                 if (view instanceof ViewGroup) {
                     mContentLayout = (ViewGroup) view;
                 }

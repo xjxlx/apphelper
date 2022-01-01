@@ -19,22 +19,14 @@ public class TitleBuilder {
     protected int mTitleLayoutId;
 
     /**
+     * 顶部titleBar的资源id
+     */
+    protected int mTitleBarLayoutId;
+
+    /**
      * 左侧返回键父布局id
      */
     protected int mLeftBackLayoutId;
-
-    /**
-     * 左侧返回键文字的id
-     */
-    protected int mLeftBackTextId;
-    /**
-     * 返回文字是否可见
-     */
-    protected boolean mShowBackText;
-    /**
-     * 左侧返回文字的内容
-     */
-    protected String mLeftBackText;
 
     /**
      * 中间标题的id
@@ -62,6 +54,11 @@ public class TitleBuilder {
     protected int mContentLayoutId;
 
     /**
+     * title布局下面，和真实使用到的activity布局，同一层级的view，用来展示错误数据的布局
+     */
+    protected int mPlaceHolderLayoutId;
+
+    /**
      * @param titleLayoutId R.layout.xxx
      * @return 设置title的资源布局
      */
@@ -74,38 +71,20 @@ public class TitleBuilder {
     }
 
     /**
+     * @param titleBarLayoutId R.id.xx
+     * @return 设置顶部titleBar的资源id
+     */
+    public TitleBuilder setTitleBarLayoutId(int titleBarLayoutId) {
+        mTitleBarLayoutId = titleBarLayoutId;
+        return this;
+    }
+
+    /**
      * @param leftBackLayoutId R.id.xx
      * @return 设置返回的父布局id
      */
     public TitleBuilder setLeftBackLayoutId(int leftBackLayoutId) {
         mLeftBackLayoutId = leftBackLayoutId;
-        return this;
-    }
-
-    /**
-     * @param leftBackTextId R.id.xx
-     * @return 设置返回的TextView的id
-     */
-    public TitleBuilder setLeftBackTextId(int leftBackTextId) {
-        mLeftBackTextId = leftBackTextId;
-        return this;
-    }
-
-    /**
-     * @param showBackText true:可见，false:不可见
-     * @return 设置返回的文字是否可见
-     */
-    public TitleBuilder setShowBackText(boolean showBackText) {
-        mShowBackText = showBackText;
-        return this;
-    }
-
-    /**
-     * @param leftBackText 具体的返回文字的内容
-     * @return 设置返回的文字内容
-     */
-    public TitleBuilder setLeftBackText(String leftBackText) {
-        mLeftBackText = leftBackText;
         return this;
     }
 
@@ -142,6 +121,15 @@ public class TitleBuilder {
      */
     public TitleBuilder setContentLayoutId(int contentLayoutId) {
         mContentLayoutId = contentLayoutId;
+        return this;
+    }
+
+    /**
+     * @param placeHolderLayoutId R.id.xx
+     * @return title布局下面，和真实使用到的activity布局，同一层级的view，用来展示错误数据的布局
+     */
+    public TitleBuilder setPlaceHolderLayoutId(int placeHolderLayoutId) {
+        mPlaceHolderLayoutId = placeHolderLayoutId;
         return this;
     }
 
