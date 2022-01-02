@@ -24,26 +24,26 @@ public class Placeholder {
     // 列表类型空布局
     private int mListEmptyResource;                     // List空布局指定的图片资源
     private String mListEmptyContent;                   // List空布局指定的文字内容
-    private float mListEmptyTitleSize;                    // List空布局文字的大小
+    private float mListEmptyTitleSize;                  // List空布局文字的大小
     private int mListEmptyTitleColor;                   // List空布局文字的颜色
 
     // page类型空数据
     private String mPageEmptyContent;                    // page类型的空布局站位图提示内容
     private int mPageEmptyResource;                      // page类型的空布局站位图资源
-    private float mPageEmptyTitleSize;                     // page空布局文字的大小
+    private float mPageEmptyTitleSize;                   // page空布局文字的大小
     private int mPageEmptyTitleColor;                    // page空布局文字的颜色
 
     // 公用错误类型数据
     private String mErrorContent;                        // 公用错误类型的空布局站位图提示内容
     private int mErrorResource;                          // 公用错误类型的空布局站位图资源
-    private float mErrorTitleSize;                         // 公用错误布局文字的大小
+    private float mErrorTitleSize;                       // 公用错误布局文字的大小
     private int mErrorTitleColor;                        // 公用错误布局文字的颜色
     private String mErrorButtonContent;                  // 公用错误布局的按钮文字
 
     // 公用无网类型数据
     private int mNoNetWorkImage;                         // 断网的图片
-    private String mNoNetWorkTitle;                      // 错误的提示
-    private float mNoNetWorkTitleSize;                     // 空布局文字的大小
+    private String mNoNetWorkContent;                    // 错误的提示
+    private float mNoNetWorkTitleSize;                   // 空布局文字的大小
     private int mNoNetWorkTitleColor;                    // 空布局文字的颜色
     private String mNoNetWorkButtonContent;              // 错误布局的按钮文字
 
@@ -79,7 +79,7 @@ public class Placeholder {
             this.mErrorTitleSize = builder.mErrorTitleSize;
             this.mErrorTitleColor = builder.mErrorTitleColor;
             this.mErrorButtonContent = builder.mErrorButtonContent;
-            this.mNoNetWorkTitle = builder.mNoNetWorkTitle;
+            this.mNoNetWorkContent = builder.mNoNetWorkContent;
             this.mNoNetWorkImage = builder.mNoNetWorkImage;
             this.mNoNetWorkTitleSize = builder.mNoNetWorkTitleSize;
             this.mNoNetWorkTitleColor = builder.mNoNetWorkTitleColor;
@@ -203,7 +203,7 @@ public class Placeholder {
     }
 
     public String getNoNetWorkTitle() {
-        return mNoNetWorkTitle;
+        return mNoNetWorkContent;
     }
 
     public float getNoNetWorkTitleSize() {
@@ -249,8 +249,8 @@ public class Placeholder {
 
         // 公用无网类型数据
         private int mNoNetWorkImage;                         // 断网的图片
-        private String mNoNetWorkTitle;                      // 错误的提示
-        private float mNoNetWorkTitleSize;                     // 空布局文字的大小
+        private String mNoNetWorkContent;                    // 错误的提示
+        private float mNoNetWorkTitleSize;                   // 空布局文字的大小
         private int mNoNetWorkTitleColor;                    // 空布局文字的颜色
         private String mNoNetWorkButtonContent;              // 错误布局的按钮文字
 
@@ -328,8 +328,8 @@ public class Placeholder {
             mNoNetWorkImage = noNetWorkImage;
         }
 
-        public void setNoNetWorkTitle(String noNetWorkTitle) {
-            mNoNetWorkTitle = noNetWorkTitle;
+        public void setNoNetWorkContent(String noNetWorkTitle) {
+            mNoNetWorkContent = noNetWorkTitle;
         }
 
         public void setNoNetWorkTitleSize(float noNetWorkTitleSize) {
