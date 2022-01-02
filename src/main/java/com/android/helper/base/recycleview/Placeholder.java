@@ -11,7 +11,7 @@ import com.android.helper.R;
 /**
  * @author : 流星
  * @CreateDate: 2021/11/10-4:56 下午
- * @Description: 项目占位图的工具类
+ * @Description: 项目占位图的工具类 ""
  */
 public class Placeholder {
     private ViewGroup mRootView;
