@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.android.helper.R;
 
@@ -11,57 +12,41 @@ import com.android.helper.R;
  * @author : 流星
  * @CreateDate: 2021/11/10-4:56 下午
  * @Description: 项目占位图的工具类
- * <ol>
- *     使用说明：使用该占位图工具，可以给页面设置空页面的信息 和 异常页面的信息
- *     使用方法：
- *          一：普通设置
- *              1：设置空数据的图片和文字，调用方法{@link Builder#setListEmpty(int, String)}
- *              2：设置空数据提示内容的颜色，调用{@link Builder#setListEmptyContentColor(int)}
- *              3：设置空数据提示内容的大小，调用方法{@link Builder#setListEmptyContentSize(int)}
- * <p>
- *              4：设置错误的图片，调用方法{@link Builder#setErrorImage(int)}
- *              5：设置错误的标题，调用方法{@link Builder#setErrorTitle(String)}
- *              6：设置错误的按钮内容，调用方法{@link Builder#setErrorButtonContent(String)}
- *              7：设置错误的按钮背景，调用方法{@link Builder#setErrorButtonBackground(int)}
- * <p>
- *          二：全局异常资源设置
- *                 说明：考虑到异常页面的占位图不会随意的变化，所以设置了一套静态的资源文件，供全局使用，一旦设置了新的异常资源，就不会使用全局的异常资源
- * <p>
- *              1：设置全局的异常资源，调用方法{@link Placeholder#setGlobalPlaceholder(Placeholder)} }
- *              2：获取全局的异常资源，调用方法{@link Placeholder#getGlobalPlaceholder()}
- * <p>
- *          三：获取资源
- *                  说明：文档只写了各种设置方法，具体的获取方式，如果是全局的，去使用静态的对应方法获取，如果不是全局的，就使用普通对象去获取，和设置方法都是一一对应的，设置是setXX( )方法，
- *                  获取就是getXX()方法
- * </ol>
  */
 public class Placeholder {
+    private ViewGroup mRootView;
 
-    private View mEmptyView;                            // 空数据的指定布局
-    private int mTypeForView;                           // view的来源,1:指定的view ，2：默认的view
+    private int mRootViewId;                           // 数据的根布局
+    private int mMessageViewId;                        // 中间消息按钮的view
+    private int mBottomOtherViewId;                    // 消息按钮下方的额外view，常用于添加一些按钮的操作，需要的话，可以去自己添加
+    private int mRefreshViewId;                        // 底部刷新按钮的对象
 
-    // 列表类型
+    // 列表类型空布局
     private int mListEmptyResource;                     // List空布局指定的图片资源
     private String mListEmptyContent;                   // List空布局指定的文字内容
     private int mListEmptyTitleSize;                    // List空布局文字的大小
     private int mListEmptyTitleColor;                   // List空布局文字的颜色
 
-    // page类型
+    // page类型空数据
     private String mPageEmptyContent;                    // page类型的空布局站位图提示内容
     private int mPageEmptyResource;                      // page类型的空布局站位图资源
     private int mPageEmptyTitleSize;                     // page空布局文字的大小
     private int mPageEmptyTitleColor;                    // page空布局文字的颜色
 
-    // 公用数据
-    private int mErrorImage;                             // 错误布局指定的图片资源
+    // 公用错误类型数据
+    private String mErrorContent;                        // 公用错误类型的空布局站位图提示内容
+    private int mErrorResource;                          // 公用错误类型的空布局站位图资源
+    private int mErrorTitleSize;                         // 公用错误布局文字的大小
+    private int mErrorTitleColor;                        // 公用错误布局文字的颜色
+    private String mErrorButtonContent;                  // 公用错误布局的按钮文字
+
+    // 公用无网类型数据
     private int mNoNetWorkImage;                         // 断网的图片
-    private String mErrorTitle;                          // 错误的提示
-    private int mErrorTitleSize;                         // 空布局文字的大小
-    private int mErrorTitleColor;                        // 空布局文字的颜色
-    private int mErrorButtonBackground;                  // 错误布局的按钮背景
-    private String mErrorButtonContent;                  // 错误布局的按钮文字
-    private boolean isFromGlobal;                        // 数据是否是全局设置的
-    private View mBottomView;                            // 空布局提示文字下的布局，一般为按钮，可以是其他
+    private String mNoNetWorkTitle;                      // 错误的提示
+    private int mNoNetWorkTitleSize;                     // 空布局文字的大小
+    private int mNoNetWorkTitleColor;                    // 空布局文字的颜色
+    private String mNoNetWorkButtonContent;              // 错误布局的按钮文字
+
     private boolean mShowPlaceHolder;                    // 是否自动显示占位图，默认为true
 
     @SuppressLint("StaticFieldLeak")
@@ -77,42 +62,88 @@ public class Placeholder {
 
     public Placeholder(Builder builder) {
         if (builder != null) {
-            this.mEmptyView = builder.mEmptyView;
-            this.mTypeForView = builder.mTypeForView;
-
+            this.mRootViewId = builder.mRootViewId;
+            this.mMessageViewId = builder.mMessageViewId;
+            this.mBottomOtherViewId = builder.mBottomOtherViewId;
+            this.mRefreshViewId = builder.mRefreshViewId;
             this.mListEmptyResource = builder.mListEmptyResource;
             this.mListEmptyContent = builder.mListEmptyContent;
             this.mListEmptyTitleSize = builder.mListEmptyTitleSize;
             this.mListEmptyTitleColor = builder.mListEmptyTitleColor;
-
-            this.mPageEmptyResource = builder.mPageEmptyResource;
             this.mPageEmptyContent = builder.mPageEmptyContent;
+            this.mPageEmptyResource = builder.mPageEmptyResource;
             this.mPageEmptyTitleSize = builder.mPageEmptyTitleSize;
             this.mPageEmptyTitleColor = builder.mPageEmptyTitleColor;
-
-            this.mErrorImage = builder.mErrorImage;
-            this.mNoNetWorkImage = builder.mNoNetWorkImage;
-            this.mErrorTitle = builder.mErrorTitle;
+            this.mErrorContent = builder.mErrorContent;
+            this.mErrorResource = builder.mErrorResource;
             this.mErrorTitleSize = builder.mErrorTitleSize;
             this.mErrorTitleColor = builder.mErrorTitleColor;
-            this.mErrorButtonBackground = builder.mErrorButtonBackground;
             this.mErrorButtonContent = builder.mErrorButtonContent;
-            this.isFromGlobal = builder.isFromGlobal;
-            this.mBottomView = builder.mBottomView;
+            this.mNoNetWorkTitle = builder.mNoNetWorkTitle;
+            this.mNoNetWorkImage = builder.mNoNetWorkImage;
+            this.mNoNetWorkTitleSize = builder.mNoNetWorkTitleSize;
+            this.mNoNetWorkTitleColor = builder.mNoNetWorkTitleColor;
+            this.mNoNetWorkButtonContent = builder.mNoNetWorkButtonContent;
             this.mShowPlaceHolder = builder.mShowPlaceHolder;
         }
     }
 
-    public View getEmptyView(ViewGroup parent) {
-        // 如果没有手动设置空布局，则使用默认的空布局
-        if (mTypeForView != 1) {
-            // 此处的布局不能作为公共使用，每一个布局，都要使用一个单独的父布局，不然会报错
-            if (parent != null) {
-                mEmptyView = LayoutInflater.from(parent.getContext()).inflate(R.layout.base_recycleview_empty, parent, false);
-                mTypeForView = 2;
+    /**
+     * @param parent 依赖的父布局
+     * @return 获取根布局
+     */
+    public View getRootView(ViewGroup parent) {
+        if (mRootViewId != 0) {
+            mRootView = (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(mRootViewId, parent, false);
+        } else {
+            mRootView = (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.base_recycleview_empty, parent, false);
+        }
+        return mRootView;
+    }
+
+    /**
+     * @return 获取提示消息的view
+     */
+    public TextView getMessageView() {
+        TextView messageView = null;
+        if (mRootView != null) {
+            if (mMessageViewId != 0) {
+                messageView = mRootView.findViewById(mMessageViewId);
+            } else {
+                messageView = mRootView.findViewById(R.id.tv_base_placeholder_msg);
             }
         }
-        return mEmptyView;
+        return messageView;
+    }
+
+    /**
+     * @return 获取消息下方其他view的父布局，用于自己去动态需要的view
+     */
+    public ViewGroup getBottomOtherView() {
+        ViewGroup otherView = null;
+        if (mRootView != null) {
+            if (mBottomOtherViewId != 0) {
+                otherView = mRootView.findViewById(mBottomOtherViewId);
+            } else {
+                otherView = mRootView.findViewById(R.id.fl_bottom_placeholder);
+            }
+        }
+        return otherView;
+    }
+
+    /**
+     * @return 获取底部刷新按钮的view, 可以用来自己定义或者重构
+     */
+    public TextView getRefreshView() {
+        TextView refreshView = null;
+        if (mRootView != null) {
+            if (mRefreshViewId != 0) {
+                refreshView = mRootView.findViewById(mRefreshViewId);
+            } else {
+                refreshView = mRootView.findViewById(R.id.iv_base_error_placeholder);
+            }
+        }
+        return refreshView;
     }
 
     public int getListEmptyResource() {
@@ -123,47 +154,36 @@ public class Placeholder {
         return mListEmptyContent;
     }
 
-    public int getListEmptyContentSize() {
+    public int getListEmptyTitleSize() {
         return mListEmptyTitleSize;
     }
 
-    public int getListEmptyContentColor() {
+    public int getListEmptyTitleColor() {
         return mListEmptyTitleColor;
-    }
-
-    public int getPageEmptyResource() {
-        return mPageEmptyResource;
     }
 
     public String getPageEmptyContent() {
         return mPageEmptyContent;
     }
 
-    public int getPageEmptyContentSize() {
+    public int getPageEmptyResource() {
+        return mPageEmptyResource;
+    }
+
+    public int getPageEmptyTitleSize() {
         return mPageEmptyTitleSize;
     }
 
-    public int getPageEmptyContentColor() {
+    public int getPageEmptyTitleColor() {
         return mPageEmptyTitleColor;
     }
 
-    public int getErrorImage() {
-        return mErrorImage;
-    }
-
-    public int getNoNetWorkImage() {
-        return mNoNetWorkImage;
-    }
-
     public String getErrorContent() {
-        return mErrorTitle;
+        return mErrorContent;
     }
 
-    /**
-     * 设置错误的提示内容
-     */
-    public void setErrorContent(String errorContent) {
-        this.mErrorTitle = errorContent;
+    public int getErrorResource() {
+        return mErrorResource;
     }
 
     public int getErrorTitleSize() {
@@ -174,139 +194,122 @@ public class Placeholder {
         return mErrorTitleColor;
     }
 
-    public int getErrorButtonBackground() {
-        return mErrorButtonBackground;
-    }
-
     public String getErrorButtonContent() {
         return mErrorButtonContent;
     }
 
-    /**
-     * @return true:表示：是手动设置的，false:默认为false，表示不是手动设置的。此标记是为了确定是否是项目设置了全局的对象，不能单纯地使用对象为空去判断
-     */
-    public boolean isFromGlobal() {
-        return isFromGlobal;
+    public int getNoNetWorkImage() {
+        return mNoNetWorkImage;
     }
 
-    /**
-     * @return 获取说明消息底部的布局资源
-     */
-    public View getBottomView() {
-        return mBottomView;
+    public String getNoNetWorkTitle() {
+        return mNoNetWorkTitle;
     }
 
-    /**
-     * @return 获取是否默认展示占位图
-     */
-    public boolean autoShowPlaceHolder() {
+    public int getNoNetWorkTitleSize() {
+        return mNoNetWorkTitleSize;
+    }
+
+    public int getNoNetWorkTitleColor() {
+        return mNoNetWorkTitleColor;
+    }
+
+    public String getNoNetWorkButtonContent() {
+        return mNoNetWorkButtonContent;
+    }
+
+    public boolean isShowPlaceHolder() {
         return mShowPlaceHolder;
     }
 
-    /**
-     * @return view的来源, 1:指定的view ，2：默认的view
-     */
-    public int getTypeForView() {
-        return mTypeForView;
-    }
-
     public static class Builder {
-        private View mEmptyView;                            // 空数据的指定布局
-        private int mTypeForView;                           // view的来源,1:指定的view ，2：默认的view
+        private int mRootViewId;                           // 数据的根布局
+        private int mMessageViewId;                        // 中间消息按钮的view
+        private int mBottomOtherViewId;                    // 消息按钮下方的额外view，常用于添加一些按钮的操作，需要的话，可以去自己添加
+        private int mRefreshViewId;                        // 底部刷新按钮的对象
 
-        // 列表类型
+        // 列表类型空布局
         private int mListEmptyResource;                     // List空布局指定的图片资源
         private String mListEmptyContent;                   // List空布局指定的文字内容
         private int mListEmptyTitleSize;                    // List空布局文字的大小
         private int mListEmptyTitleColor;                   // List空布局文字的颜色
 
-        // page类型
-        private String mPageEmptyContent;                   // page类型的空布局站位图提示内容
-        private int mPageEmptyResource;                     // page类型的空布局站位图资源
-        private int mPageEmptyTitleSize;                    // page空布局文字的大小
-        private int mPageEmptyTitleColor;                   // page空布局文字的颜色
+        // page类型空数据
+        private String mPageEmptyContent;                    // page类型的空布局站位图提示内容
+        private int mPageEmptyResource;                      // page类型的空布局站位图资源
+        private int mPageEmptyTitleSize;                     // page空布局文字的大小
+        private int mPageEmptyTitleColor;                    // page空布局文字的颜色
 
-        // 公用数据
-        private int mErrorImage;                            // 错误布局指定的图片资源
+        // 公用错误类型数据
+        private String mErrorContent;                        // 公用错误类型的空布局站位图提示内容
+        private int mErrorResource;                          // 公用错误类型的空布局站位图资源
+        private int mErrorTitleSize;                         // 公用错误布局文字的大小
+        private int mErrorTitleColor;                        // 公用错误布局文字的颜色
+        private String mErrorButtonContent;                  // 公用错误布局的按钮文字
+
+        // 公用无网类型数据
         private int mNoNetWorkImage;                         // 断网的图片
-        private String mErrorTitle;                         // 错误的提示
-        private int mErrorTitleSize;                        // 空布局文字的大小
-        private int mErrorTitleColor;                       // 空布局文字的颜色
-        private int mErrorButtonBackground;                 // 错误布局的按钮背景
-        private String mErrorButtonContent;                 // 错误布局的按钮文字
-        private boolean isFromGlobal;                       // 数据是否是全局设置的
-        private View mBottomView;                           // 空布局提示文字下的布局，一般为按钮，可以是其他
-        private boolean mShowPlaceHolder;                   // 是否自动显示占位图，默认为true
+        private String mNoNetWorkTitle;                      // 错误的提示
+        private int mNoNetWorkTitleSize;                     // 空布局文字的大小
+        private int mNoNetWorkTitleColor;                    // 空布局文字的颜色
+        private String mNoNetWorkButtonContent;              // 错误布局的按钮文字
 
-        /**
-         * 设置空布局的view
-         *
-         * @param view 指定的空布局的view
-         */
-        public Builder setEmptyView(View view) {
-            this.mEmptyView = view;
-            mTypeForView = 1;
-            return this;
+        private boolean mShowPlaceHolder;                    // 是否自动显示占位图，默认为true
+
+        public void setRootViewId(int rootViewId) {
+            mRootViewId = rootViewId;
         }
 
-        /**
-         * @param resources    指定的图片的资源
-         * @param emptyContent 指定的内容
-         */
-        public Builder setListEmpty(int resources, String emptyContent) {
-            this.mListEmptyResource = resources;
-            this.mListEmptyContent = emptyContent;
-            return this;
+        public void setMessageViewId(int messageViewId) {
+            mMessageViewId = messageViewId;
         }
 
-        public Builder setListEmptyContentSize(int contentSize) {
-            this.mListEmptyTitleSize = contentSize;
-            return this;
+        public void setBottomOtherViewId(int bottomOtherViewId) {
+            mBottomOtherViewId = bottomOtherViewId;
         }
 
-        public Builder setListEmptyContentColor(int contentColor) {
-            this.mListEmptyTitleColor = contentColor;
-            return this;
+        public void setRefreshViewId(int refreshViewId) {
+            mRefreshViewId = refreshViewId;
         }
 
-        public Builder setPageEmpty(int resources, String emptyContent) {
-            this.mPageEmptyResource = resources;
-            this.mPageEmptyContent = emptyContent;
-            return this;
+        public void setListEmptyResource(int listEmptyResource) {
+            mListEmptyResource = listEmptyResource;
         }
 
-        public Builder setPageEmptyContentSize(int contentSize) {
-            this.mPageEmptyTitleSize = contentSize;
-            return this;
+        public void setListEmptyContent(String listEmptyContent) {
+            mListEmptyContent = listEmptyContent;
         }
 
-        public Builder setPageEmptyContentColor(int contentColor) {
-            this.mPageEmptyTitleColor = contentColor;
-            return this;
+        public void setListEmptyTitleSize(int listEmptyTitleSize) {
+            mListEmptyTitleSize = listEmptyTitleSize;
         }
 
-        /**
-         * @param errorImage 错误图片的对象
-         */
-        public Builder setErrorImage(int errorImage) {
-            mErrorImage = errorImage;
-            return this;
+        public void setListEmptyTitleColor(int listEmptyTitleColor) {
+            mListEmptyTitleColor = listEmptyTitleColor;
         }
 
-        /**
-         * @param noNetWorkImage 断网图片的对象
-         */
-        public Builder setNoNetWorkImage(int noNetWorkImage) {
-            mNoNetWorkImage = noNetWorkImage;
-            return this;
+        public void setPageEmptyContent(String pageEmptyContent) {
+            mPageEmptyContent = pageEmptyContent;
         }
 
-        /**
-         * @param errorTitle 错误的提示
-         */
-        public Builder setErrorTitle(String errorTitle) {
-            mErrorTitle = errorTitle;
-            return this;
+        public void setPageEmptyResource(int pageEmptyResource) {
+            mPageEmptyResource = pageEmptyResource;
+        }
+
+        public void setPageEmptyTitleSize(int pageEmptyTitleSize) {
+            mPageEmptyTitleSize = pageEmptyTitleSize;
+        }
+
+        public void setPageEmptyTitleColor(int pageEmptyTitleColor) {
+            mPageEmptyTitleColor = pageEmptyTitleColor;
+        }
+
+        public void setErrorContent(String errorContent) {
+            mErrorContent = errorContent;
+        }
+
+        public void setErrorResource(int errorResource) {
+            mErrorResource = errorResource;
         }
 
         public void setErrorTitleSize(int errorTitleSize) {
@@ -317,41 +320,32 @@ public class Placeholder {
             mErrorTitleColor = errorTitleColor;
         }
 
-        /**
-         * @param errorButtonBackground 错误按钮的背景
-         */
-        public Builder setErrorButtonBackground(int errorButtonBackground) {
-            mErrorButtonBackground = errorButtonBackground;
-            return this;
-        }
-
-        /**
-         * @param errorButtonContent 错误布局的文字描述
-         */
-        public Builder setErrorButtonContent(String errorButtonContent) {
+        public void setErrorButtonContent(String errorButtonContent) {
             mErrorButtonContent = errorButtonContent;
-            return this;
         }
 
-        public void setFromGlobal(boolean fromGlobal) {
-            isFromGlobal = fromGlobal;
+        public void setNoNetWorkImage(int noNetWorkImage) {
+            mNoNetWorkImage = noNetWorkImage;
         }
 
-        /**
-         * @param bottomView 设置空布局说明信息下的资源对象，一般是一个按钮的形式，可以是其他的样式，需要用户去自定义
-         */
-        public Builder setBottomView(View bottomView) {
-            mBottomView = bottomView;
-            return this;
+        public void setNoNetWorkTitle(String noNetWorkTitle) {
+            mNoNetWorkTitle = noNetWorkTitle;
         }
 
-        /**
-         * @param showPlaceHolder true:默认显示，false:默认不展示
-         * @return 设置是否显示默认的占位图
-         */
-        public Builder autoShowPlaceHolder(boolean showPlaceHolder) {
+        public void setNoNetWorkTitleSize(int noNetWorkTitleSize) {
+            mNoNetWorkTitleSize = noNetWorkTitleSize;
+        }
+
+        public void setNoNetWorkTitleColor(int noNetWorkTitleColor) {
+            mNoNetWorkTitleColor = noNetWorkTitleColor;
+        }
+
+        public void setNoNetWorkButtonContent(String noNetWorkButtonContent) {
+            mNoNetWorkButtonContent = noNetWorkButtonContent;
+        }
+
+        public void setShowPlaceHolder(boolean showPlaceHolder) {
             mShowPlaceHolder = showPlaceHolder;
-            return this;
         }
 
         public Placeholder Build() {
