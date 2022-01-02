@@ -147,6 +147,13 @@ public class Placeholder {
         return otherView;
     }
 
+    public void setBottomView(View bottomView) {
+        ViewGroup bottomOtherView = getBottomOtherView();
+        if (bottomOtherView != null && bottomView != null) {
+            bottomOtherView.addView(bottomView);
+        }
+    }
+
     /**
      * @return 获取底部刷新按钮的view, 可以用来自己定义或者重构
      */
