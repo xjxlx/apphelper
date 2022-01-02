@@ -5,12 +5,12 @@ import android.content.Context;
 /**
  * @author : 流星
  * @CreateDate: 2021/12/2-2:01
- * @Description:
+ * @Description:页面布局的对象
  */
-public class TitleBuilder {
+public class PageLayoutBuilder {
     protected Context mContext;
 
-    public TitleBuilder() {
+    public PageLayoutBuilder() {
     }
 
     /**
@@ -62,7 +62,7 @@ public class TitleBuilder {
      * @param titleLayoutId R.layout.xxx
      * @return 设置title的资源布局
      */
-    public TitleBuilder setTitleLayoutId(int titleLayoutId) {
+    public PageLayoutBuilder setTitleLayoutId(int titleLayoutId) {
         mTitleLayoutId = titleLayoutId;
         if (mTitleLayoutId != 0) {
             mTitleType = 2;
@@ -74,7 +74,7 @@ public class TitleBuilder {
      * @param titleBarLayoutId R.id.xx
      * @return 设置顶部titleBar的资源id
      */
-    public TitleBuilder setTitleBarLayoutId(int titleBarLayoutId) {
+    public PageLayoutBuilder setTitleBarLayoutId(int titleBarLayoutId) {
         mTitleBarLayoutId = titleBarLayoutId;
         return this;
     }
@@ -83,7 +83,7 @@ public class TitleBuilder {
      * @param leftBackLayoutId R.id.xx
      * @return 设置返回的父布局id
      */
-    public TitleBuilder setLeftBackLayoutId(int leftBackLayoutId) {
+    public PageLayoutBuilder setLeftBackLayoutId(int leftBackLayoutId) {
         mLeftBackLayoutId = leftBackLayoutId;
         return this;
     }
@@ -92,7 +92,7 @@ public class TitleBuilder {
      * @param titleId R.id.xx
      * @return 设置title的id
      */
-    public TitleBuilder setTitleId(int titleId) {
+    public PageLayoutBuilder setTitleId(int titleId) {
         mTitleId = titleId;
         return this;
     }
@@ -101,7 +101,7 @@ public class TitleBuilder {
      * @param rightLayoutId R.id.xx
      * @return 设置右侧的父布局id
      */
-    public TitleBuilder setRightLayoutId(int rightLayoutId) {
+    public PageLayoutBuilder setRightLayoutId(int rightLayoutId) {
         mRightLayoutId = rightLayoutId;
         return this;
     }
@@ -110,7 +110,7 @@ public class TitleBuilder {
      * @param rightTextId R.id.xx
      * @return 设置右侧文字的id
      */
-    public TitleBuilder setRightTextId(int rightTextId) {
+    public PageLayoutBuilder setRightTextId(int rightTextId) {
         mRightTextId = rightTextId;
         return this;
     }
@@ -119,7 +119,7 @@ public class TitleBuilder {
      * @param contentLayoutId R.id.xx
      * @return 底部content具体使用的ViewGroup的布局id
      */
-    public TitleBuilder setContentLayoutId(int contentLayoutId) {
+    public PageLayoutBuilder setContentLayoutId(int contentLayoutId) {
         mContentLayoutId = contentLayoutId;
         return this;
     }
@@ -128,13 +128,13 @@ public class TitleBuilder {
      * @param placeHolderLayoutId R.id.xx
      * @return title布局下面，和真实使用到的activity布局，同一层级的view，用来展示错误数据的布局
      */
-    public TitleBuilder setPlaceHolderLayoutId(int placeHolderLayoutId) {
+    public PageLayoutBuilder setPlaceHolderLayoutId(int placeHolderLayoutId) {
         mPlaceHolderLayoutId = placeHolderLayoutId;
         return this;
     }
 
-    public TitleBar build(Context context) {
+    public PageLayoutManager build(Context context) {
         mContext = context;
-        return new TitleBar(this);
+        return new PageLayoutManager(this);
     }
 }

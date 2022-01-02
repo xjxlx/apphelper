@@ -12,7 +12,7 @@ import android.widget.TextView;
  * @CreateDate: 2021/12/1-23:56
  * @Description: 标题的对象封装
  */
-public class TitleBar {
+public class PageLayoutManager {
     private Context mContext;
 
     private int mTitleLayoutId; // title的根布局资源
@@ -29,7 +29,7 @@ public class TitleBar {
      */
     private View mTitleLayout;
 
-    public TitleBar(TitleBuilder builder) {
+    public PageLayoutManager(PageLayoutBuilder builder) {
         if (builder != null) {
             this.mContext = builder.mContext;
             this.mTitleLayoutId = builder.mTitleLayoutId;
@@ -72,8 +72,8 @@ public class TitleBar {
     /**
      * @return 获取左侧返回键的根布局
      */
-    public ViewGroup getLeftBackLayout() {
-        ViewGroup view = null;
+    public View getLeftBackLayout() {
+        View view = null;
         if (mTitleLayout != null) {
             if (mLeftBackLayoutId != 0) {
                 view = mTitleLayout.findViewById(mLeftBackLayoutId);
@@ -163,16 +163,16 @@ public class TitleBar {
     }
 
     @SuppressLint("StaticFieldLeak")
-    private static TitleBuilder mBuilder;
+    private static PageLayoutBuilder mBuilder;
 
     /**
      * @param builder 设置全局的信息
      */
-    public static void setGlobalTitleBar(TitleBuilder builder) {
+    public static void setGlobalTitleBar(PageLayoutBuilder builder) {
         mBuilder = builder;
     }
 
-    public static TitleBuilder getGlobalTitleBarBuilder() {
+    public static PageLayoutBuilder getGlobalTitleBarBuilder() {
         return mBuilder;
     }
 
