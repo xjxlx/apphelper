@@ -59,7 +59,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      * </ol>
      */
     protected int mItemType;
-    private Placeholder mPlaceHolder = Placeholder.getGlobalPlaceholder(); // 占位图
+    protected Placeholder mPlaceHolder = Placeholder.getGlobalPlaceholder(); // 占位图
     private View mEmptyView;
     private int mErrorType;  // 1:空数据  2：错误数据
     private RefreshUtil<?> mRefreshUtil; // 刷新工具类
@@ -257,7 +257,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         // 空布局的条目
         if (isEmpty && mPlaceHolder != null) {
             if (showPlaceHolder == -1) { // 默认的时候，请求一下
-                boolean autoShowPlaceHolder = mPlaceHolder.autoShowPlaceHolder();
+                boolean autoShowPlaceHolder = mPlaceHolder.isShowPlaceHolder();
                 if (autoShowPlaceHolder) {
                     showPlaceHolder = 1;
                 }
@@ -277,7 +277,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         if (viewType == ViewType.TYPE_EMPTY) { // 设置空布局
             if (mEmptyView == null) {
                 if (mPlaceHolder != null) {
-                    mEmptyView = mPlaceHolder.getEmptyView(parent);
+                    mEmptyView = mPlaceHolder.getRootView(parent);
                 }
             }
             if (mEmptyView != null) {
@@ -299,9 +299,12 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                 if (mErrorType != 2) { // 这里说明接口是正常的，单纯去处理无数据的占位图
                     if (mPlaceHolder != null) { // 设置了指定的占位图
                         String emptyContent = mPlaceHolder.getListEmptyContent();
-                        int emptyContentColor = mPlaceHolder.getListEmptyContentColor();
-                        int emptyContentSize = mPlaceHolder.getListEmptyContentSize();
+                        int emptyContentColor = mPlaceHolder.getListEmptyTitleColor();
+                        float emptyContentSize = mPlaceHolder.getListEmptyTitleSize();
                         int emptyResource = mPlaceHolder.getListEmptyResource();
+
+                        // 隐藏底部按钮
+                        emptyVH.mIvButton.setVisibility(View.GONE);
 
                         // 文字的描述
                         if (!TextUtils.isEmpty(emptyContent)) {
@@ -322,41 +325,18 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                         if (emptyResource != 0) {
                             emptyVH.mIvImage.setImageResource(emptyResource);
                         }
-
-                        // 获取底部的资源
-                        View bottomView = mPlaceHolder.getBottomView();
-                        if (bottomView != null) {
-                            if (mBottomResourceParent == null) {
-                                mBottomResourceParent = mEmptyView.findViewById(R.id.fl_bottom_placeholder);
-                            }
-                            mBottomResourceParent.setVisibility(View.VISIBLE);
-
-                            // 先删除，后添加，不然会崩溃
-                            int childCount = mBottomResourceParent.getChildCount();
-                            if (childCount > 0) {
-                                mBottomResourceParent.removeAllViews();
-                            }
-                            mBottomResourceParent.addView(bottomView);
-                        }
                     }
                 } else { // 这里说明接口异常了，不去处理无数据的占位图，直接处理断网的操作
                     /*
                      * 错误的占位图，此占位图因为要从新刷新说句，所以需要传入刷新工具的对象
                      */
-                    emptyVH.mIvButton.setVisibility(View.VISIBLE);
-
-                    // 底部资源按钮不可见
-                    if (mBottomResourceParent != null) {
-                        mBottomResourceParent.setVisibility(View.GONE);
-                    }
 
                     if (mPlaceHolder != null) {
                         int noNetWorkImage = mPlaceHolder.getNoNetWorkImage();
-                        String errorContent = mPlaceHolder.getErrorContent();
-                        String errorButtonContent = mPlaceHolder.getErrorButtonContent();
-                        int errorButtonBackground = mPlaceHolder.getErrorButtonBackground();
+                        String errorContent = mPlaceHolder.getNoNetWorkContent();
+                        float noNetWorkTitleSize = mPlaceHolder.getNoNetWorkTitleSize();
+                        int noNetWorkTitleColor = mPlaceHolder.getNoNetWorkTitleColor();
 
-                        // 错误布局资源
                         // 设置全局的异常图片资源
                         if (noNetWorkImage != 0) {
                             emptyVH.mIvImage.setImageResource(noNetWorkImage);
@@ -365,23 +345,28 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                         // 错误布局提示
                         if (!TextUtils.isEmpty(errorContent)) {
                             TextViewUtil.setText(emptyVH.mTvMsg, errorContent);
+
+                            if (noNetWorkTitleSize != 0) {
+                                emptyVH.mTvMsg.setTextSize(noNetWorkTitleSize);
+                            }
+                            if (noNetWorkTitleColor != 0) {
+                                emptyVH.mTvMsg.setTextColor(noNetWorkTitleColor);
+                            }
                         }
 
+                        // 刷新按钮
+                        String errorButtonContent = mPlaceHolder.getNoNetWorkButtonContent();
                         // 全局的异常Button文字
                         if (!TextUtils.isEmpty(errorButtonContent)) {
+                            emptyVH.mIvButton.setVisibility(View.VISIBLE);
                             TextViewUtil.setText(emptyVH.mIvButton, errorButtonContent);
-                        }
 
-                        // 全局的异常背景
-                        if (errorButtonBackground != 0) {
-                            emptyVH.mIvButton.setBackgroundResource(errorButtonBackground);
+                            emptyVH.mIvButton.setOnClickListener(v -> {
+                                if (mRefreshUtil != null) {
+                                    mRefreshUtil.refresh();
+                                }
+                            });
                         }
-
-                        emptyVH.mIvButton.setOnClickListener(v -> {
-                            if (mRefreshUtil != null) {
-                                mRefreshUtil.refresh();
-                            }
-                        });
                     }
                 }
             }

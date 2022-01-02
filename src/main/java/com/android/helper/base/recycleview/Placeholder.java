@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.helper.R;
@@ -104,6 +105,21 @@ public class Placeholder {
     /**
      * @return 获取提示消息的view
      */
+    public ImageView getPlaceHolderView() {
+        ImageView placeHolder = null;
+        if (mRootView != null) {
+            if (mMessageViewId != 0) {
+                placeHolder = mRootView.findViewById(mMessageViewId);
+            } else {
+                placeHolder = mRootView.findViewById(R.id.iv_base_placeholder_image);
+            }
+        }
+        return placeHolder;
+    }
+
+    /**
+     * @return 获取提示消息的view
+     */
     public TextView getMessageView() {
         TextView messageView = null;
         if (mRootView != null) {
@@ -182,6 +198,10 @@ public class Placeholder {
         return mErrorContent;
     }
 
+    public void setErrorContent(String errorContent) {
+        this.mErrorContent = errorContent;
+    }
+
     public int getErrorResource() {
         return mErrorResource;
     }
@@ -202,7 +222,7 @@ public class Placeholder {
         return mNoNetWorkImage;
     }
 
-    public String getNoNetWorkTitle() {
+    public String getNoNetWorkContent() {
         return mNoNetWorkContent;
     }
 
@@ -256,96 +276,119 @@ public class Placeholder {
 
         private boolean mShowPlaceHolder;                    // 是否自动显示占位图，默认为true
 
-        public void setRootViewId(int rootViewId) {
+        public Builder setRootViewId(int rootViewId) {
             mRootViewId = rootViewId;
+            return this;
         }
 
-        public void setMessageViewId(int messageViewId) {
+        public Builder setMessageViewId(int messageViewId) {
             mMessageViewId = messageViewId;
+            return this;
         }
 
-        public void setBottomOtherViewId(int bottomOtherViewId) {
+        public Builder setBottomOtherViewId(int bottomOtherViewId) {
             mBottomOtherViewId = bottomOtherViewId;
+            return this;
         }
 
-        public void setRefreshViewId(int refreshViewId) {
+        public Builder setRefreshViewId(int refreshViewId) {
             mRefreshViewId = refreshViewId;
+            return this;
         }
 
-        public void setListEmptyResource(int listEmptyResource) {
+        public Builder setListEmptyResource(int listEmptyResource) {
             mListEmptyResource = listEmptyResource;
+            return this;
         }
 
-        public void setListEmptyContent(String listEmptyContent) {
+        public Builder setListEmptyContent(String listEmptyContent) {
             mListEmptyContent = listEmptyContent;
+            return this;
         }
 
-        public void setListEmptyTitleSize(float listEmptyTitleSize) {
+        public Builder setListEmptyTitleSize(float listEmptyTitleSize) {
             mListEmptyTitleSize = listEmptyTitleSize;
+            return this;
         }
 
-        public void setListEmptyTitleColor(int listEmptyTitleColor) {
+        public Builder setListEmptyTitleColor(int listEmptyTitleColor) {
             mListEmptyTitleColor = listEmptyTitleColor;
+            return this;
         }
 
-        public void setPageEmptyContent(String pageEmptyContent) {
+        public Builder setPageEmptyContent(String pageEmptyContent) {
             mPageEmptyContent = pageEmptyContent;
+            return this;
         }
 
-        public void setPageEmptyResource(int pageEmptyResource) {
+        public Builder setPageEmptyResource(int pageEmptyResource) {
             mPageEmptyResource = pageEmptyResource;
+            return this;
         }
 
-        public void setPageEmptyTitleSize(float pageEmptyTitleSize) {
+        public Builder setPageEmptyTitleSize(float pageEmptyTitleSize) {
             mPageEmptyTitleSize = pageEmptyTitleSize;
+            return this;
         }
 
-        public void setPageEmptyTitleColor(int pageEmptyTitleColor) {
+        public Builder setPageEmptyTitleColor(int pageEmptyTitleColor) {
             mPageEmptyTitleColor = pageEmptyTitleColor;
+            return this;
         }
 
-        public void setErrorContent(String errorContent) {
+        public Builder setErrorContent(String errorContent) {
             mErrorContent = errorContent;
+            return this;
         }
 
-        public void setErrorResource(int errorResource) {
+        public Builder setErrorResource(int errorResource) {
             mErrorResource = errorResource;
+            return this;
         }
 
-        public void setErrorTitleSize(float errorTitleSize) {
+        public Builder setErrorTitleSize(float errorTitleSize) {
             mErrorTitleSize = errorTitleSize;
+            return this;
         }
 
-        public void setErrorTitleColor(int errorTitleColor) {
+        public Builder setErrorTitleColor(int errorTitleColor) {
             mErrorTitleColor = errorTitleColor;
+            return this;
         }
 
-        public void setErrorButtonContent(String errorButtonContent) {
+        public Builder setErrorButtonContent(String errorButtonContent) {
             mErrorButtonContent = errorButtonContent;
+            return this;
         }
 
-        public void setNoNetWorkImage(int noNetWorkImage) {
+        public Builder setNoNetWorkImage(int noNetWorkImage) {
             mNoNetWorkImage = noNetWorkImage;
+            return this;
         }
 
-        public void setNoNetWorkContent(String noNetWorkTitle) {
+        public Builder setNoNetWorkContent(String noNetWorkTitle) {
             mNoNetWorkContent = noNetWorkTitle;
+            return this;
         }
 
-        public void setNoNetWorkTitleSize(float noNetWorkTitleSize) {
+        public Builder setNoNetWorkTitleSize(float noNetWorkTitleSize) {
             mNoNetWorkTitleSize = noNetWorkTitleSize;
+            return this;
         }
 
-        public void setNoNetWorkTitleColor(int noNetWorkTitleColor) {
+        public Builder setNoNetWorkTitleColor(int noNetWorkTitleColor) {
             mNoNetWorkTitleColor = noNetWorkTitleColor;
+            return this;
         }
 
-        public void setNoNetWorkButtonContent(String noNetWorkButtonContent) {
+        public Builder setNoNetWorkButtonContent(String noNetWorkButtonContent) {
             mNoNetWorkButtonContent = noNetWorkButtonContent;
+            return this;
         }
 
-        public void setShowPlaceHolder(boolean showPlaceHolder) {
+        public Builder setShowPlaceHolder(boolean showPlaceHolder) {
             mShowPlaceHolder = showPlaceHolder;
+            return this;
         }
 
         public Placeholder Build() {
