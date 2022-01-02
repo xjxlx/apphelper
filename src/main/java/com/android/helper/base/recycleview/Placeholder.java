@@ -24,26 +24,26 @@ public class Placeholder {
     // 列表类型空布局
     private int mListEmptyResource;                     // List空布局指定的图片资源
     private String mListEmptyContent;                   // List空布局指定的文字内容
-    private int mListEmptyTitleSize;                    // List空布局文字的大小
+    private float mListEmptyTitleSize;                    // List空布局文字的大小
     private int mListEmptyTitleColor;                   // List空布局文字的颜色
 
     // page类型空数据
     private String mPageEmptyContent;                    // page类型的空布局站位图提示内容
     private int mPageEmptyResource;                      // page类型的空布局站位图资源
-    private int mPageEmptyTitleSize;                     // page空布局文字的大小
+    private float mPageEmptyTitleSize;                     // page空布局文字的大小
     private int mPageEmptyTitleColor;                    // page空布局文字的颜色
 
     // 公用错误类型数据
     private String mErrorContent;                        // 公用错误类型的空布局站位图提示内容
     private int mErrorResource;                          // 公用错误类型的空布局站位图资源
-    private int mErrorTitleSize;                         // 公用错误布局文字的大小
+    private float mErrorTitleSize;                         // 公用错误布局文字的大小
     private int mErrorTitleColor;                        // 公用错误布局文字的颜色
     private String mErrorButtonContent;                  // 公用错误布局的按钮文字
 
     // 公用无网类型数据
     private int mNoNetWorkImage;                         // 断网的图片
     private String mNoNetWorkTitle;                      // 错误的提示
-    private int mNoNetWorkTitleSize;                     // 空布局文字的大小
+    private float mNoNetWorkTitleSize;                     // 空布局文字的大小
     private int mNoNetWorkTitleColor;                    // 空布局文字的颜色
     private String mNoNetWorkButtonContent;              // 错误布局的按钮文字
 
@@ -154,7 +154,7 @@ public class Placeholder {
         return mListEmptyContent;
     }
 
-    public int getListEmptyTitleSize() {
+    public float getListEmptyTitleSize() {
         return mListEmptyTitleSize;
     }
 
@@ -170,7 +170,7 @@ public class Placeholder {
         return mPageEmptyResource;
     }
 
-    public int getPageEmptyTitleSize() {
+    public float getPageEmptyTitleSize() {
         return mPageEmptyTitleSize;
     }
 
@@ -186,7 +186,7 @@ public class Placeholder {
         return mErrorResource;
     }
 
-    public int getErrorTitleSize() {
+    public float getErrorTitleSize() {
         return mErrorTitleSize;
     }
 
@@ -206,7 +206,7 @@ public class Placeholder {
         return mNoNetWorkTitle;
     }
 
-    public int getNoNetWorkTitleSize() {
+    public float getNoNetWorkTitleSize() {
         return mNoNetWorkTitleSize;
     }
 
@@ -231,26 +231,26 @@ public class Placeholder {
         // 列表类型空布局
         private int mListEmptyResource;                     // List空布局指定的图片资源
         private String mListEmptyContent;                   // List空布局指定的文字内容
-        private int mListEmptyTitleSize;                    // List空布局文字的大小
+        private float mListEmptyTitleSize;                    // List空布局文字的大小
         private int mListEmptyTitleColor;                   // List空布局文字的颜色
 
         // page类型空数据
         private String mPageEmptyContent;                    // page类型的空布局站位图提示内容
         private int mPageEmptyResource;                      // page类型的空布局站位图资源
-        private int mPageEmptyTitleSize;                     // page空布局文字的大小
+        private float mPageEmptyTitleSize;                     // page空布局文字的大小
         private int mPageEmptyTitleColor;                    // page空布局文字的颜色
 
         // 公用错误类型数据
         private String mErrorContent;                        // 公用错误类型的空布局站位图提示内容
         private int mErrorResource;                          // 公用错误类型的空布局站位图资源
-        private int mErrorTitleSize;                         // 公用错误布局文字的大小
+        private float mErrorTitleSize;                         // 公用错误布局文字的大小
         private int mErrorTitleColor;                        // 公用错误布局文字的颜色
         private String mErrorButtonContent;                  // 公用错误布局的按钮文字
 
         // 公用无网类型数据
         private int mNoNetWorkImage;                         // 断网的图片
         private String mNoNetWorkTitle;                      // 错误的提示
-        private int mNoNetWorkTitleSize;                     // 空布局文字的大小
+        private float mNoNetWorkTitleSize;                     // 空布局文字的大小
         private int mNoNetWorkTitleColor;                    // 空布局文字的颜色
         private String mNoNetWorkButtonContent;              // 错误布局的按钮文字
 
@@ -280,7 +280,7 @@ public class Placeholder {
             mListEmptyContent = listEmptyContent;
         }
 
-        public void setListEmptyTitleSize(int listEmptyTitleSize) {
+        public void setListEmptyTitleSize(float listEmptyTitleSize) {
             mListEmptyTitleSize = listEmptyTitleSize;
         }
 
@@ -296,7 +296,7 @@ public class Placeholder {
             mPageEmptyResource = pageEmptyResource;
         }
 
-        public void setPageEmptyTitleSize(int pageEmptyTitleSize) {
+        public void setPageEmptyTitleSize(float pageEmptyTitleSize) {
             mPageEmptyTitleSize = pageEmptyTitleSize;
         }
 
@@ -312,7 +312,7 @@ public class Placeholder {
             mErrorResource = errorResource;
         }
 
-        public void setErrorTitleSize(int errorTitleSize) {
+        public void setErrorTitleSize(float errorTitleSize) {
             mErrorTitleSize = errorTitleSize;
         }
 
@@ -332,7 +332,7 @@ public class Placeholder {
             mNoNetWorkTitle = noNetWorkTitle;
         }
 
-        public void setNoNetWorkTitleSize(int noNetWorkTitleSize) {
+        public void setNoNetWorkTitleSize(float noNetWorkTitleSize) {
             mNoNetWorkTitleSize = noNetWorkTitleSize;
         }
 
