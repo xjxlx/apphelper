@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 
+import com.android.helper.R;
 import com.android.helper.interfaces.BindingViewListener;
 
 /**
@@ -21,7 +22,7 @@ import com.android.helper.interfaces.BindingViewListener;
  *        否则，布局无法正常引用
  * </ol>
  */
-public abstract class BaseBindingTitleActivity<T extends ViewBinding,R> extends AppBaseTitleActivity<R> implements BindingViewListener<T> {
+public abstract class BaseBindingTitleActivity<T extends ViewBinding> extends AppBaseTitleActivity implements BindingViewListener<T> {
 
     public T mBinding;
     private View mBindingRoot;
