@@ -14,7 +14,7 @@ import com.android.helper.R;
  * @CreateDate: 2021/11/10-4:56 下午
  * @Description: 项目占位图的工具类 ""
  */
-public class Placeholder {
+public class PlaceholderResource {
     private ViewGroup mRootView;
 
     private int mRootViewId;                           // 数据的根布局
@@ -51,17 +51,17 @@ public class Placeholder {
     private boolean mShowPlaceHolder;                    // 是否自动显示占位图，默认为true
 
     @SuppressLint("StaticFieldLeak")
-    private static Placeholder GlobalPlaceholder; // 静态的对象
+    private static PlaceholderResource GlobalPlaceholder; // 静态的对象
 
-    public static Placeholder getGlobalPlaceholder() {
+    public static PlaceholderResource getGlobalPlaceholder() {
         return GlobalPlaceholder;
     }
 
-    public static void setGlobalPlaceholder(Placeholder globalPlaceholder) {
+    public static void setGlobalPlaceholder(PlaceholderResource globalPlaceholder) {
         GlobalPlaceholder = globalPlaceholder;
     }
 
-    public Placeholder(Builder builder) {
+    public PlaceholderResource(Builder builder) {
         if (builder != null) {
             this.mRootViewId = builder.mRootViewId;
             this.mMessageViewId = builder.mMessageViewId;
@@ -398,8 +398,8 @@ public class Placeholder {
             return this;
         }
 
-        public Placeholder Build() {
-            return new Placeholder(this);
+        public PlaceholderResource Build() {
+            return new PlaceholderResource(this);
         }
     }
 

@@ -59,7 +59,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      * </ol>
      */
     protected int mItemType;
-    protected Placeholder mPlaceHolder = Placeholder.getGlobalPlaceholder(); // 占位图
+    protected PlaceholderResource mPlaceHolder = PlaceholderResource.getGlobalPlaceholder(); // 占位图
     private View mEmptyView;
     private int mErrorType;  // 1:空数据  2：错误数据
     private RefreshUtil<?> mRefreshUtil; // 刷新工具类
@@ -387,7 +387,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      *
      * @param placeHolder 占位图的信息
      */
-    public void setPlaceholderData(Placeholder placeHolder) {
+    public void setPlaceholderData(PlaceholderResource placeHolder) {
         if (placeHolder != null) {
             this.mPlaceHolder = placeHolder;
         }
