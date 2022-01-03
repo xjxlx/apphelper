@@ -27,8 +27,8 @@
             android:id="@+id/fl_placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#00ff76"
             android:visibility="gone" />
+
     </FrameLayout>
 
 </LinearLayout>
