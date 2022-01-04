@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
-import com.android.helper.base.BaseActivity;
+import com.android.helper.base.AppBaseActivity;
 import com.android.helper.utils.TextViewUtil;
 import com.android.helper.utils.ViewUtil;
 
@@ -37,7 +37,7 @@ import com.android.helper.utils.ViewUtil;
  *       5: 右侧的点击事件，会回调方法{@link #onTitleRightClick(View)}
  *       6：具体的Api设置方法，都在{@link TitleBuilder }的方法中有具体的说明，可以去按需求使用
  */
-public abstract class BaseTitleActivity extends BaseActivity {
+public abstract class BaseTitleActivity extends AppBaseActivity {
 
     private TitleBar mTitleBar;
     private TextView mRightText;

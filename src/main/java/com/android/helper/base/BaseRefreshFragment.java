@@ -32,7 +32,7 @@ import retrofit2.Call;
  * @param <T>  网络请求数据类型的对象类型
  * @param <T2> 数据列表的对象类型，如果是不带类表的情况，java可以使用object，Kotlin使用Any
  */
-public abstract class BaseRefreshFragment<T, T2> extends BaseFragment implements HttpClientListener<T>, OnRefreshLoadMoreListener {
+public abstract class BaseRefreshFragment<T, T2> extends AppBaseFragment implements HttpClientListener<T>, OnRefreshLoadMoreListener {
 
     protected FrameLayout mFlBaseRefreshContent;
     private BaseRefreshLayout mRefreshLayout;
@@ -98,24 +98,24 @@ public abstract class BaseRefreshFragment<T, T2> extends BaseFragment implements
         return R.layout.view_base_refresh;
     }
 
-    @Override
-    protected void onInitViewBefore(LayoutInflater inflater, View container) {
-        super.onInitViewBefore(inflater, container);
-
-        // refresh layout
-        mRefreshLayout = (BaseRefreshLayout) container.findViewById(R.id.brl_base_refresh);
-        // refresh  header
-        mRefreshHeader = (BaseRefreshHeader) container.findViewById(R.id.brh_base_refresh_header);
-        // content
-        mRefreshContent = (FrameLayout) container.findViewById(R.id.fl_base_refresh_content);
-        // refresh footer
-        mRefreshFooter = (BaseRefreshFooter) container.findViewById(R.id.brf_base_refresh_footer);
-        // BasePlaceholderView
-        mPlaceholder = (BasePlaceholderView) container.findViewById(R.id.bpv_base_placeholder);
-
-        // 把继承baseRefresh的基类放入到 content中去
-        inflater.inflate(getRefreshLayout(), mRefreshContent);
-    }
+//    @Override
+//    protected void onInitViewBefore(LayoutInflater inflater, View container) {
+//        super.onInitViewBefore(inflater, container);
+//
+//        // refresh layout
+//        mRefreshLayout = (BaseRefreshLayout) container.findViewById(R.id.brl_base_refresh);
+//        // refresh  header
+//        mRefreshHeader = (BaseRefreshHeader) container.findViewById(R.id.brh_base_refresh_header);
+//        // content
+//        mRefreshContent = (FrameLayout) container.findViewById(R.id.fl_base_refresh_content);
+//        // refresh footer
+//        mRefreshFooter = (BaseRefreshFooter) container.findViewById(R.id.brf_base_refresh_footer);
+//        // BasePlaceholderView
+//        mPlaceholder = (BasePlaceholderView) container.findViewById(R.id.bpv_base_placeholder);
+//
+//        // 把继承baseRefresh的基类放入到 content中去
+//        inflater.inflate(getRefreshLayout(), mRefreshContent);
+//    }
 
     protected abstract int getRefreshLayout();
 
