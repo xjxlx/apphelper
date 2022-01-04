@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.helper.R;
+import com.android.helper.app.BaseApplication;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.TextViewUtil;
@@ -59,14 +60,13 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      * </ol>
      */
     protected int mItemType;
-    private Placeholder mPlaceHolder;       // 单个的占位图
-    private Placeholder mGlobalPlaceholder; // 全局的占位图
+    protected PlaceholderResource mPlaceHolder = PlaceholderResource.getGlobalPlaceholder(); // 占位图
     private View mEmptyView;
     private int mErrorType;  // 1:空数据  2：错误数据
     private RefreshUtil<?> mRefreshUtil; // 刷新工具类
     private RecyclerView mRecycleView;
-    protected ViewGroup mBottomResourceParent;
     private int showPlaceHolder = -1;// 是否自动显示占位图，默认自动不显示 -1：默认值，不展示 1：展示 2：不展示
+    protected ViewGroup mBottomParentView;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.TYPE_EMPTY, ViewType.TYPE_HEAD, ViewType.TYPE_FOOT})
@@ -109,8 +109,6 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
             lifecycle.addObserver(this);
             mActivity = mFragment.getActivity();
         }
-        // 获取临时的占位图
-        mGlobalPlaceholder = Placeholder.getGlobalPlaceholder();
     }
 
     private void addObserverActivity(FragmentActivity activity, List<T> list) {
@@ -120,8 +118,6 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
             Lifecycle lifecycle = activity.getLifecycle();
             lifecycle.addObserver(this);
         }
-        // 获取临时的占位图
-        mGlobalPlaceholder = Placeholder.getGlobalPlaceholder();
     }
 
     /**
@@ -260,30 +256,15 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         }
 
         // 空布局的条目
-        if (isEmpty && ((mPlaceHolder != null || (mGlobalPlaceholder != null && mGlobalPlaceholder.isFromGlobal())))) {
-            // 这里是为了控制是否要显示默认的占位图，大多数都是加载数据才去展示的，如果有需要数据加载前就展示，设默认设置为true
-            if (mPlaceHolder != null) { // 指定的
-
-                if (showPlaceHolder == -1) { // 默认的时候，请求一下
-                    boolean autoShowPlaceHolder = mPlaceHolder.autoShowPlaceHolder();
-                    if (autoShowPlaceHolder) {
-                        showPlaceHolder = 1;
-                    }
+        if (isEmpty && mPlaceHolder != null) {
+            if (showPlaceHolder == -1) { // 默认的时候，请求一下
+                boolean autoShowPlaceHolder = mPlaceHolder.isShowPlaceHolder();
+                if (autoShowPlaceHolder) {
+                    showPlaceHolder = 1;
                 }
-                if (showPlaceHolder == 1) { // 如果数据为1，则展示占位图
-                    count = 1;
-                }
-            } else if (mGlobalPlaceholder != null) { // 通用的
-
-                if (showPlaceHolder == -1) { // 默认的时候，请求一下
-                    boolean autoShowPlaceHolder = mGlobalPlaceholder.autoShowPlaceHolder();
-                    if (autoShowPlaceHolder) {
-                        showPlaceHolder = 1;
-                    }
-                }
-                if (showPlaceHolder == 1) { // 如果数据为1，则展示占位图
-                    count = 1;
-                }
+            }
+            if (showPlaceHolder == 1) { // 如果数据为1，则展示占位图
+                count = 1;
             }
         }
         return count;
@@ -297,11 +278,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         if (viewType == ViewType.TYPE_EMPTY) { // 设置空布局
             if (mEmptyView == null) {
                 if (mPlaceHolder != null) {
-                    mEmptyView = mPlaceHolder.getEmptyView(parent);
-                } else {
-                    if (mGlobalPlaceholder != null) {
-                        mEmptyView = mGlobalPlaceholder.getEmptyView(parent);
-                    }
+                    mEmptyView = mPlaceHolder.getRootView(parent);
                 }
             }
             if (mEmptyView != null) {
@@ -322,10 +299,13 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
 
                 if (mErrorType != 2) { // 这里说明接口是正常的，单纯去处理无数据的占位图
                     if (mPlaceHolder != null) { // 设置了指定的占位图
-                        String emptyContent = mPlaceHolder.getEmptyContent();
-                        int emptyContentColor = mPlaceHolder.getEmptyContentColor();
-                        int emptyContentSize = mPlaceHolder.getEmptyContentSize();
-                        int emptyResource = mPlaceHolder.getEmptyResource();
+                        String emptyContent = mPlaceHolder.getListEmptyContent();
+                        int emptyContentColor = mPlaceHolder.getListEmptyTitleColor();
+                        float emptyContentSize = mPlaceHolder.getListEmptyTitleSize();
+                        int emptyResource = mPlaceHolder.getListEmptyResource();
+
+                        // 隐藏底部按钮
+                        emptyVH.mIvButton.setVisibility(View.GONE);
 
                         // 文字的描述
                         if (!TextUtils.isEmpty(emptyContent)) {
@@ -347,158 +327,60 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                             emptyVH.mIvImage.setImageResource(emptyResource);
                         }
 
-                        // 获取底部的资源
+                        // 添加提示文字下底部的按钮
                         View bottomView = mPlaceHolder.getBottomView();
-                        if (bottomView != null) {
-                            if (mBottomResourceParent == null) {
-                                mBottomResourceParent = mEmptyView.findViewById(R.id.fl_bottom_placeholder);
-                            }
-                            mBottomResourceParent.setVisibility(View.VISIBLE);
-
-                            // 先删除，后添加，不然会崩溃
-                            int childCount = mBottomResourceParent.getChildCount();
-                            if (childCount > 0) {
-                                mBottomResourceParent.removeAllViews();
-                            }
-                            mBottomResourceParent.addView(bottomView);
-                        }
-
-                    } else if (mGlobalPlaceholder != null) { // 使用公用的占位图
-                        String emptyContent = mGlobalPlaceholder.getEmptyContent();
-                        int emptyContentColor = mGlobalPlaceholder.getEmptyContentColor();
-                        int emptyContentSize = mGlobalPlaceholder.getEmptyContentSize();
-                        int emptyResource = mGlobalPlaceholder.getEmptyResource();
-
-                        // 文字的描述
-                        if (!TextUtils.isEmpty(emptyContent)) {
-                            emptyVH.mTvMsg.setText(emptyContent);
-                        }
-
-                        // 描述文字的大小
-                        if (emptyContentSize != 0) {
-                            emptyVH.mTvMsg.setTextSize(emptyContentSize);
-                        }
-
-                        // 文字的颜色
-                        if (emptyContentColor != 0) {
-                            emptyVH.mTvMsg.setTextColor(emptyContentColor);
-                        }
-
-                        // 图片
-                        if (emptyResource != 0) {
-                            emptyVH.mIvImage.setImageResource(emptyResource);
-                        }
-
-                        // 获取底部的资源
-                        View bottomView = mGlobalPlaceholder.getBottomView();
-                        if (bottomView != null) {
-                            if (mBottomResourceParent == null) {
-                                mBottomResourceParent = mEmptyView.findViewById(R.id.fl_bottom_placeholder);
-                            }
-                            mBottomResourceParent.setVisibility(View.VISIBLE);
-
-                            // 先删除，后添加，不然会崩溃
-                            int childCount = mBottomResourceParent.getChildCount();
-                            if (childCount > 0) {
-                                mBottomResourceParent.removeAllViews();
-                            }
-                            mBottomResourceParent.addView(bottomView);
+                        mBottomParentView = mPlaceHolder.getBottomParentView();
+                        if ((mBottomParentView != null) && (bottomView != null)) {
+                            mBottomParentView.addView(bottomView);
                         }
                     }
                 } else { // 这里说明接口异常了，不去处理无数据的占位图，直接处理断网的操作
                     /*
-                     * 错误的占位图，此占位图因为要从新刷新说句，所以需要传入刷新工具的对象
+                     * 断网的占位图是属于公用的，所以这里使用公共的占位图
                      */
-                    emptyVH.mIvButton.setVisibility(View.VISIBLE);
+                    PlaceholderResource globalPlaceholder = PlaceholderResource.getGlobalPlaceholder();
+                    if (globalPlaceholder != null) {
+                        int noNetWorkImage = globalPlaceholder.getNoNetWorkImage();
+                        String noNetWorkContent = globalPlaceholder.getNoNetWorkContent();
+                        float noNetWorkTitleSize = globalPlaceholder.getNoNetWorkTitleSize();
+                        int noNetWorkTitleColor = globalPlaceholder.getNoNetWorkTitleColor();
 
-                    int mGlobalErrorImage = 0;
-                    String mGlobalErrorContent = null;
-                    String mGlobalErrorButtonContent = null;
-                    int mGlobalErrorButtonBackground = 0;
-
-                    // 底部资源按钮不可见
-                    if (mBottomResourceParent != null) {
-                        mBottomResourceParent.setVisibility(View.GONE);
-                    }
-
-                    if (mGlobalPlaceholder != null) {
-                        mGlobalErrorImage = mGlobalPlaceholder.getErrorImage();
-                        mGlobalErrorContent = mGlobalPlaceholder.getErrorContent();
-                        mGlobalErrorButtonContent = mGlobalPlaceholder.getErrorButtonContent();
-                        mGlobalErrorButtonBackground = mGlobalPlaceholder.getErrorButtonBackground();
-                    }
-
-                    if (mPlaceHolder != null) {
-                        // 错误布局资源
-                        int errorImageResource = mPlaceHolder.getErrorImage();
-                        if (errorImageResource != 0) {
-                            emptyVH.mIvImage.setImageResource(errorImageResource);
-                        } else {
+                        // 区分项目，设置资源
+                        String tag = BaseApplication.getInstance().logTag();
+                        if (TextUtils.equals(tag, "ZHGJ")) {
                             // 设置全局的异常图片资源
-                            if (mGlobalErrorImage != 0) {
-                                emptyVH.mIvImage.setImageResource(mGlobalErrorImage);
+                            if (noNetWorkImage != 0) {
+                                emptyVH.mIvImage.setImageResource(noNetWorkImage);
+                            }
+
+                            // 错误布局提示
+                            if (!TextUtils.isEmpty(noNetWorkContent)) {
+                                TextViewUtil.setText(emptyVH.mTvMsg, noNetWorkContent);
+
+                                if (noNetWorkTitleSize != 0) {
+                                    emptyVH.mTvMsg.setTextSize(noNetWorkTitleSize);
+                                }
+                                if (noNetWorkTitleColor != 0) {
+                                    emptyVH.mTvMsg.setTextColor(noNetWorkTitleColor);
+                                }
                             }
                         }
 
-                        // 错误布局提示
-                        String errorContent = mPlaceHolder.getErrorContent();
-                        if (!TextUtils.isEmpty(errorContent)) {
-                            TextViewUtil.setText(emptyVH.mTvMsg, errorContent);
-                        } else {
-                            // 全局的错误提示
-                            if (!TextUtils.isEmpty(mGlobalErrorContent)) {
-                                TextViewUtil.setText(emptyVH.mTvMsg, mGlobalErrorContent);
-                            }
-                        }
-                        // 错误布局按钮的文字
-                        String errorButtonContent = mPlaceHolder.getErrorButtonContent();
-                        if (!TextUtils.isEmpty(errorButtonContent)) {
-                            TextViewUtil.setText(emptyVH.mIvButton, errorButtonContent);
-                        } else {
-                            // 全局的异常Button文字
-                            if (!TextUtils.isEmpty(mGlobalErrorButtonContent)) {
-                                TextViewUtil.setText(emptyVH.mIvButton, mGlobalErrorButtonContent);
-                            }
-                        }
-                        // 错误布局的背景
-                        int errorButtonBackground = mPlaceHolder.getErrorButtonBackground();
-                        if (errorButtonBackground != 0) {
-                            emptyVH.mIvButton.setBackgroundResource(errorButtonBackground);
-                        } else {
-                            // 全局的异常背景
-                            if (mGlobalErrorButtonBackground != 0) {
-                                emptyVH.mIvButton.setBackgroundResource(mGlobalErrorButtonBackground);
-                            }
-                        }
-                    } else {
-                        // 使用通用的异常布局
-
-                        // 设置全局的异常图片资源
-                        if (mGlobalErrorImage != 0) {
-                            emptyVH.mIvImage.setImageResource(mGlobalErrorImage);
-                        }
-
-                        // 错误布局提示
-                        if (!TextUtils.isEmpty(mGlobalErrorContent)) {
-                            TextViewUtil.setText(emptyVH.mTvMsg, mGlobalErrorContent);
-                        }
-
+                        // 刷新按钮，公共的点击事件
+                        String errorButtonContent = globalPlaceholder.getNoNetWorkButtonContent();
                         // 全局的异常Button文字
-                        if (!TextUtils.isEmpty(mGlobalErrorButtonContent)) {
-                            TextViewUtil.setText(emptyVH.mIvButton, mGlobalErrorButtonContent);
-                        }
+                        if (!TextUtils.isEmpty(errorButtonContent)) {
+                            emptyVH.mIvButton.setVisibility(View.VISIBLE);
 
-                        // 全局的异常背景
-                        if (mGlobalErrorButtonBackground != 0) {
-                            emptyVH.mIvButton.setBackgroundResource(mGlobalErrorButtonBackground);
+                            TextViewUtil.setText(emptyVH.mIvButton, errorButtonContent);
+
+                            emptyVH.mIvButton.setOnClickListener(v -> {
+                                if (mRefreshUtil != null) {
+                                    mRefreshUtil.refresh();
+                                }
+                            });
                         }
                     }
-
-                    emptyVH.mIvButton.setOnClickListener(v -> {
-                        if (mRefreshUtil != null) {
-                            mRefreshUtil.refresh();
-                        }
-                    });
                 }
             }
         }
@@ -516,10 +398,12 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     /**
      * 给数据设置站位图的信息
      *
-     * @param emptyPlaceholder 占位图的信息
+     * @param placeHolder 占位图的信息
      */
-    public void setPlaceholderData(Placeholder emptyPlaceholder) {
-        this.mPlaceHolder = emptyPlaceholder;
+    public void setPlaceholder(PlaceholderResource placeHolder) {
+        if (placeHolder != null) {
+            this.mPlaceHolder = placeHolder;
+        }
     }
 
     /**

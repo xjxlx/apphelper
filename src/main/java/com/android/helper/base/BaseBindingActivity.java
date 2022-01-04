@@ -33,6 +33,7 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends AppBase
             initView();
             initListener();
             initData(savedInstanceState);
+            initDataAfter();
         }
     }
 

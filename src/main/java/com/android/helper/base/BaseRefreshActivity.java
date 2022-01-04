@@ -13,7 +13,7 @@ import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener;
 /**
  * 带刷新工具的activity
  */
-public abstract class BaseRefreshActivity extends BaseActivity implements OnRefreshLoadMoreListener {
+public abstract class BaseRefreshActivity extends AppBaseActivity implements OnRefreshLoadMoreListener {
 
     protected View mBaseRefreshLayout;
 

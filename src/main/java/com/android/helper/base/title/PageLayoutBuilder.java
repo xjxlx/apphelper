@@ -5,12 +5,12 @@ import android.content.Context;
 /**
  * @author : 流星
  * @CreateDate: 2021/12/2-2:01
- * @Description:
+ * @Description:页面布局的对象
  */
-public class TitleBuilder {
+public class PageLayoutBuilder {
     protected Context mContext;
 
-    public TitleBuilder() {
+    public PageLayoutBuilder() {
     }
 
     /**
@@ -19,22 +19,14 @@ public class TitleBuilder {
     protected int mTitleLayoutId;
 
     /**
+     * 顶部titleBar的资源id
+     */
+    protected int mTitleBarLayoutId;
+
+    /**
      * 左侧返回键父布局id
      */
     protected int mLeftBackLayoutId;
-
-    /**
-     * 左侧返回键文字的id
-     */
-    protected int mLeftBackTextId;
-    /**
-     * 返回文字是否可见
-     */
-    protected boolean mShowBackText;
-    /**
-     * 左侧返回文字的内容
-     */
-    protected String mLeftBackText;
 
     /**
      * 中间标题的id
@@ -62,10 +54,15 @@ public class TitleBuilder {
     protected int mContentLayoutId;
 
     /**
+     * title布局下面，和真实使用到的activity布局，同一层级的view，用来展示错误数据的布局
+     */
+    protected int mPlaceHolderLayoutId;
+
+    /**
      * @param titleLayoutId R.layout.xxx
      * @return 设置title的资源布局
      */
-    public TitleBuilder setTitleLayoutId(int titleLayoutId) {
+    public PageLayoutBuilder setTitleLayoutId(int titleLayoutId) {
         mTitleLayoutId = titleLayoutId;
         if (mTitleLayoutId != 0) {
             mTitleType = 2;
@@ -74,38 +71,20 @@ public class TitleBuilder {
     }
 
     /**
+     * @param titleBarLayoutId R.id.xx
+     * @return 设置顶部titleBar的资源id
+     */
+    public PageLayoutBuilder setTitleBarLayoutId(int titleBarLayoutId) {
+        mTitleBarLayoutId = titleBarLayoutId;
+        return this;
+    }
+
+    /**
      * @param leftBackLayoutId R.id.xx
      * @return 设置返回的父布局id
      */
-    public TitleBuilder setLeftBackLayoutId(int leftBackLayoutId) {
+    public PageLayoutBuilder setLeftBackLayoutId(int leftBackLayoutId) {
         mLeftBackLayoutId = leftBackLayoutId;
-        return this;
-    }
-
-    /**
-     * @param leftBackTextId R.id.xx
-     * @return 设置返回的TextView的id
-     */
-    public TitleBuilder setLeftBackTextId(int leftBackTextId) {
-        mLeftBackTextId = leftBackTextId;
-        return this;
-    }
-
-    /**
-     * @param showBackText true:可见，false:不可见
-     * @return 设置返回的文字是否可见
-     */
-    public TitleBuilder setShowBackText(boolean showBackText) {
-        mShowBackText = showBackText;
-        return this;
-    }
-
-    /**
-     * @param leftBackText 具体的返回文字的内容
-     * @return 设置返回的文字内容
-     */
-    public TitleBuilder setLeftBackText(String leftBackText) {
-        mLeftBackText = leftBackText;
         return this;
     }
 
@@ -113,7 +92,7 @@ public class TitleBuilder {
      * @param titleId R.id.xx
      * @return 设置title的id
      */
-    public TitleBuilder setTitleId(int titleId) {
+    public PageLayoutBuilder setTitleId(int titleId) {
         mTitleId = titleId;
         return this;
     }
@@ -122,7 +101,7 @@ public class TitleBuilder {
      * @param rightLayoutId R.id.xx
      * @return 设置右侧的父布局id
      */
-    public TitleBuilder setRightLayoutId(int rightLayoutId) {
+    public PageLayoutBuilder setRightLayoutId(int rightLayoutId) {
         mRightLayoutId = rightLayoutId;
         return this;
     }
@@ -131,7 +110,7 @@ public class TitleBuilder {
      * @param rightTextId R.id.xx
      * @return 设置右侧文字的id
      */
-    public TitleBuilder setRightTextId(int rightTextId) {
+    public PageLayoutBuilder setRightTextId(int rightTextId) {
         mRightTextId = rightTextId;
         return this;
     }
@@ -140,13 +119,22 @@ public class TitleBuilder {
      * @param contentLayoutId R.id.xx
      * @return 底部content具体使用的ViewGroup的布局id
      */
-    public TitleBuilder setContentLayoutId(int contentLayoutId) {
+    public PageLayoutBuilder setContentLayoutId(int contentLayoutId) {
         mContentLayoutId = contentLayoutId;
         return this;
     }
 
-    public TitleBar build(Context context) {
+    /**
+     * @param placeHolderLayoutId R.id.xx
+     * @return title布局下面，和真实使用到的activity布局，同一层级的view，用来展示错误数据的布局
+     */
+    public PageLayoutBuilder setPlaceHolderLayoutId(int placeHolderLayoutId) {
+        mPlaceHolderLayoutId = placeHolderLayoutId;
+        return this;
+    }
+
+    public PageLayoutManager build(Context context) {
         mContext = context;
-        return new TitleBar(this);
+        return new PageLayoutManager(this);
     }
 }
