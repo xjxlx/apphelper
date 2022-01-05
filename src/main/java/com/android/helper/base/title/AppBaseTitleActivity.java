@@ -80,6 +80,9 @@ public abstract class AppBaseTitleActivity extends AppBaseActivity {
             // 获取title的根布局
             mTitleRootLayout = mPageLayoutManager.getTitleRootLayout();
 
+            // 添加真实的activity
+            int titleLayout = getTitleLayout();
+
             if (mTitleRootLayout != null) {
                 // 获取顶部titleBar的布局
                 mTitleBarLayout = mPageLayoutManager.getTitleBarLayout();
@@ -101,29 +104,6 @@ public abstract class AppBaseTitleActivity extends AppBaseActivity {
                     TextViewUtil.setText(title, titleContent);
                 }
 
-                // 右侧标题的父布局
-                mRightLayout = mPageLayoutManager.getRightLayout();
-                // 右侧标题的textView
-                mRightText = mPageLayoutManager.getRightTextView();
-
-                // 获取title下面内容的根布局
-                mContentLayout = mPageLayoutManager.getContentLayout();
-
-                // 占位图的父布局
-                mPlaceHolderLayout = mPageLayoutManager.getPlaceHolderLayout();
-
-                // 添加真实的activity
-                int titleLayout = getTitleLayout();
-                if (titleLayout != 0) {
-                    // 把真实的布局添加到 mFlActivityContent 中去
-                    if (mContentLayout != null) {
-                        LayoutInflater.from(this).inflate(titleLayout, mContentLayout, true);
-                    }
-                }
-
-                // 设置布局
-                setContentView(mTitleRootLayout);
-
                 // 加载占位
                 boolean autoLoading = autoLoading();
                 if (autoLoading) {
@@ -143,11 +123,32 @@ public abstract class AppBaseTitleActivity extends AppBaseActivity {
                     }
                 }
 
-                // 只有设置完了布局，才会去走初始化方法，避免加载顺序异常
-                initView();
-                initListener();
-                initData(savedInstanceState);
-                initDataAfter();
+                // 右侧标题的父布局
+                mRightLayout = mPageLayoutManager.getRightLayout();
+                // 右侧标题的textView
+                mRightText = mPageLayoutManager.getRightTextView();
+
+                // 获取title下面内容的根布局
+                mContentLayout = mPageLayoutManager.getContentLayout();
+
+                // 占位图的父布局
+                mPlaceHolderLayout = mPageLayoutManager.getPlaceHolderLayout();
+
+                if (titleLayout != 0) {
+                    // 把真实的布局添加到 mFlActivityContent 中去
+                    if (mContentLayout != null) {
+                        LayoutInflater.from(this).inflate(titleLayout, mContentLayout, true);
+
+                        // 设置布局
+                        setContentView(mTitleRootLayout);
+
+                        // 只有设置完了布局，才会去走初始化方法，避免加载顺序异常
+                        initView();
+                        initListener();
+                        initData(savedInstanceState);
+                        initDataAfter();
+                    }
+                }
             }
         }
     }
