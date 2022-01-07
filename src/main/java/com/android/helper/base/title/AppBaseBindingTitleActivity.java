@@ -21,7 +21,7 @@ import com.android.helper.interfaces.BindingViewListener;
  *        否则，布局无法正常引用
  * </ol>
  */
-public abstract class BaseBindingTitleActivity<T extends ViewBinding> extends AppBaseTitleActivity implements BindingViewListener<T> {
+public abstract class AppBaseBindingTitleActivity<T extends ViewBinding> extends AppBaseTitleActivity implements BindingViewListener<T> {
 
     public T mBinding;
     private View mBindingRoot;
