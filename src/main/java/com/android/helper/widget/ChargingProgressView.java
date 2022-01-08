@@ -1,18 +1,22 @@
 package com.android.helper.widget;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.android.helper.R;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ResourceUtil;
 
 /**
  * @author : 流星
@@ -43,10 +47,21 @@ public class ChargingProgressView extends View {
     private RectF mRectFNerLayer;   // 内层矩形
     private Paint mPaintRoundNerLayer;
 
-    private float mPercentage = 0.5f;// 进度条的百分比
+    private float mPercentage = 0.35f;// 进度条的百分比 todo  如果电量值过小怎么办
     private float mProgress = 0F;// 进度条的进度
     private Path mPath_w;
     private Path mPath_n;
+
+    private float mPercentageStart = 0.4f; // 区间的开始值
+    private float mPercentageEnd = 0.9f;   // 区间的结束值
+    private Paint mPaintSection;
+    private RectF mRectFSection;
+
+    // 绘制闪电符号
+    private Bitmap mBitmap;
+    private Rect mRectSrc;
+    private Rect mRectDsc;
+    private Paint mPaintBitmap;
 
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -86,13 +101,31 @@ public class ChargingProgressView extends View {
         mRectFNerLayer = new RectF();
         mRectFNerLayer.left = mRectFOuterLayer.left + mIntervalLayer;
         mRectFNerLayer.top = mRectFOuterLayer.top + mIntervalLayer;
+
+        // 绘制闪电标记
+        mBitmap = ResourceUtil.getBitmap(R.mipmap.icon_custom_charge_center);
+        mRectSrc = new Rect();
+        mRectDsc = new Rect();
+        mPaintBitmap = new Paint();
+        mPaintBitmap.setStyle(Paint.Style.FILL);
+
+        // 区间
+        mPaintSection = new Paint();
+        mPaintSection.setColor(Color.parseColor("#2BFF9C26"));
+        mPaintSection.setStyle(Paint.Style.FILL);
+        mRectFSection = new RectF();
+
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
+        // 最大的宽度
         mMaxWidth = MeasureSpec.getSize(widthMeasureSpec);
+        // 最大的高度
+        mMaxHeight = mProgressHeight;
+
         LogUtil.e("size:" + mMaxWidth);
 
         // 进度条的宽度 =  view的总宽度 - 右侧矩形的宽度
@@ -131,8 +164,30 @@ public class ChargingProgressView extends View {
             mPath_n.addRoundRect(0, 0, mRectFOuterLayer.right - mIntervalLayer, mRectFOuterLayer.bottom - mIntervalLayer, mAngleArray, Path.Direction.CW);
         }
 
-        // 最大的高度
-        mMaxHeight = mProgressHeight;
+        // 闪电符号
+        if (mBitmap != null) {
+            int bitmapWidth = mBitmap.getWidth();
+            int bitmapHeight = mBitmap.getHeight();
+
+            // src:bitmap的区域，dst:本次绘制的区域，把src放进dst中
+            mRectDsc.left = (int) ((mProgress - bitmapWidth) / 2);// left：( mProgress  - bitmap的宽 )/2
+            mRectDsc.top = (mMaxHeight - bitmapHeight) / 2; // top :( progress 高度  - bitmap的高度 ）/2
+            mRectDsc.right = mRectDsc.left + bitmapWidth;
+            mRectDsc.bottom = mRectDsc.top + bitmapHeight;
+
+            mRectSrc.left = 0;
+            mRectSrc.top = 0;
+            mRectSrc.right = bitmapWidth;
+            mRectSrc.bottom = bitmapHeight;
+        }
+
+        // 区间
+        float sectionStart = mProgressWidth * mPercentageStart;
+        float sectionEnd = mProgressWidth * mPercentageEnd;
+        mRectFSection.left = sectionStart;
+        mRectFSection.top = 0;
+        mRectFSection.right = sectionEnd;
+        mRectFSection.bottom = mMaxHeight;
 
         // 重新测量
         widthMeasureSpec = resolveSize(mMaxWidth, widthMeasureSpec);
@@ -164,6 +219,13 @@ public class ChargingProgressView extends View {
         } else {
             // 使用路径绘制
             canvas.drawPath(mPath_n, mPaintRoundNerLayer);
+        }
+
+        // 区间
+        canvas.drawRect(mRectFSection, mPaintSection);
+
+        if (mBitmap != null) {
+            canvas.drawBitmap(mBitmap, mRectSrc, mRectDsc, mPaintRoundNerLayer);
         }
 
     }
