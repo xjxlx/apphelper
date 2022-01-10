@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -17,6 +18,7 @@ import com.android.helper.R;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
 import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.NumberUtil;
 import com.android.helper.utils.ResourceUtil;
 
 /**
@@ -48,7 +50,7 @@ public class ChargingProgressView extends View {
     private RectF mRectFNerLayer;   // 内层矩形
     private Paint mPaintRoundNerLayer;
 
-    private float mPercentage = 0.35f;// 进度条的百分比 todo  如果电量值过小怎么办
+    private float mPercentage = 0.351f;// 进度条的百分比 todo  如果电量值过小怎么办
     private float mProgress = 0F;// 进度条的进度
     private Path mPath_w;
     private Path mPath_n;
@@ -70,11 +72,32 @@ public class ChargingProgressView extends View {
     private Paint mPaintOptimum;
     private float mOptimumPosition;
     private String OptimumContent = "";// 最佳的文字值
-    private float[] mTextSize;
-    private float mOptimumTextInterval = ConvertUtil.toDp(13);// 最佳值和进度条的间隔高度
-    private float mOptimumTextHeight; // 最佳电量直的高度 =  文字本身高度 + 间距
+    private float[] mOptimumTextSize;
+    private final float mOptimumTextInterval = ConvertUtil.toDp(13);// 最佳值和进度条的间隔高度
 
     private float mTopInterval = 0;// 上侧最大的高度
+    private float mBottomInterval = 0;// 下方的最大高度
+
+    // 当前电量的进度
+    private Paint mPaintCharging;
+    private String mCurrentChargingText = "";// 当前电量的进度条
+    private final float mCurrentChargingTextInterval = ConvertUtil.toDp(8);
+    private float[] mCurrentChargingTextSize;
+
+    // 充电剩余时间 #FF7A8499
+    private Paint mPaintChargingRemainingTimeText;
+    private final String mRemainingTimeText = "4小时20分";
+    private final float mRemainingTimeTextInterval = ConvertUtil.toDp(8);
+    private float[] mRemainingTimeTextSize;
+
+    // 底部SOC
+    private Paint mPaintSoc;
+    private Bitmap mBitmapSoc;
+    private final String mSocText = "目标SOC";
+    private final float mSocLeftInterval = ConvertUtil.toDp(4f);
+    private final float mSocTextTopInterval = ConvertUtil.toDp(8.5f);
+    private final float mSocBitmapTopInterval = ConvertUtil.toDp(11.5f);
+    private float[] mSocTextSize;
 
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -127,6 +150,25 @@ public class ChargingProgressView extends View {
         mPaintOptimum.setColor(Color.parseColor("#FF9AF5C1"));
         mPaintOptimum.setStyle(Paint.Style.FILL);
         mPaintOptimum.setStrokeWidth(ConvertUtil.toDp(1));
+        mPaintOptimum.setTextSize(ConvertUtil.toSp(10.5f)); // 设置值的单位是像素
+
+        // 绘制当前的电量进度
+        mPaintCharging = new Paint();
+        mPaintCharging.setColor(Color.parseColor("#FF333A4A"));
+        mPaintCharging.setTextSize(ConvertUtil.toSp(18f));
+
+        // 充电剩余时间
+        mPaintChargingRemainingTimeText = new Paint();
+        mPaintChargingRemainingTimeText.setColor(Color.parseColor("#FF7A8499"));
+        mPaintChargingRemainingTimeText.setTextSize(ConvertUtil.toSp(13f));
+
+        // 目标Soc
+        mPaintSoc = new Paint();
+        mPaintSoc.setColor(Color.parseColor("#FF7A8499"));
+        mPaintSoc.setTextSize(ConvertUtil.toSp(10.5f));
+
+        mBitmapSoc = ResourceUtil.getBitmap(R.mipmap.icon_charging_soc);
+
     }
 
     @Override
@@ -149,18 +191,18 @@ public class ChargingProgressView extends View {
                 mOptimumPosition = mProgressWidth * mPercentageOptimum;
                 // 最佳的数据值
                 OptimumContent = (mPercentageOptimum * 100) + "%最佳";
-                mTextSize = CustomViewUtil.getTextSize(mPaintOptimum, OptimumContent);
+                mOptimumTextSize = CustomViewUtil.getTextSize(mPaintOptimum, OptimumContent);
             }
         }
 
         // 最佳值的高度间隔
-        if ((mTextSize != null) && (mTextSize[1] > 0)) {
-            mOptimumTextHeight = mTextSize[1] + mOptimumTextInterval;
+        if ((mOptimumTextSize != null) && (mOptimumTextSize[1] > 0)) {
+            // 最佳电量直的高度 =  文字本身高度 + 间距
+            float optimumTextHeight = mOptimumTextSize[1] + mOptimumTextInterval;
 
-            if (mTopInterval < mOptimumTextHeight) {
-                mTopInterval = mOptimumTextHeight;
+            if (mTopInterval < optimumTextHeight) {
+                mTopInterval = optimumTextHeight;
             }
-            mMaxHeight += mTopInterval;
         }
 
         // 底层 = 整个宽度 - 右侧矩形的宽度
@@ -175,34 +217,31 @@ public class ChargingProgressView extends View {
         mRectFRight.right = mRectFBackground.right + mRightRectWidth;
         mRectFRight.bottom = mRectFRight.top + mRightRectHeight;
 
-        // 当前的进度
+        // 当前的进度 = 进度条的宽度 * 进度的百分比
         mProgress = mProgressWidth * mPercentage;
 
-        // 外层的矩形宽度 = 进度条的宽度 * 进度的百分比
+        // 绘制进度条的圆角矩形
         if (mPercentage >= 1) {
+            // 外层矩形
             mRectFOuterLayer.left = 0;
             mRectFOuterLayer.top = mTopInterval;
             mRectFOuterLayer.right = mProgress;
-            mRectFOuterLayer.bottom = mMaxHeight;
-        } else {
-            if (mPercentage > 0) {
-                // 使用路径去绘制
-                mPath_w.reset();
-                mPath_w.addRoundRect(0, mTopInterval, mProgress, mMaxHeight, mAngleArray, Path.Direction.CW);
-            }
-        }
-
-        // 内层
-        if (mPercentage >= 1) {
+            mRectFOuterLayer.bottom = mProgressHeight + mRectFOuterLayer.top;
+            // 内层矩形
             mRectFNerLayer.left = mRectFOuterLayer.left + mIntervalLayer;
             mRectFNerLayer.top = mRectFOuterLayer.top + mIntervalLayer;
             mRectFNerLayer.right = mRectFOuterLayer.right - mIntervalLayer;
             mRectFNerLayer.bottom = mRectFOuterLayer.bottom - mIntervalLayer;
+
         } else {
             if (mPercentage > 0) {
-                // 使用路径去绘制
+                // 使用路径去绘制外层圆角矩形
+                mPath_w.reset();
+                mPath_w.addRoundRect(0, mTopInterval, mProgress, mProgressHeight + mTopInterval, mAngleArray, Path.Direction.CW);
+
+                // 使用路径去绘制内层圆角矩形
                 mPath_n.reset();
-                mPath_n.addRoundRect(mIntervalLayer, mTopInterval + mIntervalLayer, mProgress - mIntervalLayer, mMaxHeight - mIntervalLayer, mAngleArray, Path.Direction.CW);
+                mPath_n.addRoundRect(mIntervalLayer, mTopInterval + mIntervalLayer, mProgress - mIntervalLayer, mProgressHeight + mTopInterval - mIntervalLayer, mAngleArray, Path.Direction.CW);
             }
         }
 
@@ -213,9 +252,8 @@ public class ChargingProgressView extends View {
 
             // src:bitmap的区域，dst:本次绘制的区域，把src放进dst中
             mRectDsc.left = ((mProgress - bitmapWidth) / 2);// left：( mProgress  - bitmap的宽 )/2
-            // src：DSC :top:(整体高低 - bitmap高度)/ /2 + 顶部的高度
-            // src：DSC :top:(整体高低 - 顶部的高度 - （进度条高度 -bitmap高度）/2
-            mRectDsc.top = (int) ((mMaxHeight - mTopInterval - (mProgressHeight - bitmapHeight) / 2));
+            // top = (进度条高度 - bitmap高度 )/2 + 顶部高度
+            mRectDsc.top = (int) ((mProgressHeight - bitmapHeight) / 2 + mTopInterval);
             mRectDsc.right = mRectDsc.left + bitmapWidth;
             mRectDsc.bottom = mRectDsc.top + bitmapHeight;
 
@@ -231,7 +269,50 @@ public class ChargingProgressView extends View {
         mRectFSection.left = sectionStart;
         mRectFSection.top = mTopInterval;
         mRectFSection.right = sectionEnd;
-        mRectFSection.bottom = mMaxHeight;
+        mRectFSection.bottom = mTopInterval + mProgressHeight; // 上方的距离高度 + 进度条的高度
+
+        // 当前电量的进度值
+        String multiply = NumberUtil.multiply(mPercentage + "", 100 + "");
+        mCurrentChargingText = multiply + "%";
+        mCurrentChargingTextSize = CustomViewUtil.getTextSize(mPaintCharging, mCurrentChargingText);
+
+        // 比较当前的间距和总间距的大小
+        float chargingInterval = mCurrentChargingTextSize[1] + mCurrentChargingTextInterval;
+        if (mTopInterval < chargingInterval) {
+            mTopInterval = chargingInterval;
+        }
+
+        // 当前剩余的充电时间
+        mRemainingTimeTextSize = CustomViewUtil.getTextSize(mPaintChargingRemainingTimeText, mRemainingTimeText);
+        float remainingTimeTextInterval = mRemainingTimeTextSize[1] + mRemainingTimeTextInterval;
+        if (mTopInterval < remainingTimeTextInterval) {
+            mTopInterval = remainingTimeTextInterval;
+        }
+
+        // SOC的图标
+        if (mBitmapSoc != null) {
+            int height = mBitmapSoc.getHeight();
+            float socBitmapBottomInterval = height + mSocBitmapTopInterval;
+            // 累加高度
+            if (mBottomInterval < socBitmapBottomInterval) {
+                mBottomInterval = socBitmapBottomInterval;
+            }
+        }
+
+        // SOC的文字
+        if (!TextUtils.isEmpty(mSocText)) {
+            mSocTextSize = CustomViewUtil.getTextSize(mPaintSoc, mSocText);
+            if (mSocTextSize != null) {
+                float socTextInterval = mSocTextSize[1] + mSocTextTopInterval;
+                if (mBottomInterval < socTextInterval) {
+                    mBottomInterval = socTextInterval;
+                }
+            }
+        }
+
+        // 叠加当前的高度
+        mMaxHeight += mTopInterval;
+        mMaxHeight += mBottomInterval;
 
         // 重新测量
         widthMeasureSpec = resolveSize(mMaxWidth, widthMeasureSpec);
@@ -246,36 +327,74 @@ public class ChargingProgressView extends View {
 
         // 绘制底层进度条
         canvas.drawRoundRect(mRectFBackground, mAngle, mAngle, mPaintBackground);
+
         // 绘制右侧矩形
         canvas.drawRect(mRectFRight, mPaintRight);
 
-        // 绘制外层圆角矩形
+        // 绘制当前进度的进度条
         if (mPercentage >= 1) {
+            // 绘制外层圆角矩形
             canvas.drawRoundRect(mRectFOuterLayer, mAngle, mAngle, mPaintRoundOuterLayer);
-        } else {
-            // 使用路径绘制
-            canvas.drawPath(mPath_w, mPaintRoundOuterLayer);
-        }
-
-        // 绘制内层
-        if (mPercentage >= 1) {
+            // 绘制圆角矩形
             canvas.drawRoundRect(mRectFNerLayer, mAngle, mAngle, mPaintRoundNerLayer);
         } else {
-            // 使用路径绘制
-            canvas.drawPath(mPath_n, mPaintRoundNerLayer);
+            if (mPercentage > 0) {
+                // 使用路径绘制外层圆角矩形
+                canvas.drawPath(mPath_w, mPaintRoundOuterLayer);
+                // 使用路径绘制内层圆角矩形
+                canvas.drawPath(mPath_n, mPaintRoundNerLayer);
+            }
         }
 
         // 区间
         canvas.drawRect(mRectFSection, mPaintSection);
 
+        // 绘制闪电图标
         if (mBitmap != null) {
             canvas.drawBitmap(mBitmap, mRectSrc, mRectDsc, mPaintRoundNerLayer);
         }
 
         // 绘制最佳的进度 mOptimumPosition
-        if (mOptimumPosition > 0) {
-            canvas.drawLine(mOptimumPosition, mTopInterval, mOptimumPosition, mMaxHeight, mPaintOptimum);
+        if (mShowOptimum) {
+            if (mOptimumPosition > 0) {
+                canvas.drawLine(mOptimumPosition, mTopInterval, mOptimumPosition, mMaxHeight - mBottomInterval, mPaintOptimum);
+                // 绘制最佳值文字
+                float dx = (mOptimumPosition - (mOptimumTextSize[0] / 2)); // 最佳值的x轴 - (文字的高度 /2)
+                float dy = mMaxHeight - mOptimumTextInterval - mProgressHeight - mBottomInterval;// 总的高度 - 最佳值的间距 - 进度条的高度 - 底部高度
+                canvas.drawText(OptimumContent, 0, OptimumContent.length(), dx, dy, mPaintOptimum);
+            }
         }
 
+        // 绘制当前电量的进度
+        if (mCurrentChargingTextSize != null) {
+            float dx = (mProgressWidth - mCurrentChargingTextSize[0]) / 2; // dx = (进度条宽度 - 文字宽度)/2
+            float dy = mMaxHeight - mProgressHeight - mCurrentChargingTextInterval - mBottomInterval; // dy = 总高度 - 进度条的高度 - 间距 - 底部间距
+            canvas.drawText(mCurrentChargingText, 0, mCurrentChargingText.length(), dx, dy, mPaintCharging);
+        }
+
+        // 绘制剩余的充电时间
+        if (!TextUtils.isEmpty(mRemainingTimeText) && mRemainingTimeTextSize != null) {
+            float dx = 0;
+            float dy = mMaxHeight - mProgressHeight - mRemainingTimeTextInterval - mBottomInterval; // dy = 总高度 - 进度条 - 间距 - 底部间距
+            canvas.drawText(mRemainingTimeText, 0, mRemainingTimeText.length(), dx, dy, mPaintChargingRemainingTimeText);
+        }
+
+        // 绘制SOC
+        if (mBitmapSoc != null) {
+            // 绘制图标
+            float dy = mTopInterval + mProgressHeight + mSocBitmapTopInterval; // 上方高度 + 进度条高度 + 间距
+            canvas.drawBitmap(mBitmapSoc, 0, dy, mPaintSoc);
+
+            // 绘制SOC文字
+            if (!TextUtils.isEmpty(mSocText)) {
+                float dx = mBitmapSoc.getWidth() + mSocLeftInterval; // dx = bitmap宽度 + 间距
+                float baseLine = CustomViewUtil.getBaseLine(mPaintSoc, mSocText);
+
+                // 因为此处要计算基准线，特别麻烦。所以换成意外一种方式去计算 = dy + 图片高度  -  文字高度 + 基准线
+                float dy2 = dy + mBitmapSoc.getHeight() - mSocTextSize[1] + baseLine;
+                canvas.drawText(mSocText, dx, dy2, mPaintSoc);
+            }
+        }
     }
+
 }

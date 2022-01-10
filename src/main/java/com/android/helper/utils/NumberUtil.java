@@ -260,6 +260,24 @@ public class NumberUtil {
     }
 
     /**
+     * @param value1 第一个值
+     * @param value2 第二个值
+     * @return 大整形乘法的运算
+     */
+    public static String multiply(String value1, String value2) {
+        String result = "";
+        BigDecimal decimal1 = new BigDecimal(value1);
+        BigDecimal decimal2 = new BigDecimal(value2);
+        //  加法
+        BigDecimal multiply = decimal1.multiply(decimal2);
+
+        result = multiply
+                .stripTrailingZeros()// 去掉多余的0;
+                .toPlainString();// 科学计数法;
+        return result;
+    }
+
+    /**
      * @param value 需要转换的字符串
      * @return 把指定的字符转换成小写字符
      */
