@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import com.android.helper.R;
 import com.android.helper.utils.ConvertUtil;
+import com.android.helper.utils.CustomViewUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.ResourceUtil;
 
@@ -60,11 +61,20 @@ public class ChargingProgressView extends View {
     // 绘制闪电符号
     private Bitmap mBitmap;
     private Rect mRectSrc;
-    private Rect mRectDsc;
+    private RectF mRectDsc;
     private Paint mPaintBitmap;
 
+    // 最佳进度值
     private boolean mShowOptimum = true; // 是否展示最佳的电量值
     private float mPercentageOptimum = 0.9f;//最佳电量值
+    private Paint mPaintOptimum;
+    private float mOptimumPosition;
+    private String OptimumContent = "";// 最佳的文字值
+    private float[] mTextSize;
+    private float mOptimumTextInterval = ConvertUtil.toDp(13);// 最佳值和进度条的间隔高度
+    private float mOptimumTextHeight; // 最佳电量直的高度 =  文字本身高度 + 间距
+
+    private float mTopInterval = 0;// 上侧最大的高度
 
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -77,8 +87,6 @@ public class ChargingProgressView extends View {
         mPaintBackground.setColor(Color.parseColor("#FFF4F4F4"));
         mPaintBackground.setStyle(Paint.Style.FILL);
         mRectFBackground = new RectF();
-        mRectFBackground.left = 0;
-        mRectFBackground.top = 0;
 
         // 右侧Paint
         mPaintRight = new Paint();
@@ -94,21 +102,17 @@ public class ChargingProgressView extends View {
         mPaintRoundOuterLayer.setColor(Color.parseColor("#FF09B6F7"));
         mPaintRoundOuterLayer.setStyle(Paint.Style.FILL);
         mRectFOuterLayer = new RectF();
-        mRectFOuterLayer.left = 0;
-        mRectFOuterLayer.top = 0;
 
         // 内层Paint
         mPaintRoundNerLayer = new Paint();
         mPaintRoundNerLayer.setColor(Color.parseColor("#FF2793DF"));
         mPaintRoundNerLayer.setStyle(Paint.Style.FILL);
         mRectFNerLayer = new RectF();
-        mRectFNerLayer.left = mRectFOuterLayer.left + mIntervalLayer;
-        mRectFNerLayer.top = mRectFOuterLayer.top + mIntervalLayer;
 
         // 绘制闪电标记
         mBitmap = ResourceUtil.getBitmap(R.mipmap.icon_custom_charge_center);
         mRectSrc = new Rect();
-        mRectDsc = new Rect();
+        mRectDsc = new RectF();
         mPaintBitmap = new Paint();
         mPaintBitmap.setStyle(Paint.Style.FILL);
 
@@ -118,6 +122,11 @@ public class ChargingProgressView extends View {
         mPaintSection.setStyle(Paint.Style.FILL);
         mRectFSection = new RectF();
 
+        // 最佳电量值
+        mPaintOptimum = new Paint();
+        mPaintOptimum.setColor(Color.parseColor("#FF9AF5C1"));
+        mPaintOptimum.setStyle(Paint.Style.FILL);
+        mPaintOptimum.setStrokeWidth(ConvertUtil.toDp(1));
     }
 
     @Override
@@ -134,37 +143,67 @@ public class ChargingProgressView extends View {
         // 进度条的宽度 =  view的总宽度 - 右侧矩形的宽度
         mProgressWidth = mMaxWidth - mRightRectWidth;
 
+        // 最佳电量直
+        if (mShowOptimum) {
+            if (mPercentageOptimum > 0) {
+                mOptimumPosition = mProgressWidth * mPercentageOptimum;
+                // 最佳的数据值
+                OptimumContent = (mPercentageOptimum * 100) + "%最佳";
+                mTextSize = CustomViewUtil.getTextSize(mPaintOptimum, OptimumContent);
+            }
+        }
+
+        // 最佳值的高度间隔
+        if ((mTextSize != null) && (mTextSize[1] > 0)) {
+            mOptimumTextHeight = mTextSize[1] + mOptimumTextInterval;
+
+            if (mTopInterval < mOptimumTextHeight) {
+                mTopInterval = mOptimumTextHeight;
+            }
+            mMaxHeight += mTopInterval;
+        }
+
         // 底层 = 整个宽度 - 右侧矩形的宽度
+        mRectFBackground.left = 0;
+        mRectFBackground.top = mTopInterval;
         mRectFBackground.right = mMaxWidth - mRightRectWidth;
-        mRectFBackground.bottom = mProgressHeight;
+        mRectFBackground.bottom = mProgressHeight + mTopInterval;
 
         // 右侧
         mRectFRight.left = mRectFBackground.right;
-        mRectFRight.top = (mProgressHeight - mRightRectHeight) / 2;
+        mRectFRight.top = ((mProgressHeight - mRightRectHeight) / 2) + mTopInterval;
         mRectFRight.right = mRectFBackground.right + mRightRectWidth;
         mRectFRight.bottom = mRectFRight.top + mRightRectHeight;
-
-        // 外层的矩形宽度 = 进度条的宽度 * 进度的百分比
-        if (mPercentage >= 1) {
-            mRectFOuterLayer.right = mProgress;
-            mRectFOuterLayer.bottom = mMaxHeight;
-        } else {
-            // 使用路径去绘制
-            mPath_w.reset();
-            mPath_w.addRoundRect(0, 0, mProgress, mMaxHeight, mAngleArray, Path.Direction.CW);
-        }
 
         // 当前的进度
         mProgress = mProgressWidth * mPercentage;
 
+        // 外层的矩形宽度 = 进度条的宽度 * 进度的百分比
+        if (mPercentage >= 1) {
+            mRectFOuterLayer.left = 0;
+            mRectFOuterLayer.top = mTopInterval;
+            mRectFOuterLayer.right = mProgress;
+            mRectFOuterLayer.bottom = mMaxHeight;
+        } else {
+            if (mPercentage > 0) {
+                // 使用路径去绘制
+                mPath_w.reset();
+                mPath_w.addRoundRect(0, mTopInterval, mProgress, mMaxHeight, mAngleArray, Path.Direction.CW);
+            }
+        }
+
         // 内层
         if (mPercentage >= 1) {
+            mRectFNerLayer.left = mRectFOuterLayer.left + mIntervalLayer;
+            mRectFNerLayer.top = mRectFOuterLayer.top + mIntervalLayer;
             mRectFNerLayer.right = mRectFOuterLayer.right - mIntervalLayer;
             mRectFNerLayer.bottom = mRectFOuterLayer.bottom - mIntervalLayer;
         } else {
-            // 使用路径去绘制
-            mPath_n.reset();
-            mPath_n.addRoundRect(0, 0, mRectFOuterLayer.right - mIntervalLayer, mRectFOuterLayer.bottom - mIntervalLayer, mAngleArray, Path.Direction.CW);
+            if (mPercentage > 0) {
+                // 使用路径去绘制
+                mPath_n.reset();
+                mPath_n.addRoundRect(mIntervalLayer, mTopInterval + mIntervalLayer, mProgress - mIntervalLayer, mMaxHeight - mIntervalLayer, mAngleArray, Path.Direction.CW);
+            }
         }
 
         // 闪电符号
@@ -173,22 +212,24 @@ public class ChargingProgressView extends View {
             int bitmapHeight = mBitmap.getHeight();
 
             // src:bitmap的区域，dst:本次绘制的区域，把src放进dst中
-            mRectDsc.left = (int) ((mProgress - bitmapWidth) / 2);// left：( mProgress  - bitmap的宽 )/2
-            mRectDsc.top = (mMaxHeight - bitmapHeight) / 2; // top :( progress 高度  - bitmap的高度 ）/2
+            mRectDsc.left = ((mProgress - bitmapWidth) / 2);// left：( mProgress  - bitmap的宽 )/2
+            // src：DSC :top:(整体高低 - bitmap高度)/ /2 + 顶部的高度
+            // src：DSC :top:(整体高低 - 顶部的高度 - （进度条高度 -bitmap高度）/2
+            mRectDsc.top = (int) ((mMaxHeight - mTopInterval - (mProgressHeight - bitmapHeight) / 2));
             mRectDsc.right = mRectDsc.left + bitmapWidth;
             mRectDsc.bottom = mRectDsc.top + bitmapHeight;
 
             mRectSrc.left = 0;
             mRectSrc.top = 0;
             mRectSrc.right = bitmapWidth;
-            mRectSrc.bottom = bitmapHeight;
+            mRectSrc.bottom = (int) bitmapHeight;
         }
 
         // 区间
         float sectionStart = mProgressWidth * mPercentageStart;
         float sectionEnd = mProgressWidth * mPercentageEnd;
         mRectFSection.left = sectionStart;
-        mRectFSection.top = 0;
+        mRectFSection.top = mTopInterval;
         mRectFSection.right = sectionEnd;
         mRectFSection.bottom = mMaxHeight;
 
@@ -229,6 +270,11 @@ public class ChargingProgressView extends View {
 
         if (mBitmap != null) {
             canvas.drawBitmap(mBitmap, mRectSrc, mRectDsc, mPaintRoundNerLayer);
+        }
+
+        // 绘制最佳的进度 mOptimumPosition
+        if (mOptimumPosition > 0) {
+            canvas.drawLine(mOptimumPosition, mTopInterval, mOptimumPosition, mMaxHeight, mPaintOptimum);
         }
 
     }
