@@ -108,6 +108,8 @@ public class ChargingProgressView extends View {
     private float mBottomScrollProgressValue = 0;
     private Paint mPaintScrollRound;// 滑动的圆
     private float mScrollValue;// 滑动的值
+    private Paint mPaintSocText; // SOC的进度的画笔
+    private String mSocCurrentText = ""; // 当前滑动进度的值
 
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -187,7 +189,9 @@ public class ChargingProgressView extends View {
         mPaintScrollRound.setColor(Color.parseColor("#FFF4F4F4"));
         mPaintScrollRound.setStyle(Paint.Style.FILL);
         mPaintScrollRound.setMaskFilter(new BlurMaskFilter(ConvertUtil.toDp(1), BlurMaskFilter.Blur.SOLID)); // 阴影
-
+        mPaintSocText = new Paint();
+        mPaintSocText.setColor(Color.parseColor("#FF3E485A"));
+        mPaintSocText.setTextSize(ConvertUtil.toDp(10.5f));
     }
 
     @Override
@@ -435,6 +439,9 @@ public class ChargingProgressView extends View {
             // 参数2：圆中心的Y轴位置
             // 参数3：圆的半径
             canvas.drawCircle(circleX, circleY, mRemainingTimeTextInterval, mPaintScrollRound);
+
+            // 绘制SOC进度 todo
+//            canvas.drawText();
         }
     }
 
