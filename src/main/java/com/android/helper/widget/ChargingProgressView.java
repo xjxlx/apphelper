@@ -63,6 +63,9 @@ public class ChargingProgressView extends View {
     private Rect mRectDsc;
     private Paint mPaintBitmap;
 
+    private boolean mShowOptimum = true; // 是否展示最佳的电量值
+    private float mPercentageOptimum = 0.9f;//最佳电量值
+
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initView(context);
