@@ -30,6 +30,8 @@ public class ChargingProgressView extends View {
 
     private int mMaxWidth, mMaxHeight;
 
+    private float mLineWidth = ConvertUtil.toDp(1);
+
     private float mProgressWidth;// 进度条的宽度
     private final int mProgressHeight = (int) ConvertUtil.toDp(60); // 进度条的高度
 
@@ -99,6 +101,11 @@ public class ChargingProgressView extends View {
     private final float mSocBitmapTopInterval = ConvertUtil.toDp(11.5f);
     private float[] mSocTextSize;
 
+    // 底部的滑动条
+    private float mBottomScrollProgress = 0.5f; // 默认的区间值
+    private Paint mPaintBottomScroll;
+    private float mBottomScrollProgressValue = 0;
+
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initView(context);
@@ -149,7 +156,7 @@ public class ChargingProgressView extends View {
         mPaintOptimum = new Paint();
         mPaintOptimum.setColor(Color.parseColor("#FF9AF5C1"));
         mPaintOptimum.setStyle(Paint.Style.FILL);
-        mPaintOptimum.setStrokeWidth(ConvertUtil.toDp(1));
+        mPaintOptimum.setStrokeWidth(mLineWidth);
         mPaintOptimum.setTextSize(ConvertUtil.toSp(10.5f)); // 设置值的单位是像素
 
         // 绘制当前的电量进度
@@ -166,9 +173,13 @@ public class ChargingProgressView extends View {
         mPaintSoc = new Paint();
         mPaintSoc.setColor(Color.parseColor("#FF7A8499"));
         mPaintSoc.setTextSize(ConvertUtil.toSp(10.5f));
-
         mBitmapSoc = ResourceUtil.getBitmap(R.mipmap.icon_charging_soc);
 
+        // 滑动的区间值
+        mPaintBottomScroll = new Paint();
+        mPaintBottomScroll.setColor(Color.parseColor("#FFFF9C26"));
+        mPaintBottomScroll.setTextSize(ConvertUtil.toSp(1f));
+        mPaintBottomScroll.setStrokeWidth(mLineWidth);
     }
 
     @Override
@@ -310,6 +321,11 @@ public class ChargingProgressView extends View {
             }
         }
 
+        // 滑动的进度
+        if (mBottomScrollProgress > 0) {
+            mBottomScrollProgressValue = mBottomScrollProgress * mProgressWidth;
+        }
+
         // 叠加当前的高度
         mMaxHeight += mTopInterval;
         mMaxHeight += mBottomInterval;
@@ -394,6 +410,11 @@ public class ChargingProgressView extends View {
                 float dy2 = dy + mBitmapSoc.getHeight() - mSocTextSize[1] + baseLine;
                 canvas.drawText(mSocText, dx, dy2, mPaintSoc);
             }
+        }
+
+        // 绘制滑动的区间值
+        if (mBottomScrollProgressValue > 0) {
+            canvas.drawLine(mBottomScrollProgressValue, mTopInterval, mBottomScrollProgressValue, mProgressHeight + mTopInterval, mPaintBottomScroll);
         }
     }
 
