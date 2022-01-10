@@ -2,6 +2,7 @@ package com.android.helper.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -103,8 +104,10 @@ public class ChargingProgressView extends View {
 
     // 底部的滑动条
     private float mBottomScrollProgress = 0.5f; // 默认的区间值
-    private Paint mPaintBottomScroll;
+    private Paint mPaintBottomScrollLine;
     private float mBottomScrollProgressValue = 0;
+    private Paint mPaintScrollRound;// 滑动的圆
+    private float mScrollValue;// 滑动的值
 
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -176,10 +179,15 @@ public class ChargingProgressView extends View {
         mBitmapSoc = ResourceUtil.getBitmap(R.mipmap.icon_charging_soc);
 
         // 滑动的区间值
-        mPaintBottomScroll = new Paint();
-        mPaintBottomScroll.setColor(Color.parseColor("#FFFF9C26"));
-        mPaintBottomScroll.setTextSize(ConvertUtil.toSp(1f));
-        mPaintBottomScroll.setStrokeWidth(mLineWidth);
+        mPaintBottomScrollLine = new Paint();
+        mPaintBottomScrollLine.setColor(Color.parseColor("#FFFF9C26"));
+        mPaintBottomScrollLine.setTextSize(ConvertUtil.toSp(1f));
+        mPaintBottomScrollLine.setStrokeWidth(mLineWidth);
+        mPaintScrollRound = new Paint();
+        mPaintScrollRound.setColor(Color.parseColor("#FFF4F4F4"));
+        mPaintScrollRound.setStyle(Paint.Style.FILL);
+        mPaintScrollRound.setMaskFilter(new BlurMaskFilter(ConvertUtil.toDp(1), BlurMaskFilter.Blur.SOLID)); // 阴影
+
     }
 
     @Override
@@ -414,7 +422,19 @@ public class ChargingProgressView extends View {
 
         // 绘制滑动的区间值
         if (mBottomScrollProgressValue > 0) {
-            canvas.drawLine(mBottomScrollProgressValue, mTopInterval, mBottomScrollProgressValue, mProgressHeight + mTopInterval, mPaintBottomScroll);
+            mScrollValue = mBottomScrollProgressValue;
+            // 绘制线
+            canvas.drawLine(mScrollValue, mTopInterval, mScrollValue, mProgressHeight + mTopInterval, mPaintBottomScrollLine);
+            // 绘制阴影
+            float circleX, circleY;
+            // 参数1：圆中心的X轴位置 = 当前进度的值
+            circleX = mScrollValue;
+            // 参数2：圆中心的Y轴位置 = 顶部间距 + 进度条高度 + 半径的高度
+            circleY = mTopInterval + mProgressHeight + mRemainingTimeTextInterval;
+            // 参数1：圆中心的X轴位置
+            // 参数2：圆中心的Y轴位置
+            // 参数3：圆的半径
+            canvas.drawCircle(circleX, circleY, mRemainingTimeTextInterval, mPaintScrollRound);
         }
     }
 
