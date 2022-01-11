@@ -200,7 +200,7 @@ public class NumberUtil {
      * @param digits       保留的小数位数
      * @return 大整形的除法运算
      */
-    public static String DecimalDivide(String dividend, long divisor, int roundingMode, int digits) {
+    public static String divide(String dividend, long divisor, int roundingMode, int digits) {
         if ((!TextUtils.isEmpty(dividend)) && (divisor > 0)) {
             BigDecimal dividendDecimal = new BigDecimal(dividend);
             BigDecimal divisorDecimal = new BigDecimal(divisor);
@@ -214,6 +214,28 @@ public class NumberUtil {
         } else {
             return "";
         }
+    }
+
+    /**
+     * @param dividend     被除数
+     * @param divisor      除数
+     * @param roundingMode 转换的方式，这里用的最多的是四舍五入和直接舍弃，默认四舍五入
+     *                     {@link BigDecimal#ROUND_HALF_UP} 四舍五入
+     *                     {@link BigDecimal#ROUND_DOWN} 直接舍弃
+     * @return 除法的操作，必须指定模式，否则会代码报错
+     */
+    public static String divide(String dividend, String divisor, int roundingMode) {
+        String result = "";
+        if ((!TextUtils.isEmpty(dividend)) && (!TextUtils.isEmpty(divisor))) {
+            BigDecimal dividendDecimal = new BigDecimal(dividend);
+            BigDecimal divisorDecimal = new BigDecimal(divisor);
+
+            result = dividendDecimal
+                    .divide(divisorDecimal, roundingMode)
+                    .stripTrailingZeros()// 去掉多余的0
+                    .toPlainString();// 转换为科学计数法
+        }
+        return result;
     }
 
     /**
@@ -340,6 +362,25 @@ public class NumberUtil {
      */
     public static String formatDigitsForDouble(double value, int roundingMode, int digits) {
         if (value != 0) {
+            // 转换为大整形运算
+            BigDecimal decimal = new BigDecimal(value);
+            return decimal
+                    .setScale(digits, roundingMode) // 数据模式
+                    .stripTrailingZeros()
+                    .toPlainString();
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * @param value        字符串
+     * @param roundingMode 数据的模式，例如四舍五入，只入不舍、只舍不入
+     * @param digits       保留的位数
+     * @return 把一个数据按照指定的模式去进行格式化处理
+     */
+    public static String dataFormat(String value, int roundingMode, int digits) {
+        if (!TextUtils.isEmpty(value)) {
             // 转换为大整形运算
             BigDecimal decimal = new BigDecimal(value);
             return decimal
