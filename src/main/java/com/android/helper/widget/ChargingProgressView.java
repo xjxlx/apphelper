@@ -107,9 +107,13 @@ public class ChargingProgressView extends View {
     private Paint mPaintBottomScrollLine;
     private float mBottomScrollProgressValue = 0;
     private Paint mPaintScrollRound;// 滑动的圆
-    private float mScrollValue;// 滑动的值
+    private float mScrollValue;// 滑动的进度值
     private Paint mPaintSocText; // SOC的进度的画笔
     private String mSocCurrentText = ""; // 当前滑动进度的值
+    private Paint mPaintScrollValue;
+    private final float mScrollTextInterval = ConvertUtil.toDp(6);
+
+    private float mScrollTextHeight;
 
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -192,6 +196,9 @@ public class ChargingProgressView extends View {
         mPaintSocText = new Paint();
         mPaintSocText.setColor(Color.parseColor("#FF3E485A"));
         mPaintSocText.setTextSize(ConvertUtil.toDp(10.5f));
+        mPaintScrollValue = new Paint();
+        mPaintScrollValue.setColor(Color.parseColor("#FF3E485A"));
+        mPaintScrollValue.setTextSize(ConvertUtil.toDp(10.5f));
     }
 
     @Override
@@ -283,7 +290,7 @@ public class ChargingProgressView extends View {
             mRectSrc.left = 0;
             mRectSrc.top = 0;
             mRectSrc.right = bitmapWidth;
-            mRectSrc.bottom = (int) bitmapHeight;
+            mRectSrc.bottom = bitmapHeight;
         }
 
         // 区间
@@ -336,6 +343,13 @@ public class ChargingProgressView extends View {
         // 滑动的进度
         if (mBottomScrollProgress > 0) {
             mBottomScrollProgressValue = mBottomScrollProgress * mProgressWidth;
+            String multiply1 = NumberUtil.multiply(mBottomScrollProgress + "", 100 + "");
+            mSocCurrentText = multiply1 + "%";
+
+            float[] textSize = CustomViewUtil.getTextSize(mPaintScrollValue, mSocCurrentText);
+            if (textSize != null) {
+                mScrollTextHeight = textSize[1];
+            }
         }
 
         // 叠加当前的高度
@@ -434,14 +448,16 @@ public class ChargingProgressView extends View {
             // 参数1：圆中心的X轴位置 = 当前进度的值
             circleX = mScrollValue;
             // 参数2：圆中心的Y轴位置 = 顶部间距 + 进度条高度 + 半径的高度
-            circleY = mTopInterval + mProgressHeight + mRemainingTimeTextInterval;
+            circleY = mTopInterval + mProgressHeight + mRemainingTimeTextInterval + 10;
             // 参数1：圆中心的X轴位置
             // 参数2：圆中心的Y轴位置
             // 参数3：圆的半径
             canvas.drawCircle(circleX, circleY, mRemainingTimeTextInterval, mPaintScrollRound);
 
-            // 绘制SOC进度 todo
-//            canvas.drawText();
+            // 绘制SOC进度
+            float dx = circleX + mRemainingTimeTextInterval + mScrollTextInterval; // dx = 圆角的dx轴 + 半径 + 距离
+            float dy = (circleY + mScrollTextHeight / 2); // dy =  圆角的y轴 +    文字的高度 /2 +
+            canvas.drawText(mSocCurrentText, 0, mSocCurrentText.length(), dx, dy, mPaintScrollValue);
         }
     }
 
