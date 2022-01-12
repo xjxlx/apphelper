@@ -93,10 +93,10 @@ public abstract class BaseBindingRecycleAdapter<T, V extends ViewBinding> extend
                  *     2:如果是指定的布局的话，肯定自己写的布局，自己会知道
                  * </ol>
                  */
-                if (mBottomResourceParent != null) {
-                    mBottomResourceParent.setOnClickListener(v -> {
+                if (mBottomParentView != null) {
+                    mBottomParentView.setOnClickListener(v -> {
                         if (mItemBindingClickListener != null) {
-                            mItemBindingClickListener.onItemClick(mBottomResourceParent, null, 0, null);
+                            mItemBindingClickListener.onItemClick(mBottomParentView, null, 0, null);
                         }
                     });
                 }

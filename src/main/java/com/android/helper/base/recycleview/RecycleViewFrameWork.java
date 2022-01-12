@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.helper.R;
+import com.android.helper.app.BaseApplication;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.TextViewUtil;
@@ -64,8 +65,8 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     private int mErrorType;  // 1:空数据  2：错误数据
     private RefreshUtil<?> mRefreshUtil; // 刷新工具类
     private RecyclerView mRecycleView;
-    protected ViewGroup mBottomResourceParent;
     private int showPlaceHolder = -1;// 是否自动显示占位图，默认自动不显示 -1：默认值，不展示 1：展示 2：不展示
+    protected ViewGroup mBottomParentView;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.TYPE_EMPTY, ViewType.TYPE_HEAD, ViewType.TYPE_FOOT})
@@ -325,40 +326,52 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                         if (emptyResource != 0) {
                             emptyVH.mIvImage.setImageResource(emptyResource);
                         }
+
+                        // 添加提示文字下底部的按钮
+                        View bottomView = mPlaceHolder.getBottomView();
+                        mBottomParentView = mPlaceHolder.getBottomParentView();
+                        if ((mBottomParentView != null) && (bottomView != null)) {
+                            mBottomParentView.addView(bottomView);
+                        }
                     }
                 } else { // 这里说明接口异常了，不去处理无数据的占位图，直接处理断网的操作
                     /*
-                     * 错误的占位图，此占位图因为要从新刷新说句，所以需要传入刷新工具的对象
+                     * 断网的占位图是属于公用的，所以这里使用公共的占位图
                      */
+                    PlaceholderResource globalPlaceholder = PlaceholderResource.getGlobalPlaceholder();
+                    if (globalPlaceholder != null) {
+                        int noNetWorkImage = globalPlaceholder.getNoNetWorkImage();
+                        String noNetWorkContent = globalPlaceholder.getNoNetWorkContent();
+                        float noNetWorkTitleSize = globalPlaceholder.getNoNetWorkTitleSize();
+                        int noNetWorkTitleColor = globalPlaceholder.getNoNetWorkTitleColor();
 
-                    if (mPlaceHolder != null) {
-                        int noNetWorkImage = mPlaceHolder.getNoNetWorkImage();
-                        String errorContent = mPlaceHolder.getNoNetWorkContent();
-                        float noNetWorkTitleSize = mPlaceHolder.getNoNetWorkTitleSize();
-                        int noNetWorkTitleColor = mPlaceHolder.getNoNetWorkTitleColor();
+                        // 区分项目，设置资源
+                        String tag = BaseApplication.getInstance().logTag();
+                        if (TextUtils.equals(tag, "ZHGJ")) {
+                            // 设置全局的异常图片资源
+                            if (noNetWorkImage != 0) {
+                                emptyVH.mIvImage.setImageResource(noNetWorkImage);
+                            }
 
-                        // 设置全局的异常图片资源
-                        if (noNetWorkImage != 0) {
-                            emptyVH.mIvImage.setImageResource(noNetWorkImage);
+                            // 错误布局提示
+                            if (!TextUtils.isEmpty(noNetWorkContent)) {
+                                TextViewUtil.setText(emptyVH.mTvMsg, noNetWorkContent);
+
+                                if (noNetWorkTitleSize != 0) {
+                                    emptyVH.mTvMsg.setTextSize(noNetWorkTitleSize);
+                                }
+                                if (noNetWorkTitleColor != 0) {
+                                    emptyVH.mTvMsg.setTextColor(noNetWorkTitleColor);
+                                }
+                            }
                         }
 
-                        // 错误布局提示
-                        if (!TextUtils.isEmpty(errorContent)) {
-                            TextViewUtil.setText(emptyVH.mTvMsg, errorContent);
-
-                            if (noNetWorkTitleSize != 0) {
-                                emptyVH.mTvMsg.setTextSize(noNetWorkTitleSize);
-                            }
-                            if (noNetWorkTitleColor != 0) {
-                                emptyVH.mTvMsg.setTextColor(noNetWorkTitleColor);
-                            }
-                        }
-
-                        // 刷新按钮
-                        String errorButtonContent = mPlaceHolder.getNoNetWorkButtonContent();
+                        // 刷新按钮，公共的点击事件
+                        String errorButtonContent = globalPlaceholder.getNoNetWorkButtonContent();
                         // 全局的异常Button文字
                         if (!TextUtils.isEmpty(errorButtonContent)) {
                             emptyVH.mIvButton.setVisibility(View.VISIBLE);
+
                             TextViewUtil.setText(emptyVH.mIvButton, errorButtonContent);
 
                             emptyVH.mIvButton.setOnClickListener(v -> {
@@ -387,7 +400,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      *
      * @param placeHolder 占位图的信息
      */
-    public void setPlaceholderData(PlaceholderResource placeHolder) {
+    public void setPlaceholder(PlaceholderResource placeHolder) {
         if (placeHolder != null) {
             this.mPlaceHolder = placeHolder;
         }

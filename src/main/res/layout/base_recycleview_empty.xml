@@ -59,6 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_15"
+        android:background="@drawable/shape_round_13_stroke_1_blue_4"
         android:paddingLeft="@dimen/dp_16"
         android:paddingTop="@dimen/dp_4"
         android:paddingRight="@dimen/dp_16"
