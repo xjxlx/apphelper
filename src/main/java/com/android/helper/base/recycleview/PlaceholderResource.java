@@ -144,7 +144,7 @@ public class PlaceholderResource {
             if (mBottomOtherViewId != 0) {
                 otherView = mRootView.findViewById(mBottomOtherViewId);
             } else {
-                otherView = mRootView.findViewById(R.id.fl_bottom_placeholder);
+                otherView = mRootView.findViewById(R.id.placeholder_bottom_parent);
             }
         }
         return otherView;
