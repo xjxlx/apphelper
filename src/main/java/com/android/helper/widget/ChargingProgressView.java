@@ -13,16 +13,14 @@ import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 
 import com.android.helper.R;
+import com.android.helper.base.BaseView;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
-import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NumberUtil;
-import com.android.helper.utils.ResourceUtil;
 
 import java.math.BigDecimal;
 
@@ -31,7 +29,7 @@ import java.math.BigDecimal;
  * @CreateDate: 2022/1/7-5:23 下午
  * @Description: 充电的进度条
  */
-public class ChargingProgressView extends View {
+public class ChargingProgressView extends BaseView {
 
     private int mMaxWidth, mMaxHeight;
 
@@ -123,10 +121,11 @@ public class ChargingProgressView extends View {
 
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        initView();
+        initView(context, attrs);
     }
 
-    private void initView() {
+    @Override
+    protected void initView(Context context, AttributeSet attrs) {
         // 底层白色进度条的Paint
         mPaintBackground = new Paint();
         mPaintBackground.setColor(Color.parseColor("#FFF4F4F4"));
@@ -160,7 +159,7 @@ public class ChargingProgressView extends View {
         mRectFNerLayer = new RectF();
 
         // 绘制闪电标记
-        mBitmap = ResourceUtil.getBitmap(R.mipmap.icon_custom_charge_center);
+        mBitmap = getBitmap(context, R.mipmap.icon_custom_charge_center);
         mRectSrc = new Rect();
         mRectDsc = new RectF();
         Paint paintBitmap = new Paint();
@@ -213,7 +212,7 @@ public class ChargingProgressView extends View {
         mPaintSoc.setColor(Color.parseColor("#FF7A8499"));
         mPaintSoc.setTextSize(ConvertUtil.toSp(10.5f));
         mPaintSoc.setAntiAlias(true);
-        mBitmapSoc = ResourceUtil.getBitmap(R.mipmap.icon_charging_soc);
+        mBitmapSoc = getBitmap(context, R.mipmap.icon_charging_soc);
 
         // SOC的进度的画笔
         Paint paintSocText = new Paint();
@@ -462,7 +461,7 @@ public class ChargingProgressView extends View {
             // 参数2：圆中心的Y轴位置
             // 参数3：圆的半径
             canvas.drawCircle(circleX, circleY, mRemainingTimeTextInterval, mPaintScrollRound);
-            LogUtil.e("绘制了圆形：！");
+            log("绘制了圆形：！");
 
             // 绘制SOC进度
             float dx = circleX + mRemainingTimeTextInterval + mScrollTextInterval; // dx = 圆角的dx轴 + 半径 + 距离
@@ -507,7 +506,7 @@ public class ChargingProgressView extends View {
     public boolean dispatchTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                LogUtil.e("ACTION_DOWN ---> dispatchTouchEvent --->");
+                log("ACTION_DOWN ---> dispatchTouchEvent --->");
                 // 如果是在区域内，则返回为true,否则返回false
                 float currentX = event.getX(); // 当前的X轴的值
                 boolean b = (currentX >= mStartBorder) && (currentX <= mEndBorder);
@@ -524,10 +523,10 @@ public class ChargingProgressView extends View {
                 float x = event.getX();
 
                 if (x < mStartBorder || x > mEndBorder) {
-                    LogUtil.e("ACTION_MOVE ---> dispatchTouchEvent ---> 自己消耗！");
+                    log("ACTION_MOVE ---> dispatchTouchEvent ---> 自己消耗！");
                     return true;
                 } else {
-                    LogUtil.e("ACTION_MOVE ---> dispatchTouchEvent ---> 交给父类去处理！");
+                    log("ACTION_MOVE ---> dispatchTouchEvent ---> 交给父类去处理！");
                     return super.dispatchTouchEvent(event);
                 }
 
@@ -545,11 +544,11 @@ public class ChargingProgressView extends View {
         // 开始和结束的边界
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                LogUtil.e("ACTION_DOWN");
+                log("ACTION_DOWN");
                 return true;
 
             case MotionEvent.ACTION_MOVE:
-                LogUtil.e("ACTION_DOWN ----> onTouchEvent");
+                log("ACTION_DOWN ----> onTouchEvent");
                 // 移动的时候，改变滑动的位置，反推出当前的进度值
                 float x = event.getX();
                 calculate(x);
@@ -562,11 +561,11 @@ public class ChargingProgressView extends View {
     private void calculate(float x) {
         // 求出当前滑动的位置所占得比例
         String divide = NumberUtil.divide(x + "", mProgressWidth + "", BigDecimal.ROUND_HALF_UP);
-        LogUtil.e("当前 的进度为：" + divide);
+        log("当前 的进度为：" + divide);
 
         // 格式化数据
         String format = NumberUtil.dataFormat(divide, BigDecimal.ROUND_HALF_UP, 1);
-        LogUtil.e("当前 的进度为：" + format);
+        log("当前 的进度为：" + format);
         mBottomScrollProgress = Float.parseFloat(format);
 
         // 重新获取竖线的left值
@@ -593,8 +592,7 @@ public class ChargingProgressView extends View {
      */
     public void setPercentage(float chargingPercentage) {
         mPercentage = chargingPercentage;
-
-        LogUtil.e("接收到的电量：" + mPercentage);
+        log("接收到的电量：" + mPercentage);
         requestLayout();
         invalidate();
     }

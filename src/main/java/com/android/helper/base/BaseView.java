@@ -3,11 +3,15 @@ package com.android.helper.base;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+
+import com.android.helper.BuildConfig;
+import com.orhanobut.logger.Logger;
 
 /**
  * 基类的View,以后所有的view都集成他，避免重写很多的袋面
@@ -51,8 +55,6 @@ public abstract class BaseView extends View {
     protected abstract void initView(Context context, AttributeSet attrs);
 
     /**
-     * @param context
-     * @param id
      * @return 获取图片
      */
     public Bitmap getBitmap(Context context, @DrawableRes int id) {
@@ -61,5 +63,18 @@ public abstract class BaseView extends View {
             bitmap = BitmapFactory.decodeResource(context.getResources(), id);
         }
         return bitmap;
+    }
+
+    /**
+     * 打印日志
+     *
+     * @param value 具体内容
+     */
+    public void log(String value) {
+        if (BuildConfig.DEBUG) {
+            if (!TextUtils.isEmpty(value)) {
+                Logger.e(value);
+            }
+        }
     }
 }

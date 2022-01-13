@@ -32,7 +32,7 @@ public class ElectricityView extends BaseView {
 
     // 进度条的范围值
     private float mProgressEnd = 63f; // 最大的进度值
-    private float mProgressTarget = 0f; // 目标的进度值
+    private float mProgressTarget = 10f; // 目标的进度值
 
     // 右侧的电流值
     private Paint mPaintRightText;
@@ -115,10 +115,10 @@ public class ElectricityView extends BaseView {
         mProgressWidth = maxWidth - mPaddingLeft - rightTextWidth - mRightInterval;
         // 根据最大的范围值和当前进度条的宽度，求出每个像素占用的百分比
         mPercentage = mProgressEnd / mProgressWidth;
-        LogUtil.e("默认进度条的百分比：" + mPercentage);
+        // LogUtil.e("默认进度条的百分比：" + mPercentage);
         // 当前的进度条
         mCurrentProgress = mProgressTarget / mPercentage;
-        LogUtil.e("默认进度条的目标：" + mProgressTarget + "  默认的位置：" + mCurrentProgress);
+        // LogUtil.e("默认进度条的目标：" + mProgressTarget + "  默认的位置：" + mCurrentProgress);
 
         // 进度条距离顶部的高度 =（ 最大高度 - 文字高度 ）/2
         float v1 = (mProgressHeight - rightTextHeight) / 2;
@@ -154,7 +154,7 @@ public class ElectricityView extends BaseView {
 
         // 当前的进度条
         mCurrentProgress = mProgressTarget / mPercentage;
-        LogUtil.e("mCurrentProgress:" + mCurrentProgress + "  mProgressTarget:" + mProgressTarget);
+        // LogUtil.e("mCurrentProgress:" + mCurrentProgress + "  mProgressTarget:" + mProgressTarget);
 
         // 绘制背景
         canvas.drawRoundRect(mCurrentProgress + mPaddingLeft, mTopInterval + mPaddingTop, mProgressWidth + mPaddingLeft, mProgressHeight + mTopInterval + mPaddingTop, mProgressRound, mProgressRound, mPaintProgressBackground);
