@@ -16,6 +16,7 @@ import com.android.helper.R;
  */
 public class PlaceholderResource {
     private ViewGroup mRootView;
+    private View mBottomView;
 
     private int mRootViewId;                           // 数据的根布局
     private int mMessageViewId;                        // 中间消息按钮的view
@@ -49,6 +50,7 @@ public class PlaceholderResource {
     private String mNoNetWorkButtonContent;              // 错误布局的按钮文字
 
     private boolean mShowPlaceHolder;                    // 是否自动显示占位图，默认为true
+    private int mBottomViewId;                           // 底部View的id
 
     @SuppressLint("StaticFieldLeak")
     private static PlaceholderResource GlobalPlaceholder; // 静态的对象
@@ -86,6 +88,7 @@ public class PlaceholderResource {
             this.mNoNetWorkTitleColor = builder.mNoNetWorkTitleColor;
             this.mNoNetWorkButtonContent = builder.mNoNetWorkButtonContent;
             this.mShowPlaceHolder = builder.mShowPlaceHolder;
+            this.mBottomViewId = builder.mBottomViewId;
         }
     }
 
@@ -135,23 +138,27 @@ public class PlaceholderResource {
     /**
      * @return 获取消息下方其他view的父布局，用于自己去动态需要的view
      */
-    public ViewGroup getBottomOtherView() {
+    public ViewGroup getBottomParentView() {
         ViewGroup otherView = null;
         if (mRootView != null) {
             if (mBottomOtherViewId != 0) {
                 otherView = mRootView.findViewById(mBottomOtherViewId);
             } else {
-                otherView = mRootView.findViewById(R.id.fl_bottom_placeholder);
+                otherView = mRootView.findViewById(R.id.placeholder_bottom_parent);
             }
         }
         return otherView;
     }
 
+    /**
+     * @param bottomView 需要加载的底部view
+     */
     public void setBottomView(View bottomView) {
-        ViewGroup bottomOtherView = getBottomOtherView();
-        if (bottomOtherView != null && bottomView != null) {
-            bottomOtherView.addView(bottomView);
-        }
+        mBottomView = bottomView;
+    }
+
+    public View getBottomView() {
+        return mBottomView;
     }
 
     /**
@@ -249,6 +256,10 @@ public class PlaceholderResource {
         return mShowPlaceHolder;
     }
 
+    public int getBottomViewId() {
+        return mBottomViewId;
+    }
+
     public static class Builder {
         private int mRootViewId;                           // 数据的根布局
         private int mMessageViewId;                        // 中间消息按钮的view
@@ -282,6 +293,7 @@ public class PlaceholderResource {
         private String mNoNetWorkButtonContent;              // 错误布局的按钮文字
 
         private boolean mShowPlaceHolder;                    // 是否自动显示占位图，默认为true
+        private int mBottomViewId;                           // 底部View的id
 
         public Builder setRootViewId(int rootViewId) {
             mRootViewId = rootViewId;
@@ -396,6 +408,10 @@ public class PlaceholderResource {
         public Builder setShowPlaceHolder(boolean showPlaceHolder) {
             mShowPlaceHolder = showPlaceHolder;
             return this;
+        }
+
+        public void setBottomViewId(int bottomViewId) {
+            mBottomViewId = bottomViewId;
         }
 
         public PlaceholderResource Build() {

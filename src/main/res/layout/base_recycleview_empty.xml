@@ -7,20 +7,22 @@
     android:layout_height="match_parent"
     tools:viewBindingIgnore="true">
 
-    <!--公用的占位图，自适应-->
+    <!--空布局的占位图-->
     <ImageView
         android:id="@+id/iv_base_placeholder_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_80"
         android:adjustViewBounds="true"
-        app:layout_constraintBottom_toTopOf="@+id/tv_base_placeholder_msg"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.185961"
         app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintWidth_percent="0.293"
         tools:src="@tools:sample/avatars" />
 
-    <!--默认的提示文字的样式-->
     <TextView
         android:id="@+id/tv_base_placeholder_msg"
         android:layout_width="0dp"
@@ -41,7 +43,7 @@
 
     <!--空布局提示下的其他情况，可能是按钮，可能是其他，使用单独添加的形式去处理-->
     <FrameLayout
-        android:id="@+id/fl_bottom_placeholder"
+        android:id="@+id/placeholder_bottom_parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -53,12 +55,13 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_base_placeholder_msg"
         app:layout_constraintVertical_bias="0" />
 
-    <!--默认底部再次刷新的按钮样式，可以自适应-->
+    <!--网络异常的刷新按钮-->
     <TextView
         android:id="@+id/iv_base_error_placeholder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_15"
+        android:background="@drawable/shape_round_13_stroke_1_blue_4"
         android:paddingLeft="@dimen/dp_16"
         android:paddingTop="@dimen/dp_4"
         android:paddingRight="@dimen/dp_16"
