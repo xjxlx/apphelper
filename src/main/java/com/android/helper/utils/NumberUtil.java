@@ -392,4 +392,14 @@ public class NumberUtil {
         }
     }
 
+    public static String dataFormat(String value) {
+        String result = "";
+        if (!TextUtils.isEmpty(value)) {
+            // 转换为大整形运算
+            BigDecimal decimal = new BigDecimal(value);
+            result = decimal.stripTrailingZeros().toPlainString();
+        }
+        return result;
+    }
+
 }

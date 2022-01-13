@@ -1,9 +1,12 @@
 package com.android.helper.base;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
 /**
@@ -47,4 +50,16 @@ public abstract class BaseView extends View {
 
     protected abstract void initView(Context context, AttributeSet attrs);
 
+    /**
+     * @param context
+     * @param id
+     * @return 获取图片
+     */
+    public Bitmap getBitmap(Context context, @DrawableRes int id) {
+        Bitmap bitmap = null;
+        if (context != null && id != 0) {
+            bitmap = BitmapFactory.decodeResource(context.getResources(), id);
+        }
+        return bitmap;
+    }
 }

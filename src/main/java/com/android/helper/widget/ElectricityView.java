@@ -2,76 +2,67 @@ package com.android.helper.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.view.View;
+import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
 
-import com.android.helper.R;
+import com.android.helper.base.BaseView;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
-import com.android.helper.utils.ResourceUtil;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.NumberUtil;
 
 /**
  * @author : 流星
  * @CreateDate: 2022/1/12-5:47 下午
  * @Description: 电流的view
  */
-public class ElectricityView extends View {
+public class ElectricityView extends BaseView {
 
-    private float mMaxWidth, mMaxHeight;
     private float mProgressWidth; // 进度条的宽度
-    private float mProgressHeight = ConvertUtil.toDp(8); // 进度条的高度
-    private float mProgressRound = ConvertUtil.toDp(5);
+    private final float mProgressHeight = ConvertUtil.toDp(8); // 进度条的高度
+    private final float mProgressRound = ConvertUtil.toDp(5);
 
     private Paint mPaintProgressBackground;
     private Paint mPaintProgress;
 
     // 进度条的范围值
-    private float mProgressStart = 0f;
-    private float mProgressEnd = 63f;
-    private float mProgressCurrent = 20f; // 当前的进度值
+    private float mProgressEnd = 63f; // 最大的进度值
+    private float mProgressTarget = 0f; // 目标的进度值
 
     // 右侧的电流值
     private Paint mPaintRightText;
     private String mRightTextValue = "";
-    private float[] mRightTextSize;
-    private float mRightTextWidth;
-    private float mRightInterval = ConvertUtil.toDp(8);
+    private final float mRightInterval = ConvertUtil.toDp(11);
     private float mBaseLineRightText; // 右侧文字的高度
-
-    // 左下角的文字
-    private Paint mPaintLeftBottomText;
-    private String mLeftBottomTextValue = "设置电流值";
-    private float mLeftBottomInterval = ConvertUtil.toDp(8);
 
     private Paint mPaintRound;
     private Paint mPaintBottomRoundText;
-    private float mBaseLineLeftBottom;
-    private Bitmap mBitmap;
-    private Rect mRectSrc;
-    private RectF mRectFDst;
     private float mCurrentProgress;
     private float mTopInterval; // 进度条距离顶部的高度
     private String mBottomTextValue = "";// 圆球底部的文字
-    private int mBitmapWidth;
-    private int mBitmapHeight;
-    private float mBottomTextWidth;
 
-    private float mBottomValueInterval = ConvertUtil.toDp(8);
+    private final float mBottomValueInterval = ConvertUtil.toDp(8);
+    private float mPercentage; // 进度条的百分比
+
+    private final float mCircleRadius = ConvertUtil.toDp(12);// 圆的半径
+    private float mBaseLineBottomText;
+    private float mPaddingLeft = ConvertUtil.toDp(17); // view的左间距 = 圆的半径
+    private final float mPaddingTop = ConvertUtil.toDp(8);// view的上方padding值，避免遮挡阴影
+
+    private ProgressListener mProgressListener;
 
     public ElectricityView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        initView(context);
+        initView(context, attrs);
     }
 
-    private void initView(Context context) {
+    @Override
+    protected void initView(Context context, AttributeSet attrs) {
         // 底部进度条
         mPaintProgressBackground = new Paint();
         mPaintProgressBackground.setAntiAlias(true);
@@ -87,22 +78,18 @@ public class ElectricityView extends View {
         mPaintRightText.setColor(Color.parseColor("#FF7A8499"));
         mPaintRightText.setTextSize(ConvertUtil.toSp(13));
 
-        // 左下角文字
-        mPaintLeftBottomText = new Paint();
-        mPaintLeftBottomText.setAntiAlias(true);
-        mPaintLeftBottomText.setColor(Color.parseColor("#FFB2B8C6"));
-        mPaintLeftBottomText.setTextSize(ConvertUtil.toSp(11));
-
         // 滑动的圆球
         mPaintRound = new Paint();
         mPaintRound.setStyle(Paint.Style.FILL);
+        mPaintRound.setColor(Color.parseColor("#FFFFFFFF"));
+        // 绘制阴影
+        mPaintRound.setShadowLayer(30, 0, 0, Color.parseColor("#FF3FAAE4"));
 
         // 绘制圆球的底部文字
         mPaintBottomRoundText = new Paint();
         mPaintBottomRoundText.setAntiAlias(true);
         mPaintBottomRoundText.setColor(Color.parseColor("#FF3FAAE4"));
         mPaintBottomRoundText.setTextSize(ConvertUtil.toSp(12));
-
     }
 
     @SuppressLint("DrawAllocation")
@@ -110,63 +97,54 @@ public class ElectricityView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        // 宽高
-        mMaxWidth = MeasureSpec.getSize(widthMeasureSpec);
-
-        // 根据最大的范围值和当前进度条的宽度，求出每个像素占用的百分比
-        float percentage = mProgressEnd / mProgressWidth;
-        // 当前的进度条
-        mCurrentProgress = mProgressCurrent / percentage;
-
+        // 获取view的宽度
+        float maxWidth = MeasureSpec.getSize(widthMeasureSpec);
         // 右侧的电流值
-        mRightTextValue = mProgressEnd + "A";
-        mRightTextSize = CustomViewUtil.getTextSize(mPaintRightText, mRightTextValue);
-        mRightTextWidth = mRightTextSize[0];
-        float rightTextHeight = mRightTextSize[1];
-        mMaxHeight = Math.max(rightTextHeight, mProgressHeight);
+
+        String format = NumberUtil.dataFormat(mProgressEnd + "");
+        mRightTextValue = format + "A";
+        float[] rightTextSize = CustomViewUtil.getTextSize(mPaintRightText, mRightTextValue);
+        float rightTextWidth = rightTextSize[0];
+        float rightTextHeight = rightTextSize[1];
+        // 测量最大的高度
+        float maxHeight = Math.max(rightTextHeight, mProgressHeight);
+        // 右侧文字的基准线
         mBaseLineRightText = CustomViewUtil.getBaseLine(mPaintRightText, mRightTextValue);
 
-        // 进度条宽高
-        mProgressWidth = mMaxWidth - mRightTextWidth - mRightInterval;
+        // 进度条宽高 = 总宽度 - 右侧文字宽度 - 文字间距 - 左侧间距
+        mProgressWidth = maxWidth - mPaddingLeft - rightTextWidth - mRightInterval;
+        // 根据最大的范围值和当前进度条的宽度，求出每个像素占用的百分比
+        mPercentage = mProgressEnd / mProgressWidth;
+        LogUtil.e("默认进度条的百分比：" + mPercentage);
+        // 当前的进度条
+        mCurrentProgress = mProgressTarget / mPercentage;
+        LogUtil.e("默认进度条的目标：" + mProgressTarget + "  默认的位置：" + mCurrentProgress);
 
-        // 左下角的文字
-        float[] LeftBottomTextSize = CustomViewUtil.getTextSize(mPaintLeftBottomText, mLeftBottomTextValue);
-        float leftBottomTextHeight = LeftBottomTextSize[1];
-        mMaxHeight += (leftBottomTextHeight + mLeftBottomInterval);
-        mBaseLineLeftBottom = CustomViewUtil.getBaseLine(mPaintLeftBottomText, mLeftBottomTextValue);
+        // 进度条距离顶部的高度 =（ 最大高度 - 文字高度 ）/2
+        float v1 = (mProgressHeight - rightTextHeight) / 2;
+        mTopInterval = Math.max(v1, mTopInterval);
 
         // 绘制圆球
-        mBitmap = ResourceUtil.getBitmap(R.mipmap.icon_eu7_control_progress_thumb);
-        mBitmapHeight = mBitmap.getHeight();
-        mBitmapWidth = mBitmap.getWidth();
-        if (mBitmapHeight > mMaxHeight) {
-            mMaxHeight = mBitmapHeight;
-        }
-        mRectSrc = new Rect(0, 0, mBitmapWidth, mBitmapHeight);
-        mRectFDst = new RectF();
-        if (mBitmapWidth > 0) {
-            float bitmapWidthFloat = (float) mBitmapWidth;
-            mRectFDst.left = mCurrentProgress - bitmapWidthFloat / 2; // 当前进度条的值 + 图片的宽度/2
-            mRectFDst.top = 0;
-            mRectFDst.right = mRectFDst.left + mBitmapWidth;
-            mRectFDst.bottom = mRectFDst.top + mBitmapHeight;
-        }
+        // 计算最大的高度
+        maxHeight = Math.max(mCircleRadius * 2, maxHeight);
 
-        // 距离顶部的高度
-        mTopInterval = (mBitmapHeight - mProgressHeight) / 2;
+        // 顶部的距离 = ( 圆球的高度 - 进度条的高度) /2
+        float v2 = (mCircleRadius * 2 - mProgressHeight) / 2;
+        // 算出圆球的顶部距离
+        mTopInterval = Math.max(v2, mTopInterval);
 
         // 圆球底部的文字
-        mBottomTextValue = mProgressCurrent + "A";
+        mBottomTextValue = mProgressTarget + "A";
         float[] textSizeBottomRoundText = CustomViewUtil.getTextSize(mPaintBottomRoundText, mBottomTextValue);
-        float bottomRoundTextHeight = textSizeBottomRoundText[1];
-        mBottomTextWidth = textSizeBottomRoundText[0];
-        float bottomHeight = bottomRoundTextHeight + mBitmapHeight;
-        if (mMaxHeight < bottomHeight) {
-            mMaxHeight = bottomHeight;
-        }
+        mBaseLineBottomText = CustomViewUtil.getBaseLine(mPaintBottomRoundText, mBottomTextValue);
+        float bottomTextWidth = textSizeBottomRoundText[0];
+        // 计算最大的高度 = 文字高度 + 原先的高度 + 间距
+        maxHeight += (textSizeBottomRoundText[1] + mBottomValueInterval);
 
-        widthMeasureSpec = resolveSize((int) mMaxWidth, widthMeasureSpec);
-        heightMeasureSpec = resolveSize((int) mMaxHeight, heightMeasureSpec);
+        maxHeight += mPaddingTop;
+
+        widthMeasureSpec = resolveSize((int) maxWidth, widthMeasureSpec);
+        heightMeasureSpec = resolveSize((int) maxHeight, heightMeasureSpec);
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -174,23 +152,100 @@ public class ElectricityView extends View {
     protected void onDraw(Canvas canvas) {
         // super.onDraw(canvas);
 
+        // 当前的进度条
+        mCurrentProgress = mProgressTarget / mPercentage;
+        LogUtil.e("mCurrentProgress:" + mCurrentProgress + "  mProgressTarget:" + mProgressTarget);
+
         // 绘制背景
-        canvas.drawRoundRect(mCurrentProgress, mTopInterval, mProgressWidth, mProgressHeight + mTopInterval, mProgressRound, mProgressRound, mPaintProgressBackground);
+        canvas.drawRoundRect(mCurrentProgress + mPaddingLeft, mTopInterval + mPaddingTop, mProgressWidth + mPaddingLeft, mProgressHeight + mTopInterval + mPaddingTop, mProgressRound, mProgressRound, mPaintProgressBackground);
         // 绘制进度
-        canvas.drawRoundRect(0, mTopInterval, mCurrentProgress, mProgressHeight + mTopInterval, mProgressRound, mProgressRound, mPaintProgress);
+        canvas.drawRoundRect(mPaddingLeft, mTopInterval + mPaddingTop, mCurrentProgress + mPaddingLeft, mProgressHeight + mTopInterval + mPaddingTop, mProgressRound, mProgressRound, mPaintProgress);
 
         // 绘制右侧的电流值
-        canvas.drawText(mRightTextValue, 0, mRightTextValue.length(), (mProgressWidth + mRightInterval), (mBaseLineRightText + mTopInterval), mPaintRightText);
+        canvas.drawText(mRightTextValue, 0, mRightTextValue.length(), (mPaddingLeft + mProgressWidth + mRightInterval), (mBaseLineRightText + mTopInterval + mPaddingTop), mPaintRightText);
 
-        // 绘制左下角的文字
-        canvas.drawText(mLeftBottomTextValue, 0, mLeftBottomTextValue.length(), 0, (mProgressHeight + mLeftBottomInterval + mBaseLineLeftBottom + mTopInterval), mPaintLeftBottomText);
+        // 圆心的x轴 = 进度的值 + 左侧的间距
+        // 圆的X轴圆心
+        float circleDx = mCurrentProgress + mPaddingLeft;
+        // 圆心的y轴 =  进度条高度 /2  + 进度条top 的值
+        // 圆的Y轴圆心
+        float circleDY = mProgressHeight / 2 + mTopInterval + mPaddingTop;
 
-        // 绘制圆球
-        canvas.drawBitmap(mBitmap, mRectSrc, mRectFDst, mPaintRound);
+        canvas.drawCircle(circleDx, circleDY, mCircleRadius, mPaintRound);
 
         // 绘制圆球下的文字
-        float dx = (mBitmapWidth - mBottomTextWidth) / 2 + mRectFDst.left;// 圆球的宽 - 文字的宽 /2  + 圆球的左侧
-        float dy = mRectFDst.bottom + mBottomValueInterval; // dy  = 圆球的底部 + 间距
+        String format = NumberUtil.dataFormat(mProgressTarget + "");
+        // 从新计算文字的宽度
+        float width = CustomViewUtil.getTextSize(mPaintBottomRoundText, mBottomTextValue)[0];
+        mBottomTextValue = format + "A";
+        float dx = (circleDx - width / 2);// 圆球的X轴圆心  - 文字的宽度/2
+        float dy = (circleDY + mCircleRadius + mBottomValueInterval + mBaseLineBottomText); // dy  = 圆球的底部 + 间距 +baseLine
         canvas.drawText(mBottomTextValue, 0, mBottomTextValue.length(), dx, dy, mPaintBottomRoundText);
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                calculate(event.getX());
+                return true;
+
+            case MotionEvent.ACTION_MOVE:
+                // 获取当前的x轴位置
+                float x = event.getX();
+                calculate(x);
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private void calculate(float x) {
+        // 当前滑动的位置 = 当前的x轴位置 * 每个像素所占用的百分比
+        float v = x - mPaddingLeft;
+        mProgressTarget = v * mPercentage;
+        if (mProgressTarget < 0) {
+            mProgressTarget = 0;
+        } else if (mProgressTarget > mProgressEnd) {
+            mProgressTarget = mProgressEnd;
+        }
+
+        if (mProgressListener != null) {
+            mProgressListener.onProgress(mProgressTarget);
+        }
+
+        // 重新绘制
+        invalidate();
+    }
+
+    /**
+     * 设置电流的最大区间值
+     *
+     * @param maxValue 最大电流
+     */
+    public void setMaxIntervalScope(float maxValue) {
+        mProgressEnd = maxValue;
+        invalidate();
+    }
+
+    /**
+     * 设置电流的当前值
+     *
+     * @param currentValue 电流的当前值
+     */
+    public void setCurrentValue(float currentValue) {
+        mProgressTarget = currentValue;
+        invalidate();
+    }
+
+    /**
+     * 设置进度的监听
+     */
+    public void setProgressListener(ProgressListener progressListener) {
+        mProgressListener = progressListener;
+    }
+
+    public interface ProgressListener {
+        void onProgress(float progress);
+    }
+
 }
