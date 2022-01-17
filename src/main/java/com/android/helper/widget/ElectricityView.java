@@ -8,12 +8,12 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 
 import com.android.helper.base.BaseView;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
-import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NumberUtil;
 
 /**
@@ -31,14 +31,8 @@ public class ElectricityView extends BaseView {
     private Paint mPaintProgress;
 
     // 进度条的范围值
-    private float mProgressEnd = 63f; // 最大的进度值
-    private float mProgressTarget = 10f; // 目标的进度值
-
-    // 右侧的电流值
-    private Paint mPaintRightText;
-    private String mRightTextValue = "";
-    private final float mRightInterval = ConvertUtil.toDp(11);
-    private float mBaseLineRightText; // 右侧文字的高度
+    private int mProgressEnd = 62; // 最大的进度值
+    private int mProgressTarget = 0; // 目标的进度值
 
     private Paint mPaintRound;
     private Paint mPaintBottomRoundText;
@@ -46,13 +40,21 @@ public class ElectricityView extends BaseView {
     private float mTopInterval; // 进度条距离顶部的高度
     private String mBottomTextValue = "";// 圆球底部的文字
 
+    // 进度条
     private final float mBottomValueInterval = ConvertUtil.toDp(8);
     private float mPercentage; // 进度条的百分比
 
+    // 中间圆
     private final float mCircleRadius = ConvertUtil.toDp(12);// 圆的半径
     private float mBaseLineBottomText;
-    private float mPaddingLeft = ConvertUtil.toDp(17); // view的左间距 = 圆的半径
+    private final float mPaddingLeft = ConvertUtil.toDp(20); // view的左间距 = 圆的半径
     private final float mPaddingTop = ConvertUtil.toDp(8);// view的上方padding值，避免遮挡阴影
+
+    // 右侧的电流值
+    private Paint mPaintRightText;
+    private String mRightTextValue = "";
+    private final float mRightInterval = ConvertUtil.toDp(4) + mPaddingLeft;
+    private float mBaseLineRightText; // 右侧文字的高度
 
     private ProgressListener mProgressListener;
 
@@ -183,9 +185,11 @@ public class ElectricityView extends BaseView {
         canvas.drawText(mBottomTextValue, 0, mBottomTextValue.length(), dx, dy, mPaintBottomRoundText);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
+
             case MotionEvent.ACTION_DOWN:
                 calculate(event.getX());
                 return true;
@@ -195,6 +199,10 @@ public class ElectricityView extends BaseView {
                 float x = event.getX();
                 calculate(x);
                 break;
+
+            case MotionEvent.ACTION_UP: // 抬起
+                calculateUp(event.getX());
+                break;
         }
         return super.onTouchEvent(event);
     }
@@ -202,7 +210,7 @@ public class ElectricityView extends BaseView {
     private void calculate(float x) {
         // 当前滑动的位置 = 当前的x轴位置 * 每个像素所占用的百分比
         float v = x - mPaddingLeft;
-        mProgressTarget = v * mPercentage;
+        mProgressTarget = (int) (v * mPercentage);
         if (mProgressTarget < 0) {
             mProgressTarget = 0;
         } else if (mProgressTarget > mProgressEnd) {
@@ -218,11 +226,32 @@ public class ElectricityView extends BaseView {
     }
 
     /**
+     * 抬起的手势操作
+     */
+    private void calculateUp(float x) {
+        // 当前滑动的位置 = 当前的x轴位置 * 每个像素所占用的百分比
+        float v = x - mPaddingLeft;
+        mProgressTarget = (int) (v * mPercentage);
+        if (mProgressTarget < 0) {
+            mProgressTarget = 0;
+        } else if (mProgressTarget > mProgressEnd) {
+            mProgressTarget = mProgressEnd;
+        }
+
+        if (mProgressListener != null) {
+            mProgressListener.onTouchUp(mProgressTarget);
+        }
+
+        // 重新绘制
+        invalidate();
+    }
+
+    /**
      * 设置电流的最大区间值
      *
      * @param maxValue 最大电流
      */
-    public void setMaxIntervalScope(float maxValue) {
+    public void setMaxIntervalScope(@IntRange(from = 0, to = 62) int maxValue) {
         mProgressEnd = maxValue;
         invalidate();
     }
@@ -232,7 +261,7 @@ public class ElectricityView extends BaseView {
      *
      * @param currentValue 电流的当前值
      */
-    public void setCurrentValue(float currentValue) {
+    public void setCurrentValue(@IntRange(from = 0, to = 62) int currentValue) {
         mProgressTarget = currentValue;
         invalidate();
     }
@@ -245,7 +274,15 @@ public class ElectricityView extends BaseView {
     }
 
     public interface ProgressListener {
-        void onProgress(float progress);
+        /**
+         * 当前进度
+         */
+        void onProgress(int progress);
+
+        /**
+         * 手指抬起的进度
+         */
+        void onTouchUp(int progress);
     }
 
 }
