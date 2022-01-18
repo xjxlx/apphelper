@@ -3,6 +3,7 @@ package com.android.helper.base;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -53,6 +54,24 @@ public abstract class BaseView extends View {
     }
 
     protected abstract void initView(Context context, AttributeSet attrs);
+
+    /**
+     * 该方法只负责测量，不参与和测量无关的逻辑
+     */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+    }
+
+    /**
+     * 该方法只负责绘制，其中的动态逻辑要放到此处去处理
+     */
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+    }
 
     /**
      * @return 获取图片
