@@ -392,6 +392,10 @@ public class NumberUtil {
         }
     }
 
+    /**
+     * @param value 具体的指定字符串
+     * @return 格式化数据，把一个值去掉多余的0，使用科学计数法去显示
+     */
     public static String dataFormat(String value) {
         String result = "";
         if (!TextUtils.isEmpty(value)) {

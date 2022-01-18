@@ -19,7 +19,6 @@ import com.android.helper.R;
 import com.android.helper.base.BaseView;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
-import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NumberUtil;
 
 import java.math.BigDecimal;
@@ -51,6 +50,7 @@ public class ChargingProgressView extends BaseView {
     private Paint mPaintRoundOuterLayer;
     private final float[] mAngleArray = new float[]{mAngle, mAngle, 0, 0, 0, 0, mAngle, mAngle};
     private final float[] mAngleArrayRight = new float[]{0, 0, mAngle, mAngle, mAngle, mAngle, 0, 0};
+    private final float[] mAngleArrayLeftRight = new float[]{mAngle, mAngle, mAngle, mAngle, mAngle, mAngle, mAngle, mAngle};
 
     private float mProgressWidth;// 进度条的宽度
     private final int mProgressHeight = (int) ConvertUtil.toDp(60); // 进度条的高度
@@ -77,7 +77,7 @@ public class ChargingProgressView extends BaseView {
 
     // 最佳进度值
     private boolean mShowOptimum = true; // 是否展示最佳的电量值
-    private float mPercentageOptimum = 0.9f;//最佳电量值 ---> 固定值
+    private float mPercentageOptimum = 0f;//最佳电量值 ---> 固定值
     private Paint mPaintOptimum;
     private float mOptimumPosition;
     private String OptimumContent = "";// 最佳的文字值
@@ -102,7 +102,7 @@ public class ChargingProgressView extends BaseView {
     // 底部的滑动条
     private float mBottomScrollProgress = 0.6f; // 默认的区间值
     private Paint mPaintBottomScrollLine;
-    private float mBottomScrollProgressValue = 0;
+    private float mBottomScrollProgressValue = 0; // 区间滑动的进度值
     private Paint mPaintScrollRound;// 滑动的圆
     private String mSocCurrentText = ""; // 当前滑动进度的值
     private Paint mPaintScrollValue;
@@ -124,6 +124,9 @@ public class ChargingProgressView extends BaseView {
     private final float mPaddingRight = mRemainingTimeTextInterval;// 右侧的间距
 
     private boolean isCharging = false;// 是否在充电中，控制闪电符号是否显示
+    private float mLeft = 0;
+    private float mRight = 0;
+    private final float mPaddingBottom = ConvertUtil.toDp(5); // 底部的间距
 
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -312,7 +315,8 @@ public class ChargingProgressView extends BaseView {
         }
 
         // 当前电量的进度值
-        String multiply = NumberUtil.multiply(mPercentage + "", 100 + "");
+        String multiply = NumberUtil.multiply(String.valueOf(mPercentage), String.valueOf(100));
+        log("当前的进度为：" + mPercentage + "   计算后的值：" + multiply);
         mCurrentChargingText = multiply + "%";
         mCurrentChargingTextSize = CustomViewUtil.getTextSize(mPaintCharging, mCurrentChargingText);
 
@@ -325,17 +329,27 @@ public class ChargingProgressView extends BaseView {
             }
         }
 
-        // 区间的滑块 == 滑块的区域不能和进度条的区域重叠
-        mRectFSection.left = mProgress; // left = 进度条的宽度
-        mRectFSection.top = mTopInterval;
+        // 区间的滑块
 
-        // 区间的进度值
-        float startProgress = mProgressWidth * mPercentageStart;
-        if (mProgress < startProgress) { // 当前的进度值小于开始的区间值
-            mRectFSection.right = startProgress; // right = 区间的开始值
-        } else { // 如果进度值大于区间值的开始值，则
-            mRectFSection.right = mProgress;
+        // 右侧的默认值
+        if (mRight <= 0) {
+            mRight = mProgressWidth * mPercentageStart;
+        } else {
+            mRight = mProgressWidth * mBottomScrollProgress; // 右侧的精确值
         }
+
+        // 进度条小于 开始的默认值
+        if (mProgress >= mRight) {
+            mLeft = mRight;
+        } else if (mProgress < mRight) { // 进度小于默认的开始值，则left = 当前进度
+            mLeft = mProgress;
+        }
+
+        log("left:" + mLeft + "  right:" + mRight + " mProgress:" + mProgress);
+
+        mRectFSection.left = mLeft;
+        mRectFSection.top = mTopInterval;
+        mRectFSection.right = mRight;
         mRectFSection.bottom = mTopInterval + mProgressHeight; // 上方的距离高度 + 进度条的高度
 
         // 滑动的进度
@@ -356,7 +370,8 @@ public class ChargingProgressView extends BaseView {
             if (mPercentageOptimum > 0) {
                 mOptimumPosition = mProgressWidth * mPercentageOptimum;
                 // 最佳的数据值
-                OptimumContent = (mPercentageOptimum * 100) + "%最佳";
+                String formatZj = NumberUtil.multiply(String.valueOf(mPercentageOptimum), String.valueOf(100));
+                OptimumContent = formatZj + "%最佳";
                 mOptimumTextSize = CustomViewUtil.getTextSize(mPaintOptimum, OptimumContent);
             }
         }
@@ -399,7 +414,7 @@ public class ChargingProgressView extends BaseView {
 
         // 叠加当前的高度
         mMaxHeight += mTopInterval;
-        mMaxHeight += mBottomInterval;
+        mMaxHeight += mBottomInterval + mPaddingBottom;
 
         // 重新测量
         widthMeasureSpec = resolveSize(mMaxWidth, widthMeasureSpec);
@@ -408,6 +423,7 @@ public class ChargingProgressView extends BaseView {
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
+    @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
         // super.onDraw(canvas);
@@ -418,6 +434,7 @@ public class ChargingProgressView extends BaseView {
         // 绘制右侧矩形
         // canvas.drawRect(mRectFRight, mPaintRight);
 
+        log("mPercentage:" + mPercentage);
         // 绘制当前进度的进度条
         if (mPercentage >= 1) {
             // 绘制外层圆角矩形
@@ -425,8 +442,8 @@ public class ChargingProgressView extends BaseView {
             // 绘制圆角矩形
             canvas.drawRoundRect(mRectFNerLayer, mAngle, mAngle, mPaintRoundNerLayer);
 
-            // 绘制右侧矩形 ---> 灰色
-            mPaintRight.setColor(Color.parseColor("#FFF4F4F4"));
+            // 绘制右侧矩形 ---> 蓝色
+            mPaintRight.setColor(Color.parseColor("#FF09B6F7"));
         } else {
             if (mPercentage > 0) {
                 // 使用路径绘制外层圆角矩形
@@ -434,8 +451,8 @@ public class ChargingProgressView extends BaseView {
                 // 使用路径绘制内层圆角矩形
                 canvas.drawPath(mPath_n, mPaintRoundNerLayer);
 
-                // 绘制右侧矩形 ---> 蓝色
-                mPaintRight.setColor(Color.parseColor("#FF2793DF"));
+                // 绘制右侧矩形 ---> 灰色
+                mPaintRight.setColor(Color.parseColor("#FFF4F4F4"));
             }
         }
 
@@ -461,20 +478,41 @@ public class ChargingProgressView extends BaseView {
         }
 
         // 区间
-        LogUtil.e("当前滑动的进度为：" + mBottomScrollProgressValue + "   进度条的宽度为：" + mProgressWidth);
-        if (mBottomScrollProgressValue < mProgressWidth) {
-            canvas.drawRect(mRectFSection, mPaintSection);
+        log("mPercentage：" + mPercentage);
+
+        float mQjRight = mBottomScrollProgress * mProgressWidth; // 区间右侧的值
+        if (mQjRight < mProgressWidth) {
+            if (mPercentage > 0) {
+                // 如果有正常的进度，则去绘制矩形
+                canvas.drawRect(mRectFSection, mPaintSection);
+            } else {
+                // 电量的进度为空，去绘制路径  = 从头开始，到开始位置
+                mPath_qj.reset();
+                mPath_qj.addRoundRect(mProgress, mTopInterval, mQjRight, mTopInterval + mProgressHeight, mAngleArray, Path.Direction.CW);
+
+                canvas.drawPath(mPath_qj, mPaintSection);
+            }
 
             // 绘制右侧 ---> 显示灰色
-            mPaintRight.setColor(Color.parseColor("#FFF4F4F4"));
+            if (mPercentage < 1) {
+                mPaintRight.setColor(Color.parseColor("#FFF4F4F4"));
+            }
         } else {
+            // 进度大于0
             mPath_qj.reset();
-            mPath_qj.addRoundRect(mProgress, mTopInterval, mProgressWidth, mTopInterval + mProgressHeight, mAngleArrayRight, Path.Direction.CW);
+            if (mPercentage > 0) {
+                mPath_qj.addRoundRect(mProgress, mTopInterval, mProgressWidth, mTopInterval + mProgressHeight, mAngleArrayRight, Path.Direction.CW);
+            } else {
+                mPath_qj.addRoundRect(mProgress, mTopInterval, mProgressWidth, mTopInterval + mProgressHeight, mAngleArrayLeftRight, Path.Direction.CW);
+            }
+
             // 使用路径绘制内层圆角矩形
             canvas.drawPath(mPath_qj, mPaintSection);
 
-            // 绘制右侧矩形 ---> 显示黄色
-            mPaintRight.setColor(Color.parseColor("#2BFF9C26"));
+            if (mPercentage < 1) {
+                // 绘制右侧矩形 ---> 显示黄色
+                mPaintRight.setColor(Color.parseColor("#2BFF9C26"));
+            }
         }
 
         // 绘制右侧方块
@@ -508,18 +546,15 @@ public class ChargingProgressView extends BaseView {
         }
 
         // 绘制最佳的进度
-        if (mShowOptimum) {
-            if (mPercentageOptimum > 0) {
-
-                if (mProgress < mOptimumPosition) {
-                    canvas.drawLine(mOptimumPosition, mTopInterval, mOptimumPosition, mMaxHeight - mBottomInterval, mPaintOptimum);
-                }
-
-                // 绘制最佳值文字
-                float dx = (mOptimumPosition - (mOptimumTextSize[0] / 2)); // 最佳值的x轴 - (文字的高度 /2)
-                float dy = mMaxHeight - mOptimumTextInterval - mProgressHeight - mBottomInterval;// 总的高度 - 最佳值的间距 - 进度条的高度 - 底部高度
-                canvas.drawText(OptimumContent, 0, OptimumContent.length(), dx, dy, mPaintOptimum);
+        if (mShowOptimum && (mPercentageOptimum > 0)) {
+            if (mProgress < mOptimumPosition) {
+                canvas.drawLine(mOptimumPosition, mTopInterval, mOptimumPosition, mMaxHeight - mBottomInterval, mPaintOptimum);
             }
+
+            // 绘制最佳值文字
+            float dx = (mOptimumPosition - (mOptimumTextSize[0] / 2)); // 最佳值的x轴 - (文字的高度 /2)
+            float dy = mMaxHeight - mOptimumTextInterval - mProgressHeight - mBottomInterval;// 总的高度 - 最佳值的间距 - 进度条的高度 - 底部高度
+            canvas.drawText(OptimumContent, 0, OptimumContent.length(), dx, dy, mPaintOptimum);
         }
 
         // 绘制SOC
@@ -619,7 +654,14 @@ public class ChargingProgressView extends BaseView {
             mRectFSection.right = mProgress;
         }
 
+//        if (mProgress == mRectFSection.right) {
+//            mLeft = mRight;
+//        } else if (mProgress < mRight) { // 进度小于默认的开始值，则left = 当前进度
+//            mLeft = mProgress;
+//        }
+
         // 重新绘制
+        requestLayout();
         invalidate();
     }
 
