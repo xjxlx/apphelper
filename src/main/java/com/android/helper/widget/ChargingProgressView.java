@@ -128,6 +128,8 @@ public class ChargingProgressView extends BaseView {
     private float mRight = 0;
     private final float mPaddingBottom = ConvertUtil.toDp(5); // 底部的间距
 
+    private ProgressListener mProgressListener;
+
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initView(context, attrs);
@@ -627,6 +629,9 @@ public class ChargingProgressView extends BaseView {
                 calculate(x);
 
                 break;
+            case MotionEvent.ACTION_UP: // 手指抬起的操作
+                calculateTouch(event.getX());
+                break;
         }
         return super.onTouchEvent(event);
     }
@@ -654,15 +659,43 @@ public class ChargingProgressView extends BaseView {
             mRectFSection.right = mProgress;
         }
 
-//        if (mProgress == mRectFSection.right) {
-//            mLeft = mRight;
-//        } else if (mProgress < mRight) { // 进度小于默认的开始值，则left = 当前进度
-//            mLeft = mProgress;
-//        }
+        // 重新绘制
+        requestLayout();
+        invalidate();
+        if (mProgressListener != null) {
+            mProgressListener.onProgress(multiply1);
+        }
+    }
+
+    private void calculateTouch(float x) {
+        // 求出当前滑动的位置所占得比例
+        String divide = NumberUtil.divide(x + "", mProgressWidth + "", BigDecimal.ROUND_HALF_UP);
+        log("当前 的进度为：" + divide);
+
+        // 格式化数据
+        String format = NumberUtil.dataFormat(divide, BigDecimal.ROUND_HALF_UP, 1);
+        log("当前 的进度为：" + format);
+        mBottomScrollProgress = Float.parseFloat(format);
+
+        // 重新获取竖线的left值
+        mBottomScrollProgressValue = mBottomScrollProgress * mProgressWidth;
+        // 文字的滑动数值
+        String multiply1 = NumberUtil.multiply(mBottomScrollProgress + "", 100 + "");
+        mSocCurrentText = multiply1 + "%";
+
+        // 区间的结束值 = 滑动的百分比值 *  进度条的总宽度
+        if (mProgress < mProgressWidth * mBottomScrollProgress) {
+            mRectFSection.right = mProgressWidth * mBottomScrollProgress;
+        } else {
+            mRectFSection.right = mProgress;
+        }
 
         // 重新绘制
         requestLayout();
         invalidate();
+        if (mProgressListener != null) {
+            mProgressListener.onTouchUp(multiply1);
+        }
     }
 
     /**
@@ -717,6 +750,22 @@ public class ChargingProgressView extends BaseView {
     public void setCharging(boolean isCharging) {
         this.isCharging = isCharging;
         invalidate();
+    }
+
+    public interface ProgressListener {
+        /**
+         * @param progress 当前滑动的百分比
+         */
+        void onProgress(String progress);
+
+        /**
+         * @param progress 手指抬起时候，当前的百分比
+         */
+        void onTouchUp(String progress);
+    }
+
+    public void setProgressListener(ProgressListener progressListener) {
+        mProgressListener = progressListener;
     }
 
 }
