@@ -129,6 +129,7 @@ public class ChargingProgressView extends BaseView {
     private final float mPaddingBottom = ConvertUtil.toDp(5); // 底部的间距
 
     private ProgressListener mProgressListener;
+    private boolean mScroll = true;// 是否可以触摸
 
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -318,7 +319,7 @@ public class ChargingProgressView extends BaseView {
 
         // 当前电量的进度值
         String multiply = NumberUtil.multiply(String.valueOf(mPercentage), String.valueOf(100));
-        log("当前的进度为：" + mPercentage + "   计算后的值：" + multiply);
+        // log("当前的进度为：" + mPercentage + "   计算后的值：" + multiply);
         mCurrentChargingText = multiply + "%";
         mCurrentChargingTextSize = CustomViewUtil.getTextSize(mPaintCharging, mCurrentChargingText);
 
@@ -347,7 +348,7 @@ public class ChargingProgressView extends BaseView {
             mLeft = mProgress;
         }
 
-        log("left:" + mLeft + "  right:" + mRight + " mProgress:" + mProgress);
+        // log("left:" + mLeft + "  right:" + mRight + " mProgress:" + mProgress);
 
         mRectFSection.left = mLeft;
         mRectFSection.top = mTopInterval;
@@ -436,7 +437,7 @@ public class ChargingProgressView extends BaseView {
         // 绘制右侧矩形
         // canvas.drawRect(mRectFRight, mPaintRight);
 
-        log("mPercentage:" + mPercentage);
+        // log("mPercentage:" + mPercentage);
         // 绘制当前进度的进度条
         if (mPercentage >= 1) {
             // 绘制外层圆角矩形
@@ -539,7 +540,7 @@ public class ChargingProgressView extends BaseView {
             // 参数2：圆中心的Y轴位置
             // 参数3：圆的半径
             canvas.drawCircle(circleX, circleY, mRemainingTimeTextInterval, mPaintScrollRound);
-            log("绘制了圆形：！");
+            // log("绘制了圆形：！");
 
             // 绘制SOC进度  改版---> 进度值改到左侧
             float dx = circleX - mScrollTextWidth - (mRemainingTimeTextInterval * 2) - mScrollTextInterval; // dx = 圆角的dx轴 - 文字宽度 - 直径 - 距离
@@ -581,6 +582,9 @@ public class ChargingProgressView extends BaseView {
     public boolean dispatchTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                if (!mScroll) {
+                    return false;
+                }
                 log("ACTION_DOWN ---> dispatchTouchEvent --->");
                 // 如果是在区域内，则返回为true,否则返回false
                 float currentX = event.getX(); // 当前的X轴的值
@@ -620,7 +624,7 @@ public class ChargingProgressView extends BaseView {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 log("ACTION_DOWN");
-                return true;
+                return mScroll;
 
             case MotionEvent.ACTION_MOVE:
                 log("ACTION_DOWN ----> onTouchEvent");
@@ -639,11 +643,11 @@ public class ChargingProgressView extends BaseView {
     private void calculate(float x) {
         // 求出当前滑动的位置所占得比例
         String divide = NumberUtil.divide(x + "", mProgressWidth + "", BigDecimal.ROUND_HALF_UP);
-        log("当前 的进度为：" + divide);
+        // log("当前 的进度为：" + divide);
 
         // 格式化数据
         String format = NumberUtil.dataFormat(divide, BigDecimal.ROUND_HALF_UP, 1);
-        log("当前 的进度为：" + format);
+        // log("当前 的进度为：" + format);
         mBottomScrollProgress = Float.parseFloat(format);
 
         // 重新获取竖线的left值
@@ -662,9 +666,6 @@ public class ChargingProgressView extends BaseView {
         // 重新绘制
         requestLayout();
         invalidate();
-        if (mProgressListener != null) {
-            mProgressListener.onProgress(multiply1);
-        }
     }
 
     private void calculateTouch(float x) {
@@ -752,12 +753,16 @@ public class ChargingProgressView extends BaseView {
         invalidate();
     }
 
-    public interface ProgressListener {
-        /**
-         * @param progress 当前滑动的百分比
-         */
-        void onProgress(String progress);
+    /**
+     * view 是否可以操作
+     *
+     * @param scroll true:可以操作，false:不可以操作 ,默认可以操作
+     */
+    public void setScroll(boolean scroll) {
+        mScroll = scroll;
+    }
 
+    public interface ProgressListener {
         /**
          * @param progress 手指抬起时候，当前的百分比
          */

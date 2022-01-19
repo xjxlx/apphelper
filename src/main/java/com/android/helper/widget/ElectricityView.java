@@ -57,6 +57,7 @@ public class ElectricityView extends BaseView {
     private float mBaseLineRightText; // 右侧文字的高度
 
     private ProgressListener mProgressListener;
+    private boolean mScroll = true;
 
     public ElectricityView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -185,14 +186,21 @@ public class ElectricityView extends BaseView {
         canvas.drawText(mBottomTextValue, 0, mBottomTextValue.length(), dx, dy, mPaintBottomRoundText);
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            return mScroll;
+        }
+        return super.dispatchTouchEvent(event);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
-
             case MotionEvent.ACTION_DOWN:
                 calculate(event.getX());
-                return true;
+                return mScroll;
 
             case MotionEvent.ACTION_MOVE:
                 // 获取当前的x轴位置
@@ -215,10 +223,6 @@ public class ElectricityView extends BaseView {
             mProgressTarget = 0;
         } else if (mProgressTarget > mProgressEnd) {
             mProgressTarget = mProgressEnd;
-        }
-
-        if (mProgressListener != null) {
-            mProgressListener.onProgress(mProgressTarget);
         }
 
         // 重新绘制
@@ -273,12 +277,11 @@ public class ElectricityView extends BaseView {
         mProgressListener = progressListener;
     }
 
-    public interface ProgressListener {
-        /**
-         * 当前进度
-         */
-        void onProgress(int progress);
+    public void setScroll(boolean scroll) {
+        this.mScroll = scroll;
+    }
 
+    public interface ProgressListener {
         /**
          * 手指抬起的进度
          */
