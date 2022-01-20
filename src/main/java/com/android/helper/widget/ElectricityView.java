@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.android.helper.base.BaseView;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
+import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NumberUtil;
 
 /**
@@ -188,8 +189,11 @@ public class ElectricityView extends BaseView {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            return mScroll;
+        if (!mScroll) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                LogUtil.e("dispatchTouchEvent ---> ACTION_DOWN");
+                return mScroll;
+            }
         }
         return super.dispatchTouchEvent(event);
     }
@@ -199,6 +203,7 @@ public class ElectricityView extends BaseView {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                LogUtil.e("onTouchEvent ---> ACTION_DOWN");
                 calculate(event.getX());
                 return mScroll;
 
@@ -209,7 +214,9 @@ public class ElectricityView extends BaseView {
                 break;
 
             case MotionEvent.ACTION_UP: // 抬起
-                calculateUp(event.getX());
+                if (mProgressListener != null) {
+                    mProgressListener.onTouchUp(mProgressTarget);
+                }
                 break;
         }
         return super.onTouchEvent(event);
@@ -223,27 +230,6 @@ public class ElectricityView extends BaseView {
             mProgressTarget = 0;
         } else if (mProgressTarget > mProgressEnd) {
             mProgressTarget = mProgressEnd;
-        }
-
-        // 重新绘制
-        invalidate();
-    }
-
-    /**
-     * 抬起的手势操作
-     */
-    private void calculateUp(float x) {
-        // 当前滑动的位置 = 当前的x轴位置 * 每个像素所占用的百分比
-        float v = x - mPaddingLeft;
-        mProgressTarget = (int) (v * mPercentage);
-        if (mProgressTarget < 0) {
-            mProgressTarget = 0;
-        } else if (mProgressTarget > mProgressEnd) {
-            mProgressTarget = mProgressEnd;
-        }
-
-        if (mProgressListener != null) {
-            mProgressListener.onTouchUp(mProgressTarget);
         }
 
         // 重新绘制

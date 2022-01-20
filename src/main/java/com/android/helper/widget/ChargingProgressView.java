@@ -130,6 +130,7 @@ public class ChargingProgressView extends BaseView {
 
     private ProgressListener mProgressListener;
     private boolean mScroll = true;// 是否可以触摸
+    private String mMultiply;
 
     public ChargingProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -481,7 +482,7 @@ public class ChargingProgressView extends BaseView {
         }
 
         // 区间
-        log("mPercentage：" + mPercentage);
+        // log("mPercentage：" + mPercentage);
 
         float mQjRight = mBottomScrollProgress * mProgressWidth; // 区间右侧的值
         if (mQjRight < mProgressWidth) {
@@ -634,7 +635,11 @@ public class ChargingProgressView extends BaseView {
 
                 break;
             case MotionEvent.ACTION_UP: // 手指抬起的操作
-                calculateTouch(event.getX());
+//                calculateTouch(event.getX());
+
+                if (mProgressListener != null) {
+                    mProgressListener.onTouchUp(mMultiply);
+                }
                 break;
         }
         return super.onTouchEvent(event);
@@ -653,8 +658,8 @@ public class ChargingProgressView extends BaseView {
         // 重新获取竖线的left值
         mBottomScrollProgressValue = mBottomScrollProgress * mProgressWidth;
         // 文字的滑动数值
-        String multiply1 = NumberUtil.multiply(mBottomScrollProgress + "", 100 + "");
-        mSocCurrentText = multiply1 + "%";
+        mMultiply = NumberUtil.multiply(mBottomScrollProgress + "", 100 + "");
+        mSocCurrentText = mMultiply + "%";
 
         // 区间的结束值 = 滑动的百分比值 *  进度条的总宽度
         if (mProgress < mProgressWidth * mBottomScrollProgress) {
