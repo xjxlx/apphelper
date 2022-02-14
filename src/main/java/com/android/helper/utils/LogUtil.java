@@ -15,7 +15,7 @@ public class LogUtil {
 
     public static void e(String value) {
         if (!TextUtils.isEmpty(value)) {
-            if (BaseApplication.getInstance().isDebug()) {
+            if (isDebug()) {
                 Logger.e(value);
             }
         }
@@ -23,7 +23,7 @@ public class LogUtil {
 
     public static void e(String tag, String value) {
         if (!TextUtils.isEmpty(value)) {
-            if (BaseApplication.getInstance().isDebug()) {
+            if (isDebug()) {
                 Logger.t(tag).e(value);
             }
         }
@@ -31,7 +31,7 @@ public class LogUtil {
 
     public static void d(String value) {
         if (!TextUtils.isEmpty(value)) {
-            if (BaseApplication.getInstance().isDebug()) {
+            if (isDebug()) {
                 Logger.d(value);
             }
         }
@@ -39,7 +39,7 @@ public class LogUtil {
 
     public static void d(String tag, String value) {
         if (!TextUtils.isEmpty(value)) {
-            if (BaseApplication.getInstance().isDebug()) {
+            if (isDebug()) {
                 Logger.t(tag).d(value);
             }
         }
@@ -47,7 +47,7 @@ public class LogUtil {
 
     public static void i(String value) {
         if (!TextUtils.isEmpty(value)) {
-            if (BaseApplication.getInstance().isDebug()) {
+            if (isDebug()) {
                 Logger.i(value);
             }
         }
@@ -55,7 +55,7 @@ public class LogUtil {
 
     public static void i(String tag, String value) {
         if (!TextUtils.isEmpty(value)) {
-            if (BaseApplication.getInstance().isDebug()) {
+            if (isDebug()) {
                 Logger.t(tag).i(value);
             }
         }
@@ -63,7 +63,7 @@ public class LogUtil {
 
     public static void w(String value) {
         if (!TextUtils.isEmpty(value)) {
-            if (BaseApplication.getInstance().isDebug()) {
+            if (isDebug()) {
                 Logger.w(value);
             }
         }
@@ -71,7 +71,7 @@ public class LogUtil {
 
     public static void w(String tag, String value) {
         if (!TextUtils.isEmpty(value)) {
-            if (BaseApplication.getInstance().isDebug()) {
+            if (isDebug()) {
                 Logger.t(tag).w(value);
             }
         }
@@ -83,7 +83,7 @@ public class LogUtil {
      * @param msg 具体的消息
      */
     public static void car(String msg) {
-        if (BaseApplication.getInstance().isDebug()) {
+        if (isDebug()) {
             Logger.t("BindCar").e(msg);
         }
     }
@@ -96,7 +96,7 @@ public class LogUtil {
      */
     public static void writeDe(String fileName, String value) {
         if ((!TextUtils.isEmpty(fileName) && (!TextUtils.isEmpty(value)))) {
-            if (BaseApplication.getInstance().isDebug()) {
+            if (isDebug()) {
                 if (writeUtil == null) {
                     writeUtil = new LogWriteUtil();
                 }
@@ -127,6 +127,18 @@ public class LogUtil {
             }
             writeUtil.write(fileName, value);
         }
+    }
+
+    /**
+     * @return 检测当前时候是debug模式，默认不是
+     */
+    public static boolean isDebug() {
+        boolean debug = false;
+        BaseApplication application = BaseApplication.getInstance();
+        if (application != null) {
+            debug = application.isDebug();
+        }
+        return debug;
     }
 
 }
