@@ -112,6 +112,30 @@ public class RxUtil implements BaseLifecycleObserver {
                 });
     }
 
+    /**
+     * @param totalTime       最大的时间，如果是0，则没有任何限制
+     * @param initialDelay    第一次回调的间隔
+     * @param period          每次间隔的时间
+     * @param counterListener 计数器的回调
+     */
+    public void counter(long totalTime, long initialDelay, long period, CounterListener counterListener) {
+        mSubscribeCountdown = Observable
+                .interval(initialDelay, period, TimeUnit.MILLISECONDS)
+                .compose(RxUtil.getSchedulerObservable())
+                .takeUntil(aLong -> { // 条件处理器，用来中断倒计时,
+                    if (totalTime != 0) {
+                        return aLong * period >= totalTime;
+                    } else {
+                        return false;
+                    }
+                })
+                .subscribe(aLong -> {  // 发送结果
+                    if (counterListener != null) {
+                        counterListener.counter(mSubscribeCountdown, aLong);
+                    }
+                });
+    }
+
     @Override
     public void onCreate() {
         LogUtil.e("rxUtil ---> onCreate");

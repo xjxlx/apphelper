@@ -21,7 +21,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
-import com.android.helper.interfaces.listener.DialogChangeListener;
 import com.android.helper.utils.TextViewUtil;
 
 /**
@@ -37,6 +36,8 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
     @SuppressLint("StaticFieldLeak")
     private PopupWindow mPopupWindow;
     private Builder mBuilder;
+    private PopupWindow.OnDismissListener mOnDismissListener;
+    private OnShowListener mShowListener;
 
     private PopupWindowUtil(Builder builder) {
         this.mBuilder = builder;
@@ -52,7 +53,6 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @Description: 构建popupWindow
      */
     private void initPopupWindow(Builder builder) {
-
         // 释放掉原来的pop
         if (mPopupWindow != null) {
             if (mPopupWindow.isShowing()) {
@@ -62,7 +62,6 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
         }
 
         mPopupWindow = new PopupWindow(builder.mWidth, builder.mHeight);
-
         // 设置布局
         if (builder.mLayout != null) {
             ViewParent parent = builder.mLayout.getParent();
@@ -72,9 +71,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
             }
 
             mPopupWindow.setContentView(builder.mLayout);
-        }
 
-        if (builder.mActivity != null) {
             //解决android 9.0水滴屏/刘海屏有黑边的问题
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 Window window = builder.mActivity.getWindow();
@@ -113,8 +110,8 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
             if (builder.mAlpha > 0) {
                 builder.closeAlpha();
             }
-            if (builder.mDialogChangeListener != null) {
-                builder.mDialogChangeListener.onDismiss();
+            if (mOnDismissListener != null) {
+                mOnDismissListener.onDismiss();
             }
         });
     }
@@ -140,8 +137,8 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
                         mBuilder.openAlpha();
                     }
                     mPopupWindow.showAtLocation(view, mBuilder.mGravity, xoff, yoff);
-                    if (mBuilder.mDialogChangeListener != null) {
-                        mBuilder.mDialogChangeListener.onShow(mBuilder.mLayout);
+                    if (mShowListener != null) {
+                        mShowListener.onShow(mBuilder.mLayout);
                     }
                 });
             }
@@ -163,8 +160,8 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
                     }
                     mPopupWindow.showAsDropDown(anchor, xoff, yoff);
 
-                    if (mBuilder.mDialogChangeListener != null) {
-                        mBuilder.mDialogChangeListener.onShow(mBuilder.mLayout);
+                    if (mShowListener != null) {
+                        mShowListener.onShow(mBuilder.mLayout);
                     }
                 }
             });
@@ -225,7 +222,6 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
         private final FragmentActivity mActivity; // 上下文对象
         private View mLayout; // 布局
         private View mCloseView; // 关闭布局的view
-        private DialogChangeListener mDialogChangeListener;
 
         private int mWidth = ViewGroup.LayoutParams.WRAP_CONTENT;   // 默认的宽高
         private int mHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -374,14 +370,6 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * 窗口打开和关闭的监听
-         */
-        public Builder setPopupWindowChangeListener(DialogChangeListener dialogChangeListener) {
-            this.mDialogChangeListener = dialogChangeListener;
-            return this;
-        }
-
-        /**
          * @param id 指定的id
          * @return 点击指定id的时候，关闭弹窗
          */
@@ -463,6 +451,22 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
     @Override
     public void onStop() {
 
+    }
+
+    /**
+     * 窗口打开和关闭的监听
+     */
+    public PopupWindowUtil setOnDismissListener(PopupWindow.OnDismissListener dismissListener) {
+        this.mOnDismissListener = dismissListener;
+        return this;
+    }
+
+    /**
+     * 窗口打开的监听
+     */
+    public PopupWindowUtil setOnShowListener(OnShowListener showListener) {
+        this.mShowListener = showListener;
+        return this;
     }
 
     @Override
