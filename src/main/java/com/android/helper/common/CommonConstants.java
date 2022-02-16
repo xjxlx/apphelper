@@ -24,6 +24,11 @@ public class CommonConstants {
     public static final String FILE_LIFECYCLE_NAME = "保活";
 
     /**
+     * 充电中心的文件名字
+     */
+    public static final String FILE_CHARGING_CENTER_NAME = "充电中心";
+
+    /**
      * 保活 服务的名字
      */
     public static final String FILE_LIFECYCLE_SERVICE_NAME = "file_lifecycle_service_name";

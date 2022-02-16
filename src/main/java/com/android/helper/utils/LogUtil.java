@@ -118,6 +118,23 @@ public class LogUtil {
     }
 
     /**
+     * 设置充电中心的数据
+     *
+     * @param value 具体的数据
+     */
+    public static void writeChargingCenter(String value) {
+        if (!TextUtils.isEmpty(value)) {
+            if (writeUtil == null) {
+                writeUtil = new LogWriteUtil();
+            }
+            writeUtil.write(CommonConstants.FILE_CHARGING_CENTER_NAME, value);
+            if (isDebug()) {
+                Logger.e("充电中心：" + value);
+            }
+        }
+    }
+
+    /**
      * 写入保活的信息日志
      */
     public static void write(String fileName, String value) {
