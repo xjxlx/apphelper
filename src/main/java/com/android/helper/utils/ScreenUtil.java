@@ -149,7 +149,11 @@ public class ScreenUtil {
     }
 
     /**
-     * 点亮屏幕并解锁
+     * 点亮屏幕并解锁，必须需要两个权限
+     * <p>
+     * <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+     * <uses-permission android:name="android.permission.WAKE_LOCK" />
+     * </p>
      *
      * @param activity 需要的activity的对象
      */
