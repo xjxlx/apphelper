@@ -39,4 +39,9 @@
         <item name="android:windowExitAnimation">@anim/base_dialog_out_to_bottom</item>
     </style>
 
+    <style name="KeepTheme">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
 </resources>

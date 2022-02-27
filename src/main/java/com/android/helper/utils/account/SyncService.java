@@ -65,9 +65,9 @@ public class SyncService extends Service {
             //1:意图都是通过Intent发送的，首先要新建一个Intent
             Intent intent = new Intent();
             //2:设置一个动作，为了让对方能知道是谁发出的，要做一个标记
-            intent.setAction("com.android.app.lifecycle");
+            intent.setAction("com.android.helper.lifecycle");
             intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-            intent.setClassName(getContext(), "com.android.account.LifecycleReceiver");
+            intent.setClassName(getContext(), "com.android.helper.utils.account.LifecycleReceiver");
             //3:发送广播
             getContext().sendBroadcast(intent);
         }

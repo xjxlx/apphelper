@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.android.helper">
+
     <!-- 网络状态权限 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 电池优化权限 -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" /> <!-- 通知栏权限 -->
@@ -16,13 +17,86 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!--保活-->
     <uses-permission
         android:name="android.permission.GET_ACCOUNTS"
-        android:maxSdkVersion="22" /> <!-- 获取账号信息的权限 -->
+        android:maxSdkVersion="22" />
     <uses-permission
         android:name="android.permission.AUTHENTICATE_ACCOUNTS"
         android:maxSdkVersion="22" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
-    <application></application>
+    <application>
+
+        <service
+            android:name=".utils.account.AppJobService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".utils.account.AppLifecycleService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".utils.account.keep.KeepActivity"
+            android:excludeFromRecents="true"
+            android:label="低版本像素保活"
+            android:theme="@style/KeepTheme" />
+
+        <receiver
+            android:name=".utils.account.keep.keepReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver
+            android:name=".utils.account.LifecycleReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="账号拉活的receiver">
+            <intent-filter>
+                <action android:name="com.android.helper.lifecycle" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="com.android.helper.utils.account.SyncProvider"
+            android:authorities="com.android.clock.account.authority"
+            android:label="2:使用provider用来同步账号之间的数据" />
+
+        <service
+            android:name="com.android.helper.utils.account.SyncService"
+            android:enabled="true"
+            android:exported="true"
+            android:label="3：账号拉货的数据接收服务">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <!-- 此处的authorities 必须和string中的account_authority数据保持一致 -->
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_adapter" />
+        </service> <!-- 此处的authorities 必须和string中的account_authority数据保持一致 -->
+
+        <service
+            android:name="com.android.helper.utils.account.AccountService"
+            android:enabled="true"
+            android:exported="true"
+            android:label="1:账号注册的服务类，这个是必须实现的">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/account_authenticator" />
+        </service>
+
+    </application>
 
 </manifest>

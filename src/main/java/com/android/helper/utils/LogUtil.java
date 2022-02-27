@@ -114,6 +114,9 @@ public class LogUtil {
                 writeUtil = new LogWriteUtil();
             }
             writeUtil.write(CommonConstants.FILE_LIFECYCLE_NAME, value);
+            if (isDebug()) {
+                Logger.e("应用保活：" + value);
+            }
         }
     }
 

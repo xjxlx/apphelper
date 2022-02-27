@@ -5,4 +5,9 @@
     <string name="nest_sliding_middle">middle_view</string>
     <string name="nest_sliding_bottom">bottom_view</string>
 
+    <!--账号拉活-->
+    <string name="account_authority">com.android.clock.account.authority</string>
+    <string name="account_type">com.android.clock.account.type</string>
+    <string name="account_name">xjxliuxing@163.com</string>
+    <string name="account_password">19900713op</string>
 </resources>
