@@ -1,6 +1,7 @@
 package com.android.helper.utils.account;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
@@ -38,9 +39,12 @@ public class AppJobService extends JobService {
     public AppJobService() {
     }
 
+
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
         LogUtil.writeLifeCycle("onStartJob");
+
+
 
         if (TextUtils.isEmpty(mServiceName)) {
             mServiceName = LifecycleManager.getInstance().getServiceName();
