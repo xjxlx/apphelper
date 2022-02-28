@@ -13,12 +13,14 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
 
 import com.android.helper.R;
 import com.android.helper.base.BaseView;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
+import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NumberUtil;
 
 import java.math.BigDecimal;
@@ -34,7 +36,7 @@ public class ChargingProgressView extends BaseView {
 
     private final float mLineWidth = ConvertUtil.toDp(1);
 
-    private final float mAngle = ConvertUtil.toDp(16);
+    private final float mAngle = ConvertUtil.toDp(10);
     private final float mIntervalLayer = ConvertUtil.toDp(4);// 外层和内层圆形的间距
 
     private final float mRightRectWidth = ConvertUtil.toDp(6);// 右侧view的宽高
@@ -111,7 +113,7 @@ public class ChargingProgressView extends BaseView {
     // 底部SOC
     private Paint mPaintSoc;
     private Bitmap mBitmapSoc;
-    private final String mSocText = "目标SOC";
+    // private final String mSocText = "目标SOC";
     private final float mSocLeftInterval = ConvertUtil.toDp(4f);
     private final float mSocTextTopInterval = ConvertUtil.toDp(8.5f);
     private final float mSocBitmapTopInterval = ConvertUtil.toDp(11.5f);
@@ -406,15 +408,15 @@ public class ChargingProgressView extends BaseView {
         }
 
         // SOC的文字
-        if (!TextUtils.isEmpty(mSocText)) {
-            mSocTextSize = CustomViewUtil.getTextSize(mPaintSoc, mSocText);
-            if (mSocTextSize != null) {
-                float socTextInterval = mSocTextSize[1] + mSocTextTopInterval;
-                if (mBottomInterval < socTextInterval) {
-                    mBottomInterval = socTextInterval;
-                }
-            }
-        }
+//        if (!TextUtils.isEmpty(mSocText)) {
+//            mSocTextSize = CustomViewUtil.getTextSize(mPaintSoc, mSocText);
+//            if (mSocTextSize != null) {
+//                float socTextInterval = mSocTextSize[1] + mSocTextTopInterval;
+//                if (mBottomInterval < socTextInterval) {
+//                    mBottomInterval = socTextInterval;
+//                }
+//            }
+//        }
 
         // 叠加当前的高度
         mMaxHeight += mTopInterval;
@@ -562,21 +564,21 @@ public class ChargingProgressView extends BaseView {
         }
 
         // 绘制SOC
-        if (mBitmapSoc != null) {
-            // 绘制图标
-            float dy = mTopInterval + mProgressHeight + mSocBitmapTopInterval; // 上方高度 + 进度条高度 + 间距
-            canvas.drawBitmap(mBitmapSoc, 0, dy, mPaintSoc);
-
-            // 绘制SOC文字
-            if (!TextUtils.isEmpty(mSocText)) {
-                float dx = mBitmapSoc.getWidth() + mSocLeftInterval; // dx = bitmap宽度 + 间距
-                float baseLine = CustomViewUtil.getBaseLine(mPaintSoc, mSocText);
-
-                // 因为此处要计算基准线，特别麻烦。所以换成意外一种方式去计算 = dy + 图片高度  -  文字高度 + 基准线
-                float dy2 = dy + mBitmapSoc.getHeight() - mSocTextSize[1] + baseLine;
-                canvas.drawText(mSocText, dx, dy2, mPaintSoc);
-            }
-        }
+//        if (mBitmapSoc != null) {
+//            // 绘制图标
+//            float dy = mTopInterval + mProgressHeight + mSocBitmapTopInterval; // 上方高度 + 进度条高度 + 间距
+//            canvas.drawBitmap(mBitmapSoc, 0, dy, mPaintSoc);
+//
+//            // 绘制SOC文字
+//            if (!TextUtils.isEmpty(mSocText)) {
+//                float dx = mBitmapSoc.getWidth() + mSocLeftInterval; // dx = bitmap宽度 + 间距
+//                float baseLine = CustomViewUtil.getBaseLine(mPaintSoc, mSocText);
+//
+//                // 因为此处要计算基准线，特别麻烦。所以换成意外一种方式去计算 = dy + 图片高度  -  文字高度 + 基准线
+//                float dy2 = dy + mBitmapSoc.getHeight() - mSocTextSize[1] + baseLine;
+//                canvas.drawText(mSocText, dx, dy2, mPaintSoc);
+//            }
+//        }
     }
 
     @Override
@@ -765,6 +767,17 @@ public class ChargingProgressView extends BaseView {
      */
     public void setScroll(boolean scroll) {
         mScroll = scroll;
+    }
+
+    /**
+     * 设置当前的SOC值
+     *
+     * @param socValue 当前的soc值
+     */
+    public void setCurrentSoc(@FloatRange(from = 0.6f, to = 1.0f) float socValue) {
+        this.mBottomScrollProgress = socValue;
+        LogUtil.writeChargingCenter("充电中心--->接收到的SOC值: " + socValue);
+        invalidate();
     }
 
     public interface ProgressListener {
