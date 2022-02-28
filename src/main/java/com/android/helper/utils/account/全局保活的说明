@@ -2,3 +2,72 @@
 
 1：必须设置完整的代码
 2：必须打开自动开机的功能
+3：拷贝具体的配置文件到自己的应用项目，避免项目中的冲突
+
+  <service
+            android:name=".utils.account.AppJobService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".utils.account.AppLifecycleService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".utils.account.keep.KeepActivity"
+            android:excludeFromRecents="true"
+            android:label="低版本像素保活"
+            android:theme="@style/KeepTheme" />
+
+        <receiver
+            android:name=".utils.account.keep.keepReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver
+            android:name=".utils.account.LifecycleReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="账号拉活的receiver">
+            <intent-filter>
+                <action android:name="com.android.helper.lifecycle" />
+            </intent-filter>
+        </receiver>
+
+        <!--        实现类必须自己去重写，不然回和项目中的其他配置冲突-->
+        <provider
+            android:name="com.android.helper.utils.account.SyncProvider"
+            android:authorities="com.android.clock.account.authority"
+            android:label="2:使用provider用来同步账号之间的数据" />
+
+        <service
+            android:name="com.android.helper.utils.account.SyncService"
+            android:enabled="true"
+            android:exported="true"
+            android:label="3：账号拉货的数据接收服务">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <!-- 此处的authorities 必须和string中的account_authority数据保持一致 -->
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_adapter" />
+        </service> <!-- 此处的authorities 必须和string中的account_authority数据保持一致 -->
+
+        <service
+            android:name="com.android.helper.utils.account.AccountService"
+            android:enabled="true"
+            android:exported="true"
+            android:label="1:账号注册的服务类，这个是必须实现的">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/account_authenticator" />
+        </service>
+
+
