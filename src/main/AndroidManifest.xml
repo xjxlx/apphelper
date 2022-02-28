@@ -64,10 +64,11 @@
             </intent-filter>
         </receiver>
 
-        <provider
-            android:name="com.android.helper.utils.account.SyncProvider"
-            android:authorities="com.android.clock.account.authority"
-            android:label="2:使用provider用来同步账号之间的数据" />
+        <!--        实现类必须自己去重写，不然回和项目中的其他配置冲突-->
+        <!--        <provider-->
+        <!--            android:name="com.android.helper.utils.account.SyncProvider"-->
+        <!--            android:authorities="com.android.clock.account.authority"-->
+        <!--            android:label="2:使用provider用来同步账号之间的数据" />-->
 
         <service
             android:name="com.android.helper.utils.account.SyncService"
