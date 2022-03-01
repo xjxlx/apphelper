@@ -418,6 +418,11 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     public static class EmptyVH extends RecyclerView.ViewHolder {
         private final ImageView mIvImage;
         private final TextView mTvMsg;

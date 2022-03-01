@@ -124,5 +124,5 @@ dependencies {
     api 'com.amap.api:3dmap:8.1.0'     // 地图
 
     //视频 完整版引入
-    implementation 'com.github.CarGuo.GSYVideoPlayer:GSYVideoPlayer:v8.1.7-release-jitpack'
+//    implementation 'com.github.CarGuo.GSYVideoPlayer:GSYVideoPlayer:v8.1.7-release-jitpack'
 }
