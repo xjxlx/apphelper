@@ -54,7 +54,7 @@ public class LifecycleManager {
             SpUtil.putString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME, serviceName);
             SpUtil.putString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME, jobName);
 
-            // 1:账号保活 todo  排查账号是否已经拉活了
+            // 1:账号保活
             AccountHelper accountHelper = AccountHelper.getInstance();
             accountHelper
                     .addAccountType(application.getResources().getString(R.string.account_type))
