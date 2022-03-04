@@ -93,7 +93,7 @@ public class ChargingProgressView extends BaseView {
     private Paint mPaintCharging;
     private String mCurrentChargingText = "";// 当前电量的进度条
     private final float mCurrentChargingTextInterval = ConvertUtil.toDp(8);
-    private float[] mCurrentChargingTextSize;
+    private float[] mCurrentChargingTextSize; // 当前进度的
 
     // 充电剩余时间
     private Paint mPaintChargingRemainingTimeText;
@@ -214,7 +214,7 @@ public class ChargingProgressView extends BaseView {
 
         // 绘制当前的电量进度
         mPaintCharging = new Paint();
-        mPaintCharging.setColor(Color.parseColor("#FF333A4A"));
+        mPaintCharging.setColor(Color.parseColor("#FFFFFFFF"));
         mPaintCharging.setTextSize(ConvertUtil.toSp(18f));
         mPaintCharging.setAntiAlias(true);
 
@@ -463,17 +463,35 @@ public class ChargingProgressView extends BaseView {
         }
 
         // 绘制闪电图标
-        if (isCharging) {
-            if (mBitmap != null) {
-                canvas.drawBitmap(mBitmap, mRectSrc, mRectDsc, mPaintRoundNerLayer);
-            }
-        }
+//        if (isCharging) {
+//            if (mBitmap != null) {
+//                canvas.drawBitmap(mBitmap, mRectSrc, mRectDsc, mPaintRoundNerLayer);
+//            }
+//        }
 
         // 绘制当前电量的进度
-        if (mCurrentChargingTextSize != null) {
-            float dx = (mProgressWidth - mCurrentChargingTextSize[0]) / 2; // dx = (进度条宽度 - 文字宽度)/2
-            float dy = mMaxHeight - mProgressHeight - mCurrentChargingTextInterval - mBottomInterval; // dy = 总高度 - 进度条的高度 - 间距 - 底部间距
-            canvas.drawText(mCurrentChargingText, 0, mCurrentChargingText.length(), dx, dy, mPaintCharging);
+        if (mPercentage >= 0) {
+            // 重新计算当前的电量
+            String multiply = NumberUtil.multiply(String.valueOf(mPercentage), String.valueOf(100));
+            mCurrentChargingText = multiply + "%";
+            mCurrentChargingTextSize = CustomViewUtil.getTextSize(mPaintCharging, mCurrentChargingText);
+
+            if (mCurrentChargingTextSize != null) {
+
+//                float dx = (mProgressWidth - mCurrentChargingTextSize[0]) / 2; // dx = (进度条宽度 - 文字宽度)/2
+//                float dy = mMaxHeight - mProgressHeight - mCurrentChargingTextInterval - mBottomInterval; // dy = 总高度 - 进度条的高度 - 间距 - 底部间距
+
+                //  x轴 = (进度条的宽度 - 文字的宽度) / 2
+                float dx = ((mProgress - mCurrentChargingTextSize[0]) / 2);
+                if (dx < 0) {
+                    dx = 0;
+                }
+
+                float baseLine = CustomViewUtil.getBaseLine(mPaintCharging, mCurrentChargingText);
+                float dy = (int) (mTopInterval + ((mProgressHeight - mCurrentChargingTextSize[1]) / 2) + baseLine);
+
+                canvas.drawText(mCurrentChargingText, 0, mCurrentChargingText.length(), dx, dy, mPaintCharging);
+            }
         }
 
         // 绘制剩余的充电时间
@@ -484,8 +502,6 @@ public class ChargingProgressView extends BaseView {
         }
 
         // 区间
-        // log("mPercentage：" + mPercentage);
-
         float mQjRight = mBottomScrollProgress * mProgressWidth; // 区间右侧的值
         if (mQjRight < mProgressWidth) {
             if (mPercentage > 0) {
