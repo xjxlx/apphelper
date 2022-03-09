@@ -11,14 +11,16 @@
       }
 
 #### 区分平台
-2：子模块地址：
+#1：子模块地址：
     马云：  https://gitee.com/baicmotor/apphelper.git 
     阿里云：https://codeup.aliyun.com/6123a7e01bd96aa110f27e23/apphelper.git
 
-3.    api('com.gitee.xjxlx:apphelper:1.0.1.0.0') {     
+#2：   api('com.gitee.xjxlx:apphelper:1.0.1.0.0') {     
             exclude group: 'com.github.bumptech.glide'      
             exclude group: 'com.scwang.smart:refresh-layout-kernel'     
       }
+      
+#3：当前线上版本：2.5.0       
 
 使用步骤：
 

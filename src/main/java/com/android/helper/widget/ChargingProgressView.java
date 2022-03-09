@@ -13,12 +13,14 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
 
 import com.android.helper.R;
 import com.android.helper.base.BaseView;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
+import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NumberUtil;
 
 import java.math.BigDecimal;
@@ -34,7 +36,7 @@ public class ChargingProgressView extends BaseView {
 
     private final float mLineWidth = ConvertUtil.toDp(1);
 
-    private final float mAngle = ConvertUtil.toDp(16);
+    private final float mAngle = ConvertUtil.toDp(10);
     private final float mIntervalLayer = ConvertUtil.toDp(4);// 外层和内层圆形的间距
 
     private final float mRightRectWidth = ConvertUtil.toDp(6);// 右侧view的宽高
@@ -91,7 +93,7 @@ public class ChargingProgressView extends BaseView {
     private Paint mPaintCharging;
     private String mCurrentChargingText = "";// 当前电量的进度条
     private final float mCurrentChargingTextInterval = ConvertUtil.toDp(8);
-    private float[] mCurrentChargingTextSize;
+    private float[] mCurrentChargingTextSize; // 当前进度的
 
     // 充电剩余时间
     private Paint mPaintChargingRemainingTimeText;
@@ -111,7 +113,7 @@ public class ChargingProgressView extends BaseView {
     // 底部SOC
     private Paint mPaintSoc;
     private Bitmap mBitmapSoc;
-    private final String mSocText = "目标SOC";
+    // private final String mSocText = "目标SOC";
     private final float mSocLeftInterval = ConvertUtil.toDp(4f);
     private final float mSocTextTopInterval = ConvertUtil.toDp(8.5f);
     private final float mSocBitmapTopInterval = ConvertUtil.toDp(11.5f);
@@ -212,7 +214,7 @@ public class ChargingProgressView extends BaseView {
 
         // 绘制当前的电量进度
         mPaintCharging = new Paint();
-        mPaintCharging.setColor(Color.parseColor("#FF333A4A"));
+        mPaintCharging.setColor(Color.parseColor("#FFFFFFFF"));
         mPaintCharging.setTextSize(ConvertUtil.toSp(18f));
         mPaintCharging.setAntiAlias(true);
 
@@ -406,15 +408,15 @@ public class ChargingProgressView extends BaseView {
         }
 
         // SOC的文字
-        if (!TextUtils.isEmpty(mSocText)) {
-            mSocTextSize = CustomViewUtil.getTextSize(mPaintSoc, mSocText);
-            if (mSocTextSize != null) {
-                float socTextInterval = mSocTextSize[1] + mSocTextTopInterval;
-                if (mBottomInterval < socTextInterval) {
-                    mBottomInterval = socTextInterval;
-                }
-            }
-        }
+//        if (!TextUtils.isEmpty(mSocText)) {
+//            mSocTextSize = CustomViewUtil.getTextSize(mPaintSoc, mSocText);
+//            if (mSocTextSize != null) {
+//                float socTextInterval = mSocTextSize[1] + mSocTextTopInterval;
+//                if (mBottomInterval < socTextInterval) {
+//                    mBottomInterval = socTextInterval;
+//                }
+//            }
+//        }
 
         // 叠加当前的高度
         mMaxHeight += mTopInterval;
@@ -461,17 +463,35 @@ public class ChargingProgressView extends BaseView {
         }
 
         // 绘制闪电图标
-        if (isCharging) {
-            if (mBitmap != null) {
-                canvas.drawBitmap(mBitmap, mRectSrc, mRectDsc, mPaintRoundNerLayer);
-            }
-        }
+//        if (isCharging) {
+//            if (mBitmap != null) {
+//                canvas.drawBitmap(mBitmap, mRectSrc, mRectDsc, mPaintRoundNerLayer);
+//            }
+//        }
 
         // 绘制当前电量的进度
-        if (mCurrentChargingTextSize != null) {
-            float dx = (mProgressWidth - mCurrentChargingTextSize[0]) / 2; // dx = (进度条宽度 - 文字宽度)/2
-            float dy = mMaxHeight - mProgressHeight - mCurrentChargingTextInterval - mBottomInterval; // dy = 总高度 - 进度条的高度 - 间距 - 底部间距
-            canvas.drawText(mCurrentChargingText, 0, mCurrentChargingText.length(), dx, dy, mPaintCharging);
+        if (mPercentage >= 0) {
+            // 重新计算当前的电量
+            String multiply = NumberUtil.multiply(String.valueOf(mPercentage), String.valueOf(100));
+            mCurrentChargingText = multiply + "%";
+            mCurrentChargingTextSize = CustomViewUtil.getTextSize(mPaintCharging, mCurrentChargingText);
+
+            if (mCurrentChargingTextSize != null) {
+
+//                float dx = (mProgressWidth - mCurrentChargingTextSize[0]) / 2; // dx = (进度条宽度 - 文字宽度)/2
+//                float dy = mMaxHeight - mProgressHeight - mCurrentChargingTextInterval - mBottomInterval; // dy = 总高度 - 进度条的高度 - 间距 - 底部间距
+
+                //  x轴 = (进度条的宽度 - 文字的宽度) / 2
+                float dx = ((mProgress - mCurrentChargingTextSize[0]) / 2);
+                if (dx < 0) {
+                    dx = 0;
+                }
+
+                float baseLine = CustomViewUtil.getBaseLine(mPaintCharging, mCurrentChargingText);
+                float dy = (int) (mTopInterval + ((mProgressHeight - mCurrentChargingTextSize[1]) / 2) + baseLine);
+
+                canvas.drawText(mCurrentChargingText, 0, mCurrentChargingText.length(), dx, dy, mPaintCharging);
+            }
         }
 
         // 绘制剩余的充电时间
@@ -482,8 +502,6 @@ public class ChargingProgressView extends BaseView {
         }
 
         // 区间
-        // log("mPercentage：" + mPercentage);
-
         float mQjRight = mBottomScrollProgress * mProgressWidth; // 区间右侧的值
         if (mQjRight < mProgressWidth) {
             if (mPercentage > 0) {
@@ -562,21 +580,21 @@ public class ChargingProgressView extends BaseView {
         }
 
         // 绘制SOC
-        if (mBitmapSoc != null) {
-            // 绘制图标
-            float dy = mTopInterval + mProgressHeight + mSocBitmapTopInterval; // 上方高度 + 进度条高度 + 间距
-            canvas.drawBitmap(mBitmapSoc, 0, dy, mPaintSoc);
-
-            // 绘制SOC文字
-            if (!TextUtils.isEmpty(mSocText)) {
-                float dx = mBitmapSoc.getWidth() + mSocLeftInterval; // dx = bitmap宽度 + 间距
-                float baseLine = CustomViewUtil.getBaseLine(mPaintSoc, mSocText);
-
-                // 因为此处要计算基准线，特别麻烦。所以换成意外一种方式去计算 = dy + 图片高度  -  文字高度 + 基准线
-                float dy2 = dy + mBitmapSoc.getHeight() - mSocTextSize[1] + baseLine;
-                canvas.drawText(mSocText, dx, dy2, mPaintSoc);
-            }
-        }
+//        if (mBitmapSoc != null) {
+//            // 绘制图标
+//            float dy = mTopInterval + mProgressHeight + mSocBitmapTopInterval; // 上方高度 + 进度条高度 + 间距
+//            canvas.drawBitmap(mBitmapSoc, 0, dy, mPaintSoc);
+//
+//            // 绘制SOC文字
+//            if (!TextUtils.isEmpty(mSocText)) {
+//                float dx = mBitmapSoc.getWidth() + mSocLeftInterval; // dx = bitmap宽度 + 间距
+//                float baseLine = CustomViewUtil.getBaseLine(mPaintSoc, mSocText);
+//
+//                // 因为此处要计算基准线，特别麻烦。所以换成意外一种方式去计算 = dy + 图片高度  -  文字高度 + 基准线
+//                float dy2 = dy + mBitmapSoc.getHeight() - mSocTextSize[1] + baseLine;
+//                canvas.drawText(mSocText, dx, dy2, mPaintSoc);
+//            }
+//        }
     }
 
     @Override
@@ -765,6 +783,17 @@ public class ChargingProgressView extends BaseView {
      */
     public void setScroll(boolean scroll) {
         mScroll = scroll;
+    }
+
+    /**
+     * 设置当前的SOC值
+     *
+     * @param socValue 当前的soc值
+     */
+    public void setCurrentSoc(@FloatRange(from = 0.6f, to = 1.0f) float socValue) {
+        this.mBottomScrollProgress = socValue;
+        LogUtil.writeChargingCenter("充电中心--->接收到的SOC值: " + socValue);
+        invalidate();
     }
 
     public interface ProgressListener {
