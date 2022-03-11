@@ -82,23 +82,43 @@ public class BaseApplication {
     }
 
     public boolean isDebug() {
-        return mApplication.isDebug();
+        boolean isDebug = true;
+        if (!isNull()) {
+            isDebug = mApplication.isDebug();
+        }
+        return isDebug;
     }
 
     public String logTag() {
-        return mApplication.logTag();
+        String logTag = "";
+        if (!isNull()) {
+            logTag = mApplication.logTag();
+        }
+        return logTag;
     }
 
     public String getAppName() {
-        return mApplication.getAppName();
+        String appName = "";
+        if (!isNull()) {
+            appName = mApplication.getAppName();
+        }
+        return appName;
     }
 
     public String getBaseUrl() {
-        return mApplication.getBaseUrl();
+        String baseUrl = "";
+        if (!isNull()) {
+            baseUrl = mApplication.getBaseUrl();
+        }
+        return baseUrl;
     }
 
     public Interceptor[] getInterceptors() {
-        return mApplication.getInterceptors();
+        Interceptor[] interceptors = null;
+        if (!isNull()) {
+            interceptors = mApplication.getInterceptors();
+        }
+        return interceptors;
     }
 
     private void initLogger() {
@@ -192,5 +212,9 @@ public class BaseApplication {
 
     public void setCommonLivedata(FragmentActivity fragmentActivity) {
         mFragmentActivity = fragmentActivity;
+    }
+
+    public boolean isNull() {
+        return mApplication == null;
     }
 }

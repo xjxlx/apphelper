@@ -32,6 +32,7 @@ public class ElectricityView extends BaseView {
     private Paint mPaintProgress;
 
     // 进度条的范围值
+    private int mProgressStart = 5; // 最小的进度值 todo  默认是5
     private int mProgressEnd = 62; // 最大的进度值
     private int mProgressTarget = 0; // 目标的进度值
 
@@ -58,7 +59,9 @@ public class ElectricityView extends BaseView {
     private float mBaseLineRightText; // 右侧文字的高度
 
     private ProgressListener mProgressListener;
-    private boolean mScroll = true;
+    private boolean mScroll = true; // 是否可以默认拖动这个view
+    private float mLeftBorder; // 左侧滑动的边界
+    private float mRightBorder; // 右侧滑动的边界
 
     public ElectricityView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -103,8 +106,8 @@ public class ElectricityView extends BaseView {
 
         // 获取view的宽度
         float maxWidth = MeasureSpec.getSize(widthMeasureSpec);
-        // 右侧的电流值
 
+        // 右侧的电流值
         String format = NumberUtil.dataFormat(mProgressEnd + "");
         mRightTextValue = format + "A";
         float[] rightTextSize = CustomViewUtil.getTextSize(mPaintRightText, mRightTextValue);
@@ -118,11 +121,8 @@ public class ElectricityView extends BaseView {
         // 进度条宽高 = 总宽度 - 右侧文字宽度 - 文字间距 - 左侧间距
         mProgressWidth = maxWidth - mPaddingLeft - rightTextWidth - mRightInterval;
         // 根据最大的范围值和当前进度条的宽度，求出每个像素占用的百分比
-        mPercentage = mProgressEnd / mProgressWidth;
-        // LogUtil.e("默认进度条的百分比：" + mPercentage);
-        // 当前的进度条
-        mCurrentProgress = mProgressTarget / mPercentage;
-        // LogUtil.e("默认进度条的目标：" + mProgressTarget + "  默认的位置：" + mCurrentProgress);
+        mPercentage = (mProgressEnd - mProgressStart) / mProgressWidth;
+        LogUtil.e("默认进度条的百分比：" + mPercentage);
 
         // 进度条距离顶部的高度 =（ 最大高度 - 文字高度 ）/2
         float v1 = (mProgressHeight - rightTextHeight) / 2;
@@ -141,7 +141,6 @@ public class ElectricityView extends BaseView {
         mBottomTextValue = mProgressTarget + "A";
         float[] textSizeBottomRoundText = CustomViewUtil.getTextSize(mPaintBottomRoundText, mBottomTextValue);
         mBaseLineBottomText = CustomViewUtil.getBaseLine(mPaintBottomRoundText, mBottomTextValue);
-        float bottomTextWidth = textSizeBottomRoundText[0];
         // 计算最大的高度 = 文字高度 + 原先的高度 + 间距
         maxHeight += (textSizeBottomRoundText[1] + mBottomValueInterval);
 
@@ -157,8 +156,10 @@ public class ElectricityView extends BaseView {
         // super.onDraw(canvas);
 
         // 当前的进度条
-        mCurrentProgress = mProgressTarget / mPercentage;
-        // LogUtil.e("mCurrentProgress:" + mCurrentProgress + "  mProgressTarget:" + mProgressTarget);
+        if (mProgressTarget > 0) {
+            mCurrentProgress = mProgressTarget / mPercentage;
+        }
+        LogUtil.e("mCurrentProgress:" + mCurrentProgress + "  mProgressTarget:" + mProgressTarget);
 
         // 绘制背景
         canvas.drawRoundRect(mCurrentProgress + mPaddingLeft, mTopInterval + mPaddingTop, mProgressWidth + mPaddingLeft, mProgressHeight + mTopInterval + mPaddingTop, mProgressRound, mProgressRound, mPaintProgressBackground);
@@ -178,10 +179,14 @@ public class ElectricityView extends BaseView {
         canvas.drawCircle(circleDx, circleDY, mCircleRadius, mPaintRound);
 
         // 绘制圆球下的文字
-        String format = NumberUtil.dataFormat(mProgressTarget + "");
+        String format = NumberUtil.dataFormat((mProgressTarget + mProgressStart) + "");
+
         // 从新计算文字的宽度
         float width = CustomViewUtil.getTextSize(mPaintBottomRoundText, mBottomTextValue)[0];
         mBottomTextValue = format + "A";
+
+        LogUtil.e("⭐️⭐️⭐️ mBottomTextValue：" + mBottomTextValue);
+
         float dx = (circleDx - width / 2);// 圆球的X轴圆心  - 文字的宽度/2
         float dy = (circleDY + mCircleRadius + mBottomValueInterval + mBaseLineBottomText); // dy  = 圆球的底部 + 间距 +baseLine
         canvas.drawText(mBottomTextValue, 0, mBottomTextValue.length(), dx, dy, mPaintBottomRoundText);
@@ -189,13 +194,51 @@ public class ElectricityView extends BaseView {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
+        // 如果设置了不可以拖动这个view，则把他给动态的禁用掉
         if (!mScroll) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                LogUtil.e("dispatchTouchEvent ---> ACTION_DOWN");
-                return mScroll;
+                LogUtil.e("dispatchTouchEvent ---> 父类消耗掉这个事件，禁止往下面去传递");
+                return true;
             }
         }
+
+        // 限制范围区域
+        mLeftBorder = mPaddingLeft;
+        // 右侧的范围 =  限定值 / 百分比
+        mRightBorder = mProgressEnd / mPercentage;
+
+        // 如果小于这个区域，或者大于这个区域，则自己消耗掉这个事件，不继续往下面传递
+        float x = event.getX();
+        int action = event.getAction();
+
+        if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
+            LogUtil.e("⭐️⭐️⭐️ dispatchTouchEvent ---> ACTION_MOVE");
+            LogUtil.e("left:" + mLeftBorder + "  right:" + mRightBorder + "  x: " + x);
+            if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                if (x < mLeftBorder || x >= mRightBorder) {
+                    LogUtil.e("停止执行！");
+                    return true;
+                }
+            }
+        }
+
         return super.dispatchTouchEvent(event);
+    }
+
+    private void calculate(float x) {
+        // 当前滑动的位置 = 当前的x轴位置 * 每个像素所占用的百分比
+        float v = x - mPaddingLeft;
+
+        mProgressTarget = (int) (v * mPercentage);
+
+        // 避免数字越界
+        if (mProgressTarget + mProgressStart > mProgressEnd) {
+            mProgressTarget = mProgressEnd - mProgressStart;
+        }
+
+        LogUtil.e("mProgressTarget:" + mProgressTarget + "  v:" + v + "  mPercentage:" + mPercentage);
+        // 重新绘制
+        invalidate();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -203,11 +246,12 @@ public class ElectricityView extends BaseView {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                LogUtil.e("onTouchEvent ---> ACTION_DOWN");
+                LogUtil.e("⭐️⭐️⭐️ onTouchEvent ---> ACTION_DOWN ");
                 calculate(event.getX());
                 return mScroll;
 
             case MotionEvent.ACTION_MOVE:
+                LogUtil.e("⭐️⭐️⭐️ onTouchEvent ---> MOVE");
                 // 获取当前的x轴位置
                 float x = event.getX();
                 calculate(x);
@@ -215,25 +259,11 @@ public class ElectricityView extends BaseView {
 
             case MotionEvent.ACTION_UP: // 抬起
                 if (mProgressListener != null) {
-                    mProgressListener.onTouchUp(mProgressTarget);
+                    mProgressListener.onTouchUp(mProgressTarget + mProgressStart);
                 }
                 break;
         }
         return super.onTouchEvent(event);
-    }
-
-    private void calculate(float x) {
-        // 当前滑动的位置 = 当前的x轴位置 * 每个像素所占用的百分比
-        float v = x - mPaddingLeft;
-        mProgressTarget = (int) (v * mPercentage);
-        if (mProgressTarget < 0) {
-            mProgressTarget = 0;
-        } else if (mProgressTarget > mProgressEnd) {
-            mProgressTarget = mProgressEnd;
-        }
-
-        // 重新绘制
-        invalidate();
     }
 
     /**
@@ -243,6 +273,16 @@ public class ElectricityView extends BaseView {
      */
     public void setMaxIntervalScope(@IntRange(from = 0, to = 62) int maxValue) {
         mProgressEnd = maxValue;
+        invalidate();
+    }
+
+    /**
+     * 设置最小的进度值
+     *
+     * @param minValue 最小的电流值
+     */
+    public void setMinIntervalScope(int minValue) {
+        mProgressStart = minValue;
         invalidate();
     }
 
@@ -263,6 +303,11 @@ public class ElectricityView extends BaseView {
         mProgressListener = progressListener;
     }
 
+    /**
+     * 是否可以默认的拖动这个view
+     *
+     * @param scroll true:可以，false:不可以， 默认可以拖动
+     */
     public void setScroll(boolean scroll) {
         this.mScroll = scroll;
     }
