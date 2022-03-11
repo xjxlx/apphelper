@@ -32,7 +32,7 @@ public class ElectricityView extends BaseView {
     private Paint mPaintProgress;
 
     // 进度条的范围值
-    private int mProgressStart = 5; // 最小的进度值 todo  默认是5
+    private int mProgressStart = 0; // 最小的进度值
     private int mProgressEnd = 62; // 最大的进度值
     private int mProgressTarget = 0; // 目标的进度值
 
