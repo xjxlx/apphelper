@@ -210,18 +210,14 @@ public class ElectricityView extends BaseView {
         // 如果小于这个区域，或者大于这个区域，则自己消耗掉这个事件，不继续往下面传递
         float x = event.getX();
         int action = event.getAction();
-
         if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
             LogUtil.e("⭐️⭐️⭐️ dispatchTouchEvent ---> ACTION_MOVE");
             LogUtil.e("left:" + mLeftBorder + "  right:" + mRightBorder + "  x: " + x);
-            if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                if (x < mLeftBorder || x >= mRightBorder) {
-                    LogUtil.e("停止执行！");
-                    return true;
-                }
+            if (x < mLeftBorder || x >= mRightBorder) {
+                LogUtil.e("停止执行！");
+                return true;
             }
         }
-
         return super.dispatchTouchEvent(event);
     }
 
@@ -229,14 +225,15 @@ public class ElectricityView extends BaseView {
         // 当前滑动的位置 = 当前的x轴位置 * 每个像素所占用的百分比
         float v = x - mPaddingLeft;
 
-        mProgressTarget = (int) (v * mPercentage);
+        // 在滑动的时候，有时候会多几个像素，可能会导致数据变大，超出范围值，
 
-        // 避免数字越界
+        mProgressTarget = (int) (v * mPercentage);
         if (mProgressTarget + mProgressStart > mProgressEnd) {
             mProgressTarget = mProgressEnd - mProgressStart;
         }
 
-        LogUtil.e("mProgressTarget:" + mProgressTarget + "  v:" + v + "  mPercentage:" + mPercentage);
+        LogUtil.e("mProgressTarget:" + mProgressTarget + "  v:"
+                + v + "  mPercentage:" + mPercentage + "  mPaddingLeft：" + mPaddingLeft);
         // 重新绘制
         invalidate();
     }
