@@ -239,10 +239,12 @@ public class ElectricityView extends BaseView {
             mProgressTarget = mProgressEnd - mProgressStart;
         }
 
-        LogUtil.e("mProgressTarget:" + mProgressTarget + "  v:"
-                + v + "  mPercentage:" + mPercentage + "  mPaddingLeft：" + mPaddingLeft);
         // 重新绘制
         invalidate();
+
+        if (mProgressListener != null) {
+            mProgressListener.onMove(mBottomTextValue);
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -328,6 +330,8 @@ public class ElectricityView extends BaseView {
          * 手指抬起的进度
          */
         void onTouchUp(int progress);
+
+        void onMove(String progress);
     }
 
 }
