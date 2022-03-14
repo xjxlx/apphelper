@@ -393,6 +393,38 @@ public class NumberUtil {
     }
 
     /**
+     * @param value        原来的数据
+     * @param roundingMode 模式
+     * @param digits       位数
+     * @return 保留指定的位数
+     */
+    public static String dataFormatDigits(String value, int roundingMode, int digits) {
+        if (!TextUtils.isEmpty(value)) {
+            // 转换为大整形运算
+            BigDecimal decimal = new BigDecimal(value);
+            return decimal
+                    .setScale(digits, roundingMode) // 数据模式
+                    .toPlainString();
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * @param value              除数
+     * @param divideAndRemainder 被除数
+     * @return 取余
+     */
+    public static String divideAndRemainder(int value, int divideAndRemainder) {
+        // 转换为大整形运算
+        BigDecimal bg = BigDecimal.valueOf(value);
+        BigDecimal om2 = BigDecimal.valueOf(divideAndRemainder);
+        //取余
+        BigDecimal decimal = bg.divideAndRemainder(om2)[1];
+        return decimal.toString();
+    }
+
+    /**
      * @param value 具体的指定字符串
      * @return 格式化数据，把一个值去掉多余的0，使用科学计数法去显示
      */
