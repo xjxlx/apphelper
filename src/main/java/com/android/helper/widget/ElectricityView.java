@@ -32,7 +32,7 @@ public class ElectricityView extends BaseView {
     private Paint mPaintProgress;
 
     // 进度条的范围值
-    private int mProgressStart = 0; // 最小的进度值
+    private int mProgressStart = 5; // 最小的进度值
     private int mProgressEnd = 62; // 最大的进度值
     private int mProgressTarget = 0; // 目标的进度值
 
@@ -159,10 +159,10 @@ public class ElectricityView extends BaseView {
         if (mProgressTarget > 0) {
             mCurrentProgress = mProgressTarget / mPercentage;
         }
-        LogUtil.e("mCurrentProgress:" + mCurrentProgress + "  mProgressTarget:" + mProgressTarget);
 
         // 绘制背景
         canvas.drawRoundRect(mCurrentProgress + mPaddingLeft, mTopInterval + mPaddingTop, mProgressWidth + mPaddingLeft, mProgressHeight + mTopInterval + mPaddingTop, mProgressRound, mProgressRound, mPaintProgressBackground);
+
         // 绘制进度
         canvas.drawRoundRect(mPaddingLeft, mTopInterval + mPaddingTop, mCurrentProgress + mPaddingLeft, mProgressHeight + mTopInterval + mPaddingTop, mProgressRound, mProgressRound, mPaintProgress);
 
@@ -179,7 +179,13 @@ public class ElectricityView extends BaseView {
         canvas.drawCircle(circleDx, circleDY, mCircleRadius, mPaintRound);
 
         // 绘制圆球下的文字
-        String format = NumberUtil.dataFormat((mProgressTarget + mProgressStart) + "");
+        int bottomTextValue = 0;
+        if (mProgressTarget + mProgressStart > mProgressEnd) {
+            bottomTextValue = mProgressEnd;
+        } else {
+            bottomTextValue = mProgressTarget + mProgressStart;
+        }
+        String format = NumberUtil.dataFormat(bottomTextValue + "");
 
         // 从新计算文字的宽度
         float width = CustomViewUtil.getTextSize(mPaintBottomRoundText, mBottomTextValue)[0];
@@ -208,12 +214,14 @@ public class ElectricityView extends BaseView {
         mRightBorder = mProgressEnd / mPercentage;
 
         // 如果小于这个区域，或者大于这个区域，则自己消耗掉这个事件，不继续往下面传递
+        float rawX = event.getRawX();
         float x = event.getX();
+        LogUtil.e("rawX:" + rawX + " x1:" + x);
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
             LogUtil.e("⭐️⭐️⭐️ dispatchTouchEvent ---> ACTION_MOVE");
-            LogUtil.e("left:" + mLeftBorder + "  right:" + mRightBorder + "  x: " + x);
-            if (x < mLeftBorder || x >= mRightBorder) {
+            LogUtil.e("left:" + mLeftBorder + "  right:" + mRightBorder + "  x: " + x + "   tra:" + mProgressTarget);
+            if (x < mLeftBorder || x > (mRightBorder + mLeftBorder)) {
                 LogUtil.e("停止执行！");
                 return true;
             }
@@ -221,12 +229,11 @@ public class ElectricityView extends BaseView {
         return super.dispatchTouchEvent(event);
     }
 
-    private void calculate(float x) {
+    private void calculate(int x) {
         // 当前滑动的位置 = 当前的x轴位置 * 每个像素所占用的百分比
-        float v = x - mPaddingLeft;
+        int v = (int) (x - mPaddingLeft);
 
         // 在滑动的时候，有时候会多几个像素，可能会导致数据变大，超出范围值，
-
         mProgressTarget = (int) (v * mPercentage);
         if (mProgressTarget + mProgressStart > mProgressEnd) {
             mProgressTarget = mProgressEnd - mProgressStart;
@@ -241,17 +248,17 @@ public class ElectricityView extends BaseView {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 LogUtil.e("⭐️⭐️⭐️ onTouchEvent ---> ACTION_DOWN ");
-                calculate(event.getX());
+                calculate((int) event.getX());
                 return mScroll;
 
             case MotionEvent.ACTION_MOVE:
                 LogUtil.e("⭐️⭐️⭐️ onTouchEvent ---> MOVE");
                 // 获取当前的x轴位置
-                float x = event.getX();
-                calculate(x);
+                calculate((int) event.getX());
                 break;
 
             case MotionEvent.ACTION_UP: // 抬起
@@ -289,7 +296,14 @@ public class ElectricityView extends BaseView {
      * @param currentValue 电流的当前值
      */
     public void setCurrentValue(@IntRange(from = 0, to = 62) int currentValue) {
-        mProgressTarget = currentValue;
+        // 中间值的区间
+        int interval = mProgressEnd - mProgressStart;
+        // 限定范围
+        if (currentValue > interval) {
+            mProgressTarget = currentValue - mProgressStart;
+        } else {
+            mProgressTarget = currentValue;
+        }
         invalidate();
     }
 
