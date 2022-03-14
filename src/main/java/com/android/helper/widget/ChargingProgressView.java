@@ -697,6 +697,10 @@ public class ChargingProgressView extends BaseView {
             // 重新绘制
             requestLayout();
             invalidate();
+
+            if (mProgressListener != null) {
+                mProgressListener.onMove(mMultiply);
+            }
         }
     }
 
@@ -778,6 +782,8 @@ public class ChargingProgressView extends BaseView {
          * @param progress 手指抬起时候，当前的百分比
          */
         void onTouchUp(String progress);
+
+        void onMove(String progress);
     }
 
     public void setProgressListener(ProgressListener progressListener) {
