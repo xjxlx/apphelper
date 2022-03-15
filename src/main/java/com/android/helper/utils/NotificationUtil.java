@@ -137,6 +137,7 @@ public class NotificationUtil {
     private Service mService;                           // 服务类
     private long mWhen;                                 // 消息出现的时间戳
     private boolean mAutoCancel;                        // 手动取消
+    private OnHandlerLoopListener mOnHandlerLoopListener; // handler轮询的监听器
 
     private ViewCallBackListener<RemoteViews> mViewCallBackListener;
     // 消息对象
@@ -167,6 +168,7 @@ public class NotificationUtil {
             this.mSound = builder.mSound;
             this.mWhen = builder.mWhen;
             this.mAutoCancel = builder.autoCancel;
+            this.mOnHandlerLoopListener = builder.mOnHandlerLoopListener;
         }
 
         createNotification();
@@ -457,6 +459,12 @@ public class NotificationUtil {
                             message.arg1 = id;
                             mHandler.sendMessageDelayed(message, mIntervalTime);
                         }
+
+                        // 轮询的回调
+                        if (mOnHandlerLoopListener != null) {
+                            mOnHandlerLoopListener.onLoop();
+                        }
+
                         break;
 
                     case CODE_WHAT_SEND_START_NOTIFICATION_LOOP:
@@ -471,6 +479,11 @@ public class NotificationUtil {
                         sendNotification(id);
 
                         mHandler.sendMessageDelayed(message1, mIntervalTime);
+
+                        // 轮询的回调
+                        if (mOnHandlerLoopListener != null) {
+                            mOnHandlerLoopListener.onLoop();
+                        }
                         break;
                 }
             }
@@ -551,6 +564,8 @@ public class NotificationUtil {
         private boolean mSound = true;                      // 是否发出声音，默认发出
         private long mWhen;                                 // 出现的时间戳
         boolean autoCancel = true;                          // 是否点击取消通知
+
+        private OnHandlerLoopListener mOnHandlerLoopListener; // handler轮询的监听器
 
         public Builder(Context context) {
             mContext = context;
@@ -735,6 +750,14 @@ public class NotificationUtil {
             return this;
         }
 
+        /**
+         * @return 设置轮询的监听器
+         */
+        public Builder setOnLoopListener(OnHandlerLoopListener onLoopListener) {
+            mOnHandlerLoopListener = onLoopListener;
+            return this;
+        }
+
         public NotificationUtil build() {
             return new NotificationUtil(this);
         }
@@ -794,4 +817,9 @@ public class NotificationUtil {
 
         LogUtil.e("清空了所有的Notification的对象！");
     }
+
+    public interface OnHandlerLoopListener {
+        void onLoop();
+    }
+
 }
