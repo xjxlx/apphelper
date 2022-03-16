@@ -243,7 +243,14 @@ public class ElectricityView extends BaseView {
         invalidate();
 
         if (mProgressListener != null) {
-            mProgressListener.onMove(mBottomTextValue);
+            int bottomTextValue = 0;
+            if (mProgressTarget + mProgressStart > mProgressEnd) {
+                bottomTextValue = mProgressEnd;
+            } else {
+                bottomTextValue = mProgressTarget + mProgressStart;
+            }
+            String format = NumberUtil.dataFormat(bottomTextValue + "");
+            mProgressListener.onMove(format + "A");
         }
     }
 
