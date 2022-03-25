@@ -116,13 +116,14 @@ dependencies {
     api 'androidx.viewpager2:viewpager2:1.0.0'
 
     // room数据库的依赖
-    implementation configDependencies["room-runtime"]
-
+    implementation ("androidx.room:room-runtime:2.2.5"){// 禁止依赖的传递
+        transitive = false
+    }
     // 高德
     api 'com.amap.api:location:5.6.1'  // 定位
     api 'com.amap.api:search:8.1.0'    // 搜索
     api 'com.amap.api:3dmap:8.1.0'     // 地图
 
     //视频 完整版引入
-//    implementation 'com.github.CarGuo.GSYVideoPlayer:GSYVideoPlayer:v8.1.7-release-jitpack'
+    // implementation 'com.github.CarGuo.GSYVideoPlayer:GSYVideoPlayer:v8.1.7-release-jitpack'
 }
