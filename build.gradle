@@ -3,8 +3,9 @@ plugins {
     id 'kotlin-android'
 }
 
-// config 依赖的版本
-def configDependencies = rootProject.ext.dependencies
+//启用Jitpack 插件
+apply plugin: 'com.github.dcendents.android-maven'
+group = 'com.github.apphelper'
 
 android {
     def compile = rootProject.ext.android
