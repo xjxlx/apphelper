@@ -105,6 +105,11 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
             builder.mCloseView.setOnClickListener(v -> dismiss());
         }
 
+        // 回调布局对象
+        if (mBuilder.mViewCreatedListener != null && mBuilder.mLayout != null) {
+            mBuilder.mViewCreatedListener.onViewCreated(mBuilder.mLayout);
+        }
+
         // 关闭的监听
         mPopupWindow.setOnDismissListener(() -> {
             if (builder.mAlpha > 0) {
@@ -229,6 +234,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
         private boolean mClippingEnabled = false; // 是否可以超出屏幕显示，默认false:表示可以遮罩
         private int mGravity = Gravity.CENTER;// 默认居中显示
         private float mAlpha;// 透明度
+        private OnViewCreatedListener mViewCreatedListener;
 
         public Builder(FragmentActivity activity, View layout) {
             mActivity = activity;
@@ -415,6 +421,15 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
                 attributes.alpha = 1.0f;
                 window.setAttributes(attributes);
             }
+        }
+
+        /**
+         * @param viewCreatedListener 布局对象的回调
+         * @return 布局对象的回调，用于获取字view
+         */
+        public Builder setViewCreatedListener(OnViewCreatedListener viewCreatedListener) {
+            this.mViewCreatedListener = viewCreatedListener;
+            return this;
         }
 
         public PopupWindowUtil Build() {
