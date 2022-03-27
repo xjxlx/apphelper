@@ -451,7 +451,8 @@ public class FileUtil implements BaseLifecycleObserver {
     private boolean commonCheckAllFile(FragmentActivity activity) {
         boolean isPermission = false;
         if (activity != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT >= 30) {
                 // 先判断有没有权限
                 isPermission = Environment.isExternalStorageManager();
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -480,7 +481,8 @@ public class FileUtil implements BaseLifecycleObserver {
      */
     public void jumpAllFiles() {
         if (mActivity != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            //   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT >= 30) {
                 if (mRegister != null) {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                     intent.setData(Uri.parse("package:" + mActivity.getPackageName()));
