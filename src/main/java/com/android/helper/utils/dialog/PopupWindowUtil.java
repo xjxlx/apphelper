@@ -145,8 +145,8 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @param view 用来获取token的view，随意view都可以
      * @return 相对于整个窗口的显示，默认显示在窗口的正中间
      */
-    public PopupWindowUtil showAtLocation(View view) {
-        showAtLocation(view, 0, 0);
+    public PopupWindowUtil show(View view) {
+        show(view, 0, 0);
         return this;
     }
 
@@ -154,7 +154,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @param view 用来获取token的view，随意view都可以
      * @return 相对于整个窗口的显示，并指定偏移
      */
-    public PopupWindowUtil showAtLocation(View view, int xoff, int yoff) {
+    public PopupWindowUtil show(View view, int xoff, int yoff) {
         if ((mActivity != null) && (view != null)) {
             if ((!mPopupWindow.isShowing())) {
                 view.post(() -> {
@@ -176,7 +176,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @CreateDate: 2021/9/28
      * @Description: 从view的左下方弹出，并指定偏移，是相对于某个控件显示
      */
-    public PopupWindowUtil showAsDropDown(View anchor, int xoff, int yoff) {
+    public PopupWindowUtil showDown(View anchor, int xoff, int yoff) {
         if (anchor != null) {
             anchor.post(() -> {
                 if (mPopupWindow != null) {
@@ -199,8 +199,8 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @CreateDate: 2021/9/28
      * @Description: 从view的左下方弹出，是相对于某个控件显示
      */
-    public PopupWindowUtil showAsDropDown(View anchor) {
-        this.showAsDropDown(anchor, 0, 0);
+    public PopupWindowUtil showDown(View anchor) {
+        this.showDown(anchor, 0, 0);
         return this;
     }
 
