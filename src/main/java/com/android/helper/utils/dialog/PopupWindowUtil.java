@@ -117,7 +117,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
         mPopupWindow.setFocusable(true);
         //: 设置PopupWindow可触摸
         mPopupWindow.setTouchable(true);
-        //: 设置超出屏幕显示
+        //: 设置超出屏幕显示 ---> false表示允许窗口扩展到屏幕外
         mPopupWindow.setClippingEnabled(mClippingEnabled);
 
         // 关闭布局的view
@@ -310,7 +310,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @return 是否可以超出屏幕显示，false :可以，true:不可以，默认不可以
+         * @return 是否可以超出屏幕显示，false :可以，true:不可以，默认可以
          */
         public Builder setClippingEnabled(boolean clippingEnabled) {
             this.mClippingEnabled = clippingEnabled;
