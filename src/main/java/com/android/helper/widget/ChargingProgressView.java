@@ -634,6 +634,7 @@ public class ChargingProgressView extends BaseView {
 
             case MotionEvent.ACTION_UP:
                 mPaintScrollRound.setColor(Color.parseColor("#FFF4F4F4"));
+                requestLayout();
                 invalidate();
                 break;
         }
@@ -722,6 +723,7 @@ public class ChargingProgressView extends BaseView {
      */
     public void setRemainingChargeTime(String remainingChargeTime) {
         mRemainingTimeText = remainingChargeTime;
+        requestLayout();
         invalidate();
     }
 
@@ -732,6 +734,7 @@ public class ChargingProgressView extends BaseView {
      */
     public void setOptimumValue(float optimumPercentage) {
         mPercentageOptimum = optimumPercentage;
+        requestLayout();
         invalidate();
     }
 
@@ -744,6 +747,7 @@ public class ChargingProgressView extends BaseView {
     public void setInterval(float startPercentage, float endPercentage) {
         mPercentageStart = startPercentage;
         mPercentageEnd = endPercentage;
+        requestLayout();
         invalidate();
     }
 
@@ -754,6 +758,7 @@ public class ChargingProgressView extends BaseView {
      */
     public void setCharging(boolean isCharging) {
         this.isCharging = isCharging;
+        requestLayout();
         invalidate();
     }
 
@@ -774,6 +779,7 @@ public class ChargingProgressView extends BaseView {
     public void setCurrentSoc(@FloatRange(from = 0.6f, to = 1.0f) float socValue) {
         this.mBottomScrollProgress = socValue;
         LogUtil.writeChargingCenter("充电中心--->接收到的SOC值: " + socValue);
+        requestLayout();
         invalidate();
     }
 
