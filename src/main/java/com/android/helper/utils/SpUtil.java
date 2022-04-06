@@ -289,7 +289,8 @@ public class SpUtil {
      *
      * @param key key
      */
-    public static void Remove(String key) {
+    public static boolean Remove(String key) {
+        boolean isSuccess = false;
         if (!TextUtils.isEmpty(key)) {
             getSp();
             if (sp != null) {
@@ -297,9 +298,11 @@ public class SpUtil {
                 if (edit != null) {
                     edit.remove(key);
                     edit.apply();
+                    isSuccess = true;
                 }
             }
         }
+        return isSuccess;
     }
 
     /**
