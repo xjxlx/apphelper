@@ -433,7 +433,7 @@ public class ChargingProgressView extends BaseView {
     @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
-        // super.onDraw(canvas);
+        super.onDraw(canvas);
 
         // 绘制底层进度条
         canvas.drawRoundRect(mRectFBackground, mAngle, mAngle, mPaintBackground);
@@ -542,7 +542,9 @@ public class ChargingProgressView extends BaseView {
         canvas.drawRect(mRectFRight, mPaintRight);
 
         // 绘制滑动的区间值
+
         if (mBottomScrollProgressValue > 0) {
+            LogUtil.writeChargingCenter("绘制滑动的区间值：" + mBottomScrollProgressValue);
             // 滑动的进度值
             float scrollValue = mBottomScrollProgressValue;
 
@@ -551,6 +553,9 @@ public class ChargingProgressView extends BaseView {
             //  }
             // 绘制线
             canvas.drawLine(scrollValue, mTopInterval, scrollValue, mProgressHeight + mTopInterval, mPaintBottomScrollLine);
+
+            LogUtil.writeChargingCenter("绘制-竖线：" + "startX：" + scrollValue + " startY：" + mTopInterval + " stopX： " + scrollValue + "  stopY: " + (mProgressHeight + mTopInterval));
+
             // 绘制阴影
             float circleX, circleY;
             // 参数1：圆中心的X轴位置 = 当前进度的值
@@ -567,6 +572,8 @@ public class ChargingProgressView extends BaseView {
             float dx = circleX - mScrollTextWidth - (mRemainingTimeTextInterval * 2) - mScrollTextInterval; // dx = 圆角的dx轴 - 文字宽度 - 直径 - 距离
             float dy = (circleY + mScrollTextHeight / 2); // dy =  圆角的y轴 +    文字的高度 /2 +
             canvas.drawText(mSocCurrentText, 0, mSocCurrentText.length(), dx, dy, mPaintScrollValue);
+        } else {
+            LogUtil.writeChargingCenter("绘制滑动的区间值：小于0 ，不执行逻辑！");
         }
 
         // 绘制最佳的进度
@@ -777,8 +784,13 @@ public class ChargingProgressView extends BaseView {
      * @param socValue 当前的soc值
      */
     public void setCurrentSoc(@FloatRange(from = 0.6f, to = 1.0f) float socValue) {
-        this.mBottomScrollProgress = socValue;
-        LogUtil.writeChargingCenter("充电中心--->接收到的SOC值: " + socValue);
+        if (socValue >= 0.6) {
+            this.mBottomScrollProgress = socValue;
+            LogUtil.writeChargingCenter("充电中心--->接收到正常的SOC值: " + socValue);
+        } else {
+            this.mBottomScrollProgress = 0.6f;
+            LogUtil.writeChargingCenter("充电中心--->接收到异常的SOC值: " + socValue + "，默认设置成0.6");
+        }
         requestLayout();
         invalidate();
     }
