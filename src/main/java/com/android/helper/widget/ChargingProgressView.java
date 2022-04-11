@@ -544,7 +544,6 @@ public class ChargingProgressView extends BaseView {
         // 绘制滑动的区间值
 
         if (mBottomScrollProgressValue > 0) {
-            LogUtil.writeChargingCenter("绘制滑动的区间值：" + mBottomScrollProgressValue);
             // 滑动的进度值
             float scrollValue = mBottomScrollProgressValue;
 
@@ -553,8 +552,6 @@ public class ChargingProgressView extends BaseView {
             //  }
             // 绘制线
             canvas.drawLine(scrollValue, mTopInterval, scrollValue, mProgressHeight + mTopInterval, mPaintBottomScrollLine);
-
-            LogUtil.writeChargingCenter("绘制-竖线：" + "startX：" + scrollValue + " startY：" + mTopInterval + " stopX： " + scrollValue + "  stopY: " + (mProgressHeight + mTopInterval));
 
             // 绘制阴影
             float circleX, circleY;
