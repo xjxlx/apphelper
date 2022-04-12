@@ -98,7 +98,7 @@ public class GlideUtil implements BaseLifecycleObserver {
     }
 
     public GlideUtil loadUrl(View view, String url) {
-        if ((view != null) && (!TextUtils.isEmpty(mUrl))) {
+        if ((view != null) && (!TextUtils.isEmpty(url))) {
             // view相斥
             this.mImageView = null;
             this.mView = view;
