@@ -388,12 +388,15 @@ public class LocationUtil implements BaseLifecycleObserver {
 
         if (isBackgroundRunning) {
             // 避免重复添加
-            if (!mListPermission.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            // if (!mListPermission.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            if (!mListPermission.contains("android.permission.ACCESS_BACKGROUND_LOCATION")) {
                 // android 30 后台定位
-                int Q = Build.VERSION_CODES.Q;
+                // int Q = Build.VERSION_CODES.Q;
+                int Q = 29;
                 // 开发版本大于等于30 && SDK版本 大于等于30
                 if ((TARGET_VERSION >= Q) && (SDK_INT >= Q)) {
-                    mListPermission.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);// 后台定位权限
+                    // mListPermission.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);// 后台定位权限
+                    mListPermission.add("android.permission.ACCESS_BACKGROUND_LOCATION");// 后台定位权限
                 }
             }
         }
