@@ -59,14 +59,15 @@ public class ResourceUtil {
      * @param id dimens的id
      * @return 获取dimens的值
      */
-    public static float getDimension(@DimenRes int id) {
-        float dimension = 0.0f;
+    public static int getDimension(@DimenRes int id) {
+        int dimension = 0;
         try {
             Application application = BaseApplication.getInstance().getApplication();
             if (application != null) {
                 Resources resources = application.getResources();
                 if (resources != null) {
-                    dimension = resources.getDimension(id);
+                    // 获取资源文件中定义的dimension值
+                    dimension = resources.getDimensionPixelSize(id);
                     return dimension;
                 }
             }

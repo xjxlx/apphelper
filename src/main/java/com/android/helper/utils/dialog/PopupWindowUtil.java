@@ -6,7 +6,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -48,7 +47,6 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
     private View mLayout; // 布局
     private int mGravity;// 默认居中显示
     private float mAlpha;// 透明度
-    private int mTypeFromPage;// 1:fragmentActivity 2:fragment
 
     private PopupWindowUtil(Builder builder) {
         // 构建popupWindow
@@ -71,7 +69,8 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
 
         mGravity = builder.mGravity;
         mAlpha = builder.mAlpha;
-        mTypeFromPage = builder.mTypeFromPage;
+        // 1:fragmentActivity 2:fragment
+        int typeFromPage = builder.mTypeFromPage;
 
         // 局部使用的对象
         int width = builder.mWidth;
@@ -100,8 +99,6 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
                 viewGroup.removeAllViews();
             }
 
-            mPopupWindow.setContentView(mLayout);
-
             //解决android 9.0水滴屏/刘海屏有黑边的问题
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 Window window = mActivity.getWindow();
@@ -111,10 +108,10 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
             }
 
             // 添加管理
-            if (mTypeFromPage == 1) {
+            if (typeFromPage == 1) {
                 Lifecycle lifecycle = mActivity.getLifecycle();
                 lifecycle.addObserver(this);
-            } else if (mTypeFromPage == 2) {
+            } else if (typeFromPage == 2) {
                 if (mFragment != null) {
                     Lifecycle lifecycle = mFragment.getLifecycle();
                     lifecycle.addObserver(this);
@@ -124,22 +121,27 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
             if (createdListener != null) {
                 createdListener.onViewCreated(mLayout);
             }
+
+            // 点击外部是否关闭popupWindow
+            if (touchable) {
+                //: pop背景（如果不设置就不会点击消失）
+                mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                mPopupWindow.setFocusable(true);
+            } else {
+                mPopupWindow.setBackgroundDrawable(null);
+                mPopupWindow.setFocusable(false);
+            }
+            //: 设置可以点击pop以外的区域
+            mPopupWindow.setOutsideTouchable(touchable);
+
+            //: 设置PopupWindow可触摸
+            mPopupWindow.setTouchable(true);
+
+            //: 设置超出屏幕显示
+            mPopupWindow.setClippingEnabled(clippingEnabled);
+
+            mPopupWindow.setContentView(mLayout);
         }
-
-        //: pop背景（如果不设置就不会点击消失）
-        mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        //: 设置可以点击pop以外的区域
-        mPopupWindow.setOutsideTouchable(touchable);
-
-        //: 设置PopupWindow可获得焦点
-        mPopupWindow.setFocusable(true);
-
-        //: 设置PopupWindow可触摸
-        mPopupWindow.setTouchable(true);
-
-        //: 设置超出屏幕显示
-        mPopupWindow.setClippingEnabled(clippingEnabled);
 
         // 关闭布局的view集合
         if (closeView != null) {
@@ -158,22 +160,6 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
                 mOnDismissListener.onDismiss();
             }
         });
-
-//        mPopupWindow.setTouchInterceptor(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                // 如果点击了popupwindow的外部，popupwindow也会消失
-//                // 这⾥如果返回true的话，touch事件将被拦截
-//                // 拦截后 PopupWindow的onTouchEvent不被调⽤，这样点击外部区域⽆法dismiss
-//                if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-//                    //popupMenu.dismiss();
-////                    StationEventCaptain.getInstance().fireEventDataChange(
-////                            new StationEventData(IStationEventName.HEDGE_KEYBORAD_DIMISS, true));
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
     }
 
     /**
