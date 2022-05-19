@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -17,11 +18,15 @@ import android.widget.TextView;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.TextViewUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * PopupWidow 的工具类
@@ -35,12 +40,17 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
 
     @SuppressLint("StaticFieldLeak")
     private PopupWindow mPopupWindow;
-    private Builder mBuilder;
     private PopupWindow.OnDismissListener mOnDismissListener;
     private OnShowListener mShowListener;
 
+    private FragmentActivity mActivity; // 上下文对象
+    private Fragment mFragment;
+    private View mLayout; // 布局
+    private int mGravity;// 默认居中显示
+    private float mAlpha;// 透明度
+    private int mTypeFromPage;// 1:fragmentActivity 2:fragment
+
     private PopupWindowUtil(Builder builder) {
-        this.mBuilder = builder;
         // 构建popupWindow
         if (builder != null) {
             initPopupWindow(builder);
@@ -53,6 +63,26 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @Description: 构建popupWindow
      */
     private void initPopupWindow(Builder builder) {
+        mActivity = builder.mActivity;
+        mFragment = builder.mFragment;
+        mLayout = builder.mLayout;
+
+        ViewCreatedListener createdListener = builder.mCreatedListener;
+
+        mGravity = builder.mGravity;
+        mAlpha = builder.mAlpha;
+        mTypeFromPage = builder.mTypeFromPage;
+
+        // 局部使用的对象
+        int width = builder.mWidth;
+        int height = builder.mHeight;
+        // 关闭布局的view
+        List<View> closeView = builder.mCloseView;
+        // 触摸是否可以取消，默认可以
+        boolean touchable = builder.mTouchable;
+        // 是否可以超出屏幕显示，默认false:表示可以遮罩
+        boolean clippingEnabled = builder.mClippingEnabled;
+
         // 释放掉原来的pop
         if (mPopupWindow != null) {
             if (mPopupWindow.isShowing()) {
@@ -61,35 +91,46 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
             mPopupWindow = null;
         }
 
-        mPopupWindow = new PopupWindow(builder.mWidth, builder.mHeight);
+        mPopupWindow = new PopupWindow(width, height);
         // 设置布局
-        if (builder.mLayout != null) {
-            ViewParent parent = builder.mLayout.getParent();
+        if (mLayout != null) {
+            ViewParent parent = mLayout.getParent();
             if (parent instanceof ViewGroup) {
                 ViewGroup viewGroup = (ViewGroup) parent;
                 viewGroup.removeAllViews();
             }
 
-            mPopupWindow.setContentView(builder.mLayout);
+            mPopupWindow.setContentView(mLayout);
 
             //解决android 9.0水滴屏/刘海屏有黑边的问题
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                Window window = builder.mActivity.getWindow();
+                Window window = mActivity.getWindow();
                 WindowManager.LayoutParams attributes = window.getAttributes();
                 attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
                 window.setAttributes(attributes);
             }
 
             // 添加管理
-            Lifecycle lifecycle = builder.mActivity.getLifecycle();
-            lifecycle.addObserver(this);
+            if (mTypeFromPage == 1) {
+                Lifecycle lifecycle = mActivity.getLifecycle();
+                lifecycle.addObserver(this);
+            } else if (mTypeFromPage == 2) {
+                if (mFragment != null) {
+                    Lifecycle lifecycle = mFragment.getLifecycle();
+                    lifecycle.addObserver(this);
+                }
+            }
+
+            if (createdListener != null) {
+                createdListener.onViewCreated(mLayout);
+            }
         }
 
         //: pop背景（如果不设置就不会点击消失）
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         //: 设置可以点击pop以外的区域
-        mPopupWindow.setOutsideTouchable(builder.mTouchable);
+        mPopupWindow.setOutsideTouchable(touchable);
 
         //: 设置PopupWindow可获得焦点
         mPopupWindow.setFocusable(true);
@@ -98,22 +139,41 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
         mPopupWindow.setTouchable(true);
 
         //: 设置超出屏幕显示
-        mPopupWindow.setClippingEnabled(builder.mClippingEnabled);
+        mPopupWindow.setClippingEnabled(clippingEnabled);
 
-        // 关闭布局的view
-        if (builder.mCloseView != null) {
-            builder.mCloseView.setOnClickListener(v -> dismiss());
+        // 关闭布局的view集合
+        if (closeView != null) {
+            for (int i = 0; i < closeView.size(); i++) {
+                View view = closeView.get(i);
+                view.setOnClickListener(v -> dismiss());
+            }
         }
 
         // 关闭的监听
         mPopupWindow.setOnDismissListener(() -> {
-            if (builder.mAlpha > 0) {
-                builder.closeAlpha();
+            if (mAlpha > 0) {
+                closeAlpha();
             }
             if (mOnDismissListener != null) {
                 mOnDismissListener.onDismiss();
             }
         });
+
+//        mPopupWindow.setTouchInterceptor(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                // 如果点击了popupwindow的外部，popupwindow也会消失
+//                // 这⾥如果返回true的话，touch事件将被拦截
+//                // 拦截后 PopupWindow的onTouchEvent不被调⽤，这样点击外部区域⽆法dismiss
+//                if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+//                    //popupMenu.dismiss();
+////                    StationEventCaptain.getInstance().fireEventDataChange(
+////                            new StationEventData(IStationEventName.HEDGE_KEYBORAD_DIMISS, true));
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
     }
 
     /**
@@ -130,15 +190,15 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @return 相对于整个窗口的显示，并指定偏移
      */
     public PopupWindowUtil showAtLocation(View view, int xoff, int yoff) {
-        if ((mBuilder != null) && (mBuilder.mActivity != null) && (view != null)) {
+        if (view != null) {
             if ((!mPopupWindow.isShowing())) {
                 view.post(() -> {
-                    if (mBuilder.mAlpha > 0) {
-                        mBuilder.openAlpha();
+                    if (mAlpha > 0) {
+                        openAlpha();
                     }
-                    mPopupWindow.showAtLocation(view, mBuilder.mGravity, xoff, yoff);
+                    mPopupWindow.showAtLocation(view, mGravity, xoff, yoff);
                     if (mShowListener != null) {
-                        mShowListener.onShow(mBuilder.mLayout);
+                        mShowListener.onShow(mLayout);
                     }
                 });
             }
@@ -155,13 +215,13 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
         if (anchor != null) {
             anchor.post(() -> {
                 if (mPopupWindow != null) {
-                    if (mBuilder.mAlpha > 0) {
-                        mBuilder.openAlpha();
+                    if (mAlpha > 0) {
+                        openAlpha();
                     }
                     mPopupWindow.showAsDropDown(anchor, xoff, yoff);
 
                     if (mShowListener != null) {
-                        mShowListener.onShow(mBuilder.mLayout);
+                        mShowListener.onShow(mLayout);
                     }
                 }
             });
@@ -192,8 +252,8 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @return 设置textView的内容
      */
     public PopupWindowUtil setText(@IdRes int id, String content) {
-        if ((mBuilder != null) && (mBuilder.mLayout != null)) {
-            View view = mBuilder.mLayout.findViewById(id);
+        if (mLayout != null) {
+            View view = mLayout.findViewById(id);
             if (view instanceof TextView) {
                 TextViewUtil.setText((TextView) view, content);
             }
@@ -220,8 +280,10 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
 
     public static class Builder {
         private final FragmentActivity mActivity; // 上下文对象
+        private Fragment mFragment;
         private View mLayout; // 布局
-        private View mCloseView; // 关闭布局的view
+        private List<View> mCloseView; // 关闭布局的view
+        private ViewCreatedListener mCreatedListener;
 
         private int mWidth = ViewGroup.LayoutParams.WRAP_CONTENT;   // 默认的宽高
         private int mHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -229,16 +291,38 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
         private boolean mClippingEnabled = false; // 是否可以超出屏幕显示，默认false:表示可以遮罩
         private int mGravity = Gravity.CENTER;// 默认居中显示
         private float mAlpha;// 透明度
+        private int mTypeFromPage = 1;// 1:fragmentActivity 2:fragment
 
         public Builder(FragmentActivity activity, View layout) {
             mActivity = activity;
             mLayout = layout;
+            mTypeFromPage = 1;
         }
 
         public Builder(FragmentActivity activity, @LayoutRes int resource) {
             mActivity = activity;
+            mTypeFromPage = 1;
             if (resource != 0) {
                 View inflate = LayoutInflater.from(activity).inflate(resource, null, false);
+                if (inflate != null) {
+                    mLayout = inflate;
+                }
+            }
+        }
+
+        public Builder(Fragment fragment, View layout) {
+            mFragment = fragment;
+            mLayout = layout;
+            mActivity = fragment.getActivity();
+            mTypeFromPage = 2;
+        }
+
+        public Builder(Fragment fragment, @LayoutRes int resource) {
+            mFragment = fragment;
+            mActivity = fragment.getActivity();
+            mTypeFromPage = 2;
+            if (resource != 0) {
+                View inflate = LayoutInflater.from(fragment.getContext()).inflate(resource, null, false);
                 if (inflate != null) {
                     mLayout = inflate;
                 }
@@ -377,7 +461,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
             if (mLayout != null) {
                 View view = mLayout.findViewById(id);
                 if (view != null) {
-                    mCloseView = view;
+                    setClose(view);
                 }
             }
             return this;
@@ -389,7 +473,10 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
          */
         public Builder setClose(View view) {
             if (view != null) {
-                mCloseView = view;
+                if (mCloseView == null) {
+                    mCloseView = new ArrayList<>();
+                }
+                mCloseView.add(view);
             }
             return this;
         }
@@ -399,22 +486,9 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
             return this;
         }
 
-        private void openAlpha() {
-            if (mActivity != null) {
-                Window window = mActivity.getWindow();
-                WindowManager.LayoutParams attributes = window.getAttributes();
-                attributes.alpha = mAlpha;
-                window.setAttributes(attributes);
-            }
-        }
-
-        private void closeAlpha() {
-            if (mActivity != null) {
-                Window window = mActivity.getWindow();
-                WindowManager.LayoutParams attributes = window.getAttributes();
-                attributes.alpha = 1.0f;
-                window.setAttributes(attributes);
-            }
+        public Builder setViewCreated(ViewCreatedListener viewCreated) {
+            this.mCreatedListener = viewCreated;
+            return this;
         }
 
         public PopupWindowUtil Build() {
@@ -453,6 +527,24 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
 
     }
 
+    private void openAlpha() {
+        if (mActivity != null) {
+            Window window = mActivity.getWindow();
+            WindowManager.LayoutParams attributes = window.getAttributes();
+            attributes.alpha = mAlpha;
+            window.setAttributes(attributes);
+        }
+    }
+
+    private void closeAlpha() {
+        if (mActivity != null) {
+            Window window = mActivity.getWindow();
+            WindowManager.LayoutParams attributes = window.getAttributes();
+            attributes.alpha = 1.0f;
+            window.setAttributes(attributes);
+        }
+    }
+
     /**
      * 窗口打开和关闭的监听
      */
@@ -479,8 +571,5 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
             mPopupWindow = null;
         }
 
-        if (mBuilder != null) {
-            mBuilder = null;
-        }
     }
 }

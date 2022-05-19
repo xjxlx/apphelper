@@ -42,11 +42,15 @@ public class ResourceUtil {
 
     public static Bitmap getBitmap(@DrawableRes int id) {
         Bitmap bitmap = null;
-        if (id != 0 && mContext != null) {
-            bitmap = BitmapFactory.decodeResource(mContext.getResources(), id);
-            if (bitmap != null) {
-                return bitmap;
+        try {
+            if (id != 0 && mContext != null) {
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), id);
+                if (bitmap != null) {
+                    return bitmap;
+                }
             }
+        } catch (Exception e) {
+            LogUtil.e("获取Bitmap失败！");
         }
         return bitmap;
     }
@@ -57,13 +61,17 @@ public class ResourceUtil {
      */
     public static float getDimension(@DimenRes int id) {
         float dimension = 0.0f;
-        Application application = BaseApplication.getInstance().getApplication();
-        if (application != null) {
-            Resources resources = application.getResources();
-            if (resources != null) {
-                dimension = resources.getDimension(id);
-                return dimension;
+        try {
+            Application application = BaseApplication.getInstance().getApplication();
+            if (application != null) {
+                Resources resources = application.getResources();
+                if (resources != null) {
+                    dimension = resources.getDimension(id);
+                    return dimension;
+                }
             }
+        } catch (Exception e) {
+            LogUtil.e("获取dimens失败！");
         }
         return dimension;
     }
