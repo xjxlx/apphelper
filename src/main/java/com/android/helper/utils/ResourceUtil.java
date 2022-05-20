@@ -12,7 +12,9 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
+import com.android.helper.R;
 import com.android.helper.app.BaseApplication;
 
 /**
@@ -75,6 +77,23 @@ public class ResourceUtil {
             LogUtil.e("获取dimens失败！");
         }
         return dimension;
+    }
+
+    public static Drawable getShapeDrawable(int shapeId) {
+        Drawable drawableShape = null;
+        try {
+            Application application = BaseApplication.getInstance().getApplication();
+            if (application != null) {
+                Resources resources = application.getResources();
+                if (resources != null) {
+                    // 获取资源文件中定义的dimension值
+                    drawableShape = ResourcesCompat.getDrawable(resources, shapeId, application.getTheme());
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.e("获取dimens失败！");
+        }
+        return drawableShape;
     }
 
 }
