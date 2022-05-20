@@ -388,12 +388,15 @@ public class LocationUtil implements BaseLifecycleObserver {
 
         if (isBackgroundRunning) {
             // 避免重复添加
-            if (!mListPermission.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            // if (!mListPermission.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            if (!mListPermission.contains("android.permission.ACCESS_BACKGROUND_LOCATION")) {
                 // android 30 后台定位
-                int Q = Build.VERSION_CODES.Q;
+                // int Q = Build.VERSION_CODES.Q;
+                int Q = 29;
                 // 开发版本大于等于30 && SDK版本 大于等于30
                 if ((TARGET_VERSION >= Q) && (SDK_INT >= Q)) {
-                    mListPermission.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);// 后台定位权限
+                    // mListPermission.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);// 后台定位权限
+                    mListPermission.add("android.permission.ACCESS_BACKGROUND_LOCATION");// 后台定位权限
                 }
             }
         }
@@ -517,8 +520,10 @@ public class LocationUtil implements BaseLifecycleObserver {
         // 注意设置合适的定位时间的间隔（最小间隔支持为1000ms），并且在合适时间调用stopLocation()方法来取消定位请求
         // 在定位结束后，在合适的生命周期调用onDestroy()方法
         // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
+
         //启动定位
-        onResume();
+        // 首次启动定位
+        mClient.startLocation();
     }
     //</editor-fold>
 

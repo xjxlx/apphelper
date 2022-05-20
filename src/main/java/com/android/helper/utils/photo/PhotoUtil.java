@@ -49,7 +49,8 @@ public class PhotoUtil implements BaseLifecycleObserver {
             LogUtil.e("压缩拍摄视频的路径为：$mPhoto_path");
         } else {
             // android Q 版本数据的获取
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+            // if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+            if (Build.VERSION.SDK_INT == 29) {
                 String androidQToPath = localMedia.getAndroidQToPath();
                 if (!TextUtils.isEmpty(androidQToPath)) {
                     url = androidQToPath;
