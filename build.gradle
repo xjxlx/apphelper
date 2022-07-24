@@ -5,7 +5,7 @@ plugins {
 
 //启用Jitpack 插件
 //apply plugin: 'com.github.dcendents.android-maven'
-group = 'com.github.apphelper'
+//group = 'com.github.apphelper'
 
 android {
     def compile = rootProject.ext.android
