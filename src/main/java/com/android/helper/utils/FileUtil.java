@@ -1,23 +1,18 @@
 package com.android.helper.utils;
 
-import android.Manifest;
 import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.provider.Settings;
 import android.text.TextUtils;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
@@ -451,21 +446,21 @@ public class FileUtil implements BaseLifecycleObserver {
     private boolean commonCheckAllFile(FragmentActivity activity) {
         boolean isPermission = false;
         if (activity != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                // 先判断有没有权限
-                isPermission = Environment.isExternalStorageManager();
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // 7.0 判断读权限和写权限
-                if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                        ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    isPermission = true;
-                } else {
-                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
-                }
-            } else {
-                // 其他版本，默认拥有权限
-                isPermission = true;
-            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//                // 先判断有没有权限
+//                isPermission = Environment.isExternalStorageManager();
+//            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                // 7.0 判断读权限和写权限
+//                if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+//                        ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+//                    isPermission = true;
+//                } else {
+//                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
+//                }
+//            } else {
+//                // 其他版本，默认拥有权限
+//                isPermission = true;
+//            }
         }
         return isPermission;
     }
@@ -480,11 +475,12 @@ public class FileUtil implements BaseLifecycleObserver {
      */
     public void jumpAllFiles() {
         if (mActivity != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            //   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT >= 30) {
                 if (mRegister != null) {
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                    intent.setData(Uri.parse("package:" + mActivity.getPackageName()));
-                    mRegister.launch(intent);
+//                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+//                    intent.setData(Uri.parse("package:" + mActivity.getPackageName()));
+//                    mRegister.launch(intent);
                 }
             } else {
                 ToastUtil.show("当前系统无需开启所有文件访问权限！");
