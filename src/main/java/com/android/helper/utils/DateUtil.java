@@ -217,4 +217,55 @@ public class DateUtil {
         return result;
     }
 
+    /**
+     * @param calendar 日历对象
+     * @param pattern  转换规则，例如：yyyy-MM-dd HH:mm:ss
+     * @return 把一个日历对象转换为具体的时间格式
+     */
+    public static String getDateForCalendar(Calendar calendar, String pattern) {
+//        Calendar instance = Calendar.getInstance();
+        // 增加
+//        instance.add(Calendar.DAY_OF_MONTH,2025);
+//
+//        instance.set(Calendar.YEAR, ((mStartYear!!) + (DEFAULT_END_YEAR)))
+//        instance.set(Calendar.MONTH, 11) // 从0开始，11 是最大的值
+//        instance.set(Calendar.DAY_OF_MONTH, 31)
+//        instance.set(Calendar.HOUR_OF_DAY, 23)
+//        instance.set(Calendar.MINUTE, 59)
+//        instance.set(Calendar.SECOND, 59)
+
+        if ((calendar != null) && !TextUtils.isEmpty(pattern)) {
+            return DateFormat.format(pattern, calendar).toString();
+        }
+        return "";
+    }
+
+    /**
+     * @param calendar 日历对象
+     * @param field    key值
+     * @param value    具体的key的值
+     * @return 把一个Calendar 对象重新设置内容，并返回该对象
+     */
+    public static Calendar setDateForCalendar(Calendar calendar, int field, int value) {
+//        //年
+//        calendar.set(Calendar.YEAR, 2014);
+//        //月
+//        calendar.set(Calendar.MONTH, 11); // 从0开始，11 是最大的值
+//        // 日
+//        calendar.set(Calendar.DAY_OF_MONTH, 31)
+//        // 时
+//        calendar.set(Calendar.HOUR_OF_DAY, 23)
+//        // 分
+//        calendar.set(Calendar.MINUTE, 59)
+//        // 秒
+//        calendar.set(Calendar.SECOND, 59)
+
+        // 设置具体的内容
+        if (calendar != null) {
+            calendar.set(field, value);
+        }
+        return calendar;
+    }
+
+
 }

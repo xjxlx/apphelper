@@ -72,4 +72,65 @@ public class XmlUtil {
             }
         }
     }
+
+    /**
+     * 批量写入数据到文本中
+     *
+     * @param filePath 写入数据的文本地址
+     */
+    public void writeDatForString(String filePath, String start, String end, List<String> list) {
+
+        FileOutputStream outputStream = null;
+
+        if (!TextUtils.isEmpty(filePath)) {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+            LogUtil.e("文件是否存在：" + file.exists());
+
+            if (list == null || list.size() <= 0) {
+                ToastUtil.show("写入长度异常，无法写入！");
+                return;
+            }
+
+            try {
+                /*
+                 * 往文件<.txt>中一行一行的写入数据
+                 * append 为true表示追加内容，false表示覆盖内容
+                 */
+                outputStream = new FileOutputStream(file);
+                // 往文件中写入10行数据进行测试
+                for (int i = 0; i < list.size(); i++) {
+                    // \n  表示换行
+                    String value = list.get(i);
+                    String data = start + value + end;
+                    try {
+                        outputStream.write(data.getBytes());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                ToastUtil.show("数据写入完毕！");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                LogUtil.e("写文件异常：：" + e.getMessage());
+            } finally {
+                //注意关闭的先后顺序，先打开的后关闭，后打开的先关闭
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
 }
