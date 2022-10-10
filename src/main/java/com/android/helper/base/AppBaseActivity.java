@@ -175,7 +175,7 @@ public abstract class AppBaseActivity extends AppCompatActivity implements View.
      *
      * @param v 点击的view
      */
-    private void onViewClick(View v) {
+    public void onViewClick(View v) {
         // 在指定的间隔时间内是否做了双击
         // view的点击事件间隔
         int clickInterval = 500;
