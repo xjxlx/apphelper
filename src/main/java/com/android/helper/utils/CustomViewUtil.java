@@ -41,6 +41,18 @@ public class CustomViewUtil {
     /**
      * @param paint   画笔
      * @param content 内容
+     * @return 返回测量文字的宽度
+     */
+    public static float getTextViewWidth(Paint paint, String content) {
+        if (paint == null || TextUtils.isEmpty(content)) {
+            return 0;
+        }
+        return paint.measureText(content, 0, content.length());
+    }
+
+    /**
+     * @param paint   画笔
+     * @param content 内容
      * @return 获取文字的高度
      */
     public static float getTextHeight(Paint paint, String content) {
