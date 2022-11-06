@@ -33,10 +33,10 @@ import java.util.List;
  * 使用的时候，要在activity 或者 fragment 中调用 getLifecycle.addObserver() 把自身
  * 绑定页面的生命周期，在页面关闭的时候，就会自动关闭弹窗，避免出现找不到window的崩溃
  * 错误了
+ * 此工具已经废弃，最新版可以使用
  */
 
-public class PopupWindowUtil implements BaseLifecycleObserver {
-
+public class PopupUtil implements BaseLifecycleObserver {
     @SuppressLint("StaticFieldLeak")
     private PopupWindow mPopupWindow;
     private PopupWindow.OnDismissListener mOnDismissListener;
@@ -47,7 +47,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
     private int mGravity;// 默认居中显示
     private float mAlpha;// 透明度
 
-    private PopupWindowUtil(Builder builder) {
+    private PopupUtil(Builder builder) {
         // 构建popupWindow
         if (builder != null) {
             initPopupWindow(builder);
@@ -165,7 +165,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @param view 用来获取token的view，随意view都可以
      * @return 相对于整个窗口的显示，默认显示在窗口的正中间
      */
-    public PopupWindowUtil showAtLocation(View view) {
+    public PopupUtil showAtLocation(View view) {
         showAtLocation(view, 0, 0);
         return this;
     }
@@ -174,7 +174,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @param view 用来获取token的view，随意view都可以
      * @return 相对于整个窗口的显示，并指定偏移
      */
-    public PopupWindowUtil showAtLocation(View view, int xoff, int yoff) {
+    public PopupUtil showAtLocation(View view, int xoff, int yoff) {
         if (view != null) {
             if ((!mPopupWindow.isShowing())) {
                 view.post(() -> {
@@ -196,7 +196,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @CreateDate: 2021/9/28
      * @Description: 从view的左下方弹出，并指定偏移，是相对于某个控件显示
      */
-    public PopupWindowUtil showAsDropDown(View anchor, int xoff, int yoff) {
+    public PopupUtil showAsDropDown(View anchor, int xoff, int yoff) {
         if (anchor != null) {
             anchor.post(() -> {
                 if (mPopupWindow != null) {
@@ -219,7 +219,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @CreateDate: 2021/9/28
      * @Description: 从view的左下方弹出，是相对于某个控件显示
      */
-    public PopupWindowUtil showAsDropDown(View anchor) {
+    public PopupUtil showAsDropDown(View anchor) {
         this.showAsDropDown(anchor, 0, 0);
         return this;
     }
@@ -236,7 +236,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @param content 现实的内容
      * @return 设置textView的内容
      */
-    public PopupWindowUtil setText(@IdRes int id, String content) {
+    public PopupUtil setText(@IdRes int id, String content) {
         if (mLayout != null) {
             View view = mLayout.findViewById(id);
             if (view instanceof TextView) {
@@ -251,7 +251,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
      * @param content  显示的内容
      * @return 设置textView的内容
      */
-    public PopupWindowUtil setText(TextView textView, String content) {
+    public PopupUtil setText(TextView textView, String content) {
         TextViewUtil.setText(textView, content);
         return this;
     }
@@ -476,8 +476,8 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
             return this;
         }
 
-        public PopupWindowUtil Build() {
-            return new PopupWindowUtil(this);
+        public PopupUtil Build() {
+            return new PopupUtil(this);
         }
     }
 
@@ -533,7 +533,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
     /**
      * 窗口打开和关闭的监听
      */
-    public PopupWindowUtil setOnDismissListener(PopupWindow.OnDismissListener dismissListener) {
+    public PopupUtil setOnDismissListener(PopupWindow.OnDismissListener dismissListener) {
         this.mOnDismissListener = dismissListener;
         return this;
     }
@@ -541,7 +541,7 @@ public class PopupWindowUtil implements BaseLifecycleObserver {
     /**
      * 窗口打开的监听
      */
-    public PopupWindowUtil setOnShowListener(OnShowListener showListener) {
+    public PopupUtil setOnShowListener(OnShowListener showListener) {
         this.mShowListener = showListener;
         return this;
     }
