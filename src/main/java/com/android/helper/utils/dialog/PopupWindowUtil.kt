@@ -36,6 +36,7 @@ class PopupWindowUtil : BaseLifecycleObserver {
     private var mDismissListener: OnDismissListener? = null
     private var mCreatedListener: ViewCreatedListener? = null
     private var mShowListener: OnShowListener? = null
+    private val mCloseList: ArrayList<View> = arrayListOf()
 
     fun setContentView(fragment: Fragment, view: View): PopupWindowUtil {
         this.mFragment = fragment
@@ -122,17 +123,44 @@ class PopupWindowUtil : BaseLifecycleObserver {
                         contentView = layout
 
                         // 布局加载后的回调
-                        mCreatedListener?.onViewCreated(layout, this@PopupWindowUtil)
+                        if (mCreatedListener != null) {
+                            LogUtil.e(TAG, " onViewCreated ")
+                            mCreatedListener?.onViewCreated(layout, this@PopupWindowUtil)
+                        }
+
+                        // close view
+                        for (item in mCloseList) {
+                            item.setOnClickListener {
+                                this@PopupWindowUtil.dismiss()
+                            }
+                        }
                     }
 
                     // 关闭
-                    this.setOnDismissListener { mDismissListener?.onDismiss(mLayout, this@PopupWindowUtil) }
+                    this.setOnDismissListener {
+                        LogUtil.e(TAG, "onDismiss")
+                        mDismissListener?.onDismiss(mLayout, this@PopupWindowUtil)
+                    }
                 }
     }
 
-    fun closeView(closeView: View): PopupWindowUtil {
-        closeView.setOnClickListener { view ->
-            view.setOnClickListener { dismiss() }
+    fun closeView(vararg closeView: View): PopupWindowUtil {
+        for (item in closeView) {
+            if (item !in mCloseList) {
+                mCloseList.add(item)
+            }
+        }
+        return this
+    }
+
+    fun closeView(vararg closeView: Int): PopupWindowUtil {
+        for (item in closeView) {
+            val view = mLayout?.findViewById<View>(item)
+            if (view != null) {
+                if (view !in mCloseList) {
+                    mCloseList.add(view)
+                }
+            }
         }
         return this
     }
@@ -260,6 +288,9 @@ class PopupWindowUtil : BaseLifecycleObserver {
     }
 
     fun build(): PopupWindowUtil {
+        if (mLayout == null) {
+            throw NullPointerException("setContentView 未调用！")
+        }
         initPopupWindow()
         return this
     }
