@@ -9,7 +9,8 @@ import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.android.helper.utils.LogUtil
 import com.android.helper.utils.TextViewUtil
 
@@ -18,7 +19,8 @@ import com.android.helper.utils.TextViewUtil
  * @CreateDate: 2022/11/6-14:12
  * @Description:
  */
-class PopupWindowUtil : BaseLifecycleObserver {
+class PopupWindowUtil {
+
     private val TAG = "PopupWindowUtil2"
     private var mActivity: FragmentActivity? = null
     private var mFragment: Fragment? = null
@@ -37,6 +39,21 @@ class PopupWindowUtil : BaseLifecycleObserver {
     private var mCreatedListener: ViewCreatedListener? = null
     private var mShowListener: OnShowListener? = null
     private val mCloseList: ArrayList<View> = arrayListOf()
+
+    private val defaultLifecycleObserver = object : DefaultLifecycleObserver {
+        override fun onDestroy(owner: LifecycleOwner) {
+            LogUtil.e(TAG, "onDestroy")
+            // 手动关闭弹窗，避免崩溃
+            if (isShowing()) {
+                dismiss()
+            }
+
+            if (popupWindow != null) {
+                popupWindow = null
+            }
+            super.onDestroy(owner)
+        }
+    }
 
     fun setContentView(fragment: Fragment, view: View): PopupWindowUtil {
         this.mFragment = fragment
@@ -68,9 +85,9 @@ class PopupWindowUtil : BaseLifecycleObserver {
     private fun initPopupWindow() {
         // 添加管理
         if (mTypeFromPage == DialogFromType.TYPE_FRAGMENT) {
-            mFragment?.lifecycle?.addObserver(this)
+            mFragment?.lifecycle?.addObserver(defaultLifecycleObserver)
         } else if (mTypeFromPage == DialogFromType.TYPE_ACTIVITY) {
-            mActivity?.lifecycle?.addObserver(this)
+            mActivity?.lifecycle?.addObserver(defaultLifecycleObserver)
         }
 
         // 释放掉原来的pop
@@ -80,7 +97,6 @@ class PopupWindowUtil : BaseLifecycleObserver {
             }
             popupWindow = null
         }
-
 
         //解决android 9.0水滴屏/刘海屏有黑边的问题
         mActivity?.let {
@@ -92,56 +108,55 @@ class PopupWindowUtil : BaseLifecycleObserver {
             }
         }
 
-        popupWindow = PopupWindow()
-                .apply {
-                    this.width = mWidth // 宽度
-                    this.height = mHeight // 高度
+        popupWindow = PopupWindow().apply {
+            this.width = mWidth // 宽度
+            this.height = mHeight // 高度
 
-                    // 点击外部是否关闭popupWindow
-                    if (mTouchable) {
-                        this.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                    } else {
-                        this.setBackgroundDrawable(null)
-                    }
+            // 点击外部是否关闭popupWindow
+            if (mTouchable) {
+                this.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            } else {
+                this.setBackgroundDrawable(null)
+            }
 
-                    // 焦点
-                    this.isFocusable = focusable
-                    // 设置可以点击pop以外的区域
-                    this.isOutsideTouchable = mTouchable
-                    // 设置PopupWindow可触摸
-                    this.isTouchable = mTouchable
-                    // 设置超出屏幕显示，默认为false,代表可以
-                    this.isClippingEnabled = mClippingEnabled
+            // 焦点
+            this.isFocusable = focusable
+            // 设置可以点击pop以外的区域
+            this.isOutsideTouchable = mTouchable
+            // 设置PopupWindow可触摸
+            this.isTouchable = mTouchable
+            // 设置超出屏幕显示，默认为false,代表可以
+            this.isClippingEnabled = mClippingEnabled
 
-                    mLayout?.let { layout ->
-                        // 移除原来的父类
-                        val parent = layout.parent
-                        if (parent is ViewGroup) {
-                            parent.removeAllViews()
-                        }
-                        // 设置布局
-                        contentView = layout
+            mLayout?.let { layout ->
+                // 移除原来的父类
+                val parent = layout.parent
+                if (parent is ViewGroup) {
+                    parent.removeAllViews()
+                }
+                // 设置布局
+                contentView = layout
 
-                        // 布局加载后的回调
-                        if (mCreatedListener != null) {
-                            LogUtil.e(TAG, " onViewCreated ")
-                            mCreatedListener?.onViewCreated(layout, this@PopupWindowUtil)
-                        }
+                // 布局加载后的回调
+                if (mCreatedListener != null) {
+                    LogUtil.e(TAG, " onViewCreated ")
+                    mCreatedListener?.onViewCreated(layout, this@PopupWindowUtil)
+                }
 
-                        // close view
-                        for (item in mCloseList) {
-                            item.setOnClickListener {
-                                this@PopupWindowUtil.dismiss()
-                            }
-                        }
-                    }
-
-                    // 关闭
-                    this.setOnDismissListener {
-                        LogUtil.e(TAG, "onDismiss")
-                        mDismissListener?.onDismiss(mLayout, this@PopupWindowUtil)
+                // close view
+                for (item in mCloseList) {
+                    item.setOnClickListener {
+                        this@PopupWindowUtil.dismiss()
                     }
                 }
+            }
+
+            // 关闭
+            this.setOnDismissListener {
+                LogUtil.e(TAG, "onDismiss")
+                mDismissListener?.onDismiss(mLayout, this@PopupWindowUtil)
+            }
+        }
     }
 
     fun closeView(vararg closeView: View): PopupWindowUtil {
@@ -295,44 +310,18 @@ class PopupWindowUtil : BaseLifecycleObserver {
         return this
     }
 
-    override fun onCreate() {
-    }
-
-    override fun onStart() {
-    }
-
-    override fun onResume() {
-    }
-
-    override fun onPause() {
-    }
-
-    override fun onStop() {
-    }
-
-    override fun onDestroy() {
-        LogUtil.e(TAG, "onDestroy")
-        // 手动关闭弹窗，避免崩溃
-        if (isShowing()) {
-            dismiss()
-        }
-
-        if (popupWindow != null) {
-            popupWindow = null
-        }
-    }
-
     interface ViewCreatedListener {
+
         fun onViewCreated(rootView: View?, popupWindow: PopupWindowUtil)
     }
 
     interface OnShowListener {
+
         fun onShow(view: View?, popupWindow: PopupWindowUtil)
     }
 
     interface OnDismissListener {
         fun onDismiss(view: View?, popupWindow: PopupWindowUtil)
     }
-
 
 }

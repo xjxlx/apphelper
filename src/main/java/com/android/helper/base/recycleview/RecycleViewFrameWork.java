@@ -10,12 +10,13 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.helper.R;
 import com.android.helper.app.BaseApplication;
-import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.TextViewUtil;
 import com.android.helper.utils.refresh.RefreshUtil;
@@ -30,7 +31,7 @@ import java.util.List;
 /**
  * RecycleView 的最底层
  */
-public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<E> implements BaseLifecycleObserver {
+public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<E> {
 
     protected boolean isDestroy;// 页面是不是已经销毁了
 
@@ -85,6 +86,36 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         int TYPE_FOOT = -33;
     }
 
+    private final DefaultLifecycleObserver defaultLifecycleObserver = new DefaultLifecycleObserver() {
+        @Override
+        public void onDestroy(@NonNull LifecycleOwner owner) {
+            DefaultLifecycleObserver.super.onDestroy(owner);
+
+            if (mFragment != null) {
+                boolean detached = mFragment.isDetached();
+                if (detached) {
+                    isDestroy = true;
+                }
+            }
+
+            if (mActivity != null) {
+                if (mActivity.isFinishing() || mActivity.isDestroyed()) {
+                    isDestroy = true;
+                }
+            }
+
+            if (mEmptyView != null) {
+                mEmptyView = null;
+            }
+
+            if (mList != null) {
+                mList = null;
+            }
+
+            LogUtil.e("isDestroy:" + isDestroy);
+        }
+    };
+
     public RecycleViewFrameWork(FragmentActivity activity) {
         addObserverActivity(activity, null);
     }
@@ -106,7 +137,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         this.mList = list;
         if (fragment != null) {
             Lifecycle lifecycle = fragment.getLifecycle();
-            lifecycle.addObserver(this);
+            lifecycle.addObserver(defaultLifecycleObserver);
             mActivity = mFragment.getActivity();
         }
     }
@@ -116,7 +147,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         this.mList = list;
         if (activity != null) {
             Lifecycle lifecycle = activity.getLifecycle();
-            lifecycle.addObserver(this);
+            lifecycle.addObserver(defaultLifecycleObserver);
         }
     }
 
@@ -440,57 +471,6 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     public void onAttachedToRecyclerView(@NonNull @NotNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         this.mRecycleView = recyclerView;
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onStart() {
-
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mFragment != null) {
-            boolean detached = mFragment.isDetached();
-            if (detached) {
-                isDestroy = true;
-            }
-        }
-
-        if (mActivity != null) {
-            if (mActivity.isFinishing() || mActivity.isDestroyed()) {
-                isDestroy = true;
-            }
-        }
-
-        if (mEmptyView != null) {
-            mEmptyView = null;
-        }
-
-        if (mList != null) {
-            mList = null;
-        }
-
-        LogUtil.e("isDestroy:" + isDestroy);
     }
 
 }
