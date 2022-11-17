@@ -9,8 +9,10 @@ import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import com.android.helper.interfaces.lifecycle.LifecycleDestroyObserver
 import com.android.helper.utils.LogUtil
 import com.android.helper.utils.TextViewUtil
 
@@ -40,18 +42,15 @@ class PopupWindowUtil {
     private var mShowListener: OnShowListener? = null
     private val mCloseList: ArrayList<View> = arrayListOf()
 
-    private val defaultLifecycleObserver = object : DefaultLifecycleObserver {
-        override fun onDestroy(owner: LifecycleOwner) {
-            LogUtil.e(TAG, "onDestroy")
-            // 手动关闭弹窗，避免崩溃
-            if (isShowing()) {
-                dismiss()
-            }
+    private val mLifecycleObserver = LifecycleDestroyObserver {
+        LogUtil.e(TAG, "onDestroy")
+        // 手动关闭弹窗，避免崩溃
+        if (isShowing()) {
+            dismiss()
+        }
 
-            if (popupWindow != null) {
-                popupWindow = null
-            }
-            super.onDestroy(owner)
+        if (popupWindow != null) {
+            popupWindow = null
         }
     }
 
@@ -85,9 +84,9 @@ class PopupWindowUtil {
     private fun initPopupWindow() {
         // 添加管理
         if (mTypeFromPage == DialogFromType.TYPE_FRAGMENT) {
-            mFragment?.lifecycle?.addObserver(defaultLifecycleObserver)
+            mFragment?.lifecycle?.addObserver(mLifecycleObserver)
         } else if (mTypeFromPage == DialogFromType.TYPE_ACTIVITY) {
-            mActivity?.lifecycle?.addObserver(defaultLifecycleObserver)
+            mActivity?.lifecycle?.addObserver(mLifecycleObserver)
         }
 
         // 释放掉原来的pop
@@ -321,6 +320,7 @@ class PopupWindowUtil {
     }
 
     interface OnDismissListener {
+
         fun onDismiss(view: View?, popupWindow: PopupWindowUtil)
     }
 

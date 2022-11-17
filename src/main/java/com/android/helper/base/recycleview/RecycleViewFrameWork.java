@@ -10,13 +10,12 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.helper.R;
 import com.android.helper.app.BaseApplication;
+import com.android.helper.interfaces.lifecycle.LifecycleDestroyObserver;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.TextViewUtil;
 import com.android.helper.utils.refresh.RefreshUtil;
@@ -86,11 +85,9 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         int TYPE_FOOT = -33;
     }
 
-    private final DefaultLifecycleObserver defaultLifecycleObserver = new DefaultLifecycleObserver() {
+    private final LifecycleDestroyObserver lifecycleDestroyObserver = new LifecycleDestroyObserver() {
         @Override
-        public void onDestroy(@NonNull LifecycleOwner owner) {
-            DefaultLifecycleObserver.super.onDestroy(owner);
-
+        public void onDestroy() {
             if (mFragment != null) {
                 boolean detached = mFragment.isDetached();
                 if (detached) {
@@ -137,7 +134,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         this.mList = list;
         if (fragment != null) {
             Lifecycle lifecycle = fragment.getLifecycle();
-            lifecycle.addObserver(defaultLifecycleObserver);
+            lifecycle.addObserver(lifecycleDestroyObserver);
             mActivity = mFragment.getActivity();
         }
     }
@@ -147,7 +144,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         this.mList = list;
         if (activity != null) {
             Lifecycle lifecycle = activity.getLifecycle();
-            lifecycle.addObserver(defaultLifecycleObserver);
+            lifecycle.addObserver(lifecycleDestroyObserver);
         }
     }
 
@@ -471,6 +468,10 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     public void onAttachedToRecyclerView(@NonNull @NotNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         this.mRecycleView = recyclerView;
+    }
+
+    public void onDestroy() {
+
     }
 
 }

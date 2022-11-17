@@ -9,8 +9,8 @@ plugins {
 
 android {
     def compile = rootProject.ext.android
-
     compileSdkVersion compile.compileSdkVersion
+
     // 此处暂时先别打开
     buildToolsVersion compile.buildToolsVersion
 
@@ -84,9 +84,9 @@ dependencies {
     // implementation 'com.squareup.okhttp3:logging-interceptor:4.8.0' // 拦截器，非必须
 
     // 公共的类库引用
-    def lifecycle_version = "2.5.0"
-    api "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
-    api "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    def lifecycle_version = "2.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
     // 私有的类库引用
     api 'org.greenrobot:eventbus:3.2.0'
@@ -117,14 +117,12 @@ dependencies {
     api 'androidx.viewpager2:viewpager2:1.0.0'
 
     // room数据库的依赖
-    implementation ("androidx.room:room-runtime:2.2.5"){// 禁止依赖的传递
+    implementation("androidx.room:room-runtime:2.2.5") {// 禁止依赖的传递
         transitive = false
     }
-    // 高德
-    api 'com.amap.api:location:5.6.1'  // 定位
-    api 'com.amap.api:search:8.1.0'    // 搜索
-    api 'com.amap.api:3dmap:8.1.0'     // 地图
 
-    //视频 完整版引入
-    // implementation 'com.github.CarGuo.GSYVideoPlayer:GSYVideoPlayer:v8.1.7-release-jitpack'
+    // 高德
+    implementation 'com.amap.api:location:5.6.1'  // 定位
+    implementation 'com.amap.api:search:8.1.0'    // 搜索
+    implementation 'com.amap.api:3dmap:8.1.0'     // 地图
 }
