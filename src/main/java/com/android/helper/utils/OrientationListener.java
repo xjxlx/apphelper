@@ -6,6 +6,8 @@ import android.content.pm.ActivityInfo;
 import android.provider.Settings;
 import android.view.OrientationEventListener;
 
+import androidx.fragment.app.FragmentActivity;
+
 import com.android.helper.interfaces.TagListener;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 
@@ -24,8 +26,8 @@ public class OrientationListener extends OrientationEventListener implements Tag
     public OrientationListener(Context context, Object obj) {
         super(context);
         this.mObj = obj;
-        if (context instanceof Activity) {
-            mContext = (Activity) context;
+        if (context instanceof FragmentActivity) {
+            mContext = (FragmentActivity) context;
         }
     }
 
