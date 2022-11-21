@@ -36,7 +36,7 @@ public abstract class AppBaseActivity extends AppCompatActivity implements View.
     /*
      *此处不能写成静态的，否则就会和使用RxManager一样了
      */
-    private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    public final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

@@ -7,7 +7,7 @@ import com.android.helper.utils.NetworkUtil;
 
 import java.io.IOException;
 
-import io.reactivex.subscribers.DisposableSubscriber;
+import io.reactivex.observers.DisposableObserver;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
@@ -16,7 +16,7 @@ import retrofit2.Response;
  *
  * @param <T>
  */
-public abstract class BaseHttpSubscriber<T> extends DisposableSubscriber<T> {
+public abstract class BaseHttpDisposableObserver<T> extends DisposableObserver<T> {
 
     @Override
     protected void onStart() {
