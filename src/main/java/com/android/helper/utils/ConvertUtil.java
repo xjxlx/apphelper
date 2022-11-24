@@ -1,5 +1,6 @@
 package com.android.helper.utils;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -33,7 +34,9 @@ public class ConvertUtil {
      * @param view TextView的对象
      */
     public static void setPhoneNumber(TextView view) {
-        String str = view.getText().toString();
+        String str = view
+                .getText()
+                .toString();
         StringBuffer buffer = new StringBuffer(str);
         StringBuffer replace = buffer.replace(3, 7, "****");
         view.setText(replace);
@@ -175,7 +178,9 @@ public class ConvertUtil {
      * @return 使用标准的dp值
      */
     public static float toDp(float dp) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, Resources.getSystem().getDisplayMetrics());
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, Resources
+                .getSystem()
+                .getDisplayMetrics());
     }
 
     /**
@@ -183,7 +188,9 @@ public class ConvertUtil {
      * @return 返回一个标准的px的值
      */
     public static float toPx(float px) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, px, Resources.getSystem().getDisplayMetrics());
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, px, Resources
+                .getSystem()
+                .getDisplayMetrics());
     }
 
     /**
@@ -191,7 +198,9 @@ public class ConvertUtil {
      * @return 返回一个标准的sp的值
      */
     public static float toSp(float sp) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, Resources.getSystem().getDisplayMetrics());
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, Resources
+                .getSystem()
+                .getDisplayMetrics());
     }
 
     /***
@@ -257,4 +266,12 @@ public class ConvertUtil {
         }
     }
 
+    // 根据手机的分辨率从 px(像素) 的单位 转成为 dp
+    public static int px2dip(Context context, float pxValue) {
+        // 获取当前手机的像素密度（1个dp对应几个px）
+        float scale = context
+                .getResources()
+                .getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f); // 四舍五入取整
+    }
 }

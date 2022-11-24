@@ -2,7 +2,10 @@ package com.android.helper.utils;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.graphics.Typeface;
+import android.text.TextPaint;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +37,9 @@ public class ToastUtil {
      */
     public static void show(String text) {
         if (context == null) {
-            context = BaseApplication.getInstance().getApplication();
+            context = BaseApplication
+                    .getInstance()
+                    .getApplication();
         }
 
         if (yOffset <= 0) {
@@ -55,7 +60,9 @@ public class ToastUtil {
     public static void show(String text, int duration, int gravity, int xOffset, int yOffset) {
 
         if (context == null) {
-            context = BaseApplication.getInstance().getApplication();
+            context = BaseApplication
+                    .getInstance()
+                    .getApplication();
         }
 
         if (context == null) {
@@ -73,11 +80,18 @@ public class ToastUtil {
 
         toast = new Toast(context);
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.widget_toast, null);
+            view = LayoutInflater
+                    .from(context)
+                    .inflate(R.layout.widget_toast, null);
         }
         TextView textView = view.findViewById(R.id.message);
         // 4:设置布局的内容
         textView.setText(text);
+        textView.setPadding(mLeft, mTop, mRight, mBottom);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
+        if (mIsBOLD) {
+            textView.setTypeface(Typeface.DEFAULT_BOLD);
+        }
 
         // 5:设置Toast的参数
         toast.setGravity(gravity, xOffset, yOffset);
@@ -85,6 +99,28 @@ public class ToastUtil {
 
         toast.setDuration(duration);
         toast.show();
+    }
+
+    private static int mLeft = (int) ConvertUtil.toDp(15);
+    private static int mTop = (int) ConvertUtil.toDp(10);
+    private static int mRight = (int) ConvertUtil.toDp(15);
+    private static int mBottom = (int) ConvertUtil.toDp(10);
+    private static int mTextSize = (int) ConvertUtil.toSp(13);
+    private static boolean mIsBOLD = false;
+
+    public static void setPadding(int left, int top, int right, int bottom) {
+        mLeft = left;
+        mTop = top;
+        mRight = right;
+        mBottom = bottom;
+    }
+
+    public static void setTextSize(int size) {
+        mTextSize = size;
+    }
+
+    public static void isBOLD(boolean isBOLD) {
+        mIsBOLD = isBOLD;
     }
 
 }
