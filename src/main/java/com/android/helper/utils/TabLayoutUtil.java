@@ -155,7 +155,9 @@ public class TabLayoutUtil {
     private View getTabView(int currentPosition) {
         View view = null;
         if (mAdapterCount > 0) {
-            view = LayoutInflater.from(mContext).inflate(R.layout.indicator_tab, null);
+            view = LayoutInflater
+                    .from(mContext)
+                    .inflate(R.layout.indicator_tab, null);
             TextView textView = view.findViewById(R.id.tv_indicator);
 
             if (mViewPagerType == 1) {
@@ -213,6 +215,8 @@ public class TabLayoutUtil {
     private void setTextViewSelector(View view, boolean selector) {
         if ((view != null) && (mResources != null)) {
             TextView textView = view.findViewWithTag("indicator");
+            View tab_indicator = view.findViewWithTag("tab_indicator");
+            
             if (selector) {
                 if (mSelectorTextSize > 0) {
                     textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mResources.getDimension(mSelectorTextSize));
