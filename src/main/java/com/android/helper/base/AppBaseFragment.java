@@ -37,8 +37,7 @@ public abstract class AppBaseFragment extends Fragment implements View.OnClickLi
     /*
      *此处不能写成静态的，否则就会和使用RxManager一样了
      */
-    private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
-
+    protected final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     protected FragmentActivity mContext;
     protected Fragment mFragment;
     protected View mRootView;
