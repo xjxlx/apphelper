@@ -32,7 +32,8 @@ import io.reactivex.disposables.Disposable;
 /**
  * fragment的基类，全面使用viewBinding
  */
-public abstract class AppBaseFragment extends Fragment implements View.OnClickListener, HttpManagerListener, UIInterface, FragmentUiInterface {
+public abstract class AppBaseFragment extends Fragment
+    implements View.OnClickListener, HttpManagerListener, UIInterface, FragmentUiInterface {
 
     /*
      *此处不能写成静态的，否则就会和使用RxManager一样了
@@ -47,7 +48,7 @@ public abstract class AppBaseFragment extends Fragment implements View.OnClickLi
     public void onAttach(@NonNull Activity activity) {
         super.onAttach(activity);
         if (activity instanceof FragmentActivity) {
-            mContext = (FragmentActivity) activity;
+            mContext = (FragmentActivity)activity;
         }
     }
 
@@ -55,7 +56,7 @@ public abstract class AppBaseFragment extends Fragment implements View.OnClickLi
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof FragmentActivity) {
-            mContext = (FragmentActivity) context;
+            mContext = (FragmentActivity)context;
         }
     }
 
@@ -68,18 +69,16 @@ public abstract class AppBaseFragment extends Fragment implements View.OnClickLi
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mFragment = this;
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+        @Nullable Bundle savedInstanceState) {
         TAG = getClass().getSimpleName();
         LogUtil.e("当前的页面：Fragment：--->  " + TAG);
-
+        mFragment = this;
         onBeforeCreateView();
 
         int layout = getBaseLayout();
         if (layout != 0) {
             mRootView = inflater.inflate(layout, container, false);
-            initView(mRootView);
-            initListener();
         }
 
         // 获取布局资源文件
@@ -107,7 +106,8 @@ public abstract class AppBaseFragment extends Fragment implements View.OnClickLi
     /**
      * Fragment初始化view
      *
-     * @param rootView fragment的根布局
+     * @param rootView
+     *            fragment的根布局
      */
     @Override
     public void initView(View rootView) {
@@ -133,7 +133,11 @@ public abstract class AppBaseFragment extends Fragment implements View.OnClickLi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mFragment = this;
+
         if (mRootView != null) {
+            initView(mRootView);
+            initListener();
             initData(savedInstanceState);
             initDataAfter();
         }
@@ -142,10 +146,9 @@ public abstract class AppBaseFragment extends Fragment implements View.OnClickLi
     @SuppressLint("CheckResult")
     public <T> Disposable net(@NonNull Flowable<T> flowAble, BaseHttpSubscriber<T> subscriber) {
 
-        BaseHttpSubscriber<T> httpSubscriber = flowAble
-                .compose(RxUtil.getSchedulerFlowable())  // 转换线程
-                .onBackpressureLatest()  // 使用背压，保留最后一次的结果
-                .subscribeWith(subscriber);  // 返回对象
+        BaseHttpSubscriber<T> httpSubscriber = flowAble.compose(RxUtil.getSchedulerFlowable()) // 转换线程
+            .onBackpressureLatest() // 使用背压，保留最后一次的结果
+            .subscribeWith(subscriber); // 返回对象
 
         if (!mCompositeDisposable.isDisposed()) {
             mCompositeDisposable.add(httpSubscriber); // 添加到管理类中
@@ -156,7 +159,8 @@ public abstract class AppBaseFragment extends Fragment implements View.OnClickLi
     /**
      * 设置view的点击事件
      *
-     * @param ids id的数组
+     * @param ids
+     *            id的数组
      */
     protected void setViewClickListener(int... ids) {
         if (mRootView != null && ids != null && ids.length > 0) {
@@ -182,7 +186,8 @@ public abstract class AppBaseFragment extends Fragment implements View.OnClickLi
     /**
      * 过滤点击的事件
      *
-     * @param v 点击的view
+     * @param v
+     *            点击的view
      */
     private void onViewClick(View v) {
         boolean doubleClick = ClickUtil.isDoubleClick(1000);
@@ -224,18 +229,18 @@ public abstract class AppBaseFragment extends Fragment implements View.OnClickLi
     public void onDestroyView() {
         super.onDestroyView();
         // 销毁内部嵌套的fragment，避免异常。
-//        FragmentManager childFragmentManager = getChildFragmentManager();
-//        List<Fragment> fragments = childFragmentManager.getFragments();
-//        if (fragments.size() > 0) {
-//            for (int i = 0; i < fragments.size(); i++) {
-//                Fragment fragment = fragments.get(i);
-//                if (fragment != null) {
-//                    fragment.onDestroyView();
-//                    fragment = null;
-//                    LogUtil.e("销毁Fragment的时候，轮询销毁嵌套的fragment");
-//                }
-//            }
-//        }
+        // FragmentManager childFragmentManager = getChildFragmentManager();
+        // List<Fragment> fragments = childFragmentManager.getFragments();
+        // if (fragments.size() > 0) {
+        // for (int i = 0; i < fragments.size(); i++) {
+        // Fragment fragment = fragments.get(i);
+        // if (fragment != null) {
+        // fragment.onDestroyView();
+        // fragment = null;
+        // LogUtil.e("销毁Fragment的时候，轮询销毁嵌套的fragment");
+        // }
+        // }
+        // }
     }
 
     @Override
