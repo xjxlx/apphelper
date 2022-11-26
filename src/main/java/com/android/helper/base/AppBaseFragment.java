@@ -224,18 +224,18 @@ public abstract class AppBaseFragment extends Fragment implements View.OnClickLi
     public void onDestroyView() {
         super.onDestroyView();
         // 销毁内部嵌套的fragment，避免异常。
-        FragmentManager childFragmentManager = getChildFragmentManager();
-        List<Fragment> fragments = childFragmentManager.getFragments();
-        if (fragments.size() > 0) {
-            for (int i = 0; i < fragments.size(); i++) {
-                Fragment fragment = fragments.get(i);
-                if (fragment != null) {
-                    fragment.onDestroyView();
-                    fragment = null;
-                    LogUtil.e("销毁Fragment的时候，轮询销毁嵌套的fragment");
-                }
-            }
-        }
+//        FragmentManager childFragmentManager = getChildFragmentManager();
+//        List<Fragment> fragments = childFragmentManager.getFragments();
+//        if (fragments.size() > 0) {
+//            for (int i = 0; i < fragments.size(); i++) {
+//                Fragment fragment = fragments.get(i);
+//                if (fragment != null) {
+//                    fragment.onDestroyView();
+//                    fragment = null;
+//                    LogUtil.e("销毁Fragment的时候，轮询销毁嵌套的fragment");
+//                }
+//            }
+//        }
     }
 
     @Override
