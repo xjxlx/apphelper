@@ -2,8 +2,6 @@ package com.android.helper.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Point
-import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -267,12 +265,6 @@ class SideMenuView : ViewGroup {
         if (mViewDragHelper != null && mViewDragHelper.continueSettling(true)) {
             ViewCompat.postInvalidateOnAnimation(this);
         }
-    }
-
-    override fun getGlobalVisibleRect(r: Rect?, globalOffset: Point?): Boolean {
-        LogUtil.e("getGlobalVisibleRect: r:" + r + "  globalOffset: " + globalOffset)
-
-        return super.getGlobalVisibleRect(r, globalOffset)
     }
 
     fun setMenuClickListener(listener: SideMenuClickListener?) {
