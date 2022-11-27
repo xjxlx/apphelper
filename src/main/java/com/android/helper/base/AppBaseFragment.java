@@ -1,5 +1,13 @@
 package com.android.helper.base;
 
+import com.android.helper.httpclient.BaseHttpSubscriber;
+import com.android.helper.httpclient.RxUtil;
+import com.android.helper.interfaces.FragmentUiInterface;
+import com.android.helper.interfaces.UIInterface;
+import com.android.helper.interfaces.listener.HttpManagerListener;
+import com.android.helper.utils.ClickUtil;
+import com.android.helper.utils.LogUtil;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -13,17 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-
-import com.android.helper.httpclient.BaseHttpSubscriber;
-import com.android.helper.httpclient.RxUtil;
-import com.android.helper.interfaces.FragmentUiInterface;
-import com.android.helper.interfaces.UIInterface;
-import com.android.helper.interfaces.listener.HttpManagerListener;
-import com.android.helper.utils.ClickUtil;
-import com.android.helper.utils.LogUtil;
-
-import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -43,6 +40,13 @@ public abstract class AppBaseFragment extends Fragment
     protected Fragment mFragment;
     protected View mRootView;
     protected String TAG;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        TAG = getClass().getSimpleName();
+        LogUtil.e("当前的页面：Fragment：--->  " + TAG);
+    }
 
     @Override
     public void onAttach(@NonNull Activity activity) {
@@ -71,8 +75,7 @@ public abstract class AppBaseFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
         @Nullable Bundle savedInstanceState) {
-        TAG = getClass().getSimpleName();
-        LogUtil.e("当前的页面：Fragment：--->  " + TAG);
+
         mFragment = this;
         onBeforeCreateView();
 
