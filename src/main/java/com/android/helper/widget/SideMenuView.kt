@@ -2,6 +2,8 @@ package com.android.helper.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Point
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -19,12 +21,11 @@ import com.android.helper.utils.ScreenUtil
 class SideMenuView : ViewGroup {
     val TAG_CONTENT = "content"
     val TAG_MENU = "menu"
-    private var mContentView: View? = null
-    private var mMenuView: View? = null
+    private var mContentView: ViewGroup? = null
+    private var mMenuView: ViewGroup? = null
     private var mContentViewWidth = 0
     private var mContentViewHeight = 0
     private var mMenuViewWidth = 0
-    private var mMenuViewHeight = 0
     private val mMiddleValue by lazy {
         mMenuViewWidth / 2
     }
@@ -32,6 +33,8 @@ class SideMenuView : ViewGroup {
         mContentViewWidth - mMenuViewWidth
     }
     private var mWidthPixels: Int = 0
+    private var mDx = 0
+    private var mDragCallBackListener: DragCallBackListener? = null
 
     private val mCallBack = object : ViewDragHelper.Callback() {
         /*
@@ -53,6 +56,18 @@ class SideMenuView : ViewGroup {
 
         // 5：限制横向滑动的范围，不能让view无限制的滑动，否则没有意义
         override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int {
+            LogUtil.e("clampViewPositionHorizontal: dx: $dx  mDx:$mDx" + "  mMenuViewWidth： " + mMenuViewWidth + "  left：" + left)
+
+            // 处理手势的拦截事件
+            if (left > 0) { // 往右滑动，不拦截
+                parent.requestDisallowInterceptTouchEvent(false)
+            } else {
+                // 往左滑动，往左滑动，都是负数，只要负数不大于 munu的宽度，都拦截
+                if (left >= -mMenuViewWidth) {
+                    parent.requestDisallowInterceptTouchEvent(true)
+                }
+            }
+
             // 限制左侧的边距
             var mLeftValue = left
             if (child == mContentView) {
@@ -93,17 +108,16 @@ class SideMenuView : ViewGroup {
         /*
         * 6：view滑动的改变，
         */
-        private var mDx = 0
         override fun onViewPositionChanged(changedView: View, left: Int, top: Int, dx: Int, dy: Int) {
             super.onViewPositionChanged(changedView, left, top, dx, dy)
             mDx += dx
-            LogUtil.e("onViewPositionChanged:$left  dx:$mDx")
+            LogUtil.e("onViewPositionChanged:$left  dx:$mDx" + "  mMenuViewWidth: " + mMenuViewWidth + "  left: " + left)
 
             if (changedView == mContentView) {
                 val menuScrollLeft = mContentViewWidth + mDx
-                val menuScrollTop = mMenuView?.top
+                val menuScrollTop = mContentView?.top
                 val menuScrollRight = menuScrollLeft + mMenuViewWidth
-                val menuScrollBottom = mMenuViewHeight
+                val menuScrollBottom = mContentViewHeight
                 mMenuView?.layout(menuScrollLeft, menuScrollTop!!, menuScrollRight, menuScrollBottom)
             } else if (changedView == mMenuView) {
                 // 左侧  =
@@ -117,28 +131,38 @@ class SideMenuView : ViewGroup {
         }
 
         /**
-         *
          * 7：手指松开时候的处理
          */
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
             super.onViewReleased(releasedChild, xvel, yvel)
             val left = releasedChild.left
             if (releasedChild == mContentView) {
-                // left 都是负数 ，left  < -mMenuViewWidth / 2  向左，打开
-                // left >  -mMenuViewWidth/2 向右， 关闭
                 if (left < -mMiddleValue) {
                     open()
                 } else if (left > -mMiddleValue) {
                     close()
                 }
             } else if (releasedChild == mMenuView) {
-                // left 是整数
-                // left < startx +middleValue  打开
-                // left > starx +middleVale 关闭
                 if (left < mStartX + mMiddleValue) {
                     open()
                 } else {
                     close()
+                }
+            }
+        }
+
+        /**
+         * 状态的改变
+         */
+        override fun onViewDragStateChanged(state: Int) {
+            super.onViewDragStateChanged(state)
+            LogUtil.e(" state ::: " + state)
+            mDragCallBackListener?.let {
+                // 1:拖拽中 2：停止
+                if (state == ViewDragHelper.STATE_DRAGGING) {
+                    it.onStatusChange(1)
+                } else {
+                    it.onStatusChange(2)
                 }
             }
         }
@@ -152,6 +176,7 @@ class SideMenuView : ViewGroup {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+
         measureChildren(widthMeasureSpec, heightMeasureSpec)
         for (index in 0 until childCount) {
             val childAt = getChildAt(index)
@@ -160,18 +185,18 @@ class SideMenuView : ViewGroup {
                 mContentViewHeight = childAt.measuredHeight
             } else if (childAt == mMenuView) {
                 mMenuViewWidth = childAt.measuredWidth
-                mMenuViewHeight = childAt.measuredHeight
             }
         }
+
         val maxWidth = mMenuViewWidth + mContentViewWidth
-        val maxHeight = mMenuViewHeight.coerceAtLeast(mContentViewHeight)
+        val maxHeight = mContentViewHeight
         setMeasuredDimension(maxWidth, maxHeight)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         mContentView?.let {
-            mContentView?.layout(l, t, mContentViewWidth, mContentViewHeight)
-            mMenuView?.layout(it.right, t, it.right + mMenuViewWidth, mContentViewHeight)
+            it.layout(it.left, it.top, mContentViewWidth, mContentViewHeight)
+            mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
         }
     }
 
@@ -189,13 +214,26 @@ class SideMenuView : ViewGroup {
         }
         mMenuView?.let {
             mMenuViewWidth = it.measuredWidth
-            mMenuViewHeight = it.measuredHeight
         }
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         // 1 把viewDragHelper 交给interceptTouchEvent 去处理拦截的机制
         return mViewDragHelper.shouldInterceptTouchEvent(ev!!)
+    }
+
+    fun restore() {
+        mContentView?.let {
+            it.layout(0, it.top, it.measuredWidth, it.measuredHeight)
+            mMenuView?.let { menu ->
+                val left = it.measuredWidth
+                val right = left + menu.measuredWidth
+                LogUtil.e(" --- left: $left  right: $right")
+                menu.layout(left, it.top, right, it.measuredHeight)
+                // 强制归零
+                mDx = 0
+            }
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -207,15 +245,18 @@ class SideMenuView : ViewGroup {
 
     private fun close() {
         // settleCapturedViewAt 尽量不要使用，否则会很麻烦，要计算每个view的滑动，最好用smoothSlideViewTo去控制
+        // mViewDragHelper.settleCapturedViewAt(0,0)
         mContentView?.let {
-            mViewDragHelper.smoothSlideViewTo(it, 0, it.top);
+            mViewDragHelper.settleCapturedViewAt(0, it.top)
+            // mViewDragHelper.smoothSlideViewTo(it, 0, it.top);
             ViewCompat.postInvalidateOnAnimation(this);
         }
     }
 
-    private fun open() {
+    fun open() {
         mContentView?.let {
             mViewDragHelper.smoothSlideViewTo(it, -mMenuViewWidth, it.top);
+            // mViewDragHelper.settleCapturedViewAt(-mMenuViewWidth, it.top)
             ViewCompat.postInvalidateOnAnimation(this);
         }
     }
@@ -224,7 +265,44 @@ class SideMenuView : ViewGroup {
         super.computeScroll()
         // 如果动画正在进行中，就进行view的绘制
         if (mViewDragHelper != null && mViewDragHelper.continueSettling(true)) {
-            invalidate()
+            ViewCompat.postInvalidateOnAnimation(this);
         }
+    }
+
+    override fun getGlobalVisibleRect(r: Rect?, globalOffset: Point?): Boolean {
+        LogUtil.e("getGlobalVisibleRect: r:" + r + "  globalOffset: " + globalOffset)
+
+        return super.getGlobalVisibleRect(r, globalOffset)
+    }
+
+    fun setMenuClickListener(listener: SideMenuClickListener?) {
+        mMenuView?.let {
+            it.setOnClickListener {
+                listener?.onClick(this@SideMenuView, this)
+            }
+        }
+    }
+
+    fun setContentClickListener(listener: SideMenuClickListener?) {
+        mContentView?.let {
+            it.setOnClickListener {
+                listener?.onClick(this@SideMenuView, this)
+            }
+        }
+    }
+
+    fun setDragCallBackListener(listener: DragCallBackListener?) {
+        mDragCallBackListener = listener
+    }
+
+    interface SideMenuClickListener {
+        fun onClick(sideMenu: SideMenuView, view: View)
+    }
+
+    interface DragCallBackListener {
+        /**
+         * 1:拖拽中 2：停止
+         */
+        fun onStatusChange(status: Int)
     }
 }
