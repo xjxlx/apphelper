@@ -171,8 +171,8 @@ public class GlideUtil implements BaseLifecycleObserver {
 
         // 错误图片
         if (mErrorResource != 0) {
-            mOptions.error(mPlaceholderResource);
-            mOptions.fallback(mPlaceholderResource);
+            mOptions.error(mErrorResource);
+            mOptions.fallback(mErrorResource);
         }
 
         // 指定圆角
