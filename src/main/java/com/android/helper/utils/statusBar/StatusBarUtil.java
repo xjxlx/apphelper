@@ -17,8 +17,7 @@ import java.lang.reflect.Method;
 /**
  * 状态栏工具
  * <p>
- * 使用说明：
- * 1：如果是正常的Activity的话，就直接设置颜色：setStatusColor（），并设置状态栏字体颜色：setStatusFontColor（）
+ * 使用说明： 1：如果是正常的Activity的话，就直接设置颜色：setStatusColor（），并设置状态栏字体颜色：setStatusFontColor（）
  * 2：如果是需要布局延伸到状态栏的话，就设置透明状态栏：setStatusTranslucent（），并设置颜色：setStatusFontColor（）
  * 2.1：如果要延伸布局到状态栏中的话，就需要继承一个：fitsSystemWindows 属性为false的主题才可以
  */
@@ -49,8 +48,8 @@ public class StatusBarUtil {
             Window window = mActivity.getWindow();
 
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); // 状态栏
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.getDecorView()
+                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
 
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
@@ -58,14 +57,13 @@ public class StatusBarUtil {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window window = mActivity.getWindow();
             window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
         return util;
     }
 
     /**
-     * 如果需要内容紧贴着StatusBar
-     * 应该在对应的xml布局文件中，设置根布局fitsSystemWindows=true。
+     * 如果需要内容紧贴着StatusBar 应该在对应的xml布局文件中，设置根布局fitsSystemWindows=true。
      */
     public StatusBarUtil setFitSystemWindow(boolean fitSystemWindow) {
         View rootView = null;
@@ -84,25 +82,13 @@ public class StatusBarUtil {
      */
     @TargetApi(19)
     public StatusBarUtil setStatusColor(int color) {
-
         // 设置状态栏颜色
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = mActivity.getWindow();
-
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); // 状态栏
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(mActivity.getResources().getColor(color));
-
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Window window = mActivity.getWindow();
-            window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        }
-
+        Window window = mActivity.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); // 状态栏
+        window.getDecorView()
+            .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(mActivity.getResources().getColor(color));
         return util;
     }
 
@@ -111,15 +97,15 @@ public class StatusBarUtil {
      */
     protected void setHalfTransparent() {
 
-        if (Build.VERSION.SDK_INT >= 21) {//21表示5.0
+        if (Build.VERSION.SDK_INT >= 21) {// 21表示5.0
             View decorView = mActivity.getWindow().getDecorView();
             int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
             decorView.setSystemUiVisibility(option);
             mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-        } else if (Build.VERSION.SDK_INT >= 19) {//19表示4.4
+        } else if (Build.VERSION.SDK_INT >= 19) {// 19表示4.4
             mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            //虚拟键盘也透明
+            // 虚拟键盘也透明
             // getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
     }
@@ -157,10 +143,12 @@ public class StatusBarUtil {
                 View decor = window.getDecorView();
                 // 谷歌原生的处理方式
                 if (dark) {
-                    decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                    decor.setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                 } else {
                     // 设置状态栏底色白色
-                    decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+                    decor.setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
                 }
             } else {
                 // 如果小于6.0 ，就把状态栏设置为30%的透明色 ,否则在某些手机上就不会显示出来正常的状态栏的字体颜色
@@ -184,9 +172,11 @@ public class StatusBarUtil {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             if (dark) {
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                window.getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             } else {
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+                window.getDecorView()
+                    .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             }
 
         } else {
@@ -214,10 +204,8 @@ public class StatusBarUtil {
         if (window != null) {
             try {
                 WindowManager.LayoutParams lp = window.getAttributes();
-                Field darkFlag = WindowManager.LayoutParams.class
-                        .getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON");
-                Field meizuFlags = WindowManager.LayoutParams.class
-                        .getDeclaredField("meizuFlags");
+                Field darkFlag = WindowManager.LayoutParams.class.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON");
+                Field meizuFlags = WindowManager.LayoutParams.class.getDeclaredField("meizuFlags");
                 darkFlag.setAccessible(true);
                 meizuFlags.setAccessible(true);
                 int bit = darkFlag.getInt(null);
@@ -254,7 +242,7 @@ public class StatusBarUtil {
         // 布局延伸进状态栏
         mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
         mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //隐藏状态栏
+        mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); // 隐藏状态栏
 
     }
 
@@ -268,21 +256,19 @@ public class StatusBarUtil {
         // 布局延伸进状态栏
         mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
         mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //全屏
+        mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); // 全屏
 
         // 隐藏底部导航栏，并禁止弹出
         View decorView = mActivity.getWindow().getDecorView();
         int uiOptions =
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
 
         decorView.setSystemUiVisibility(uiOptions);
         return util;
     }
 
     public StatusBarUtil hideBottomUIMenu() {
-        //隐藏虚拟按键，滑动也不能重新显示
+        // 隐藏虚拟按键，滑动也不能重新显示
         Window window = mActivity.getWindow();
         WindowManager.LayoutParams params = window.getAttributes();
         params.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE;
@@ -294,7 +280,7 @@ public class StatusBarUtil {
      * @return 隐藏底导航栏，手势滑动的时候再次出现，默认隐藏,建议放到基类中使用，避免小米手机底部出现幺蛾子
      */
     public StatusBarUtil hideBottomMenu() {
-        //隐藏虚拟按键，滑动也不能重新显示
+        // 隐藏虚拟按键，滑动也不能重新显示
         Window window = mActivity.getWindow();
         WindowManager.LayoutParams params = window.getAttributes();
         params.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE;
@@ -302,10 +288,8 @@ public class StatusBarUtil {
 
         // 隐藏底部导航栏，并禁止弹出
         View decorView = mActivity.getWindow().getDecorView();
-        int uiOptions =
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY        // 自动过一会后自动隐藏
-                ;
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY // 自动过一会后自动隐藏
+        ;
 
         decorView.setSystemUiVisibility(uiOptions);
 

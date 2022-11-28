@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
+import kotlin.jvm.internal.PropertyReference0Impl;
 import okhttp3.Interceptor;
 
 /**
@@ -37,6 +38,7 @@ import okhttp3.Interceptor;
 public class BaseApplication {
 
     private static ApplicationInterface mApplication;
+    private static AppBarStatusListener mAppBarStatusListener;
     private static BaseApplication INSTANCE;
     /**
      * 一个项目中通用的对象，该对象一般情况杨下不会被销毁，因为加载的时机比较特殊，只能写成这种方式
@@ -54,13 +56,19 @@ public class BaseApplication {
         return INSTANCE;
     }
 
-    public void setApplication(ApplicationInterface iCommonApplication) {
+    public BaseApplication setApplication(ApplicationInterface iCommonApplication) {
         mApplication = iCommonApplication;
         if (mApplication != null) {
             initApp();
             // 加载公共的逻辑
             mApplication.initApp();
         }
+        return this;
+    }
+
+    public BaseApplication setAppBarStatusListener(AppBarStatusListener appBarStatusListener) {
+        mAppBarStatusListener = appBarStatusListener;
+        return this;
     }
 
     // <editor-fold desc="initData" defaultstate="collapsed">
@@ -136,6 +144,22 @@ public class BaseApplication {
                 return isDebug(); // 只有在 Debug模式下才会打印
             }
         });
+    }
+
+    public int getAppBarStatusColor() {
+        int color = 0;
+        if (mAppBarStatusListener != null) {
+            color = mAppBarStatusListener.getAppBarStatusColor();
+        }
+        return color;
+    }
+
+    public boolean getAppBarStatusFontDark() {
+        boolean dark = false;
+        if (mAppBarStatusListener != null) {
+            dark = mAppBarStatusListener.getAppBarStatusFontDark();
+        }
+        return dark;
     }
 
     public void initSmartRefreshLayout() {
@@ -252,4 +276,5 @@ public class BaseApplication {
     public boolean isNull() {
         return mApplication == null;
     }
+
 }
