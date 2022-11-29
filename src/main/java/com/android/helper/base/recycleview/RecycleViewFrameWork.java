@@ -266,6 +266,12 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         }
     }
 
+    public void scrollTop() {
+        if (mRecycleView != null) {
+            mRecycleView.smoothScrollToPosition(0);
+        }
+    }
+
     /**
      * <ol>
      * 注意：删除item的时候，position的取值，不能按照数据集合的position取值，应该使用{@link RecyclerView.ViewHolder#getBindingAdapterPosition()}
