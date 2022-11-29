@@ -1,5 +1,19 @@
 package com.android.helper.base.recycleview;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.android.helper.R;
+import com.android.helper.app.BaseApplication;
+import com.android.helper.interfaces.lifecycle.LifecycleDestroyObserver;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.TextViewUtil;
+import com.android.helper.utils.refresh.RefreshUtil;
+
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,20 +26,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.android.helper.R;
-import com.android.helper.app.BaseApplication;
-import com.android.helper.interfaces.lifecycle.LifecycleDestroyObserver;
-import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.TextViewUtil;
-import com.android.helper.utils.refresh.RefreshUtil;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * RecycleView 的最底层
@@ -54,15 +54,13 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     /**
      * 布局的类型
      * <ol>
-     *     -1：空布局
-     *     -2：头布局
-     *     -3：脚布局
+     * -1：空布局 -2：头布局 -3：脚布局
      * </ol>
      */
     protected int mItemType;
     protected PlaceholderResource mPlaceHolder = PlaceholderResource.getGlobalPlaceholder(); // 占位图
     private View mEmptyView;
-    private int mErrorType;  // 1:空数据  2：错误数据
+    private int mErrorType; // 1:空数据 2：错误数据
     private RefreshUtil<?> mRefreshUtil; // 刷新工具类
     private RecyclerView mRecycleView;
     private int showPlaceHolder = -1;// 是否自动显示占位图，默认自动不显示 -1：默认值，不展示 1：展示 2：不展示
@@ -158,14 +156,16 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     /**
      * 刷新全部的数据
      *
-     * @param list 数据源
+     * @param list
+     *            数据源
      */
     public void setList(List<T> list) {
         mErrorType = 1; // 普通数据的设置
         showPlaceHolder = 1;// 只要设置完数据了，就要展示默认的占位图
         this.mList = list;
         if (mList != null) {
-            LogUtil.e("------------------------------------------------size: " + mList.size() + " ----------------------------------");
+            LogUtil.e("------------------------------------------------size: " + mList.size()
+                + " ----------------------------------");
         }
         notifyDataSetChanged();
     }
@@ -175,32 +175,39 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      * 针对有上拉加载更多的时候去使用，如果是刷新，就刷新所有，如果是加载更多，就去添加数据
      * </p>
      *
-     * @param list      数据源
-     * @param isRefresh 是否是下拉刷新，如果是首次加载数据，就刷新全部数据，否则就添加数据
+     * @param list
+     *            数据源
+     * @param isRefresh
+     *            是否是下拉刷新，如果是首次加载数据，就刷新全部数据，否则就添加数据
      */
     public void setList(List<T> list, boolean isRefresh) {
         mErrorType = 1; // 普通数据的设置
         showPlaceHolder = 1;// 只要设置完数据了，就要展示默认的占位图
 
         if (list != null) {
-            LogUtil.e("------------------------------------------------size: " + list.size() + " ----------------------------------");
+            LogUtil.e("------------------------------------------------size: " + list.size()
+                + " ----------------------------------");
             // 首次加载数据，刷新全部的数据源
             if (isRefresh) {
                 this.mList = list;
                 notifyDataSetChanged();
-                LogUtil.e("------------------------------------------------ 全部刷新了数据 ----------------------------------");
+                LogUtil
+                    .e("------------------------------------------------ 全部刷新了数据 ----------------------------------");
             } else {
                 // 针对上拉加载的时候，如果是下拉加载，就添加新的数据源
                 insertedList(list);
-                LogUtil.e("------------------------------------------------ 插入了新的数据 ----------------------------------");
+                LogUtil
+                    .e("------------------------------------------------ 插入了新的数据 ----------------------------------");
             }
         }
         // 空数据的时候，不执行其他操作，避免数据显示异常
     }
 
     /**
-     * @param list        数据源
-     * @param refreshUtil 刷新工具的对象
+     * @param list
+     *            数据源
+     * @param refreshUtil
+     *            刷新工具的对象
      */
     public void setList(List<T> list, RefreshUtil<?> refreshUtil) {
         if (refreshUtil != null) {
@@ -215,7 +222,8 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      * 插入一个数据集合
      * </p>
      *
-     * @param list 插入的数据
+     * @param list
+     *            插入的数据
      */
     public void insertedList(List<T> list) {
         showPlaceHolder = 1;// 只要设置完数据了，就要展示默认的占位图
@@ -233,7 +241,8 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
      * 插入单个的数据
      * </p>
      *
-     * @param t 具体的数据
+     * @param t
+     *            具体的数据，默认插入到最后
      */
     public void insertedItem(T t) {
         showPlaceHolder = 1;// 只要设置完数据了，就要展示默认的占位图
@@ -246,13 +255,25 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         }
     }
 
+    public void insertedItemFirst(T t) {
+        showPlaceHolder = 1;
+        if (t != null) {
+            if (mList == null) {
+                mList = new ArrayList<>();
+            }
+            mList.add(0, t);
+            notifyItemInserted(0);
+        }
+    }
+
     /**
      * <ol>
-     *     注意：删除item的时候，position的取值，不能按照数据集合的position取值，应该使用{@link RecyclerView.ViewHolder#getBindingAdapterPosition()}
-     *     去获取当前点击时候的position
+     * 注意：删除item的时候，position的取值，不能按照数据集合的position取值，应该使用{@link RecyclerView.ViewHolder#getBindingAdapterPosition()}
+     * 去获取当前点击时候的position
      * </ol>
      *
-     * @param position 删除具体的位置，有动画的效果
+     * @param position
+     *            删除具体的位置，有动画的效果
      */
     public void removeItem(int position) {
         if ((position >= 0) && (mList != null) && (mList.size() > position)) {
@@ -265,7 +286,8 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     /**
      * 更新一个对象
      *
-     * @param position 具体的位置
+     * @param position
+     *            具体的位置
      */
     public void updateItem(int position) {
         if ((mList != null) && (position < mList.size())) {
@@ -311,7 +333,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
             }
             if (mEmptyView != null) {
                 EmptyVH emptyVH = new EmptyVH(mEmptyView);
-                vh = (E) emptyVH;
+                vh = (E)emptyVH;
             }
         }
         assert vh != null;
@@ -323,7 +345,7 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         int itemViewType = getItemViewType(position);
         if (itemViewType == ViewType.TYPE_EMPTY) { // 空布局的数据设置
             if (holder instanceof EmptyVH) {
-                EmptyVH emptyVH = (EmptyVH) holder;
+                EmptyVH emptyVH = (EmptyVH)holder;
 
                 if (mErrorType != 2) { // 这里说明接口是正常的，单纯去处理无数据的占位图
                     if (mPlaceHolder != null) { // 设置了指定的占位图
@@ -426,7 +448,8 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     /**
      * 给数据设置站位图的信息
      *
-     * @param placeHolder 占位图的信息
+     * @param placeHolder
+     *            占位图的信息
      */
     public void setPlaceholder(PlaceholderResource placeHolder) {
         if (placeHolder != null) {
