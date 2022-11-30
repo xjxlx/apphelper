@@ -33,17 +33,26 @@ public class AddressUtil {
     private List<JsonBean> options1Items = new ArrayList<>();
     private final List<List<String>> options2Items = new ArrayList<>();
     private final List<List<List<String>>> options3Items = new ArrayList<>();
-    private ParseAddressJsonListener mListener;
+    private OnSelectorListener mListener;
+    private CreateBuilderCreatedListener mCreatedListener;
 
-    public interface ParseAddressJsonListener{
-        void onSelector(AddressUtil  addressUtil,String option1,String option2,String option3);
+    public interface OnSelectorListener {
+        void onSelector(AddressUtil  addressUtil,String option1,String option2,String option3,int index1,int index2,int index3);
     }
 
-    public void setOnSelectorListener(ParseAddressJsonListener listener){
+    public interface CreateBuilderCreatedListener{
+        void onBuilderCreated(AddressUtil  addressUtil,OptionsPickerBuilder pickerBuilder);
+    }
+
+    public void setCreateBuilderCreatedListener(CreateBuilderCreatedListener createdListener){
+        mCreatedListener=createdListener;
+    }
+
+    public void setOnSelectorListener(OnSelectorListener listener){
         mListener =listener;
     }
 
-    private boolean isSuccess=false;
+   private OptionsPickerBuilder pickerBuilder;
 
     public void parseAddress(Context context,String fileName){
         Observable
@@ -108,13 +117,49 @@ public class AddressUtil {
 
                     @Override
                     public void onNext(List<JsonBean> jsonBeans) {
-                        isSuccess=true;
+
+                        pickerBuilder = new OptionsPickerBuilder(context, new OnOptionsSelectListener() {
+                            @Override
+                            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                                //返回的分别是三个级别的选中位置
+                                String opt1tx = options1Items.size() > 0 ? options1Items
+                                        .get(options1)
+                                        .getPickerViewText() : "";
+
+                                String opt2tx = options2Items.size() > 0 && options2Items
+                                                                                    .get(options1)
+                                                                                    .size() > 0 ? options2Items
+                                        .get(options1)
+                                        .get(options2) : "";
+
+                                String opt3tx = options2Items.size() > 0 && options3Items
+                                                                                    .get(options1)
+                                                                                    .size() > 0 && options3Items
+                                                                                                           .get(options1)
+                                                                                                           .get(options2)
+                                                                                                           .size() > 0 ? options3Items
+                                        .get(options1)
+                                        .get(options2)
+                                        .get(options3) : "";
+
+                                if (mListener != null) {
+                                    mListener.onSelector(AddressUtil.this, opt1tx, opt2tx, opt3tx,options1,options2,options3);
+                                }
+                            }
+                        })
+                                .setTitleText("城市选择")
+                                .setDividerColor(Color.BLACK)
+                                .setTextColorCenter(Color.BLACK) //设置选中项文字颜色
+                                .setContentTextSize(20);
+
+                        if (mCreatedListener!=null){
+                            mCreatedListener.onBuilderCreated(AddressUtil.this,pickerBuilder);
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        isSuccess=false;
-                        LogUtil.e("解析数据出错："+e.getMessage());
+                         LogUtil.e("解析数据出错："+e.getMessage());
                     }
 
                     @Override
@@ -139,43 +184,12 @@ public class AddressUtil {
         return detail;
     }
 
-
-    public void showPickerView(Context context) {// 弹出选择器
-        if (!isSuccess){
-            LogUtil.e("解析数据异常！");
-            return;
+    public void show() {// 弹出选择器
+        if (pickerBuilder!=null){
+            OptionsPickerView build = pickerBuilder.build();
+            build.setPicker(options1Items, options2Items, options3Items);//三级选择器
+            build.show();
         }
-
-
-        OptionsPickerView pvOptions = new OptionsPickerBuilder(context, new OnOptionsSelectListener() {
-            @Override
-            public void onOptionsSelect(int options1, int options2, int options3, View v) {
-                //返回的分别是三个级别的选中位置
-                String opt1tx = options1Items.size() > 0 ?
-                        options1Items.get(options1).getPickerViewText() : "";
-
-                String opt2tx = options2Items.size() > 0
-                                && options2Items.get(options1).size() > 0 ?
-                        options2Items.get(options1).get(options2) : "";
-
-                String opt3tx = options2Items.size() > 0
-                                && options3Items.get(options1).size() > 0
-                                && options3Items.get(options1).get(options2).size() > 0 ?
-                        options3Items.get(options1).get(options2).get(options3) : "";
-
-                 if (mListener!=null){
-                    mListener.onSelector(AddressUtil.this,opt1tx,opt2tx,opt3tx);
-                }
-            }
-        })
-
-                .setTitleText("城市选择")
-                .setDividerColor(Color.BLACK)
-                .setTextColorCenter(Color.BLACK) //设置选中项文字颜色
-                .setContentTextSize(20)
-                .build();
-        pvOptions.setPicker(options1Items, options2Items, options3Items);//三级选择器
-        pvOptions.show();
     }
 
 }
