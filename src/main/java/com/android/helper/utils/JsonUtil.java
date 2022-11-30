@@ -1,5 +1,7 @@
 package com.android.helper.utils;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -8,6 +10,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.luck.picture.lib.tools.SPUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -144,6 +149,24 @@ public class JsonUtil {
             }
         }
         return list;
+    }
+
+
+
+    public static String getJsonForAssets(Context context,String fileName) {
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            AssetManager assetManager = context.getAssets();
+            BufferedReader bf = new BufferedReader(new InputStreamReader(
+                    assetManager.open(fileName)));
+            String line;
+            while ((line = bf.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
     }
 
 }
