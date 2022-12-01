@@ -6,6 +6,7 @@ import android.text.format.DateFormat;
 
 import com.android.helper.enums.DataEnum;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -267,5 +268,18 @@ public class DateUtil {
         return calendar;
     }
 
-
+    /**
+     * @param dateValue 日期的字符串，例如"2022-12-12"
+     * @param pattern 转换规则，例如：yyyy-MM-dd HH:mm:ss
+     * @return 把字符串转换成一个 Date 对象
+     */
+    public static Date getDate(String dateValue,String pattern){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        try {
+            return simpleDateFormat.parse(dateValue);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
