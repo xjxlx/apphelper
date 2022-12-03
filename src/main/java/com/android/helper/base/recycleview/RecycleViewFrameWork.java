@@ -8,7 +8,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import com.android.helper.R;
-import com.android.helper.app.BaseApplication;
 import com.android.helper.interfaces.lifecycle.LifecycleDestroyObserver;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.TextViewUtil;
@@ -326,7 +325,6 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
         return count;
     }
 
-    @NonNull
     @NotNull
     @Override
     public E onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
@@ -361,7 +359,9 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                         int emptyResource = mPlaceHolder.getListEmptyResource();
 
                         // 隐藏底部按钮
-                        emptyVH.mIvButton.setVisibility(View.GONE);
+                        if (emptyVH.mIvButton!=null){
+                            emptyVH.mIvButton.setVisibility(View.GONE);
+                        }
 
                         // 文字的描述
                         if (!TextUtils.isEmpty(emptyContent)) {
@@ -401,31 +401,27 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
                         float noNetWorkTitleSize = globalPlaceholder.getNoNetWorkTitleSize();
                         int noNetWorkTitleColor = globalPlaceholder.getNoNetWorkTitleColor();
 
-                        // 区分项目，设置资源
-                        String tag = BaseApplication.getInstance().logTag();
-                        if (TextUtils.equals(tag, "ZHGJ")) {
-                            // 设置全局的异常图片资源
-                            if (noNetWorkImage != 0) {
-                                emptyVH.mIvImage.setImageResource(noNetWorkImage);
+                        // 设置全局的异常图片资源
+                        if (noNetWorkImage != 0 && emptyVH.mIvImage != null) {
+                            emptyVH.mIvImage.setImageResource(noNetWorkImage);
+                        }
+
+                        // 错误布局提示
+                        if (!TextUtils.isEmpty(noNetWorkContent)) {
+                            TextViewUtil.setText(emptyVH.mTvMsg, noNetWorkContent);
+
+                            if (noNetWorkTitleSize != 0 && emptyVH.mTvMsg!=null) {
+                                emptyVH.mTvMsg.setTextSize(noNetWorkTitleSize);
                             }
-
-                            // 错误布局提示
-                            if (!TextUtils.isEmpty(noNetWorkContent)) {
-                                TextViewUtil.setText(emptyVH.mTvMsg, noNetWorkContent);
-
-                                if (noNetWorkTitleSize != 0) {
-                                    emptyVH.mTvMsg.setTextSize(noNetWorkTitleSize);
-                                }
-                                if (noNetWorkTitleColor != 0) {
-                                    emptyVH.mTvMsg.setTextColor(noNetWorkTitleColor);
-                                }
+                            if (noNetWorkTitleColor != 0 && emptyVH.mTvMsg!=null) {
+                                emptyVH.mTvMsg.setTextColor(noNetWorkTitleColor);
                             }
                         }
 
                         // 刷新按钮，公共的点击事件
                         String errorButtonContent = globalPlaceholder.getNoNetWorkButtonContent();
                         // 全局的异常Button文字
-                        if (!TextUtils.isEmpty(errorButtonContent)) {
+                        if (!TextUtils.isEmpty(errorButtonContent) && emptyVH.mIvButton!=null) {
                             emptyVH.mIvButton.setVisibility(View.VISIBLE);
 
                             TextViewUtil.setText(emptyVH.mIvButton, errorButtonContent);
