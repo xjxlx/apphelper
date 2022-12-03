@@ -48,3 +48,23 @@ allprojects {
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <!--设置振动， 需要添加权限-->
     <uses-permission android:name="android.permission.VIBRATE" />
+
+
+    文件上传：
+    java:
+    RequestBody requestFile =
+                    RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            //和后端约定好Key，这里的partName是用file
+            MultipartBody.Part body =
+                    MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+
+    kotlin:
+       val requestFile: RequestBody = RequestBody.create("multipart/form-data".toMediaTypeOrNull(), file)
+            val body: MultipartBody.Part = MultipartBody.Part.createFormData("avatarFile", file.name, requestFile)
+
+      /**
+         * 上传头像
+         */
+        @POST("test-api/system/user/avatar/update")
+        @Multipart
+        fun updateHead(@Part file: MultipartBody.Part): Observable<HttpResult<UpdateHeadBean>>
