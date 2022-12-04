@@ -262,6 +262,9 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
             }
             mList.add(0, t);
             notifyItemInserted(0);
+            if (0 != mList.size()) {
+                notifyItemRangeChanged(0, mList.size());
+            }
         }
     }
 
@@ -285,6 +288,10 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
             // 移除数据源
             mList.remove(position);
             notifyItemRemoved(position);
+            // 避免删除数据后导致位置错乱
+            if (position != mList.size()) {
+                notifyItemRangeChanged(position, mList.size() - position);
+            }
         }
     }
 
@@ -498,5 +505,4 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     public void onDestroy() {
 
     }
-
 }
