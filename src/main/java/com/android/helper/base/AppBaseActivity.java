@@ -10,6 +10,7 @@ import com.android.helper.interfaces.ActivityUiInterface;
 import com.android.helper.interfaces.TagListener;
 import com.android.helper.interfaces.UIInterface;
 import com.android.helper.interfaces.listener.HttpManagerListener;
+import com.android.helper.utils.ActivityManager;
 import com.android.helper.utils.ClassUtil;
 import com.android.helper.utils.ClickUtil;
 import com.android.helper.utils.LogUtil;
@@ -48,6 +49,7 @@ public abstract class AppBaseActivity extends AppCompatActivity
         mActivity = this;
         LogUtil.e("当前的页面：Activity：--->  " + getClass().getName());
         ProxyErrorImp.getInstance().setObject(this);
+        ActivityManager.getInstance().addActivity(this);
 
         // 在onCreate之前调用的方法
         onBeforeCreateView();
