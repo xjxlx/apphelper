@@ -17,7 +17,7 @@ public class RegularUtils {
      */
     public static boolean isCorrectPhone(String phoneNumber) {
         if (TextUtils.isEmpty(phoneNumber)) return false;
-        String regExp = "^[1][0-9]{10}$";
+        String regExp = "^[1][1-9]{10}$";
         Pattern p = Pattern.compile(regExp);
         Matcher m = p.matcher(phoneNumber);
         return m.find();
