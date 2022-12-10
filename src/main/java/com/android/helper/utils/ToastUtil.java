@@ -90,7 +90,10 @@ public class ToastUtil {
             textView.setPadding(mLeft, mTop, mRight, mBottom);
         }
 
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
+        if (mTextSize!=0){
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
+        }
+
         if (mIsBOLD) {
             textView.setTypeface(Typeface.DEFAULT_BOLD);
         }
