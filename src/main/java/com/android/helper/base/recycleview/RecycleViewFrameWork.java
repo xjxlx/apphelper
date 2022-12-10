@@ -467,6 +467,15 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     }
 
     /**
+     * 适用于设置了全局的PlaceHolder,但是某些地方不想用，又不想单独设置的情况下
+     */
+    public void clearPlaceholder(){
+        if (this.mPlaceHolder!=null){
+            this.mPlaceHolder=null;
+        }
+    }
+
+    /**
      * 设置网络错误的展示
      */
     public void setErrorHttpClient(RefreshUtil<?> refreshUtil) {
