@@ -103,14 +103,14 @@ class PopupWindowUtil {
         }
 
         //解决android 9.0水滴屏/刘海屏有黑边的问题
-        mActivity?.let {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                val window = it.window
-                val attributes = window.attributes
-                attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-                window.attributes = attributes
-            }
-        }
+        // mActivity?.let {
+        //     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        //        val window = it.window
+        //        val attributes = window.attributes
+        //        attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        //        window.attributes = attributes
+        //    }
+        // }
 
         popupWindow = PopupWindow().apply {
             this.width = mWidth // 宽度
