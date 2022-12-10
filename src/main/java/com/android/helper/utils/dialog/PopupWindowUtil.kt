@@ -41,6 +41,7 @@ class PopupWindowUtil {
     private var mCreatedListener: ViewCreatedListener? = null
     private var mShowListener: OnShowListener? = null
     private val mCloseList: ArrayList<View> = arrayListOf()
+    private var isBuild = false
 
     private val mLifecycleObserver = LifecycleDestroyObserver {
         LogUtil.e(TAG, "onDestroy")
@@ -70,13 +71,17 @@ class PopupWindowUtil {
     }
 
     fun setContentView(fragment: Fragment, resource: Int): PopupWindowUtil {
-        val inflate = LayoutInflater.from(fragment.activity).inflate(resource, null, false)
+        val inflate = LayoutInflater
+            .from(fragment.activity)
+            .inflate(resource, null, false)
         setContentView(fragment, inflate)
         return this
     }
 
     fun setContentView(activity: FragmentActivity, resource: Int): PopupWindowUtil {
-        val inflate = LayoutInflater.from(activity).inflate(resource, null, false)
+        val inflate = LayoutInflater
+            .from(activity)
+            .inflate(resource, null, false)
         setContentView(activity, inflate)
         return this
     }
@@ -272,6 +277,10 @@ class PopupWindowUtil {
     }
 
     fun showAtLocation(view: View?, xOff: Int, yOff: Int) {
+        if (!isBuild) {
+            throw NullPointerException("Build方法未调用！")
+        }
+
         view?.let {
             it.post {
                 popupWindow?.showAtLocation(view, mGravity, xOff, yOff)
@@ -286,6 +295,9 @@ class PopupWindowUtil {
     }
 
     fun showAsDropDown(view: View?, xOff: Int, yOff: Int) {
+        if (!isBuild) {
+            throw NullPointerException("Build方法未调用！")
+        }
         view?.let {
             it.post {
                 popupWindow?.showAsDropDown(view, mGravity, xOff, yOff)
@@ -302,6 +314,7 @@ class PopupWindowUtil {
     }
 
     fun build(): PopupWindowUtil {
+        isBuild = true
         if (mLayout == null) {
             throw NullPointerException("setContentView 未调用！")
         }
@@ -310,7 +323,6 @@ class PopupWindowUtil {
     }
 
     interface ViewCreatedListener {
-
         fun onViewCreated(rootView: View?, popupWindow: PopupWindowUtil)
     }
 
