@@ -54,7 +54,19 @@ public class LeftImageView extends androidx.appcompat.widget.AppCompatImageView 
 
         LogUtil.e("measuredWidth: " + measuredWidth + " measuredHeight: " + measuredHeight + " bitmapWidth： " + bitmapWidth + "  bitmapHeight： " + bitmapHeight);
 
-        if (orientation == 2) {
+        if (orientation == 1) {
+            // 图片 / 屏幕宽度
+            float ratio = (float) bitmapWidth / bitmapHeight;
+            // 比例：宽 / 高  --> 高 = 宽 / 比例
+            int realHeight = (int) (measuredWidth * 2 / ratio);
+            LogUtil.e("realHeight: " + realHeight);
+            int interval = (measuredHeight - realHeight) / 2;
+            scaleBitmap = BitmapUtil.getBitmapForScale(forImageView, measuredWidth, realHeight);
+            src = new Rect(0, 0, measuredWidth / 2, realHeight);
+            des = new Rect(0, interval, measuredWidth, realHeight + interval);
+            canvas.drawBitmap(scaleBitmap, src, des, null);
+
+        } else if (orientation == 2) {
             // 图片高度和view高度的最大比值
             float i = (float) bitmapHeight / measuredHeight;
             // 得到最大图片的宽度
