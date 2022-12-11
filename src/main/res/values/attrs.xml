@@ -94,4 +94,19 @@
         <attr name="bi_selector_resource" format="reference" />
     </declare-styleable>
 
+
+    <declare-styleable name="LeftImageView">
+        <attr name="left_orientation" format="enum">
+            <enum name="width" value="1" />
+            <enum name="height" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="RightImageView">
+        <attr name="right_orientation" format="enum">
+            <enum name="width" value="1" />
+            <enum name="height" value="2" />
+        </attr>
+
+    </declare-styleable>
 </resources>

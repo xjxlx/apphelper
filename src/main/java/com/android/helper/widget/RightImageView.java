@@ -2,6 +2,7 @@ package com.android.helper.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -9,12 +10,16 @@ import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
 
+import com.android.helper.R;
 import com.android.helper.utils.BitmapUtil;
+import com.android.helper.utils.LogUtil;
+import com.android.helper.utils.ScreenUtil;
 
 /**
  * 只显示右侧图像的imageView
  */
 public class RightImageView extends androidx.appcompat.widget.AppCompatImageView {
+    private int orientation = 0;
 
     public RightImageView(Context context) {
         super(context);
@@ -22,30 +27,59 @@ public class RightImageView extends androidx.appcompat.widget.AppCompatImageView
 
     public RightImageView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        if (attrs != null) {
+            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RightImageView);
+            // 1: 已宽度为主，2：以高度为主
+            orientation = typedArray.getInt(R.styleable.RightImageView_right_orientation, 0);
+            typedArray.recycle();
+        }
     }
-
 
     @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
+        // super.onDraw(canvas);
+        Rect src = null;
+        Rect des = null;
+        Bitmap scaleBitmap = null;
 
+        // 得到view的宽高
         int measuredWidth = getMeasuredWidth();
         int measuredHeight = getMeasuredHeight();
 
+        // 得到图片的宽高
         Bitmap forImageView = BitmapUtil.getBitmapForImageView(this);
+        int bitmapWidth = forImageView.getWidth();
+        int bitmapHeight = forImageView.getHeight();
+        int screenWidth = ScreenUtil.getScreenWidth(getContext());
 
-        Bitmap bitmap = BitmapUtil.getBitmapForScale(forImageView, measuredWidth, measuredHeight);
+        LogUtil.e("measuredWidth: " + measuredWidth + " measuredHeight: " + measuredHeight + " bitmapWidth： " + bitmapWidth + "  bitmapHeight： " + bitmapHeight);
 
-        if (bitmap != null) {
-            int width = bitmap.getWidth();
-            int height = bitmap.getHeight();
+        if (orientation == 2) {
+            // 图片高度和view高度的最大比值
+            float i = (float) bitmapHeight / measuredHeight;
+            // 得到最大图片的宽度
+            float bitmapMaxWidth = bitmapWidth / i;
+            // view的宽度 * 2  - 图片的最大值， /2  得到两边的间距
+            float interval = (measuredWidth * 2 - bitmapMaxWidth) / 2;
 
-            int dx = width / 2;
+            // 计算view高度和图片高度的比值
+            float ratio = (float) measuredHeight / bitmapHeight;
+            // 得到图片的真实宽度
+            int realWidth = (int) (bitmapWidth / ratio);
+            LogUtil.e("realWidth: " + realWidth + " realHeight: " + measuredHeight);
 
-            Rect src = new Rect(0, 0, width, height);
-            Rect des = new Rect(-dx, 0, width - dx, height);
+            // 缩放bitmap
+            scaleBitmap = BitmapUtil.getBitmapForScale(forImageView, realWidth, measuredHeight);
 
-            canvas.drawBitmap(bitmap, src, des, null);
+            // x轴的偏移
+            int dx = realWidth / 2;
+            // 计算开始的偏移
+            LogUtil.e("realWidth: " + realWidth + " measuredWidth: " + measuredWidth);
+
+            src = new Rect(dx, 0, realWidth, measuredHeight);
+            des = new Rect(0, 0, (int) (measuredWidth - interval), measuredHeight);
+            canvas.drawBitmap(scaleBitmap, src, des, null);
         }
     }
 
