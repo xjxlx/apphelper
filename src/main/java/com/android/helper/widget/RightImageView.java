@@ -19,7 +19,7 @@ import com.android.helper.utils.ScreenUtil;
  * 只显示右侧图像的imageView
  */
 public class RightImageView extends androidx.appcompat.widget.AppCompatImageView {
-    private int orientation = 0;
+    private int orientation = 2;
 
     public RightImageView(Context context) {
         super(context);

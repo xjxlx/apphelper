@@ -23,7 +23,7 @@ public class LeftImageView extends androidx.appcompat.widget.AppCompatImageView 
         super(context);
     }
 
-    private int orientation = 0;
+    private int orientation = 2;
 
     public LeftImageView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
