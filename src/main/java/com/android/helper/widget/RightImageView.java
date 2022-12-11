@@ -30,7 +30,7 @@ public class RightImageView extends androidx.appcompat.widget.AppCompatImageView
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RightImageView);
             // 1: 已宽度为主，2：以高度为主
-            orientation = typedArray.getInt(R.styleable.RightImageView_right_orientation, 0);
+            orientation = typedArray.getInt(R.styleable.RightImageView_right_orientation, 2);
             typedArray.recycle();
         }
     }

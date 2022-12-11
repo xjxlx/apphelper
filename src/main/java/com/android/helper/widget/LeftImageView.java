@@ -23,14 +23,14 @@ public class LeftImageView extends androidx.appcompat.widget.AppCompatImageView 
         super(context);
     }
 
-    private int orientation = 2;
+    private int orientation = 0;
 
     public LeftImageView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.LeftImageView);
             // 1: 已宽度为主，2：以高度为主
-            orientation = typedArray.getInt(R.styleable.LeftImageView_left_orientation, 0);
+            orientation = typedArray.getInt(R.styleable.LeftImageView_left_orientation, 2);
             typedArray.recycle();
         }
     }
