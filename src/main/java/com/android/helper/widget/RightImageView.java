@@ -54,7 +54,7 @@ public class RightImageView extends androidx.appcompat.widget.AppCompatImageView
             int bitmapHeight = forImageView.getHeight();
             int screenWidth = ScreenUtil.getScreenWidth(getContext());
 
-            LogUtil.e("measuredWidth: " + measuredWidth + " measuredHeight: " + measuredHeight + " bitmapWidth： " + bitmapWidth + "  bitmapHeight： " + bitmapHeight);
+            // LogUtil.e("measuredWidth: " + measuredWidth + " measuredHeight: " + measuredHeight + " bitmapWidth： " + bitmapWidth + "  bitmapHeight： " + bitmapHeight);
 
             if (orientation == 1) {
                 // 图片 / 屏幕宽度
@@ -80,7 +80,7 @@ public class RightImageView extends androidx.appcompat.widget.AppCompatImageView
                 float ratio = (float) measuredHeight / bitmapHeight;
                 // 得到图片的真实宽度
                 int realWidth = (int) (bitmapWidth / ratio);
-                LogUtil.e("realWidth: " + realWidth + " realHeight: " + measuredHeight);
+                //  LogUtil.e("realWidth: " + realWidth + " realHeight: " + measuredHeight);
 
                 // 缩放bitmap
                 scaleBitmap = BitmapUtil.getBitmapForScale(forImageView, realWidth, measuredHeight);
@@ -88,7 +88,7 @@ public class RightImageView extends androidx.appcompat.widget.AppCompatImageView
                 // x轴的偏移
                 int dx = realWidth / 2;
                 // 计算开始的偏移
-                LogUtil.e("realWidth: " + realWidth + " measuredWidth: " + measuredWidth);
+                //  LogUtil.e("realWidth: " + realWidth + " measuredWidth: " + measuredWidth);
 
                 src = new Rect(dx, 0, realWidth, measuredHeight);
                 des = new Rect(0, 0, (int) (measuredWidth - interval), measuredHeight);
