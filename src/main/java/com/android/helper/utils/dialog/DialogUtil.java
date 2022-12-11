@@ -479,9 +479,9 @@ public class DialogUtil implements BaseLifecycleObserver {
                     }
 
                     //解决android 9.0水滴屏/刘海屏有黑边的问题
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-                    }
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//                        attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+//                    }
                 }
 
                 // 设置属性

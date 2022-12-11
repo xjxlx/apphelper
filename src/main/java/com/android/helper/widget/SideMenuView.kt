@@ -191,9 +191,22 @@ class SideMenuView : ViewGroup {
         setMeasuredDimension(maxWidth, maxHeight)
     }
 
+    private var mContentMarginLeft = 0
+
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+
+        val marginLayoutParams = layoutParams as MarginLayoutParams
+        val rightMargin = marginLayoutParams.rightMargin
+
         mContentView?.let {
-            it.layout(it.left, it.top, mContentViewWidth, mContentViewHeight)
+            if (mContentMarginLeft <= 0) {
+                val lp = it.layoutParams as MarginLayoutParams
+                mContentMarginLeft = lp.marginStart
+
+            }
+
+            it.layout(mContentMarginLeft + it.left, it.top, it.left + mContentViewWidth, it.top + mContentViewHeight)
+
             mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
         }
     }
@@ -296,5 +309,17 @@ class SideMenuView : ViewGroup {
          * 1:拖拽中 2：停止
          */
         fun onStatusChange(status: Int)
+    }
+
+    override fun generateLayoutParams(p: LayoutParams?): LayoutParams {
+        return MarginLayoutParams(p)
+    }
+
+    override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
+        return MarginLayoutParams(context, attrs)
+    }
+
+    override fun generateDefaultLayoutParams(): LayoutParams {
+        return MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     }
 }

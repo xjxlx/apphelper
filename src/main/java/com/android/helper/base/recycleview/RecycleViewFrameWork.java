@@ -262,6 +262,9 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
             }
             mList.add(0, t);
             notifyItemInserted(0);
+            if (0 != mList.size()) {
+                notifyItemRangeChanged(0, mList.size());
+            }
         }
     }
 
@@ -285,6 +288,10 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
             // 移除数据源
             mList.remove(position);
             notifyItemRemoved(position);
+            // 避免删除数据后导致位置错乱
+            if (position != mList.size()) {
+                notifyItemRangeChanged(position, mList.size() - position);
+            }
         }
     }
 
@@ -460,6 +467,15 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     }
 
     /**
+     * 适用于设置了全局的PlaceHolder,但是某些地方不想用，又不想单独设置的情况下
+     */
+    public void clearPlaceholder(){
+        if (this.mPlaceHolder!=null){
+            this.mPlaceHolder=null;
+        }
+    }
+
+    /**
      * 设置网络错误的展示
      */
     public void setErrorHttpClient(RefreshUtil<?> refreshUtil) {
@@ -498,5 +514,4 @@ public abstract class RecycleViewFrameWork<T, E extends RecyclerView.ViewHolder>
     public void onDestroy() {
 
     }
-
 }

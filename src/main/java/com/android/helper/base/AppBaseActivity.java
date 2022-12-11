@@ -4,10 +4,13 @@ import com.android.helper.R;
 import com.android.helper.app.BaseApplication;
 import com.android.helper.httpclient.BaseHttpSubscriber;
 import com.android.helper.httpclient.RxUtil;
+import com.android.helper.httpclient.error.ProxyErrorImp;
+import com.android.helper.httpclient.error.ProxyErrorListener;
 import com.android.helper.interfaces.ActivityUiInterface;
 import com.android.helper.interfaces.TagListener;
 import com.android.helper.interfaces.UIInterface;
 import com.android.helper.interfaces.listener.HttpManagerListener;
+import com.android.helper.utils.ActivityManager;
 import com.android.helper.utils.ClassUtil;
 import com.android.helper.utils.ClickUtil;
 import com.android.helper.utils.LogUtil;
@@ -32,7 +35,7 @@ import io.reactivex.disposables.Disposable;
  * 最基层的Activity
  */
 public abstract class AppBaseActivity extends AppCompatActivity
-    implements View.OnClickListener, HttpManagerListener, TagListener, UIInterface, ActivityUiInterface {
+    implements View.OnClickListener, HttpManagerListener, TagListener, UIInterface, ActivityUiInterface , ProxyErrorListener {
 
     public FragmentActivity mActivity;
     /*
@@ -45,6 +48,8 @@ public abstract class AppBaseActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         mActivity = this;
         LogUtil.e("当前的页面：Activity：--->  " + getClass().getName());
+        ProxyErrorImp.getInstance().setObject(this);
+        ActivityManager.getInstance().addActivity(this);
 
         // 在onCreate之前调用的方法
         onBeforeCreateView();
@@ -61,6 +66,7 @@ public abstract class AppBaseActivity extends AppCompatActivity
             initDataAfter();
         }
     }
+
 
     @SuppressLint("CheckResult")
     public <T> Disposable net(@NonNull Flowable<T> flowAble, BaseHttpSubscriber<T> subscriber) {
@@ -247,4 +253,9 @@ public abstract class AppBaseActivity extends AppCompatActivity
         return ClassUtil.getClassName(this);
     }
 
+
+    @Override
+    public void errorCallBack(Throwable throwable) {
+
+    }
 }

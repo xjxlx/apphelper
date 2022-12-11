@@ -2,6 +2,8 @@ package com.android.helper.base;
 
 import com.android.helper.httpclient.BaseHttpSubscriber;
 import com.android.helper.httpclient.RxUtil;
+import com.android.helper.httpclient.error.ProxyErrorImp;
+import com.android.helper.httpclient.error.ProxyErrorListener;
 import com.android.helper.interfaces.FragmentUiInterface;
 import com.android.helper.interfaces.UIInterface;
 import com.android.helper.interfaces.listener.HttpManagerListener;
@@ -30,7 +32,7 @@ import io.reactivex.disposables.Disposable;
  * fragment的基类，全面使用viewBinding
  */
 public abstract class AppBaseFragment extends Fragment
-    implements View.OnClickListener, HttpManagerListener, UIInterface, FragmentUiInterface {
+    implements View.OnClickListener, HttpManagerListener, UIInterface, FragmentUiInterface, ProxyErrorListener {
 
     /*
      *此处不能写成静态的，否则就会和使用RxManager一样了
@@ -46,6 +48,7 @@ public abstract class AppBaseFragment extends Fragment
         super.onCreate(savedInstanceState);
         TAG = getClass().getSimpleName();
         LogUtil.e("当前的页面：Fragment：--->  " + TAG);
+        ProxyErrorImp.getInstance().setObject(this);
     }
 
     @Override
@@ -255,4 +258,11 @@ public abstract class AppBaseFragment extends Fragment
         }
     }
 
+    @Override
+    public void errorCallBack(Throwable throwable) {
+        if (mContext instanceof AppBaseActivity){
+            AppBaseActivity activity = (AppBaseActivity) this.mContext;
+            activity.errorCallBack(throwable);
+        }
+    }
 }

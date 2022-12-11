@@ -1,9 +1,9 @@
 package com.android.helper.utils;
 
-import android.text.TextUtils;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import android.text.TextUtils;
 
 /**
  * 正则表达式工具类  校验的工具列
@@ -17,7 +17,7 @@ public class RegularUtils {
      */
     public static boolean isCorrectPhone(String phoneNumber) {
         if (TextUtils.isEmpty(phoneNumber)) return false;
-        String regExp = "^[1][0-9]{10}$";
+        String regExp = "^0?(12|13|14|15|16|17|18|19)[0-9]{9}$";
         Pattern p = Pattern.compile(regExp);
         Matcher m = p.matcher(phoneNumber);
         return m.find();
