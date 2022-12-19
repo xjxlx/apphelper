@@ -28,4 +28,7 @@
     <string name="srl_footer_finish">加载完成</string>
     <string name="srl_footer_failed">加载失败</string>
     <string name="srl_footer_nothing">没有更多数据了</string>
+
+    <string name="app_name">""</string>
+
 </resources>
