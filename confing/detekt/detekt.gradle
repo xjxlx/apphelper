@@ -4,7 +4,7 @@ detekt {
     // 指定版本
     toolVersion = "1.14.2"
     // 配置文件
-    config = files("../confing/detekt/detekt.yml")
+    config = files("../apphelper/confing/detekt/detekt.yml")
 
     buildUponDefaultConfig = true // preconfigure defaults
     // 输出形式
