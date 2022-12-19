@@ -195,7 +195,9 @@ public class NotificationUtil {
             // 渠道名字
             if (TextUtils.isEmpty(mChannelName)) {
                 // 使用app的名字作为渠道的名字，用户可以看到的通知渠道的名字.
-                mChannelName = mContext.getResources().getString(R.string.app_name);
+                mChannelName = mContext
+                        .getResources()
+                        .getString(R.string.app_name);
             }
 
             // 构建消息通知的对象
@@ -259,8 +261,7 @@ public class NotificationUtil {
 
             // 当SDK大于16且小于26的时候
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                mNotification = mNotificationBuilder
-                        .setPriority(mNotificationLevel)// 设置优先级
+                mNotification = mNotificationBuilder.setPriority(mNotificationLevel)// 设置优先级
                         .build();
             } else {
                 // 渠道对象
@@ -296,8 +297,7 @@ public class NotificationUtil {
                 // 通知Manager去创建渠道
                 manager.createNotificationChannel(mChannel);
 
-                mNotification = mNotificationBuilder
-                        .setPriority(mNotificationLevel)// 设置优先级
+                mNotification = mNotificationBuilder.setPriority(mNotificationLevel)// 设置优先级
                         .setChannelId(channelId)// 设置渠道
                         .build();
             }
@@ -515,7 +515,9 @@ public class NotificationUtil {
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
         } else {
             intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-            intent.putExtra("app_package", context.getApplicationContext().getPackageName());
+            intent.putExtra("app_package", context
+                    .getApplicationContext()
+                    .getPackageName());
             intent.putExtra("app_uid", context.getApplicationInfo().uid);
         }
         context.startActivityForResult(intent, CODE_REQUEST_ACTIVITY_NOTIFICATION);
