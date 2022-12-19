@@ -1,17 +1,5 @@
 package com.android.helper.utils.photo;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.PointF;
-import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.widget.ImageView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
-
 import com.android.helper.R;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -23,6 +11,18 @@ import com.luck.picture.lib.tools.MediaUtils;
 import com.luck.picture.lib.widget.longimage.ImageSource;
 import com.luck.picture.lib.widget.longimage.ImageViewState;
 import com.luck.picture.lib.widget.longimage.SubsamplingScaleImageView;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 public class GlideEngine implements ImageEngine {
     /**
@@ -159,7 +159,7 @@ public class GlideEngine implements ImageEngine {
                 .override(180, 180)
                 .centerCrop()
                 .sizeMultiplier(0.5f)
-                .apply(new RequestOptions().placeholder(R.drawable.picture_image_placeholder))
+                .apply(new RequestOptions().placeholder(R.drawable.picture_icon_placeholder))
                 .into(new BitmapImageViewTarget(imageView) {
                     @Override
                     protected void setResource(Bitmap resource) {
@@ -201,7 +201,7 @@ public class GlideEngine implements ImageEngine {
                 .load(url)
                 .override(200, 200)
                 .centerCrop()
-                .apply(new RequestOptions().placeholder(R.drawable.picture_image_placeholder))
+                .apply(new RequestOptions().placeholder(R.drawable.picture_icon_placeholder))
                 .into(imageView);
     }
 
