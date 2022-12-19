@@ -1,0 +1,6 @@
+complexity:
+  #  最多20个方法
+  TooManyFunctions:
+    thresholdInFiles: 30
+
+  
