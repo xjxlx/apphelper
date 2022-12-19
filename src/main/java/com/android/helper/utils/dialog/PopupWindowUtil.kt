@@ -2,16 +2,15 @@ package com.android.helper.utils.dialog
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import com.android.helper.interfaces.lifecycle.LifecycleDestroyObserver
 import com.android.helper.utils.LogUtil
 import com.android.helper.utils.TextViewUtil
@@ -215,6 +214,14 @@ class PopupWindowUtil {
     }
 
     /**
+     * @param focusable 是否拥有焦点，默认拥有
+     */
+    fun setFocusable(focusable: Boolean): PopupWindowUtil {
+        this.focusable = focusable
+        return this
+    }
+
+    /**
      * @return 是否可以超出屏幕显示，false :可以，true:不可以，默认不可以
      */
     fun setClippingEnabled(clippingEnabled: Boolean): PopupWindowUtil {
@@ -327,12 +334,10 @@ class PopupWindowUtil {
     }
 
     interface OnShowListener {
-
         fun onShow(view: View?, popupWindow: PopupWindowUtil)
     }
 
     interface OnDismissListener {
-
         fun onDismiss(view: View?, popupWindow: PopupWindowUtil)
     }
 
