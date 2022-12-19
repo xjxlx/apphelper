@@ -6,6 +6,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.Message
 import android.text.TextUtils
 import com.android.helper.R
@@ -48,7 +49,8 @@ class AppLifecycleService : Service() {
     }
 
     private fun sendNotification(type: String) {
-        val builder = NotificationUtil.Builder(applicationContext)
+        val builder = NotificationUtil
+            .Builder(applicationContext)
             .setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME)
             .setSmallIcon(R.mipmap.ic_launcher)
 
@@ -86,7 +88,7 @@ class AppLifecycleService : Service() {
     }
 
     @SuppressLint("HandlerLeak")
-    private val mHandler: Handler = object : Handler() {
+    private val mHandler: Handler = object : Handler(Looper.myLooper()!!) {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
 

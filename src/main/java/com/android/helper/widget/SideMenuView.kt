@@ -195,8 +195,8 @@ class SideMenuView : ViewGroup {
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
 
-        val marginLayoutParams = layoutParams as MarginLayoutParams
-        val rightMargin = marginLayoutParams.rightMargin
+//        val marginLayoutParams = layoutParams as MarginLayoutParams
+//        val rightMargin = marginLayoutParams.rightMargin
 
         mContentView?.let {
             if (mContentMarginLeft <= 0) {

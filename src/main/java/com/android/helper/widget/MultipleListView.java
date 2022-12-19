@@ -56,7 +56,7 @@ public class MultipleListView extends View {
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Paint.Align.LEFT); // 文字在左侧
 
-        mPaint2.setColor(ContextCompat.getColor(context, R.color.picture_color_black));
+        mPaint2.setColor(ContextCompat.getColor(context, R.color.color_333333));
         mPaint2.setStrokeWidth(2);
 
         if (attrs != null) {
