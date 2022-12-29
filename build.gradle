@@ -1,11 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'maven-publish'
 }
-
-//启用Jitpack 插件
-apply plugin: 'com.github.dcendents.android-maven'
-group = 'com.github.apphelper'
 
 android {
     def compile = rootProject.ext.android
@@ -63,6 +60,20 @@ void initSystemInfo() {
     }
     project.extensions.findByName('android')?.defaultConfig?.buildConfigField("String", "SYSTEM_NAME", "\"" + system + "\"")
     println "${"SYSTEM_NAME:" + system}"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.apphelper'
+                artifactId = 'apphelper'
+                version = '3.0.2'
+            }
+        }
+    }
 }
 
 dependencies {
