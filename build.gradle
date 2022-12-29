@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'maven-publish'//用来推送aar到jitpack
 }
 
 //启用Jitpack 插件
@@ -144,3 +145,19 @@ dependencies {
         transitive = false// 禁止依赖的传递
     }
 }
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.apphelper'//插件id，格式：com.gitee/github.用户名
+                artifactId = 'apphelper'//插件名称
+                version = '3.0.3'//版本号
+                //引用使用格式：implementation 'com.gitee.xiaweifeng:JitPackTest11:1.0'
+            }
+        }
+    }
+}
+
+
