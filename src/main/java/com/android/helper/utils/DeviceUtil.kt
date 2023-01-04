@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
+import android.text.TextUtils
+import androidx.annotation.RequiresApi
 import java.util.*
 
 /**
@@ -25,11 +27,7 @@ object DeviceUtil {
         return fingerprint
     }
 
-    fun getDeviceSN(): String? {
-        return Build.SERIAL
-    }
-
-    fun getDeviceId(context: Context): String? {
+    fun getDeviceId(context: Context): String {
         val androidId = getAndroidId(context)
 
         LogUtil.e("设备的android——id为：$androidId")
