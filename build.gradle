@@ -153,17 +153,8 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.apphelper'//插件id，格式：com.gitee/github.用户名
                 artifactId = 'apphelper'//插件名称
-                version = '3.0.3'//版本号
+                version = '3.0.7'//版本号
                 //引用使用格式：implementation 'com.gitee.xiaweifeng:JitPackTest11:1.0'
-            }
-        }
-        repositories {
-            maven {
-                // change URLs to point to your repos, e.g. http://my.org/repo
-                def baseUrl = buildDir.getParent()
-                def releasesRepoUrl = "$baseUrl/repos/releases"
-                def snapshotsRepoUrl = "$baseUrl/repos/snapshots"
-                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             }
         }
     }
