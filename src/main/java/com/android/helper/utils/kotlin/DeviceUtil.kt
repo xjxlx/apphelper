@@ -1,11 +1,11 @@
-package com.android.helper.utils
+package com.android.helper.utils.kotlin
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import android.text.TextUtils
-import androidx.annotation.RequiresApi
+import com.android.helper.utils.LogUtil
+import com.android.helper.utils.MD5Utils
 import java.util.*
 
 /**
