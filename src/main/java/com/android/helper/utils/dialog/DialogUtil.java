@@ -57,7 +57,6 @@ public class DialogUtil implements BaseLifecycleObserver {
     private int mOffsetY; // 偏移的Y轴
     private Dialog mDialog;
     private boolean isAutoDismiss;// 在点击按钮的时候，是否自定关闭dialog
-    private OnViewCreatedListener mCreatedListener;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({DialogType.DEFAULT_DIALOG, DialogType.HINT_DIALOG})
@@ -451,11 +450,6 @@ public class DialogUtil implements BaseLifecycleObserver {
                     }
                 }
 
-                // view布局设置之后的回调
-                if (mCreatedListener != null) {
-                    mCreatedListener.onViewCreated(mLayoutView);
-                }
-
                 // dialog展示时候的监听
                 mDialog.setOnShowListener(dialog -> {
                     if (mShowListener != null) {
@@ -633,7 +627,10 @@ public class DialogUtil implements BaseLifecycleObserver {
      * @return 设置加载view成功的监听
      */
     public DialogUtil setOnViewCreatedListener(OnViewCreatedListener listener) {
-        this.mCreatedListener = listener;
+        // view布局设置之后的回调
+        if (listener != null) {
+            listener.onViewCreated(mLayoutView);
+        }
         return this;
     }
 
