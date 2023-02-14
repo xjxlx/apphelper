@@ -46,7 +46,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         this.mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
     }
 
-    public static AppException getAppExceptionHandler(Context context) {
+    public static AppException getInstance(Context context) {
         if (INSTANCE == null) {
             INSTANCE = new AppException(context);
         }

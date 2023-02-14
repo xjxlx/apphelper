@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
-import kotlin.jvm.internal.PropertyReference0Impl;
 import okhttp3.Interceptor;
 
 /**
@@ -78,7 +77,7 @@ public class BaseApplication {
             // 捕获所有的异常，存入到app目录下
             if (mApplication != null && mApplication.getApplication() != null) {
                 Thread.setDefaultUncaughtExceptionHandler(
-                        AppException.getAppExceptionHandler(mApplication.getApplication()));
+                        AppException.getInstance(mApplication.getApplication()));
             }
         } catch (Exception e) {
             Log.e("捕获系统异常信息：", e.getMessage());
