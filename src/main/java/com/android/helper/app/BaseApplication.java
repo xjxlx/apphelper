@@ -22,7 +22,6 @@ import com.scwang.smart.refresh.layout.listener.DefaultRefreshInitializer;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,16 +72,6 @@ public class BaseApplication {
     // <editor-fold desc="initData" defaultstate="collapsed">
 
     public void initApp() {
-        try {
-            // 捕获所有的异常，存入到app目录下
-            if (mApplication != null && mApplication.getApplication() != null) {
-                Thread.setDefaultUncaughtExceptionHandler(
-                        AppException.getInstance(mApplication.getApplication()));
-            }
-        } catch (Exception e) {
-            Log.e("捕获系统异常信息：", e.getMessage());
-        }
-
         ScreenUtil.getScreenHeight(getApplication());
         initLogger();
         initSmartRefreshLayout();
@@ -134,13 +123,12 @@ public class BaseApplication {
     }
 
     private void initLogger() {
-        FormatStrategy formatStrategy =
-                PrettyFormatStrategy.newBuilder().showThreadInfo(false) // （可选）是否显示线程信息。
-                        // 默认值为true
-                        .methodCount(0) // （可选）要显示的方法行数。 默认2
-                        .methodOffset(0) // （可选）设置调用堆栈的函数偏移值，0的话则从打印该Log的函数开始输出堆栈信息，默认是0
-                        .tag(mApplication.logTag()) // （可选）每个日志的全局标记。 默认PRETTY_LOGGER（如上图）
-                        .build();
+        FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder().showThreadInfo(false) // （可选）是否显示线程信息。
+            // 默认值为true
+            .methodCount(0) // （可选）要显示的方法行数。 默认2
+            .methodOffset(0) // （可选）设置调用堆栈的函数偏移值，0的话则从打印该Log的函数开始输出堆栈信息，默认是0
+            .tag(mApplication.logTag()) // （可选）每个日志的全局标记。 默认PRETTY_LOGGER（如上图）
+            .build();
         Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy) {
             @Override
             public boolean isLoggable(int priority, @Nullable String tag) {
@@ -168,42 +156,26 @@ public class BaseApplication {
     public void initSmartRefreshLayout() {
         Application application = mApplication.getApplication();
         if (application != null) {
-            ClassicsHeader.REFRESH_HEADER_PULLING =
-                    application.getString(R.string.srl_header_pulling);// "下拉可以刷新";
-            ClassicsHeader.REFRESH_HEADER_REFRESHING =
-                    application.getString(R.string.srl_header_refreshing);// "正在刷新...";
-            ClassicsHeader.REFRESH_HEADER_LOADING =
-                    application.getString(R.string.srl_header_loading);// "正在加载...";
-            ClassicsHeader.REFRESH_HEADER_RELEASE =
-                    application.getString(R.string.srl_header_release);// "释放立即刷新";
-            ClassicsHeader.REFRESH_HEADER_FINISH =
-                    application.getString(R.string.srl_header_finish);// "刷新完成";
-            ClassicsHeader.REFRESH_HEADER_FAILED =
-                    application.getString(R.string.srl_header_failed);// "刷新失败";
-            ClassicsHeader.REFRESH_HEADER_UPDATE =
-                    application.getString(R.string.srl_header_update);// "上次更新 M-d
+            ClassicsHeader.REFRESH_HEADER_PULLING = application.getString(R.string.srl_header_pulling);// "下拉可以刷新";
+            ClassicsHeader.REFRESH_HEADER_REFRESHING = application.getString(R.string.srl_header_refreshing);// "正在刷新...";
+            ClassicsHeader.REFRESH_HEADER_LOADING = application.getString(R.string.srl_header_loading);// "正在加载...";
+            ClassicsHeader.REFRESH_HEADER_RELEASE = application.getString(R.string.srl_header_release);// "释放立即刷新";
+            ClassicsHeader.REFRESH_HEADER_FINISH = application.getString(R.string.srl_header_finish);// "刷新完成";
+            ClassicsHeader.REFRESH_HEADER_FAILED = application.getString(R.string.srl_header_failed);// "刷新失败";
+            ClassicsHeader.REFRESH_HEADER_UPDATE = application.getString(R.string.srl_header_update);// "上次更新 M-d
             // HH:mm";
-            ClassicsHeader.REFRESH_HEADER_UPDATE =
-                    application.getString(R.string.srl_header_update);// "'Last update'
+            ClassicsHeader.REFRESH_HEADER_UPDATE = application.getString(R.string.srl_header_update);// "'Last update'
             // M-d
             // HH:mm";
-            ClassicsHeader.REFRESH_HEADER_SECONDARY =
-                    application.getString(R.string.srl_header_secondary);// "释放进入二楼"
+            ClassicsHeader.REFRESH_HEADER_SECONDARY = application.getString(R.string.srl_header_secondary);// "释放进入二楼"
 
-            ClassicsFooter.REFRESH_FOOTER_PULLING =
-                    application.getString(R.string.srl_footer_pulling);// "上拉加载更多";
-            ClassicsFooter.REFRESH_FOOTER_RELEASE =
-                    application.getString(R.string.srl_footer_release);// "释放立即加载";
-            ClassicsFooter.REFRESH_FOOTER_LOADING =
-                    application.getString(R.string.srl_footer_loading);// "正在刷新...";
-            ClassicsFooter.REFRESH_FOOTER_REFRESHING =
-                    application.getString(R.string.srl_footer_refreshing);// "正在加载...";
-            ClassicsFooter.REFRESH_FOOTER_FINISH =
-                    application.getString(R.string.srl_footer_finish);// "加载完成";
-            ClassicsFooter.REFRESH_FOOTER_FAILED =
-                    application.getString(R.string.srl_footer_failed);// "加载失败";
-            ClassicsFooter.REFRESH_FOOTER_NOTHING =
-                    application.getString(R.string.srl_footer_nothing);// "全部加载完成";
+            ClassicsFooter.REFRESH_FOOTER_PULLING = application.getString(R.string.srl_footer_pulling);// "上拉加载更多";
+            ClassicsFooter.REFRESH_FOOTER_RELEASE = application.getString(R.string.srl_footer_release);// "释放立即加载";
+            ClassicsFooter.REFRESH_FOOTER_LOADING = application.getString(R.string.srl_footer_loading);// "正在刷新...";
+            ClassicsFooter.REFRESH_FOOTER_REFRESHING = application.getString(R.string.srl_footer_refreshing);// "正在加载...";
+            ClassicsFooter.REFRESH_FOOTER_FINISH = application.getString(R.string.srl_footer_finish);// "加载完成";
+            ClassicsFooter.REFRESH_FOOTER_FAILED = application.getString(R.string.srl_footer_failed);// "加载失败";
+            ClassicsFooter.REFRESH_FOOTER_NOTHING = application.getString(R.string.srl_footer_nothing);// "全部加载完成";
         }
 
         // SmartReRefreshLayout的初始化，static 代码段可以防止内存泄露
@@ -268,10 +240,7 @@ public class BaseApplication {
         SmartRefreshLayout.setDefaultRefreshHeaderCreator(new DefaultRefreshHeaderCreator() {
             @NotNull
             @Override
-            public RefreshHeader createRefreshHeader(
-                    @NotNull Context context,
-                    @NotNull RefreshLayout layout
-            ) {
+            public RefreshHeader createRefreshHeader(@NotNull Context context, @NotNull RefreshLayout layout) {
                 return new BaseRefreshHeader(context);// .setTimeFormat(new DynamicTimeFormat("更新于
                 // %s"));//指定为经典Header，默认是 贝塞尔雷达Header
             }
@@ -280,10 +249,7 @@ public class BaseApplication {
         SmartRefreshLayout.setDefaultRefreshFooterCreator(new DefaultRefreshFooterCreator() {
             @NotNull
             @Override
-            public RefreshFooter createRefreshFooter(
-                    @NotNull Context context,
-                    @NotNull RefreshLayout layout
-            ) {
+            public RefreshFooter createRefreshFooter(@NotNull Context context, @NotNull RefreshLayout layout) {
                 // 指定为经典Footer，默认是 BallPulseFooter
                 return new BaseRefreshFooter(context).setDrawableSize(20);
             }
