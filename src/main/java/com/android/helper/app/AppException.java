@@ -1,19 +1,5 @@
 package com.android.helper.app;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.ParseException;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.android.helper.utils.LogUtil;
-import com.google.gson.JsonParseException;
-
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,6 +14,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+
+import com.android.helper.utils.ActivityManager;
+import com.android.helper.utils.LogUtil;
+import com.google.gson.JsonParseException;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.ParseException;
+import android.text.TextUtils;
+import android.util.Log;
+
 import retrofit2.HttpException;
 
 /**
@@ -40,13 +41,14 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
     private final UncaughtExceptionHandler mDefaultHandler;
     private final Context mContext;
     private final HashMap<String, String> mMapParameter = new LinkedHashMap<>();
+    private String mFileTag = "";
 
     private AppException(Context context) {
         this.mContext = context;
         this.mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
     }
 
-    public static AppException getAppExceptionHandler(Context context) {
+    public static AppException getInstance(Context context) {
         if (INSTANCE == null) {
             INSTANCE = new AppException(context);
         }
@@ -55,22 +57,24 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
 
     @Override
     public void uncaughtException(@NotNull Thread thread, @NotNull Throwable ex) {
+        LogUtil.e("uncaughtException ----->");
         if (mDefaultHandler != null && !handleException(thread, ex)) {
+            LogUtil.e("uncaughtException -----> 内部消耗！ ");
             // 如果没有处理就交给系统处理
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
+            LogUtil.e("uncaughtException -----> else ");
             // Sleep一会后结束程序
             try {
-                Thread.sleep(3000);
+                Thread.sleep(1500);
+                ActivityManager.getInstance().AppExit(mContext);
             } catch (InterruptedException e) {
                 Log.e("AppException", "Error : ", e);
             }
-            android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(1);
         }
     }
 
-    public boolean saveErrorLog(Throwable ex) {
+    private boolean saveErrorLog(Throwable ex) {
         boolean isSave = false;
         FileWriter fw = null;
         PrintWriter pw = null;
@@ -85,8 +89,8 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             fw = new FileWriter(path, false);
             pw = new PrintWriter(fw);
 
-            pw.println("--------------------" + (DateFormat.getDateTimeInstance()
-                    .format(new Date())) + "---------------------");
+            pw.println("--------------------" + (DateFormat.getDateTimeInstance().format(new Date()))
+                + "---------------------");
 
             Map<String, String> parameter = getParameter();
             for (Entry<String, String> entry : parameter.entrySet()) {
@@ -123,14 +127,19 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
      * @return true:处理了该异常信息;否则返回false
      */
     private boolean handleException(Thread thread, Throwable ex) {
+        LogUtil.e("uncaughtException ----->handleException  ！ ");
+
         if (thread == null || ex == null || mContext == null) {
+            LogUtil.e("uncaughtException ----->handleException  false = 1 ！ ");
             return false;
         } else {
             try {
                 boolean saveErrorLog = saveErrorLog(ex);
                 LogUtil.e("日志是否写成功：" + saveErrorLog);
+                LogUtil.e("uncaughtException ----->handleException  false = 3 ！ ");
                 return saveErrorLog;
             } catch (Exception ignored) {
+                LogUtil.e("uncaughtException ----->handleException  false = 2 ！ ");
                 return false;
             }
         }
@@ -148,7 +157,8 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace(System.err);
         }
-        if (info == null) info = new PackageInfo();
+        if (info == null)
+            info = new PackageInfo();
         return info;
     }
 
@@ -183,39 +193,50 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         if (mContext != null) {
             File filesDir = mContext.getFilesDir();
             if (filesDir != null) {
-                String path = filesDir.getPath();
-                if (!TextUtils.isEmpty(path)) {
-                    File file = new File(path + File.separator, "error.txt");
-                    // 文件存在
-                    if (file.exists()) {
-                        return file.getPath();
-                    } else {
-                        // 文件不存在
-                        try {
-                            boolean newFile = file.createNewFile();
-                            if (newFile) {
-                                return file.getPath();
-                            } else {
-                                return "";
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            return "";
-                        }
+                String fileName = "";
+                if (!TextUtils.isEmpty(mFileTag)) {
+                    fileName = mFileTag + "_error.txt";
+                } else {
+                    fileName = mFileTag + "error.txt";
+                }
+
+                File parentFile = new File(filesDir + File.separator + "error" + File.separator);
+                boolean exists = parentFile.exists();
+                LogUtil.e("getErrorLogPath: parentFile ---> exists: " + exists);
+
+                if (!exists) {
+                    boolean mkdirs = parentFile.mkdirs();
+                    LogUtil.e("getErrorLogPath: parentFile ---> mkdirs: " + mkdirs);
+                }
+
+                File file = new File(parentFile, fileName);
+                boolean existsFile = file.exists();
+                LogUtil.e("getErrorLogPath: parentFile ---> existsFile: " + existsFile);
+                if (!existsFile) {
+                    try {
+                        boolean newFile = file.createNewFile();
+                        LogUtil.e("getErrorLogPath: parentFile ---> newFile: " + newFile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
+                return file.getPath();
             }
         }
         return "";
     }
 
+    public void setFileTag(String fileName) {
+        this.mFileTag = fileName;
+    }
 
     public Map<String, String> getParameter() {
         PackageInfo packageInfo = getPackageInfo();
-        mMapParameter.put("versionName", packageInfo.versionName);
-        mMapParameter.put("versionCode", packageInfo.versionCode + "");
-        mMapParameter.put("AndroidVersion", android.os.Build.VERSION.RELEASE);
-        mMapParameter.put("AndroidModel", android.os.Build.MODEL);
+        mMapParameter.put("App版本", packageInfo.versionName);
+        mMapParameter.put("App版本号", packageInfo.versionCode + "");
+        mMapParameter.put("系统版本", android.os.Build.VERSION.RELEASE);
+        mMapParameter.put("系统品牌", android.os.Build.BRAND);
+        mMapParameter.put("系统型号", android.os.Build.MODEL);
         return mMapParameter;
     }
 
