@@ -1,13 +1,11 @@
 package com.android.helper.utils
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import androidx.annotation.RequiresPermission
-import androidx.core.content.ContextCompat
 import java.net.NetworkInterface
 import java.util.*
 
@@ -49,23 +47,23 @@ class DeviceUtil private constructor() {
         context?.let {
             val systemService = it.getSystemService(Context.TELEPHONY_SERVICE)
             if (systemService is TelephonyManager) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ContextCompat.checkSelfPermission(it, "android.permission.READ_PRIVILEGED_PHONE_STATE") == PackageManager.PERMISSION_GRANTED) {
-                        //1.1:如果有权限，直接显示
-                        // 8.0 以下可以用deviceId，8.0以上要使用 imeiId
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            // 只适用于手机，依赖于sim卡
-                            deviceId = systemService.imei
-                            // 设备的SN 序列号
-                            if (TextUtils.isEmpty(deviceId)) {
-                                deviceId = Build.getSerial()
-                            }
-                        } else {
-                            deviceId = systemService.deviceId
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    // android 10 以上，只能通过系统权限获取
+
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    //1.1:如果有权限，直接显示
+                    // 8.0 以下可以用deviceId，8.0以上要使用 imeiId
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        // 只适用于手机，依赖于sim卡
+                        deviceId = systemService.imei
+                        // 设备的SN 序列号
+                        if (TextUtils.isEmpty(deviceId)) {
+                            deviceId = Build.getSerial()
                         }
+                    } else {
+                        deviceId = systemService.deviceId
                     }
-                } else {
-                    deviceId = systemService.deviceId
                 }
 
                 // 设备的SN 序列号
@@ -123,6 +121,27 @@ class DeviceUtil private constructor() {
             }
         }
         return macAddress
+    }
+
+    fun getDeviceId2() {
+        // 设备的唯一标识。由设备的多个信息拼接合成
+        val fingerprint = Build.FINGERPRINT
+        // 系统品牌
+        val BRAND = Build.BRAND
+        // 型号
+        val MODEL = Build.MODEL
+        // 系统制造商
+        val MANUFACTURER = Build.MANUFACTURER
+        // 设备参数
+        val DEVICE = Build.DEVICE
+        // 手机制造商
+        val PRODUCT = Build.PRODUCT
+        // sdk 版本
+        val SDK = Build.VERSION.SDK
+        // 系统 版本
+        val RELEASE = Build.VERSION.RELEASE
+
+        LogUtil.e("fingerprint:" + fingerprint + "\r\n 系统品牌:" + BRAND + " \r\n 型号: " + MODEL + " \n 系统制造商:" + MANUFACTURER + " \n 设备参数:" + DEVICE + " \n 手机制造商:" + PRODUCT + "\n sdk 版本:" + SDK + "\n 系统 版本:" + RELEASE)
     }
 
 }
