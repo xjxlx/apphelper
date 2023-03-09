@@ -37,6 +37,6 @@ ext {
             versionCode      : 1,
             versionName      : "1.0"
     ]
-    lifecycle_version = "2.4.1"
+    lifecycle_version = "2.5.1"
     navigation_version = "2.4.1"
 }
