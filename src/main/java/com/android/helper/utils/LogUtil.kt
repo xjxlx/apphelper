@@ -12,7 +12,6 @@ object LogUtil {
     private val mWriteUtil: LogWriteUtil = LogWriteUtil()
 
     @JvmStatic
-    @JvmOverloads
     fun e(value: Any? = "", tag: String = "") {
         if (isDebug) {
             value?.let {
@@ -36,7 +35,11 @@ object LogUtil {
     }
 
     @JvmStatic
-    @JvmOverloads
+    fun e(value: Any?) {
+        e(value = value, tag = "")
+    }
+
+    @JvmStatic
     fun d(value: Any? = "", tag: String = "") {
         if (isDebug) {
             value?.let {
@@ -60,7 +63,11 @@ object LogUtil {
     }
 
     @JvmStatic
-    @JvmOverloads
+    fun d(value: Any?) {
+        d(value = value, tag = "")
+    }
+
+    @JvmStatic
     fun i(value: Any? = "", tag: String = "") {
         if (isDebug) {
             value?.let {
@@ -83,8 +90,11 @@ object LogUtil {
         }
     }
 
+    fun i(value: Any?) {
+        i(value = value, tag = "")
+    }
+
     @JvmStatic
-    @JvmOverloads
     fun w(value: Any? = "", tag: String = "") {
         if (isDebug) {
             value?.let {
@@ -107,12 +117,17 @@ object LogUtil {
         }
     }
 
+    @JvmStatic
+    fun w(value: Any?) {
+        w(value = value, tag = "")
+    }
+
     /**
      * write file content
      */
     @JvmStatic
     @JvmOverloads
-    fun write(value: String? = "", fileName: String? = "") {
+    fun write(fileName: String? = "", value: String? = "") {
         if ((!TextUtils.isEmpty(value)) && (!TextUtils.isEmpty(fileName))) {
             mWriteUtil.write(fileName!!, value)
         }
@@ -122,7 +137,6 @@ object LogUtil {
      * write  file content and write log
      */
     @JvmStatic
-    @JvmOverloads
     fun writeAll(fileName: String? = "", value: String? = "", tag: String? = "") {
         if ((!TextUtils.isEmpty(value)) && (!TextUtils.isEmpty(fileName))) {
             value?.let {
@@ -136,6 +150,11 @@ object LogUtil {
                 mWriteUtil.write(fileName!!, it)
             }
         }
+    }
+
+    @JvmStatic
+    fun writeAll(fileName: String? = "", value: String? = "") {
+        writeAll(fileName = fileName, value = value, tag = "")
     }
 
     /**
