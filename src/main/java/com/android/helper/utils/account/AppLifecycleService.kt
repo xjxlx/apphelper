@@ -29,7 +29,7 @@ class AppLifecycleService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "onStartCommand --->", tag = "应用保活")
+        LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "应用保活", "onStartCommand --->")
 
         // 标记打开服务的来源
         val fromType = intent!!.getStringExtra(CommonConstants.KEY_LIFECYCLE_FROM)
@@ -56,15 +56,15 @@ class AppLifecycleService : Service() {
 
         if (TextUtils.equals(type, LifecycleAppEnum.From_Intent.from)) {
             builder.setContentText("我是后台服务，我是被直接启动的")
-            LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "我是后台服务，我是被直接启动的", tag = "应用保活")
+            LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "应用保活", "我是后台服务，我是被直接启动的")
 
         } else if (TextUtils.equals(type, LifecycleAppEnum.FROM_JOB.from)) {
             builder.setContentText("我是后台服务，我是被JobService启动的")
-            LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "我是后台服务，我是被JobService启动的", tag = "应用保活")
+            LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "应用保活", "我是后台服务，我是被JobService启动的")
 
         } else if (TextUtils.equals(type, LifecycleAppEnum.FROM_ACCOUNT.from)) {
             builder.setContentText("我是后台服务，我是被账号拉活的")
-            LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "我是后台服务，我是被账号拉活的", tag = "应用保活")
+            LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "应用保活", "我是后台服务，我是被账号拉活的")
 
         }
         builder.setWhen(System.currentTimeMillis())
@@ -95,15 +95,14 @@ class AppLifecycleService : Service() {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
 
-            if (msg.what == CODE_NOTIFICATION) {
-                // 1：删除原有的消息通知，避免重复性发送消息
+            if (msg.what == CODE_NOTIFICATION) { // 1：删除原有的消息通知，避免重复性发送消息
                 removeMessages(CODE_NOTIFICATION)
                 removeCallbacksAndMessages(null)
 
                 // 2:启动jobService
                 val jobServiceName: String = LifecycleManager.getInstance().jobServiceName
                 val jobServiceRunning = ServiceUtil.isJobServiceRunning(applicationContext, jobServiceName)
-                LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "☆☆☆☆☆---我是后台服务，当前jobService的状态为:$jobServiceRunning", tag = "应用保活")
+                LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "应用保活", "☆☆☆☆☆---我是后台服务，当前jobService的状态为:$jobServiceRunning")
 
                 if (!jobServiceRunning) {
                     AppJobService.startJob(applicationContext, LifecycleAppEnum.FROM_SERVICE)
