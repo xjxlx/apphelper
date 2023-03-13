@@ -21,7 +21,7 @@ public class LifecycleReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         if (TextUtils.equals(action, "com.android.helper.lifecycle")) {
-            LogUtil.writeLifeCycle("接收到了账号同步的信息！");
+            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "接收到了账号同步的信息！", "应用保活：");
 
             sendNotification(context);
 
@@ -30,7 +30,8 @@ public class LifecycleReceiver extends BroadcastReceiver {
             if (!TextUtils.isEmpty(serviceName)) {
                 // 后台服务
                 boolean serviceRunning = ServiceUtil.isServiceRunning(context, serviceName);
-                LogUtil.writeLifeCycle("☆☆☆☆☆---我是广播通知，当前后台服务的状态为：" + serviceRunning);
+                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "☆☆☆☆☆---我是广播通知，当前后台服务的状态为：" + serviceRunning,
+                    "应用保活：");
 
                 if (!serviceRunning) {
                     Intent intentService = new Intent();
@@ -44,8 +45,8 @@ public class LifecycleReceiver extends BroadcastReceiver {
             // 如果JobService没有运行着的时候，顺便把它也唤醒
             String jobServiceName = LifecycleManager.getInstance().getJobServiceName();
             boolean jobServiceRunning = ServiceUtil.isJobServiceRunning(context, jobServiceName);
-            LogUtil.writeLifeCycle("☆☆☆☆☆---我是广播通知，当前JobService的状态为：" + jobServiceRunning);
-
+            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME,
+                "☆☆☆☆☆---我是广播通知，当前JobService的状态为：" + jobServiceRunning, "应用保活：");
             if (!jobServiceRunning) {
                 AppJobService.startJob(context, LifecycleAppEnum.FROM_ACCOUNT);
             }
@@ -53,13 +54,9 @@ public class LifecycleReceiver extends BroadcastReceiver {
     }
 
     private void sendNotification(Context context) {
-        NotificationUtil notificationUtil1 = new NotificationUtil
-                .Builder(context)
-                .setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentText("账号同步开始了，主动检测服务存活")
-                .setWhen(System.currentTimeMillis())
-                .build();
+        NotificationUtil notificationUtil1 = new NotificationUtil.Builder(context)
+            .setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME).setSmallIcon(R.mipmap.ic_launcher)
+            .setContentText("账号同步开始了，主动检测服务存活").setWhen(System.currentTimeMillis()).build();
 
         notificationUtil1.sendNotification(333);
     }

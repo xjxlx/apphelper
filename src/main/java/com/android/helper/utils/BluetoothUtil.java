@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import com.android.helper.common.CommonConstants;
 import com.android.helper.common.EventMessage;
 
 import org.greenrobot.eventbus.EventBus;
@@ -53,7 +54,7 @@ public class BluetoothUtil {
         mContext = context;
         if (mBluetoothManager == null) {
             if (mContext != null) {
-                mBluetoothManager = (BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE);
+                mBluetoothManager = (BluetoothManager)mContext.getSystemService(Context.BLUETOOTH_SERVICE);
             }
         }
 
@@ -131,7 +132,7 @@ public class BluetoothUtil {
                 // getPdList();
 
                 // 搜索附近的设备
-//                  startDiscovery();
+                // startDiscovery();
                 startScanBackground();
             }
         } else {
@@ -142,7 +143,7 @@ public class BluetoothUtil {
     // 蓝牙扫描回调
     private final ScanCallback mScanCallback = new ScanCallback() {
 
-        //当一个蓝牙ble广播被发现时回调
+        // 当一个蓝牙ble广播被发现时回调
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
@@ -154,7 +155,7 @@ public class BluetoothUtil {
                     String name = device.getName();
 
                     LogUtil.e("蓝牙扫描回调---成功：" + name + "  描到的蓝牙地址为：" + address);
-                    LogUtil.writeLifeCycle("->蓝牙扫描回调---成功：" + name + "  描到的蓝牙地址为：" + address);
+                    LogUtil.writeAll("->蓝牙扫描回调---成功：" + name + "  描到的蓝牙地址为：" + address);
 
                     sendDevice(device);
 
@@ -167,7 +168,7 @@ public class BluetoothUtil {
             }
         }
 
-        //批量返回扫描结果
+        // 批量返回扫描结果
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
             super.onBatchScanResults(results);
@@ -180,20 +181,20 @@ public class BluetoothUtil {
                     if (device != null) {
                         String address = device.getAddress();
                         String name = device.getName();
-                        LogUtil.writeLifeCycle("蓝牙扫描回调---批量成功：" + name + "  描到的蓝牙地址为：" + address);
+                        LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME,
+                            "蓝牙扫描回调---批量成功：" + name + "  描到的蓝牙地址为：" + address);
                         LogUtil.e("蓝牙扫描回调---批量成功：" + name + "  描到的蓝牙地址为：" + address);
                     }
                 }
             }
         }
 
-        //当扫描不能开启时回调
+        // 当扫描不能开启时回调
         @Override
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
             isScan = false;
-
-            LogUtil.writeLifeCycle("蓝牙扫描回调---异常：onScanFailed！" + errorCode);
+            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "蓝牙扫描回调---异常：onScanFailed！" + errorCode);
             LogUtil.e("蓝牙扫描回调---异常：onScanFailed！" + errorCode);
 
             if (mScanner != null) {
@@ -245,10 +246,10 @@ public class BluetoothUtil {
                         }
                         break;
 
-                    case BluetoothDevice.ACTION_FOUND: { //found device
+                    case BluetoothDevice.ACTION_FOUND: { // found device
                         Parcelable parcelableExtra = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                         if (parcelableExtra instanceof BluetoothDevice) {
-                            BluetoothDevice device = (BluetoothDevice) parcelableExtra;
+                            BluetoothDevice device = (BluetoothDevice)parcelableExtra;
                             String address = device.getAddress();
                             String name = device.getName();
                             LogUtil.e(" --> 发现的蓝牙名字：" + name + "  发现到的蓝牙地址：" + address);
@@ -256,7 +257,7 @@ public class BluetoothUtil {
                             sendDevice(device);
                         }
                     }
-                    break;
+                        break;
                     case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
                         LogUtil.e("---> 蓝牙扫描中！");
                         isScan = true;
@@ -278,7 +279,7 @@ public class BluetoothUtil {
      */
     private boolean checkLocationEnable() {
         if (locationManager == null) {
-            locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+            locationManager = (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
         }
         boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean netWork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -307,18 +308,18 @@ public class BluetoothUtil {
                 if (((end - mStartScan) / 1000) > 20) {
                     mAdapter.cancelDiscovery();
                     LogUtil.e("扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
-                    LogUtil.writeLifeCycle("扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
+                    LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
 
                     mStartScan = end;
                     isScan = false;
                 } else {
                     LogUtil.e("蓝牙正在扫描中~~");
-                    LogUtil.writeLifeCycle("蓝牙正在扫描中~~");
+                    LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "蓝牙正在扫描中~~");
                 }
             } else {
                 mAdapter.startDiscovery();
                 LogUtil.e("------开始扫描蓝牙------");
-                LogUtil.writeLifeCycle("------开始扫描蓝牙------");
+                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "------开始扫描蓝牙------");
 
                 isScan = true;
                 mStartScan = System.currentTimeMillis();
@@ -338,37 +339,36 @@ public class BluetoothUtil {
                     if (isOpenBluetooth()) {
                         mScanner.stopScan(mScanCallback);
                         LogUtil.e("扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
-                        LogUtil.writeLifeCycle("扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
+                        LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
                     }
                 }
                 mStartScan = end;
                 isScan = false;
             } else {
                 LogUtil.e("蓝牙正在扫描中~~");
-                LogUtil.writeLifeCycle("蓝牙正在扫描中~~");
+                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "蓝牙正在扫描中~~");
             }
         } else {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
                 ScanSettings mScannerSetting = new ScanSettings.Builder()
-                        //  退到后台时设置扫描模式为低功耗
-                        .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
-                        //  使用最高占空比进行扫描。建议只在应用程序处于此模式时使用此模式在前台运行
-                        //  .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                        //  设置蓝牙LE扫描滤波器硬件匹配的匹配模式
-                        //  在主动模式下，即使信号强度较弱，hw也会更快地确定匹配.在一段时间内很少有目击/匹配。
-                        .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
-                        .build();
+                    // 退到后台时设置扫描模式为低功耗
+                    .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
+                    // 使用最高占空比进行扫描。建议只在应用程序处于此模式时使用此模式在前台运行
+                    // .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                    // 设置蓝牙LE扫描滤波器硬件匹配的匹配模式
+                    // 在主动模式下，即使信号强度较弱，hw也会更快地确定匹配.在一段时间内很少有目击/匹配。
+                    .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE).build();
 
                 List<ScanFilter> scanFilterList = new ArrayList<>();
-                // 通过服务 uuid 过滤自己要连接的设备   过滤器搜索GATT服务UUID
+                // 通过服务 uuid 过滤自己要连接的设备 过滤器搜索GATT服务UUID
                 ScanFilter.Builder scanBuilder = new ScanFilter.Builder();
-//                ParcelUuid parcelUuid = ParcelUuid.fromString("0000fee7-0000-1000-8000-00805f9b34fb");
-//                scanBuilder.setServiceUuid(parcelUuid);
+                // ParcelUuid parcelUuid = ParcelUuid.fromString("0000fee7-0000-1000-8000-00805f9b34fb");
+                // scanBuilder.setServiceUuid(parcelUuid);
                 scanBuilder.setDeviceName("China Tower");
                 scanFilterList.add(scanBuilder.build());
 
-                //  scanFilterList.add(new ScanFilter.Builder()
-                //  过滤扫描蓝牙设备的主服务
+                // scanFilterList.add(new ScanFilter.Builder()
+                // 过滤扫描蓝牙设备的主服务
                 // .setServiceUuid(ParcelUuid.fromString("0000ffff-0000-1000-8000-00805f9bfffb"))
                 // .build());
                 mScanner.startScan(scanFilterList, mScannerSetting, mScanCallback);
@@ -376,7 +376,7 @@ public class BluetoothUtil {
                 mScanner.startScan(mScanCallback);
             }
             LogUtil.e("------开始扫描蓝牙------");
-            LogUtil.writeLifeCycle("------开始扫描蓝牙------");
+            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "------开始扫描蓝牙------");
 
             isScan = true;
             mStartScan = System.currentTimeMillis();
@@ -398,9 +398,9 @@ public class BluetoothUtil {
     private void canOtherUser() {
         if (mAdapter != null) {
             if (mAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-                //不在可被搜索的范围
+                // 不在可被搜索的范围
                 Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);//设置本机蓝牙在300秒内可见
+                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);// 设置本机蓝牙在300秒内可见
                 mContext.startActivity(discoverableIntent);
             }
         }

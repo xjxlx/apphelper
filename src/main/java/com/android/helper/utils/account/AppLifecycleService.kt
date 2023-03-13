@@ -29,7 +29,7 @@ class AppLifecycleService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        LogUtil.writeLifeCycle("onStartCommand --->")
+        LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "onStartCommand --->", tag = "应用保活")
 
         // 标记打开服务的来源
         val fromType = intent!!.getStringExtra(CommonConstants.KEY_LIFECYCLE_FROM)
@@ -56,13 +56,16 @@ class AppLifecycleService : Service() {
 
         if (TextUtils.equals(type, LifecycleAppEnum.From_Intent.from)) {
             builder.setContentText("我是后台服务，我是被直接启动的")
-            LogUtil.writeLifeCycle("我是后台服务，我是被直接启动的")
+            LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "我是后台服务，我是被直接启动的", tag = "应用保活")
+
         } else if (TextUtils.equals(type, LifecycleAppEnum.FROM_JOB.from)) {
             builder.setContentText("我是后台服务，我是被JobService启动的")
-            LogUtil.writeLifeCycle("我是后台服务，我是被JobService启动的")
+            LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "我是后台服务，我是被JobService启动的", tag = "应用保活")
+
         } else if (TextUtils.equals(type, LifecycleAppEnum.FROM_ACCOUNT.from)) {
             builder.setContentText("我是后台服务，我是被账号拉活的")
-            LogUtil.writeLifeCycle("我是后台服务，我是被账号拉活的")
+            LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "我是后台服务，我是被账号拉活的", tag = "应用保活")
+
         }
         builder.setWhen(System.currentTimeMillis())
         val notificationUtil = builder.build()
@@ -100,7 +103,8 @@ class AppLifecycleService : Service() {
                 // 2:启动jobService
                 val jobServiceName: String = LifecycleManager.getInstance().jobServiceName
                 val jobServiceRunning = ServiceUtil.isJobServiceRunning(applicationContext, jobServiceName)
-                LogUtil.writeLifeCycle("☆☆☆☆☆---我是后台服务，当前jobService的状态为:$jobServiceRunning")
+                LogUtil.writeAll(fileName = CommonConstants.FILE_LIFECYCLE_NAME, "☆☆☆☆☆---我是后台服务，当前jobService的状态为:$jobServiceRunning", tag = "应用保活")
+
                 if (!jobServiceRunning) {
                     AppJobService.startJob(applicationContext, LifecycleAppEnum.FROM_SERVICE)
                 }

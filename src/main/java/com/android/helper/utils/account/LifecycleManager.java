@@ -66,7 +66,9 @@ public class LifecycleManager {
 
             // 2:后台服务写日志
             boolean serviceRunning = ServiceUtil.isServiceRunning(application, serviceName);
-            LogUtil.writeLifeCycle("☆☆☆☆☆---我是Manager，当前后台服务的状态为：" + serviceRunning);
+            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "☆☆☆☆☆---我是Manager，当前后台服务的状态为：" + serviceRunning,
+                "应用保活：");
+
             if (!serviceRunning) {
                 mIntent = new Intent();
                 mIntent.setClassName(application, serviceName);
@@ -77,8 +79,8 @@ public class LifecycleManager {
 
             // 3:启动jobService
             boolean jobServiceRunning = ServiceUtil.isJobServiceRunning(application, jobName);
-            LogUtil.writeLifeCycle("☆☆☆☆☆---我是Manager，当前JobService的状态为：" + jobServiceRunning);
-
+            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME,
+                "☆☆☆☆☆---我是Manager，当前JobService的状态为：" + jobServiceRunning, "应用保活：");
             if (!jobServiceRunning) {
                 AppJobService.startJob(application, LifecycleAppEnum.From_Intent);
             }
