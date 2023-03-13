@@ -51,13 +51,12 @@ public class ChargingProgressView extends BaseView {
 
     private RectF mRectFOuterLayer; // 外层矩形
     private Paint mPaintRoundOuterLayer;
-    private final float[] mAngleArray = new float[] {mAngle, mAngle, 0, 0, 0, 0, mAngle, mAngle};
-    private final float[] mAngleArrayRight = new float[] {0, 0, mAngle, mAngle, mAngle, mAngle, 0, 0};
-    private final float[] mAngleArrayLeftRight =
-        new float[] {mAngle, mAngle, mAngle, mAngle, mAngle, mAngle, mAngle, mAngle};
+    private final float[] mAngleArray = new float[]{mAngle, mAngle, 0, 0, 0, 0, mAngle, mAngle};
+    private final float[] mAngleArrayRight = new float[]{0, 0, mAngle, mAngle, mAngle, mAngle, 0, 0};
+    private final float[] mAngleArrayLeftRight = new float[]{mAngle, mAngle, mAngle, mAngle, mAngle, mAngle, mAngle, mAngle};
 
     private float mProgressWidth;// 进度条的宽度
-    private final int mProgressHeight = (int)ConvertUtil.toDp(60); // 进度条的高度
+    private final int mProgressHeight = (int) ConvertUtil.toDp(60); // 进度条的高度
 
     private RectF mRectFNerLayer; // 内层矩形
     private Paint mPaintRoundNerLayer;
@@ -311,7 +310,7 @@ public class ChargingProgressView extends BaseView {
                     // src:bitmap的区域，dst:本次绘制的区域，把src放进dst中
                     mRectDsc.left = ((mProgress - bitmapWidth) / 2);// left：( mProgress - bitmap的宽 )/2
                     // top = (进度条高度 - bitmap高度 )/2 + 顶部高度
-                    mRectDsc.top = (int)((mProgressHeight - bitmapHeight) / 2 + mTopInterval);
+                    mRectDsc.top = (int) ((mProgressHeight - bitmapHeight) / 2 + mTopInterval);
                     mRectDsc.right = mRectDsc.left + bitmapWidth;
                     mRectDsc.bottom = mRectDsc.top + bitmapHeight;
 
@@ -492,7 +491,7 @@ public class ChargingProgressView extends BaseView {
                 }
 
                 float baseLine = CustomViewUtil.getBaseLine(mPaintCharging, mCurrentChargingText);
-                float dy = (int)(mTopInterval + ((mProgressHeight - mCurrentChargingTextSize[1]) / 2) + baseLine);
+                float dy = (int) (mTopInterval + ((mProgressHeight - mCurrentChargingTextSize[1]) / 2) + baseLine);
 
                 canvas.drawText(mCurrentChargingText, 0, mCurrentChargingText.length(), dx, dy, mPaintCharging);
             }
@@ -573,7 +572,7 @@ public class ChargingProgressView extends BaseView {
             float dy = (circleY + mScrollTextHeight / 2); // dy =  圆角的y轴 +    文字的高度 /2 +
             canvas.drawText(mSocCurrentText, 0, mSocCurrentText.length(), dx, dy, mPaintScrollValue);
         } else {
-            LogUtil.writeAll(CommonConstants.FILE_CHARGING_CENTER_NAME, "绘制滑动的区间值：小于0 ，不执行逻辑！", "充电中心：");
+            LogUtil.writeAll(CommonConstants.FILE_CHARGING_CENTER_NAME, "充电中心：", "绘制滑动的区间值：小于0 ，不执行逻辑！");
         }
 
         // 绘制最佳的进度
@@ -677,7 +676,7 @@ public class ChargingProgressView extends BaseView {
         String format1 = NumberUtil.dataFormatDigits((x / mProgressWidth) + "", BigDecimal.ROUND_HALF_UP, 2);
         // 换算成整数，用来取余数
         float v1 = Float.parseFloat(format1);
-        int v2 = (int)(v1 * 100);
+        int v2 = (int) (v1 * 100);
         mDivideAndRemainder = NumberUtil.divideAndRemainder(v2, 5);
 
         LogUtil.e("format: " + format1 + "  v2:" + v2 + "   mDivideAndRemainder:" + mDivideAndRemainder);
@@ -715,8 +714,7 @@ public class ChargingProgressView extends BaseView {
     /**
      * 设置当前的电量百分比
      *
-     * @param chargingPercentage
-     *            当前电量进度的百分比
+     * @param chargingPercentage 当前电量进度的百分比
      */
     public void setPercentage(float chargingPercentage) {
         mPercentage = chargingPercentage;
@@ -727,8 +725,7 @@ public class ChargingProgressView extends BaseView {
     /**
      * 设置剩余的充电时间
      *
-     * @param remainingChargeTime
-     *            剩余充电时间
+     * @param remainingChargeTime 剩余充电时间
      */
     public void setRemainingChargeTime(String remainingChargeTime) {
         mRemainingTimeText = remainingChargeTime;
@@ -739,8 +736,7 @@ public class ChargingProgressView extends BaseView {
     /**
      * 设置最佳的soc值
      *
-     * @param optimumPercentage
-     *            最佳的SOC值
+     * @param optimumPercentage 最佳的SOC值
      */
     public void setOptimumValue(float optimumPercentage) {
         mPercentageOptimum = optimumPercentage;
@@ -751,10 +747,8 @@ public class ChargingProgressView extends BaseView {
     /**
      * 设置滑动区间值的百分比
      *
-     * @param startPercentage
-     *            开始的区间值
-     * @param endPercentage
-     *            结束的区间值
+     * @param startPercentage 开始的区间值
+     * @param endPercentage   结束的区间值
      */
     public void setInterval(float startPercentage, float endPercentage) {
         mPercentageStart = startPercentage;
@@ -766,8 +760,7 @@ public class ChargingProgressView extends BaseView {
     /**
      * 设置是否在充电中
      *
-     * @param isCharging
-     *            true:充电，false:停止充电
+     * @param isCharging true:充电，false:停止充电
      */
     public void setCharging(boolean isCharging) {
         this.isCharging = isCharging;
@@ -778,8 +771,7 @@ public class ChargingProgressView extends BaseView {
     /**
      * view 是否可以操作
      *
-     * @param scroll
-     *            true:可以操作，false:不可以操作 ,默认可以操作
+     * @param scroll true:可以操作，false:不可以操作 ,默认可以操作
      */
     public void setScroll(boolean scroll) {
         mScroll = scroll;
@@ -788,17 +780,15 @@ public class ChargingProgressView extends BaseView {
     /**
      * 设置当前的SOC值
      *
-     * @param socValue
-     *            当前的soc值
+     * @param socValue 当前的soc值
      */
     public void setCurrentSoc(@FloatRange(from = 0.6f, to = 1.0f) float socValue) {
         if (socValue >= 0.6) {
             this.mBottomScrollProgress = socValue;
-            LogUtil.writeAll(CommonConstants.FILE_CHARGING_CENTER_NAME, "充电中心--->接收到正常的SOC值！", "充电中心：");
+            LogUtil.writeAll(CommonConstants.FILE_CHARGING_CENTER_NAME, "充电中心：", "充电中心--->接收到正常的SOC值！");
         } else {
             this.mBottomScrollProgress = 0.6f;
-            LogUtil.writeAll(CommonConstants.FILE_CHARGING_CENTER_NAME, "充电中心--->接收到异常的SOC值: " + socValue + "，默认设置成0.6",
-                "充电中心：");
+            LogUtil.writeAll(CommonConstants.FILE_CHARGING_CENTER_NAME, "充电中心：", "充电中心--->接收到异常的SOC值: " + socValue + "，默认设置成0.6");
         }
         requestLayout();
         invalidate();
@@ -806,8 +796,7 @@ public class ChargingProgressView extends BaseView {
 
     public interface ProgressListener {
         /**
-         * @param progress
-         *            手指抬起时候，当前的百分比
+         * @param progress 手指抬起时候，当前的百分比
          */
         void onTouchUp(String progress);
 

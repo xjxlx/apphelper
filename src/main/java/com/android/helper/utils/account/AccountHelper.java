@@ -43,7 +43,8 @@ public class AccountHelper {
     private String ACCOUNT_PASSWORD;
     private String ACCOUNT_AUTHORITY;
 
-    public AccountHelper() {}
+    public AccountHelper() {
+    }
 
     private static AccountHelper mAccountHelper;
 
@@ -81,32 +82,32 @@ public class AccountHelper {
     public AccountHelper addAccount(Context context) {
         try {
             if (TextUtils.isEmpty(ACCOUNT_TYPE)) {
-                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "添加账户的类型为空，停止后续的操作", "应用保活：");
+                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "添加账户的类型为空，停止后续的操作");
                 throw new NullPointerException("添加账户的类型为空");
             }
             if (TextUtils.isEmpty(ACCOUNT_NAME)) {
-                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "添加账户的名字为空，停止后续的操作", "应用保活：");
+                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "添加账户的名字为空，停止后续的操作");
                 throw new NullPointerException("添加账户的名字为空");
             }
 
             if (TextUtils.isEmpty(ACCOUNT_PASSWORD)) {
-                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "添加账户的密码为空，停止后续的操作", "应用保活：");
+                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "添加账户的密码为空，停止后续的操作");
                 throw new NullPointerException("添加账户的密码为空");
             }
 
-            AccountManager accountManager = (AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE);
+            AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
             Account[] accounts = accountManager.getAccountsByType(ACCOUNT_TYPE);
             if (accounts != null && accounts.length > 0) {
-                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "已经拥有账号信息,就不去再次添加新的账户", "应用保活：");
+                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "已经拥有账号信息,就不去再次添加新的账户");
 
             } else {
-                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "没有账号信息，去=添加新的账户", "应用保活：");
+                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "没有账号信息，去=添加新的账户");
                 Account account = new Account(ACCOUNT_NAME, ACCOUNT_TYPE);
                 accountManager.addAccountExplicitly(account, ACCOUNT_PASSWORD, new Bundle());
-                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "账号添加成功！", "应用保活：");
+                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "账号添加成功！");
             }
         } catch (Exception e) {
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "账号添加数据异常：", "应用保活：");
+            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "账号添加数据异常!");
         }
         return mAccountHelper;
     }
@@ -114,7 +115,7 @@ public class AccountHelper {
     public AccountHelper autoSync() {
         try {
             if (TextUtils.isEmpty(ACCOUNT_AUTHORITY)) {
-                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "添加账户的Authority为空，停止了后续的操作", "应用保活：");
+                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "添加账户的Authority为空，停止了后续的操作");
                 throw new NullPointerException("添加账户的Authority为空");
             }
             // 进程间通信
@@ -125,9 +126,9 @@ public class AccountHelper {
             ContentResolver.setSyncAutomatically(account, ACCOUNT_AUTHORITY, true);
             // 同步到队列中去
             ContentResolver.addPeriodicSync(account, ACCOUNT_AUTHORITY, new Bundle(), 1);
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "账号同步数据成功！", "应用保活：");
+            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "账号同步数据成功！");
         } catch (Exception e) {
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "账号同步数据异常：" + e.getMessage(), "应用保活：");
+            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "账号同步数据异常：" + e.getMessage());
         }
         return mAccountHelper;
     }

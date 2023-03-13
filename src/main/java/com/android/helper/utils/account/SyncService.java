@@ -24,7 +24,8 @@ public class SyncService extends Service {
 
     private SyncAdapter syncAdapter;
 
-    public SyncService() {}
+    public SyncService() {
+    }
 
     @Override
     public void onCreate() {
@@ -52,7 +53,7 @@ public class SyncService extends Service {
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
             //与互联网 或者 本地数据库同步账户
             LogUtil.e("onPerformSync ---> 开始了账户的同步！" + account.toString());
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "账号开始同步，数据开始更新！", "应用保活：");
+            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "账号开始同步，数据开始更新！");
 
             // 1:意图都是通过Intent发送的，首先要新建一个Intent
             Intent intent = new Intent();
