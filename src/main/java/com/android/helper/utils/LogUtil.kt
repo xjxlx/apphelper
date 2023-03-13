@@ -37,7 +37,7 @@ object LogUtil {
 
     @JvmStatic
     @JvmOverloads
-    fun d(value: Any?, tag: String = "") {
+    fun d(value: Any? = "", tag: String = "") {
         if (isDebug) {
             value?.let {
                 val contentValue = if (value is String) {
@@ -61,7 +61,7 @@ object LogUtil {
 
     @JvmStatic
     @JvmOverloads
-    fun i(value: Any?, tag: String = "") {
+    fun i(value: Any? = "", tag: String = "") {
         if (isDebug) {
             value?.let {
                 val contentValue = if (value is String) {
@@ -85,7 +85,7 @@ object LogUtil {
 
     @JvmStatic
     @JvmOverloads
-    fun w(value: Any?, tag: String = "") {
+    fun w(value: Any? = "", tag: String = "") {
         if (isDebug) {
             value?.let {
                 val contentValue = if (value is String) {
@@ -112,7 +112,7 @@ object LogUtil {
      */
     @JvmStatic
     @JvmOverloads
-    fun write(value: String?, fileName: String?) {
+    fun write(value: String? = "", fileName: String? = "") {
         if ((!TextUtils.isEmpty(value)) && (!TextUtils.isEmpty(fileName))) {
             mWriteUtil.write(fileName!!, value)
         }
@@ -151,8 +151,4 @@ object LogUtil {
         }
 
 }
-class sss{
-    fun sss(){
-        LogUtil.writeAll(fileName = "")
-    }
-}
+
