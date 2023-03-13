@@ -1,5 +1,14 @@
 package com.android.helper.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.greenrobot.eventbus.EventBus;
+
+import com.android.helper.common.CommonConstants;
+import com.android.helper.common.EventMessage;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -17,15 +26,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-
-import com.android.helper.common.CommonConstants;
-import com.android.helper.common.EventMessage;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * 蓝牙的工具类
@@ -155,7 +155,8 @@ public class BluetoothUtil {
                     String name = device.getName();
 
                     LogUtil.e("蓝牙扫描回调---成功：" + name + "  描到的蓝牙地址为：" + address);
-                    LogUtil.writeAll("->蓝牙扫描回调---成功：" + name + "  描到的蓝牙地址为：" + address);
+                    LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME,
+                        "->蓝牙扫描回调---成功：" + name + "  描到的蓝牙地址为：" + address);
 
                     sendDevice(device);
 
@@ -181,7 +182,7 @@ public class BluetoothUtil {
                     if (device != null) {
                         String address = device.getAddress();
                         String name = device.getName();
-                        LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME,
+                        LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME,
                             "蓝牙扫描回调---批量成功：" + name + "  描到的蓝牙地址为：" + address);
                         LogUtil.e("蓝牙扫描回调---批量成功：" + name + "  描到的蓝牙地址为：" + address);
                     }
@@ -194,7 +195,7 @@ public class BluetoothUtil {
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
             isScan = false;
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "蓝牙扫描回调---异常：onScanFailed！" + errorCode);
+            LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME, "蓝牙扫描回调---异常：onScanFailed！" + errorCode);
             LogUtil.e("蓝牙扫描回调---异常：onScanFailed！" + errorCode);
 
             if (mScanner != null) {
@@ -308,18 +309,18 @@ public class BluetoothUtil {
                 if (((end - mStartScan) / 1000) > 20) {
                     mAdapter.cancelDiscovery();
                     LogUtil.e("扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
-                    LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
+                    LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME, "扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
 
                     mStartScan = end;
                     isScan = false;
                 } else {
                     LogUtil.e("蓝牙正在扫描中~~");
-                    LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "蓝牙正在扫描中~~");
+                    LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME, "蓝牙正在扫描中~~");
                 }
             } else {
                 mAdapter.startDiscovery();
                 LogUtil.e("------开始扫描蓝牙------");
-                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "------开始扫描蓝牙------");
+                LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME, "------开始扫描蓝牙------");
 
                 isScan = true;
                 mStartScan = System.currentTimeMillis();
@@ -339,14 +340,14 @@ public class BluetoothUtil {
                     if (isOpenBluetooth()) {
                         mScanner.stopScan(mScanCallback);
                         LogUtil.e("扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
-                        LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
+                        LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME, "扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
                     }
                 }
                 mStartScan = end;
                 isScan = false;
             } else {
                 LogUtil.e("蓝牙正在扫描中~~");
-                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "蓝牙正在扫描中~~");
+                LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME, "蓝牙正在扫描中~~");
             }
         } else {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
@@ -376,7 +377,7 @@ public class BluetoothUtil {
                 mScanner.startScan(mScanCallback);
             }
             LogUtil.e("------开始扫描蓝牙------");
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "------开始扫描蓝牙------");
+            LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME, "------开始扫描蓝牙------");
 
             isScan = true;
             mStartScan = System.currentTimeMillis();

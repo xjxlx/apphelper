@@ -19,6 +19,11 @@ public class CommonConstants {
     public static final String KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME = "key_lifecycle_notification_channel_name";
 
     /**
+     * 蓝牙扫描
+     */
+    public static final String FILE_BLUETOOTH_NAME = "bluetooth";
+
+    /**
      * 保活日志的文件名字
      */
     public static final String FILE_LIFECYCLE_NAME = "保活";
