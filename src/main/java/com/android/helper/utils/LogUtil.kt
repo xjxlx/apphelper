@@ -12,7 +12,7 @@ object LogUtil {
     private val mWriteUtil: LogWriteUtil = LogWriteUtil()
 
     @JvmStatic
-    fun e(tag: String = "", value: Any? = "") {
+    fun e(tag: String = "", value: Any?) {
         if (isDebug) {
             value?.let {
                 val contentValue = if (value is String) {
@@ -40,7 +40,7 @@ object LogUtil {
     }
 
     @JvmStatic
-    fun d(tag: String = "", value: Any? = "") {
+    fun d(tag: String = "", value: Any?) {
         if (isDebug) {
             value?.let {
                 val contentValue = if (value is String) {
@@ -68,7 +68,7 @@ object LogUtil {
     }
 
     @JvmStatic
-    fun i(tag: String = "", value: Any? = "") {
+    fun i(tag: String = "", value: Any?) {
         if (isDebug) {
             value?.let {
                 val contentValue = if (value is String) {
@@ -95,7 +95,7 @@ object LogUtil {
     }
 
     @JvmStatic
-    fun w(tag: String = "", value: Any? = "") {
+    fun w(tag: String = "", value: Any?) {
         if (isDebug) {
             value?.let {
                 val contentValue = if (value is String) {
