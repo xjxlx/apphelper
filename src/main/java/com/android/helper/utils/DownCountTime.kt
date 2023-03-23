@@ -74,9 +74,11 @@ class DownCountTime {
     }
 
     fun pause() {
-        if (isPause) {
-            LogUtil.e(TAG, "the current status is pause, can't pause ...")
-            return
+        mJob?.let {
+            if (it.isCompleted) {
+                LogUtil.e(TAG, "the current status is completed, can't pause ...")
+                return
+            }
         }
         isPause = true
     }
