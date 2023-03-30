@@ -1,6 +1,6 @@
 package com.android.helper.utils.room;
 
-import androidx.room.RoomDatabase;
+//import androidx.room.RoomDatabase;
 
 /**
  * Room数据库管理对象的基类
@@ -12,7 +12,7 @@ import androidx.room.RoomDatabase;
  * 5：数据库的文件名字和version一样，最好是写在gradle中，例如： buildConfigField("String", "ROOM_VERSION_FILE_NAME", "\"room_table.db\"")
  */
 // @Database(version = RoomManager.ROOM_VERSION, entities = {RoomTable1.class, RoomTable2.class})
-public abstract class BaseRoomManager extends RoomDatabase {
+//public abstract class BaseRoomManager extends RoomDatabase {
 
 
     /* 一：创建一个对象
@@ -40,4 +40,4 @@ public abstract class BaseRoomManager extends RoomDatabase {
      * /
      */
 
-}
+//}
