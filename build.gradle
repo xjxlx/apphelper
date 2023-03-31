@@ -83,8 +83,7 @@ dependencies {
 
     // 系统级类库
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.recyclerview:recyclerview:1.3.0'
-
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
     //经典刷新头
     api 'io.github.scwang90:refresh-header-classics:2.0.5'
     //刷新的核心须依赖
