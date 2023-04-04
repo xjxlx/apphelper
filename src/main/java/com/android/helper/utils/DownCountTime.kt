@@ -14,7 +14,7 @@ class DownCountTime {
     private var mInterval: Long = 0L
     private var mCurrent: Long = 0
     private var mCount: Long = 0
-    private val mScope = CoroutineScope(CoroutineName(TAG))
+    private val mScope = CoroutineScope(Dispatchers.Main + CoroutineName(TAG))
     private var mJob: Job? = null
     private var isPause = false
     private var mCallBackListener: CallBack? = null
@@ -30,6 +30,9 @@ class DownCountTime {
         this.mCallBackListener = listener
     }
 
+    /**
+     * The countdown runs on the main thread
+     */
     fun start() {
         mJob?.let {
             if (it.isActive) {
@@ -58,6 +61,9 @@ class DownCountTime {
                 mCurrent = realTotal - (mInterval * mCount)
                 // LogUtil.e(TAG, "current ----> $mCurrent")
                 mCallBackListener?.onTick(mCount, mCurrent)
+                if (mCurrent <= 0) {
+                    mCallBackListener?.onFinish()
+                }
 
                 if (mCount == mTotal) {
                     mCount = 0
@@ -92,9 +98,34 @@ class DownCountTime {
         }
     }
 
-    interface CallBack {
-        fun onTick(count: Long, current: Long)
-        fun onFinish()
+    fun restart() {
+        isPause = false
+        mCount = 0
+        mJob?.let {
+            if (it.isActive) {
+                it.cancel()
+                LogUtil.e(TAG, "restart ... cancel job ...")
+            } else {
+                LogUtil.e(TAG, "restart the current status is not running, can't cancel ...")
+            }
+        }
     }
 
+    fun destroy() {
+        mJob?.let {
+            if (it.isActive) {
+                LogUtil.e(TAG, "destroy ---->")
+            }
+        }
+    }
+
+    interface CallBack {
+
+        /**
+         * @param current The current timer, starting at 0
+         * @param countdown current countdown
+         */
+        fun onTick(current: Long, countdown: Long)
+        fun onFinish()
+    }
 }
