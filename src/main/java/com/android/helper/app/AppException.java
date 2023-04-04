@@ -197,7 +197,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
                 if (!TextUtils.isEmpty(mFileTag)) {
                     fileName = mFileTag + "_error.txt";
                 } else {
-                    fileName = mFileTag + "error.txt";
+                    fileName = mFileTag + "_error.txt";
                 }
 
                 File parentFile = new File(filesDir + File.separator + "error" + File.separator);
