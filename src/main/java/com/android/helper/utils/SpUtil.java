@@ -30,8 +30,10 @@ public class SpUtil {
      */
     private static synchronized void getSp() {
         if (sp == null) {
-            if ((BaseApplication.getInstance() != null) && (BaseApplication.getInstance().getApplication() != null)) {
-                sp = BaseApplication.getInstance().getApplication().getSharedPreferences(SP_FILE_NAME, Context.MODE_PRIVATE);
+            if ((BaseApplication.getInstance() != null) && (BaseApplication.getInstance()
+                    .getApplication() != null)) {
+                sp = BaseApplication.getInstance().getApplication()
+                        .getSharedPreferences(SP_FILE_NAME, Context.MODE_PRIVATE);
             }
         }
     }
@@ -372,8 +374,9 @@ public class SpUtil {
                 if (!TextUtils.isEmpty(spValue)) {
                     // 转换为集合
                     Gson gson = new Gson();
-                    HashMap<String, String> hashMap = gson.fromJson(spValue, new TypeToken<HashMap<String, String>>() {
-                    }.getType());
+                    HashMap<String, String> hashMap =
+                            gson.fromJson(spValue, new TypeToken<HashMap<String, String>>() {
+                            }.getType());
 
                     if ((hashMap != null) && (hashMap.size() > 0)) {
                         String s = hashMap.get(mapKey);
@@ -403,8 +406,9 @@ public class SpUtil {
                 if (!TextUtils.isEmpty(spValue)) {
                     // 转换为集合
                     Gson gson = new Gson();
-                    HashMap<String, Integer> hashMap = gson.fromJson(spValue, new TypeToken<HashMap<String, Integer>>() {
-                    }.getType());
+                    HashMap<String, Integer> hashMap =
+                            gson.fromJson(spValue, new TypeToken<HashMap<String, Integer>>() {
+                            }.getType());
 
                     if ((hashMap != null) && (hashMap.size() > 0)) {
                         Integer integer = hashMap.get(mapKey);
@@ -434,8 +438,9 @@ public class SpUtil {
                 if (!TextUtils.isEmpty(spValue)) {
                     // 转换为集合
                     Gson gson = new Gson();
-                    HashMap<String, Float> hashMap = gson.fromJson(spValue, new TypeToken<HashMap<String, Float>>() {
-                    }.getType());
+                    HashMap<String, Float> hashMap =
+                            gson.fromJson(spValue, new TypeToken<HashMap<String, Float>>() {
+                            }.getType());
 
                     if ((hashMap != null) && (hashMap.size() > 0)) {
                         Float aFloat = hashMap.get(mapKey);
@@ -465,8 +470,9 @@ public class SpUtil {
                 if (!TextUtils.isEmpty(spValue)) {
                     // 转换为集合
                     Gson gson = new Gson();
-                    HashMap<String, Double> hashMap = gson.fromJson(spValue, new TypeToken<HashMap<String, Double>>() {
-                    }.getType());
+                    HashMap<String, Double> hashMap =
+                            gson.fromJson(spValue, new TypeToken<HashMap<String, Double>>() {
+                            }.getType());
 
                     if ((hashMap != null) && (hashMap.size() > 0)) {
                         Double aDouble = hashMap.get(mapKey);
@@ -496,8 +502,9 @@ public class SpUtil {
                 if (!TextUtils.isEmpty(spValue)) {
                     // 转换为集合
                     Gson gson = new Gson();
-                    HashMap<String, T> hashMap = gson.fromJson(spValue, new TypeToken<HashMap<String, T>>() {
-                    }.getType());
+                    HashMap<String, T> hashMap =
+                            gson.fromJson(spValue, new TypeToken<HashMap<String, T>>() {
+                            }.getType());
 
                     if ((hashMap != null) && (hashMap.size() > 0)) {
                         t = hashMap.get(mapKey);
@@ -524,8 +531,9 @@ public class SpUtil {
                 if (!TextUtils.isEmpty(spValue)) {
                     // 转换为集合
                     Gson gson = new Gson();
-                    HashMap<String, Object> hashMap = gson.fromJson(spValue, new TypeToken<HashMap<String, Object>>() {
-                    }.getType());
+                    HashMap<String, Object> hashMap =
+                            gson.fromJson(spValue, new TypeToken<HashMap<String, Object>>() {
+                            }.getType());
 
                     if ((hashMap != null) && (hashMap.size() > 0)) {
                         object = hashMap.get(mapKey);
@@ -595,8 +603,9 @@ public class SpUtil {
             String spValue = getString(key);
             if (!TextUtils.isEmpty(spValue)) {
                 Gson gson = new Gson();
-                HashMap<String, Object> hashMap = gson.fromJson(spValue, new TypeToken<HashMap<String, Object>>() {
-                }.getType());
+                HashMap<String, Object> hashMap =
+                        gson.fromJson(spValue, new TypeToken<HashMap<String, Object>>() {
+                        }.getType());
 
                 if (hashMap != null && hashMap.size() > 0) {
                     hashMap.remove(mapKey);
@@ -607,4 +616,11 @@ public class SpUtil {
         return isSuccess;
     }
 
+    public static String getString(Context context, String key) {
+        SharedPreferences sp = context.getSharedPreferences(SP_FILE_NAME, Context.MODE_PRIVATE);
+        if (sp != null) {
+            return sp.getString(key, "");
+        }
+        return "";
+    }
 }

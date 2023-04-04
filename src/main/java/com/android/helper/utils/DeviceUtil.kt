@@ -25,22 +25,10 @@ class DeviceUtil private constructor() {
     val TAG = "DeviceUtil"
 
     companion object {
-
-        @Volatile
-        private var INSTANCE: DeviceUtil? = null
-
         @JvmStatic
-        val instance: DeviceUtil?
-            get() {
-                if (INSTANCE == null) {
-                    synchronized(DeviceUtil::class.java) {
-                        if (INSTANCE == null) {
-                            INSTANCE = DeviceUtil()
-                        }
-                    }
-                }
-                return INSTANCE
-            }
+        val instance: DeviceUtil by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+            DeviceUtil()
+        }
     }
 
     /**
@@ -58,7 +46,6 @@ class DeviceUtil private constructor() {
             if (systemService is TelephonyManager) {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // android 10 以上，只能通过系统权限获取
-
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { //1.1:如果有权限，直接显示
                     // 8.0 以下可以用deviceId，8.0以上要使用 imeiId
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // 只适用于手机，依赖于sim卡
@@ -113,10 +100,11 @@ class DeviceUtil private constructor() {
                                 if (buf.isNotEmpty()) {
                                     buf.deleteCharAt(buf.length - 1)
                                 }
-                                return buf.toString().lowercase(Locale.getDefault())
+                                return buf
+                                    .toString()
+                                    .lowercase(Locale.getDefault())
                             }
                         }
-
                     }
                 } catch (ex: java.lang.Exception) {
                     LogUtil.e("getMacAddress:" + ex.message)
@@ -143,7 +131,9 @@ class DeviceUtil private constructor() {
     }
 
     fun getSdPath(): String {
-        return FileUtil.getInstance().getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
+        return FileUtil
+            .getInstance()
+            .getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
     }
 
     fun getFilePath(context: Context?): String {
@@ -242,4 +232,10 @@ class DeviceUtil private constructor() {
         return deviceId
     }
 
+    /**
+     * 获取设备的型号
+     */
+    fun getBrand(): String {
+        return Build.BRAND
+    }
 }
