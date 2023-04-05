@@ -1,5 +1,20 @@
 package com.android.helper.app;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.ParseException;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.android.helper.utils.ActivityManager;
+import com.android.helper.utils.LogUtil;
+import com.google.gson.JsonParseException;
+
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,21 +29,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-
-import com.android.helper.utils.ActivityManager;
-import com.android.helper.utils.LogUtil;
-import com.google.gson.JsonParseException;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.ParseException;
-import android.text.TextUtils;
-import android.util.Log;
-
 import retrofit2.HttpException;
 
 /**
@@ -42,6 +42,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
     private final Context mContext;
     private final HashMap<String, String> mMapParameter = new LinkedHashMap<>();
     private String mFileTag = "";
+    private String TAG = "AppException";
 
     private AppException(Context context) {
         this.mContext = context;
@@ -57,31 +58,32 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
 
     @Override
     public void uncaughtException(@NotNull Thread thread, @NotNull Throwable ex) {
-        LogUtil.e("uncaughtException ----->");
+        LogUtil.e(TAG, "uncaughtException ----->");
         if (mDefaultHandler != null && !handleException(thread, ex)) {
-            LogUtil.e("uncaughtException -----> 内部消耗！ ");
+            LogUtil.e(TAG, "uncaughtException -----> 内部消耗！ ");
             // 如果没有处理就交给系统处理
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
-            LogUtil.e("uncaughtException -----> else ");
+            LogUtil.e(TAG, "uncaughtException -----> 系统停止！ ");
             // Sleep一会后结束程序
             try {
                 Thread.sleep(1500);
                 ActivityManager.getInstance().AppExit(mContext);
             } catch (InterruptedException e) {
-                Log.e("AppException", "Error : ", e);
+                LogUtil.e(TAG, "AppException --- Error : " + e.getMessage());
             }
         }
     }
 
     private boolean saveErrorLog(Throwable ex) {
+        LogUtil.e(TAG, "saveErrorLog ---> ");
         boolean isSave = false;
         FileWriter fw = null;
         PrintWriter pw = null;
         try {
             // 获取路径
             String path = getErrorLogPath();
-            LogUtil.e("app --- error --path: " + path);
+            LogUtil.e(TAG, "app --- path: " + path);
             if (TextUtils.isEmpty(path)) {
                 return false;
             }
@@ -89,8 +91,8 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             fw = new FileWriter(path, false);
             pw = new PrintWriter(fw);
 
-            pw.println("--------------------" + (DateFormat.getDateTimeInstance().format(new Date()))
-                + "---------------------");
+            pw.println("--------------------" + (DateFormat.getDateTimeInstance()
+                    .format(new Date())) + "---------------------");
 
             Map<String, String> parameter = getParameter();
             for (Entry<String, String> entry : parameter.entrySet()) {
@@ -106,7 +108,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             isSave = true;
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("AppException", "App崩溃信息异常，请检查是否给予了应用读写权限！ --->error:" + e.getMessage());
+            Log.e(TAG, "AppException --- App崩溃信息异常，请检查是否给予了应用读写权限！ --->error:" + e.getMessage());
         } finally {
             if (pw != null) {
                 pw.close();
@@ -127,19 +129,18 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
      * @return true:处理了该异常信息;否则返回false
      */
     private boolean handleException(Thread thread, Throwable ex) {
-        LogUtil.e("uncaughtException ----->handleException  ！ ");
+        LogUtil.e(TAG, "uncaughtException ----->handleException  ！ ");
 
         if (thread == null || ex == null || mContext == null) {
-            LogUtil.e("uncaughtException ----->handleException  false = 1 ！ ");
+            LogUtil.e(TAG, "uncaughtException ----->handleException  false = 1 ！ ");
             return false;
         } else {
             try {
                 boolean saveErrorLog = saveErrorLog(ex);
-                LogUtil.e("日志是否写成功：" + saveErrorLog);
-                LogUtil.e("uncaughtException ----->handleException  false = 3 ！ ");
+                LogUtil.e(TAG, "日志是否写成功：" + saveErrorLog);
                 return saveErrorLog;
             } catch (Exception ignored) {
-                LogUtil.e("uncaughtException ----->handleException  false = 2 ！ ");
+                LogUtil.e(TAG, "uncaughtException ----->handleException  false = 2 ！ ");
                 return false;
             }
         }
@@ -152,7 +153,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         PackageInfo info = null;
         try {
             String packageName = mContext.getPackageName();
-            LogUtil.e("----P: packageName: " + packageName);
+            LogUtil.e(TAG, "----P: packageName: " + packageName);
             info = mContext.getPackageManager().getPackageInfo(packageName, 0);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace(System.err);
@@ -197,25 +198,25 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
                 if (!TextUtils.isEmpty(mFileTag)) {
                     fileName = mFileTag + "_error.txt";
                 } else {
-                    fileName = mFileTag + "_error.txt";
+                    fileName = "error.txt";
                 }
 
                 File parentFile = new File(filesDir + File.separator + "error" + File.separator);
                 boolean exists = parentFile.exists();
-                LogUtil.e("getErrorLogPath: parentFile ---> exists: " + exists);
+                LogUtil.e(TAG, "getErrorLogPath: parentFile ---> exists: " + exists);
 
                 if (!exists) {
                     boolean mkdirs = parentFile.mkdirs();
-                    LogUtil.e("getErrorLogPath: parentFile ---> mkdirs: " + mkdirs);
+                    LogUtil.e(TAG, "getErrorLogPath: parentFile ---> mkdirs: " + mkdirs);
                 }
 
                 File file = new File(parentFile, fileName);
                 boolean existsFile = file.exists();
-                LogUtil.e("getErrorLogPath: parentFile ---> existsFile: " + existsFile);
+                LogUtil.e(TAG, "getErrorLogPath: parentFile ---> existsFile: " + existsFile);
                 if (!existsFile) {
                     try {
                         boolean newFile = file.createNewFile();
-                        LogUtil.e("getErrorLogPath: parentFile ---> newFile: " + newFile);
+                        LogUtil.e(TAG, "getErrorLogPath: parentFile ---> newFile: " + newFile);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -239,5 +240,4 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         mMapParameter.put("系统型号", android.os.Build.MODEL);
         return mMapParameter;
     }
-
 }

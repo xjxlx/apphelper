@@ -2,7 +2,6 @@ package com.android.helper.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
@@ -10,7 +9,6 @@ import android.telephony.TelephonyManager
 import android.text.TextUtils
 import androidx.annotation.RequiresPermission
 import java.io.File
-import java.net.NetworkInterface
 import java.util.*
 
 /**
@@ -22,7 +20,7 @@ class DeviceUtil private constructor() {
 
     @JvmField
     val fileName = "deviceId.txt"
-    val TAG = "DeviceUtil"
+    private val TAG = "DeviceUtil"
 
     companion object {
         @JvmStatic
@@ -65,53 +63,6 @@ class DeviceUtil private constructor() {
             }
         }
         return deviceId
-    }
-
-    /**
-     * 获取mac地址
-     * <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-     * @return 通过反射的方式去获取Mac网卡的地址值
-     */
-    private fun getMacAddress(context: Context?): String {
-        var macAddress = ""
-        context?.let {
-            val systemService = it.getSystemService(Context.WIFI_SERVICE)
-            if (systemService is WifiManager) {
-                try {
-                    val buf = StringBuilder()
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                        val info = systemService.connectionInfo
-                        info?.let { info ->
-                            macAddress = info.macAddress
-                        }
-                        return macAddress
-                    } else {
-                        val interfaces = NetworkInterface.getNetworkInterfaces()
-                        while (interfaces.hasMoreElements()) {
-                            val netInterface: NetworkInterface = interfaces.nextElement()
-                            if ("wlan0" == netInterface.name || "eth0" == netInterface.name) {
-                                val address = netInterface.hardwareAddress
-                                if (address == null || address.isEmpty()) {
-                                    return macAddress
-                                }
-                                for (b in address) {
-                                    buf.append(String.format("%02X:", b))
-                                }
-                                if (buf.isNotEmpty()) {
-                                    buf.deleteCharAt(buf.length - 1)
-                                }
-                                return buf
-                                    .toString()
-                                    .lowercase(Locale.getDefault())
-                            }
-                        }
-                    }
-                } catch (ex: java.lang.Exception) {
-                    LogUtil.e("getMacAddress:" + ex.message)
-                }
-            }
-        }
-        return macAddress
     }
 
     private fun getDeviceId2(uniqueId: String) { // 设备的唯一标识。由设备的多个信息拼接合成
