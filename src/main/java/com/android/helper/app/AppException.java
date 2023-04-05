@@ -5,10 +5,13 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ParseException;
+import android.os.Build;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.helper.utils.ActivityManager;
+import com.android.helper.utils.FileUtil;
 import com.android.helper.utils.LogUtil;
 import com.google.gson.JsonParseException;
 
@@ -43,6 +46,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
     private final HashMap<String, String> mMapParameter = new LinkedHashMap<>();
     private static String mFileTag = "";
     private String TAG = "AppException";
+    private int mTargetVersion = 30;// 默认是30，高版本
 
     private AppException(Context context) {
         this.mContext = context;
@@ -77,9 +81,8 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
 
     private boolean saveErrorLog(Throwable ex) {
         LogUtil.e(TAG, "saveErrorLog ---> ");
-        boolean isSave = false;
-        FileWriter fw = null;
-        PrintWriter pw = null;
+        FileWriter fw;
+        PrintWriter pw;
         try {
             // 获取路径
             String path = getErrorLogPath();
@@ -87,12 +90,9 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             if (TextUtils.isEmpty(path)) {
                 return false;
             }
-
-            fw = new FileWriter(path, false);
+            fw = new FileWriter(path);
             pw = new PrintWriter(fw);
-
-            pw.println("--------------------" + (DateFormat.getDateTimeInstance()
-                    .format(new Date())) + "---------------------");
+            pw.println("--------------------" + (DateFormat.getDateTimeInstance().format(new Date())) + "---------------------");
 
             Map<String, String> parameter = getParameter();
             for (Entry<String, String> entry : parameter.entrySet()) {
@@ -100,27 +100,16 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
                 String value = entry.getValue();
                 pw.println(key + " : " + value);
             }
-
             pw.println("Exception: " + ex.getMessage() + "\n");
             ex.printStackTrace(pw);
             pw.close();
             fw.close();
-            isSave = true;
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "AppException --- App崩溃信息异常，请检查是否给予了应用读写权限！ --->error:" + e.getMessage());
-        } finally {
-            if (pw != null) {
-                pw.close();
-            }
-            if (fw != null) {
-                try {
-                    fw.close();
-                } catch (IOException ignored) {
-                }
-            }
         }
-        return isSave;
+        return false;
     }
 
     /**
@@ -152,7 +141,6 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         PackageInfo info = null;
         try {
             String packageName = mContext.getPackageName();
-            LogUtil.e(TAG, "----P: packageName: " + packageName);
             info = mContext.getPackageManager().getPackageInfo(packageName, 0);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace(System.err);
@@ -191,48 +179,56 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
      */
     public String getErrorLogPath() {
         LogUtil.e(TAG, "getErrorLogPath:  ---> ");
-
         if (mContext != null) {
-            File filesDir = mContext.getFilesDir();
-            if (filesDir != null) {
-                String fileName = "";
-                if (!TextUtils.isEmpty(mFileTag)) {
-                    fileName = mFileTag + "_error.txt";
-                } else {
-                    fileName = "error.txt";
-                }
-
-                LogUtil.e(TAG, "getErrorLogPath:  ---> fileName ：" + fileName);
-
-                File parentFile = new File(filesDir + File.separator + "error" + File.separator);
-                boolean exists = parentFile.exists();
-                LogUtil.e(TAG, "getErrorLogPath: parentFile ---> exists: " + exists);
-
-                if (!exists) {
-                    boolean mkdirs = parentFile.mkdirs();
-                    LogUtil.e(TAG, "getErrorLogPath: parentFile ---> mkdirs: " + mkdirs);
-                }
-
-                File file = new File(parentFile, fileName);
-                boolean existsFile = file.exists();
-                LogUtil.e(TAG, "getErrorLogPath: childFile ---> exists : " + existsFile);
-
-                if (!existsFile) {
-                    try {
-                        boolean newFile = file.createNewFile();
-                        LogUtil.e(TAG, "getErrorLogPath: childFile ---> newFile:  create: " + newFile);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return file.getPath();
+            String fileName = "";
+            if (!TextUtils.isEmpty(mFileTag)) {
+                fileName = mFileTag + "_error.txt";
+            } else {
+                fileName = "error.txt";
             }
-        }
-        return "";
+            LogUtil.e(TAG, "getErrorLogPath:  ---> fileName ：" + fileName + "  TargetVersion: " + mTargetVersion);
+
+            File parentFile;
+            if (mTargetVersion > Build.VERSION_CODES.Q) {
+                // 大于android 10 的版本，存入到不可见的沙盒目录中
+                File filesDir = mContext.getFilesDir();
+                parentFile = new File(filesDir + File.separator + "error" + File.separator);
+            } else {
+                // 小于android 10 ,存入到sd卡的文件目录下 /storage/emulated/0/Documents/com.jollyeng.www/error/error.txt
+                String sdkPath = FileUtil.getInstance().getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS);
+                parentFile = new File(sdkPath + File.separator + mContext.getPackageName() + File.separator + "error" + File.separator);
+            }
+
+            boolean exists = parentFile.exists();
+            LogUtil.e(TAG, "getErrorLogPath: parentFile ---> exists: " + exists);
+
+            if (!exists) {
+                boolean mkdirs = parentFile.mkdirs();
+                LogUtil.e(TAG, "getErrorLogPath: parentFile ---> mkdirs: " + mkdirs);
+            }
+
+            File file = new File(parentFile, fileName);
+            boolean existsFile = file.exists();
+            LogUtil.e(TAG, "getErrorLogPath: childFile ---> exists : " + existsFile);
+
+            if (!existsFile) {
+                try {
+                    boolean newFile = file.createNewFile();
+                    LogUtil.e(TAG, "getErrorLogPath: childFile ---> newFile:  create: " + newFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return file.getPath();
+        } return "";
     }
 
     public void setFileTag(String fileName) {
         this.mFileTag = fileName;
+    }
+
+    public void setTargetVersion(int targetVersion) {
+        this.mTargetVersion = targetVersion;
     }
 
     public Map<String, String> getParameter() {
