@@ -60,7 +60,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
     public void uncaughtException(@NotNull Thread thread, @NotNull Throwable ex) {
         LogUtil.e(TAG, "uncaughtException ----->");
         if (mDefaultHandler != null && !handleException(thread, ex)) {
-            LogUtil.e(TAG, "uncaughtException -----> 内部消耗！ ");
+            LogUtil.e(TAG, "uncaughtException -----> 自定义消耗！ ");
             // 如果没有处理就交给系统处理
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
@@ -129,15 +129,14 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
      * @return true:处理了该异常信息;否则返回false
      */
     private boolean handleException(Thread thread, Throwable ex) {
-        LogUtil.e(TAG, "uncaughtException ----->handleException  ！ ");
-
+        LogUtil.e(TAG, "uncaughtException -----> handleException ！");
         if (thread == null || ex == null || mContext == null) {
-            LogUtil.e(TAG, "uncaughtException ----->handleException  false = 1 ！ ");
+            LogUtil.e(TAG, "uncaughtException -----> handleException  false = null ！ ");
             return false;
         } else {
             try {
                 boolean saveErrorLog = saveErrorLog(ex);
-                LogUtil.e(TAG, "日志是否写成功：" + saveErrorLog);
+                LogUtil.e(TAG, "uncaughtException ---> save error ---> 日志是否写成功：" + saveErrorLog);
                 return saveErrorLog;
             } catch (Exception ignored) {
                 LogUtil.e(TAG, "uncaughtException ----->handleException  false = 2 ！ ");
@@ -191,6 +190,8 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
      * @return 返回一个应用目录下的File文件的路径，这里不适用sd卡的路径，在高版本手机上，很多权限被拒绝，这里尽量避免类似的情况
      */
     public String getErrorLogPath() {
+        LogUtil.e(TAG, "getErrorLogPath:  ---> ");
+
         if (mContext != null) {
             File filesDir = mContext.getFilesDir();
             if (filesDir != null) {
@@ -200,6 +201,8 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
                 } else {
                     fileName = "error.txt";
                 }
+
+                LogUtil.e(TAG, "getErrorLogPath:  ---> fileName ：" + fileName);
 
                 File parentFile = new File(filesDir + File.separator + "error" + File.separator);
                 boolean exists = parentFile.exists();
@@ -212,11 +215,12 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
 
                 File file = new File(parentFile, fileName);
                 boolean existsFile = file.exists();
-                LogUtil.e(TAG, "getErrorLogPath: parentFile ---> existsFile: " + existsFile);
+                LogUtil.e(TAG, "getErrorLogPath: childFile ---> exists : " + existsFile);
+
                 if (!existsFile) {
                     try {
                         boolean newFile = file.createNewFile();
-                        LogUtil.e(TAG, "getErrorLogPath: parentFile ---> newFile: " + newFile);
+                        LogUtil.e(TAG, "getErrorLogPath: childFile ---> newFile:  create: " + newFile);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
