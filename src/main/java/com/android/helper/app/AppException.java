@@ -41,7 +41,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
     private final UncaughtExceptionHandler mDefaultHandler;
     private final Context mContext;
     private final HashMap<String, String> mMapParameter = new LinkedHashMap<>();
-    private String mFileTag = "";
+    private static String mFileTag = "";
     private String TAG = "AppException";
 
     private AppException(Context context) {
