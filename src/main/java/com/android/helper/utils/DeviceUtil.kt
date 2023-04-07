@@ -87,7 +87,7 @@ class DeviceUtil private constructor() {
             .getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
     }
 
-    fun getFilePath(context: Context?): String {
+    fun getFilesDirPath(context: Context?): String {
         context?.let {
             val filesDir = it.filesDir
             if (filesDir != null) {
@@ -120,18 +120,14 @@ class DeviceUtil private constructor() {
     fun writeDeviceId(context: Context?, androidId: String) {
         context?.let {
             if (!TextUtils.isEmpty(androidId)) {
-                val fileUtil = FileUtil.getInstance()
                 // 1:使用标准的文档地址
-                val documents = fileUtil.getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
-                writeContentToFile(documents, androidId)
+                val sdPath = getSdPath()
+                writeContentToFile(sdPath, androidId)
 
                 // 2: 使用内部沙盒文件的file目录下的地址
-                val filesDir = it.filesDir
-                if (filesDir != null) {
-                    val path = filesDir.path
-                    if (!TextUtils.isEmpty(path)) {
-                        writeContentToFile(path, androidId)
-                    }
+                val filesDirPath = getFilesDirPath(context)
+                if (!TextUtils.isEmpty(filesDirPath)) {
+                    writeContentToFile(filesDirPath, androidId)
                 }
             }
         }
@@ -147,22 +143,26 @@ class DeviceUtil private constructor() {
         }
 
         // 如果存在了，就去创建子文件
-        if (parentFile.exists()) {
-            val childFile = File(path + File.separator, fileName)
-            if (!childFile.exists()) {
-                childFile.createNewFile()
-            }
+        try {
+            if (parentFile.exists()) {
+                val childFile = File(path + File.separator, fileName)
+                if (!childFile.exists()) {
+                    childFile.createNewFile()
+                }
 
-            if (childFile.exists()) { // 写入数据
-                val success = FileUtil
-                    .getInstance()
-                    .writeContentToFile(childFile, androidId)
-                LogUtil.e(TAG, "Device 文件写入成功：$success")
+                if (childFile.exists()) { // 写入数据
+                    val success = FileUtil
+                        .getInstance()
+                        .writeContentToFile(childFile, androidId)
+                    LogUtil.e(TAG, "Device 文件写入成功：$success")
+                } else {
+                    LogUtil.e(TAG, "Device 子类文件创建失败！")
+                }
             } else {
-                LogUtil.e(TAG, "Device 子类文件创建失败！")
+                LogUtil.e(TAG, "Device 父类文件创建失败！")
             }
-        } else {
-            LogUtil.e(TAG, "Device 父类文件创建失败！")
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "Device 写入失败！")
         }
     }
 
