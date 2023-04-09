@@ -82,8 +82,7 @@ class DeviceUtil private constructor() {
     }
 
     fun getSdPath(): String {
-        return FileUtil
-            .getInstance()
+        return FileUtil.getInstance()
             .getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
     }
 
@@ -107,8 +106,7 @@ class DeviceUtil private constructor() {
         var content = ""
         val file = File(path + File.separator, fileName)
         if (file.exists()) {
-            content = FileUtil
-                .getInstance()
+            content = FileUtil.getInstance()
                 .getContentForFile(file)
         }
         return content
@@ -135,7 +133,6 @@ class DeviceUtil private constructor() {
 
     private fun writeContentToFile(path: String, androidId: String) {
         LogUtil.e("path::$path")
-
         // 判断文档地址是否存在，不存在就创建
         val parentFile = File(path)
         if (!parentFile.exists()) {
@@ -150,9 +147,9 @@ class DeviceUtil private constructor() {
                     childFile.createNewFile()
                 }
 
-                if (childFile.exists()) { // 写入数据
-                    val success = FileUtil
-                        .getInstance()
+                if (childFile.exists()) {
+                    // 写入数据
+                    val success = FileUtil.getInstance()
                         .writeContentToFile(childFile, androidId)
                     LogUtil.e(TAG, "Device 文件写入成功：$success")
                 } else {
