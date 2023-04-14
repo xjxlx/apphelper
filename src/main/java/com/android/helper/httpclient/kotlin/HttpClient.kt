@@ -1,8 +1,8 @@
 package com.android.helper.httpclient.kotlin
 
 import com.android.helper.utils.LogUtil
-import com.xjx.kotlin.network.listener.HttpCallBackListener
-import com.xjx.kotlin.network.listener.HttpResultCallBackListener
+import com.android.helper.httpclient.kotlin.listener.HttpCallBackListener
+import com.android.helper.httpclient.kotlin.listener.HttpResultCallBackListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 
