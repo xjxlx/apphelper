@@ -67,8 +67,19 @@ object HttpClient {
 
     @JvmStatic
     suspend inline fun <reified T, P, R> http(block: T.(P) -> HttpResult<R>, p: P): HttpResult<R> {
-        val apiService = RetrofitHelper.create(T::class.java)
-        return apiService.block(p)
+        return RetrofitHelper.create(T::class.java)
+            .block(p)
+    }
+
+    @JvmStatic
+    suspend inline fun <reified T, R> http(crossinline block: T.() -> HttpResult<R>): Flow<HttpResult<R>> {
+        return callbackFlow {
+            val bean = RetrofitHelper.create(T::class.java)
+                .block()
+
+            // send request data
+            trySend(bean)
+        }
     }
 
 }
