@@ -6,6 +6,8 @@ package com.android.helper.httpclient.kotlin.listener
  * @Description:
  */
 interface HttpCallBackListener<T> {
+    fun onStart()
     fun onSuccess(t: T)
-    fun onError(throwable: Throwable)
+    fun onFailure(exception: Throwable)
+    fun onCompletion()
 }

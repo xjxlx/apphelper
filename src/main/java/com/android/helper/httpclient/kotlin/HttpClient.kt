@@ -1,9 +1,9 @@
 package com.android.helper.httpclient.kotlin
 
+import com.android.helper.httpclient.kotlin.listener.HttpCallBackListenerImp
 import com.android.helper.utils.LogUtil
-import com.android.helper.httpclient.kotlin.listener.HttpCallBackListener
-import com.android.helper.httpclient.kotlin.listener.HttpResultCallBackListener
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 
 /**
@@ -14,72 +14,72 @@ import kotlinx.coroutines.flow.*
 object HttpClient {
 
     @JvmStatic
-    suspend fun <T> httpResult(block: suspend () -> HttpResult<T>, onStart: () -> Unit = {}, onComplete: () -> Unit = {}, listener: HttpResultCallBackListener<HttpResult<T>>) {
-        flow {
-            LogUtil.e("http:", "block ---> launch ...")
-            emit(block())
-        }.flowOn(Dispatchers.IO)
-            .onStart {
-                LogUtil.e("http:", "onStart")
-                onStart()
-            }
-            .catch {
-                LogUtil.e("http:", "catch:" + it.message)
-                it.printStackTrace()
-                listener.onError(it)
-            }
-            .onCompletion {
-                LogUtil.e("http:", "onCompletion: --->")
-                onComplete()
-            }
-            .collect {
-                val code = it.code
-                if (code == 200) {
-                    listener.onSuccess(it)
-                } else {
-                    listener.onEmpty(it.msg)
-                }
-            }
-    }
-
-    @JvmStatic
-    suspend fun <T> http(block: suspend () -> T, onStart: () -> Unit = {}, onComplete: () -> Unit = {}, listener: HttpCallBackListener<T>) {
-        flow {
-            LogUtil.e("http:", "block ---> launch ...")
-            emit(block())
-        }.onStart {
-            LogUtil.e("http:", "onStart")
-            onStart()
-        }
-            .catch {
-                LogUtil.e("http:", "catch:" + it.message)
-                it.printStackTrace()
-                listener.onError(it)
-            }
-            .onCompletion {
-                LogUtil.e("http:", "onCompletion: --->")
-                onComplete()
-            }
-            .collect {
-                listener.onSuccess(it)
-            }
-    }
-
-    @JvmStatic
-    suspend inline fun <reified T, P, R> http(block: T.(P) -> HttpResult<R>, p: P): HttpResult<R> {
-        return RetrofitHelper.create(T::class.java)
-            .block(p)
-    }
-
-    @JvmStatic
-    suspend inline fun <reified T, R> http(crossinline block: T.() -> HttpResult<R>): Flow<HttpResult<R>> {
-        return callbackFlow {
+    suspend inline fun <reified T, Result> http(crossinline block: suspend T.() -> Result) = callbackFlow {
+        try {
             val bean = RetrofitHelper.create(T::class.java)
                 .block()
-
             // send request data
             trySend(bean)
+        } catch (exception: Throwable) {
+            exception.printStackTrace()
+            close(exception)
         }
+        // close callback
+        awaitClose()
+    }.flowOn(Dispatchers.IO)
+
+    @JvmStatic
+    suspend inline fun <reified T, Parameter, Result> http(crossinline block: suspend T.(Parameter) -> Result, p: Parameter) =
+        callbackFlow {
+            try {
+                LogUtil.e("http thread callbackFlow :" + Thread.currentThread().name)
+                val bean = RetrofitHelper.create(T::class.java)
+                    .block(p)
+                // send request data
+                trySend(bean)
+            } catch (exception: Throwable) {
+                exception.printStackTrace()
+                close(exception)
+            }
+            // close callback
+            awaitClose()
+        }.flowOn(Dispatchers.IO)
+
+    @JvmStatic
+    suspend inline fun <reified T, Parameter, Result> http(crossinline block: suspend T.(Parameter) -> Result, p: Parameter, callback: HttpCallBackListenerImp<Result>) {
+        http<T, Parameter, Result>({ block(it) }, p).onStart {
+            LogUtil.e("http thread started :" + Thread.currentThread().name)
+            callback.onStart()
+        }
+            .catch {
+                it.printStackTrace()
+                callback.onFailure(it)
+            }
+            .onCompletion {
+                callback.onCompletion()
+            }
+            .flowOn(Dispatchers.IO)
+            .collect {
+                callback.onSuccess(it)
+            }
     }
 
+    @JvmStatic
+    suspend inline fun <reified T, Result> http(crossinline block: suspend T.() -> Result, callback: HttpCallBackListenerImp<Result>) {
+        http<T, Result> { block() }.onStart {
+            LogUtil.e("http thread started :" + Thread.currentThread().name)
+            callback.onStart()
+        }
+            .catch {
+                it.printStackTrace()
+                callback.onFailure(it)
+            }
+            .onCompletion {
+                callback.onCompletion()
+            }
+            .flowOn(Dispatchers.IO)
+            .collect {
+                callback.onSuccess(it)
+            }
+    }
 }
