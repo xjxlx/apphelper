@@ -32,7 +32,7 @@ object HttpClient {
     suspend inline fun <reified T, Parameter, Result> http(crossinline block: suspend T.(Parameter) -> Result, p: Parameter) =
         callbackFlow {
             try {
-                LogUtil.e("http thread callbackFlow :" + Thread.currentThread().name)
+                // LogUtil.e("http thread callbackFlow :" + Thread.currentThread().name)
                 val bean = RetrofitHelper.create(T::class.java)
                     .block(p)
                 // send request data
