@@ -8,4 +8,7 @@ abstract class HttpCallBackListener<T> : BaseHttpCallBackListener<T> {
     override fun onCompletion() {
     }
 
+    override fun onFailure(exception: Throwable) {
+    }
+
 }
