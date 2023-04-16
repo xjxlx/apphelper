@@ -58,7 +58,6 @@ object HttpClient {
             .onCompletion {
                 callback.onCompletion()
             }
-            .flowOn(Dispatchers.IO)
             .collect {
                 callback.onSuccess(it)
             }
@@ -77,7 +76,6 @@ object HttpClient {
             .onCompletion {
                 callback.onCompletion()
             }
-            .flowOn(Dispatchers.IO)
             .collect {
                 callback.onSuccess(it)
             }
