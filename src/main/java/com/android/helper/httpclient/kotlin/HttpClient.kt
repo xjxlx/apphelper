@@ -1,6 +1,6 @@
 package com.android.helper.httpclient.kotlin
 
-import com.android.helper.httpclient.kotlin.listener.HttpCallBackListenerImp
+import com.android.helper.httpclient.kotlin.listener.HttpCallBackListener
 import com.android.helper.utils.LogUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -46,7 +46,7 @@ object HttpClient {
         }.flowOn(Dispatchers.IO)
 
     @JvmStatic
-    suspend inline fun <reified T, Parameter, Result> http(crossinline block: suspend T.(Parameter) -> Result, p: Parameter, callback: HttpCallBackListenerImp<Result>) {
+    suspend inline fun <reified T, Parameter, Result> http(crossinline block: suspend T.(Parameter) -> Result, p: Parameter, callback: HttpCallBackListener<Result>) {
         http<T, Parameter, Result>({ block(it) }, p).onStart {
             LogUtil.e("http thread started :" + Thread.currentThread().name)
             callback.onStart()
@@ -64,7 +64,7 @@ object HttpClient {
     }
 
     @JvmStatic
-    suspend inline fun <reified T, Result> http(crossinline block: suspend T.() -> Result, callback: HttpCallBackListenerImp<Result>) {
+    suspend inline fun <reified T, Result> http(crossinline block: suspend T.() -> Result, callback: HttpCallBackListener<Result>) {
         http<T, Result> { block() }.onStart {
             LogUtil.e("http thread started :" + Thread.currentThread().name)
             callback.onStart()
