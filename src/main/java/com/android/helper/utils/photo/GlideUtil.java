@@ -17,8 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
 
-import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.LogUtil;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
@@ -35,22 +35,21 @@ import java.security.MessageDigest;
 /**
  * 图片加载的工具类
  */
-public class GlideUtil implements BaseLifecycleObserver {
+public class GlideUtil {
 
-    private static final String TAG = "GlideUtil";
-
+    private final String TAG = "GlideUtil";
     /**
      * -------------------  重构-----------------------------
      */
     private int mErrorResource;
     private int mPlaceholderResource;
     private int mAngle;// 圆角的角度
-    private FragmentActivity mActivity, mOldAcivity;
-    private Fragment mFragment, mOldFragment;
+    private FragmentActivity mActivity;
+    private Fragment mFragment;
     private Context mContext;
     private View mView;
     private ImageView mImageView;
-    private boolean isDestroy;//页面是不是已经被销毁了；
+    private boolean isDestroy = false;//页面是不是已经被销毁了；
     private RequestOptions mOptions;
     private String mUrl;
 
@@ -62,100 +61,41 @@ public class GlideUtil implements BaseLifecycleObserver {
             this.mFragment = builder.mFragment;
             this.mActivity = builder.mActivity;
             this.mContext = builder.mContext;
+
+            // 观察生命周期
+            if (mActivity != null) {
+                addObserverActivity();
+            }
+
+            if (mFragment != null) {
+                addObserverFragment();
+            }
+
+            // 配置参数
+            addOptions();
         }
     }
 
     private void addObserverActivity() {
         if (mActivity != null) {
-            /*
-             * 这么做的原因是因为，为了避免同一个页面的对象，去不停的观察生命周期的状态，不然遇到列表的时候会很麻烦
-             */
-            if (mOldAcivity != null) {
-                if (mActivity == mOldAcivity) {
-                    return;
-                }
-            }
-            Lifecycle lifecycle = mActivity.getLifecycle();
-            lifecycle.addObserver(this);
-            mOldAcivity = mActivity;
+            mActivity.getLifecycle()
+                    .addObserver((LifecycleEventObserver) (source, event) -> {
+                        if (event == Lifecycle.Event.ON_DESTROY) {
+                            isDestroy = true;
+                        }
+                    });
         }
     }
 
     private void addObserverFragment() {
         if (mFragment != null) {
-            /*
-             * 这么做的原因是因为，为了避免同一个页面的对象，去不停的观察生命周期的状态，不然遇到列表的时候会很麻烦
-             */
-            if (mOldFragment != null) {
-                if (mOldFragment == mFragment) {
-                    return;
-                }
-            }
-            Lifecycle lifecycle = mFragment.getLifecycle();
-            lifecycle.addObserver(this);
-            mOldFragment = mFragment;
+            mFragment.getLifecycle()
+                    .addObserver((LifecycleEventObserver) (source, event) -> {
+                        if (event == Lifecycle.Event.ON_DESTROY) {
+                            isDestroy = true;
+                        }
+                    });
         }
-    }
-
-    public GlideUtil loadUrl(View view, String url) {
-        if ((view != null) && (!TextUtils.isEmpty(url))) {
-            // view相斥
-            this.mImageView = null;
-            this.mView = view;
-            this.mUrl = url;
-
-            mUrl = url;
-
-            if (mContext != null) {
-                if (mContext instanceof FragmentActivity) {
-                    mActivity = (FragmentActivity) mContext;
-                }
-            }
-
-            // 配置参数
-            addOptions();
-
-            // 观察生命周期
-            if (mActivity != null) {
-                addObserverActivity();
-            }
-
-            if (mFragment != null) {
-                addObserverFragment();
-            }
-
-            // 加载view
-            loadView();
-        } else {
-            LogUtil.e(TAG, "加载的View为空,或者ulr为空！");
-        }
-        return this;
-    }
-
-    public GlideUtil loadUrl(ImageView imageView, String url) {
-        if ((imageView != null) && (!TextUtils.isEmpty(url))) {
-            // view相斥
-            this.mView = null;
-            this.mImageView = imageView;
-            this.mUrl = url;
-
-            // 配置参数
-            addOptions();
-
-            // 观察生命周期
-            if (mActivity != null) {
-                addObserverActivity();
-            }
-
-            if (mFragment != null) {
-                addObserverFragment();
-            }
-            // 加载view
-            loadView();
-        } else {
-            LogUtil.e(TAG, "加载的View为空,或者ulr为空！");
-        }
-        return this;
     }
 
     @SuppressLint("CheckResult")
@@ -181,12 +121,40 @@ public class GlideUtil implements BaseLifecycleObserver {
         }
     }
 
+    public GlideUtil loadUrl(View view, String url) {
+        if ((view != null) && (!TextUtils.isEmpty(url))) {
+            // view相斥
+            this.mImageView = null;
+            this.mView = view;
+            this.mUrl = url;
+            // 加载view
+            loadView();
+        } else {
+            LogUtil.e(TAG, "加载的View为空,或者ulr为空！");
+        }
+        return this;
+    }
+
+    public GlideUtil loadUrl(ImageView imageView, String url) {
+        if ((imageView != null) && (!TextUtils.isEmpty(url))) {
+            // view相斥
+            this.mView = null;
+            this.mImageView = imageView;
+            this.mUrl = url;
+
+            // 加载view
+            loadView();
+        } else {
+            LogUtil.e(TAG, "加载的View为空,或者ulr为空！");
+        }
+        return this;
+    }
+
     private void loadView() {
         if (!TextUtils.isEmpty(mUrl)) {
             // activity
             if (mActivity != null && !isDestroy) {
-                RequestBuilder<Drawable> builder = Glide
-                        .with(mActivity)
+                RequestBuilder<Drawable> builder = Glide.with(mActivity)
                         .load(mUrl)
                         .thumbnail(0.2f) // 图片未加载出来之前的缩略图展示
                         .apply(mOptions);
@@ -196,8 +164,7 @@ public class GlideUtil implements BaseLifecycleObserver {
 
             // fragment
             if (mFragment != null && !isDestroy) {
-                RequestBuilder<Drawable> builder = Glide
-                        .with(mFragment)
+                RequestBuilder<Drawable> builder = Glide.with(mFragment)
                         .load(mUrl)
                         .thumbnail(0.2f) // 图片未加载出来之前的缩略图展示
                         .apply(mOptions);
@@ -207,8 +174,7 @@ public class GlideUtil implements BaseLifecycleObserver {
 
             //  context 这种情况，有可能会崩溃，但是目前无法处理，拿不到生命周期的对象就无法处理
             if (mContext != null) {
-                RequestBuilder<Drawable> builder = Glide
-                        .with(mContext)
+                RequestBuilder<Drawable> builder = Glide.with(mContext)
                         .load(mUrl)
                         .thumbnail(0.2f) // 图片未加载出来之前的缩略图展示
                         .apply(mOptions);
@@ -239,40 +205,8 @@ public class GlideUtil implements BaseLifecycleObserver {
         }
     }
 
-    @Override
-    public void onCreate() {
-        // 感知生命周期，在生命周期里面进行加载，避免加载异常
-        isDestroy = false;
-        // 首次进来的时候，在这里加载一此对象
-        loadView();
-    }
-
-    @Override
-    public void onStart() {
-        isDestroy = false;
-    }
-
-    @Override
-    public void onResume() {
-        isDestroy = false;
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-        isDestroy = true;
-    }
-
     public static class Builder {
+
         private int mErrorResource;
         private int mPlaceholderResource;
         private int mAngle;// 圆角的角度
@@ -342,8 +276,8 @@ public class GlideUtil implements BaseLifecycleObserver {
      *
      * </ul>
      */
-
     public static class GlideRoundTransform extends BitmapTransformation {
+
         private static float radius = 0f;
 
         public GlideRoundTransform() {
@@ -377,5 +311,4 @@ public class GlideUtil implements BaseLifecycleObserver {
 
         }
     }
-
 }
