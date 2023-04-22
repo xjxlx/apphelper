@@ -1,7 +1,14 @@
+
+buildscript {
+    dependencies {
+        classpath "com.github.dcendents:android-maven-gradle-plugin:2.1"
+    }
+}
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'maven-publish'//用来推送aar到jitpack
+    id 'com.github.dcendents.android-maven'
 }
 
 //启用Jitpack 插件
