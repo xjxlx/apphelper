@@ -8,7 +8,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.luck.picture.lib.tools.SPUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,7 +51,7 @@ public class JsonUtil {
         if (key == null || (value == null) || (key.length != value.length)) {
             return;
         }
-        String json = SPUtils.getInstance().getString(spKey);
+        String json = SpUtil.getString(spKey);
         if (TextUtils.isEmpty(json)) {
             map = new HashMap<>();
         } else {
@@ -68,7 +67,7 @@ public class JsonUtil {
         }
         if (map != null) {
             LogUtil.e("无线存储的map：" + map);
-            SPUtils.getInstance().put(spKey, new Gson().toJson(map));
+            SpUtil.putString(spKey, new Gson().toJson(map));
         }
     }
 
@@ -81,7 +80,7 @@ public class JsonUtil {
     public static <T> T spJsonMapToValue(String spKey, String key) {
         try {
             if (!TextUtils.isEmpty(key)) {
-                String json = SPUtils.getInstance().getString(spKey);
+                String json = SpUtil.getString(spKey);
                 if (!TextUtils.isEmpty(json)) {
                     Map<String, Object> map = jsonToMap(json);
                     if (map != null) {
@@ -102,7 +101,7 @@ public class JsonUtil {
      */
     public static void spClearMap(String spKey) {
         if (!TextUtils.isEmpty(spKey)) {
-            SPUtils.getInstance().put(spKey, "");
+            SpUtil.putString(spKey, "");
             LogUtil.e("清空了sp中存储的key对应的值");
         }
     }
@@ -151,14 +150,11 @@ public class JsonUtil {
         return list;
     }
 
-
-
-    public static String getJsonForAssets(Context context,String fileName) {
+    public static String getJsonForAssets(Context context, String fileName) {
         StringBuilder stringBuilder = new StringBuilder();
         try {
             AssetManager assetManager = context.getAssets();
-            BufferedReader bf = new BufferedReader(new InputStreamReader(
-                    assetManager.open(fileName)));
+            BufferedReader bf = new BufferedReader(new InputStreamReader(assetManager.open(fileName)));
             String line;
             while ((line = bf.readLine()) != null) {
                 stringBuilder.append(line);
@@ -168,5 +164,4 @@ public class JsonUtil {
         }
         return stringBuilder.toString();
     }
-
 }

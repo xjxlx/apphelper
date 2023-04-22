@@ -19,7 +19,7 @@ import androidx.lifecycle.Lifecycle;
 
 import com.android.helper.app.BaseApplication;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
-import com.luck.picture.lib.tools.PictureFileUtils;
+import com.luck.picture.lib.utils.PictureFileUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -133,7 +133,8 @@ public class FileUtil implements BaseLifecycleObserver {
 
                                             // 如果新文件的大小小于等于0，或者新文件的大小小于文件的总大小，那么就找到了我们需要的文件,并且要停掉整个轮询
                                             if ((newFileLength <= 0) || (newFileLength < contentLength)) {
-                                                LogUtil.e(TAG, "新生成的文件名字大小大于0，小于文件的总大小，这个文件就是当前需要的文件：newFileName:" + newFileName);
+                                                LogUtil.e(TAG,
+                                                        "新生成的文件名字大小大于0，小于文件的总大小，这个文件就是当前需要的文件：newFileName:" + newFileName);
                                                 break;
                                             }
                                         }
@@ -166,9 +167,7 @@ public class FileUtil implements BaseLifecycleObserver {
     public long getFileSizeForUrl(String url) {
         final long[] contentLength = {0};
 
-        Request.Builder builder = new Request
-                .Builder()
-                .url(url);
+        Request.Builder builder = new Request.Builder().url(url);
         OkHttpClient okHttpClient = new OkHttpClient();
         Call call = okHttpClient.newCall(builder.build());
         call.enqueue(new Callback() {
@@ -231,7 +230,8 @@ public class FileUtil implements BaseLifecycleObserver {
      */
     public String getAppFilesPath() {
         String path = "";
-        Application application = BaseApplication.getInstance().getApplication();
+        Application application = BaseApplication.getInstance()
+                .getApplication();
         if (application != null) {
             File filesDir = application.getFilesDir();
             if (filesDir != null) {
@@ -261,8 +261,12 @@ public class FileUtil implements BaseLifecycleObserver {
      */
     public String getAppTypePath(String type) {
         String path = "";
-        if ((BaseApplication.getInstance().getApplication() != null) && (!TextUtils.isEmpty(type))) {
-            path = BaseApplication.getInstance().getApplication().getExternalFilesDir(type).getPath();
+        if ((BaseApplication.getInstance()
+                .getApplication() != null) && (!TextUtils.isEmpty(type))) {
+            path = BaseApplication.getInstance()
+                    .getApplication()
+                    .getExternalFilesDir(type)
+                    .getPath();
         }
         return path;
     }
@@ -271,7 +275,8 @@ public class FileUtil implements BaseLifecycleObserver {
      * @return true:设备sd卡正在挂载中，false：sd卡异常不可用
      */
     private boolean checkSdStatus() {
-        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+        return Environment.getExternalStorageState()
+                .equals(Environment.MEDIA_MOUNTED);
     }
 
     /**
@@ -514,8 +519,10 @@ public class FileUtil implements BaseLifecycleObserver {
         String path = "";
         path = getCommonPath();
         if (!TextUtils.isEmpty(path)) {
-            if (BaseApplication.getInstance().logTag() != null) {
-                path = path + "/" + BaseApplication.getInstance().logTag();
+            if (BaseApplication.getInstance()
+                    .logTag() != null) {
+                path = path + "/" + BaseApplication.getInstance()
+                        .logTag();
             }
         }
         LogUtil.e("获取App指定存储路径为：" + path);
@@ -638,24 +645,26 @@ public class FileUtil implements BaseLifecycleObserver {
     @Override
     public void onCreate() {
         if (mActivity != null) {
-            mRegister = mActivity.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    boolean allFilesPermission = checkAllFilesPermission(mActivity);
-                    // ToastUtil.show("是否拥有了全部的权限 ：+" + allFilesPermission);
-                    LogUtil.e("permission: -----> 是否拥有了全部的权限 :" + allFilesPermission);
-                }
-            });
+            mRegister = mActivity.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    new ActivityResultCallback<ActivityResult>() {
+                        @Override
+                        public void onActivityResult(ActivityResult result) {
+                            boolean allFilesPermission = checkAllFilesPermission(mActivity);
+                            // ToastUtil.show("是否拥有了全部的权限 ：+" + allFilesPermission);
+                            LogUtil.e("permission: -----> 是否拥有了全部的权限 :" + allFilesPermission);
+                        }
+                    });
         }
         if (mFragment != null) {
-            mRegister = mFragment.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    boolean allFilesPermission = checkAllFilesPermission(mActivity);
-                    // ToastUtil.show("是否拥有了全部的权限 ：+" + allFilesPermission);
-                    LogUtil.e("permission: -----> 是否拥有了全部的权限 :" + allFilesPermission);
-                }
-            });
+            mRegister = mFragment.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    new ActivityResultCallback<ActivityResult>() {
+                        @Override
+                        public void onActivityResult(ActivityResult result) {
+                            boolean allFilesPermission = checkAllFilesPermission(mActivity);
+                            // ToastUtil.show("是否拥有了全部的权限 ：+" + allFilesPermission);
+                            LogUtil.e("permission: -----> 是否拥有了全部的权限 :" + allFilesPermission);
+                        }
+                    });
         }
     }
 
