@@ -21,7 +21,6 @@ import com.android.helper.interfaces.listener.CallBackListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.luck.picture.lib.tools.ScreenUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -239,37 +238,37 @@ public class BitmapUtil {
      */
     public static void getBitmapForService(Context context, final String path, CallBackListener<Bitmap> callBackListener) {
         Flowable.create(new FlowableOnSubscribe<Bitmap>() {
-            @Override
-            public void subscribe(@NonNull FlowableEmitter<Bitmap> emitter) throws Exception {
-                Glide.with(context)
-                        .load(path)
-                        .into(new CustomTarget<Drawable>() {
-                            @Override
-                            public void onResourceReady(@androidx.annotation.NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                                if (resource instanceof BitmapDrawable) {
-                                    BitmapDrawable bitmapDrawable = (BitmapDrawable) resource;
-                                    Bitmap bitmap = bitmapDrawable.getBitmap();
-                                    if (bitmap != null) {
-                                        emitter.onNext(bitmap);
-                                    } else {
-                                        emitter.onError(new Exception("获取的bitmap为空"));
+                    @Override
+                    public void subscribe(@NonNull FlowableEmitter<Bitmap> emitter) throws Exception {
+                        Glide.with(context)
+                                .load(path)
+                                .into(new CustomTarget<Drawable>() {
+                                    @Override
+                                    public void onResourceReady(@androidx.annotation.NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                        if (resource instanceof BitmapDrawable) {
+                                            BitmapDrawable bitmapDrawable = (BitmapDrawable) resource;
+                                            Bitmap bitmap = bitmapDrawable.getBitmap();
+                                            if (bitmap != null) {
+                                                emitter.onNext(bitmap);
+                                            } else {
+                                                emitter.onError(new Exception("获取的bitmap为空"));
+                                            }
+                                        }
                                     }
-                                }
-                            }
 
-                            @Override
-                            public void onLoadCleared(@Nullable Drawable placeholder) {
+                                    @Override
+                                    public void onLoadCleared(@Nullable Drawable placeholder) {
 
-                            }
+                                    }
 
-                            @Override
-                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                                super.onLoadFailed(errorDrawable);
-                                emitter.onError(new Exception("获取的bitmap异常"));
-                            }
-                        });
-            }
-        }, BackpressureStrategy.LATEST)
+                                    @Override
+                                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                                        super.onLoadFailed(errorDrawable);
+                                        emitter.onError(new Exception("获取的bitmap异常"));
+                                    }
+                                });
+                    }
+                }, BackpressureStrategy.LATEST)
                 .compose(RxUtil.getSchedulerFlowable())
                 .subscribe(new DisposableSubscriber<Bitmap>() {
                     @Override
@@ -308,29 +307,29 @@ public class BitmapUtil {
      */
     public static void getDrawableForService(Context context, final String path, CallBackListener<Drawable> callBackListener) {
         Flowable.create(new FlowableOnSubscribe<Drawable>() {
-            @Override
-            public void subscribe(@NonNull FlowableEmitter<Drawable> emitter) throws Exception {
-                Glide.with(context)
-                        .load(path)
-                        .into(new CustomTarget<Drawable>() {
-                            @Override
-                            public void onResourceReady(@androidx.annotation.NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                                emitter.onNext(resource);
-                            }
+                    @Override
+                    public void subscribe(@NonNull FlowableEmitter<Drawable> emitter) throws Exception {
+                        Glide.with(context)
+                                .load(path)
+                                .into(new CustomTarget<Drawable>() {
+                                    @Override
+                                    public void onResourceReady(@androidx.annotation.NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                        emitter.onNext(resource);
+                                    }
 
-                            @Override
-                            public void onLoadCleared(@Nullable Drawable placeholder) {
+                                    @Override
+                                    public void onLoadCleared(@Nullable Drawable placeholder) {
 
-                            }
+                                    }
 
-                            @Override
-                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                                super.onLoadFailed(errorDrawable);
-                                emitter.onError(new Exception("获取的bitmap异常"));
-                            }
-                        });
-            }
-        }, BackpressureStrategy.LATEST)
+                                    @Override
+                                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                                        super.onLoadFailed(errorDrawable);
+                                        emitter.onError(new Exception("获取的bitmap异常"));
+                                    }
+                                });
+                    }
+                }, BackpressureStrategy.LATEST)
                 .compose(RxUtil.getSchedulerFlowable())
                 .subscribe(new DisposableSubscriber<Drawable>() {
                     @Override
@@ -367,8 +366,8 @@ public class BitmapUtil {
      */
     public static void LoadMorePhoto(Context context, int id, ViewGroup viewGroup) {
         // 获取屏幕宽高
-        int screenWidth = ScreenUtils.getScreenWidth(context);
-        int screenHeight = ScreenUtils.getScreenHeight(context);
+        int screenWidth = ScreenUtil.getScreenWidth(context);
+        int screenHeight = ScreenUtil.getScreenHeight(context);
 
         Resources resources = context.getResources();
 
@@ -401,5 +400,4 @@ public class BitmapUtil {
 
         viewGroup.setBackground(drawable);
     }
-
 }

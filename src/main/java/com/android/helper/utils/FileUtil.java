@@ -1,10 +1,7 @@
 package com.android.helper.utils;
 
 import android.app.Application;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -19,7 +16,6 @@ import androidx.lifecycle.Lifecycle;
 
 import com.android.helper.app.BaseApplication;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
-import com.luck.picture.lib.utils.PictureFileUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -189,35 +185,6 @@ public class FileUtil implements BaseLifecycleObserver {
         });
 
         return contentLength[0];
-    }
-
-    /**
-     * @param context context
-     * @param uri     一个uri类型的字符串
-     * @return 把一个uri类型的字符串转换成一个正常的真实路径，如果是一个文件路径或者本身就是一个真实路径，就会直接转换成一个url
-     */
-    public String UriToPath(Context context, String uri) {
-        String data = "";
-        if (!TextUtils.isEmpty(uri)) {
-            try {
-                Uri parse = Uri.parse(uri);
-                final String scheme = parse.getScheme();
-
-                if (TextUtils.isEmpty(scheme)) {
-                    return parse.getPath();
-                } else if (TextUtils.equals(ContentResolver.SCHEME_FILE, scheme)) {
-                    // file:// 开头的
-                    data = parse.getPath();
-                } else if (TextUtils.equals(ContentResolver.SCHEME_CONTENT, scheme)) {
-                    // 使用选择器的三方类库去获取
-                    data = PictureFileUtils.getPath(context, parse);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                LogUtil.e("转换Uri失败！");
-            }
-        }
-        return data;
     }
 
     /**
