@@ -66,7 +66,7 @@ public class SendProgressView extends View {
         // 一共几个view
         // 使用四舍五入的方式，获取需要设置的view
         drawable = array.getDrawable(R.styleable.SendProgressView_drawable);
-        int strokeWidth = array.getInteger(R.styleable.SendProgressView_stroke_Width, 3);
+        int strokeWidth = array.getInteger(R.styleable.SendProgressView_progress_stroke_width, 3);
         int colorInner = array.getColor(R.styleable.SendProgressView_inner_layer_color, Color.WHITE);
         int colorOuter = array.getColor(R.styleable.SendProgressView_outer_layer_color, Color.WHITE);
         // 内层的透明度
