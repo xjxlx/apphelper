@@ -69,11 +69,11 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     //经典刷新头
-    api 'io.github.scwang90:refresh-header-classics:2.0.5'
+    api 'io.github.scwang90:refresh-header-classics:2.0.6'
     //刷新的核心须依赖
-    api 'io.github.scwang90:refresh-layout-kernel:2.0.5'
+    api 'io.github.scwang90:refresh-layout-kernel:2.0.6'
     //经典加载
-    api 'io.github.scwang90:refresh-footer-classics:2.0.5'
+    api 'io.github.scwang90:refresh-footer-classics:2.0.6'
 
     implementation 'com.orhanobut:logger:2.2.0' // log工具
     // implementation 'com.squareup.okhttp3:logging-interceptor:4.8.0' // 拦截器，非必须
