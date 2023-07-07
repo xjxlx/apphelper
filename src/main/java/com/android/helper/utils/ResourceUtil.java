@@ -14,7 +14,6 @@ import androidx.annotation.DrawableRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.android.helper.R;
 import com.android.helper.app.BaseApplication;
 
 /**
@@ -23,7 +22,7 @@ import com.android.helper.app.BaseApplication;
 public class ResourceUtil {
 
     @SuppressLint("StaticFieldLeak")
-    public static Context mContext = BaseApplication.getInstance().getApplication();
+    private static final Context mContext = BaseApplication.getInstance().getApplication();
 
     public static int getColor(@ColorRes int id) {
         int color = 0;
