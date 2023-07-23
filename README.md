@@ -68,4 +68,4 @@
 
 使用变更：
     1：android.enableJetifier=true
-    必须要加入这个权限，否则有些老的android.support.xxx的功能将会无法使用。
+    必须要在 gradle.properties中加入这个权限，否则有些老的android.support.xxx的功能将会无法使用。
