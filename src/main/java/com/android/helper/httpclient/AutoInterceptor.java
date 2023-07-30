@@ -2,7 +2,6 @@ package com.android.helper.httpclient;
 
 import android.text.TextUtils;
 
-import com.android.helper.app.BaseApplication;
 import com.android.helper.utils.AppUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -39,21 +38,21 @@ public class AutoInterceptor implements Interceptor {
         }
 
         // 智慧管家
-        if (!TextUtils.isEmpty(mToken) && !TextUtils.isEmpty(mToken)) {
-            request = request.newBuilder()
-                    .addHeader("authorization", "Bearer " + mToken)
-                    .addHeader("versionInfo", encode)
-                    .build();
-        }
+//        if (!TextUtils.isEmpty(mToken) && !TextUtils.isEmpty(mToken)) {
+//            request = request.newBuilder()
+//                    .addHeader("authorization", "Bearer " + mToken)
+//                    .addHeader("versionInfo", encode)
+//                    .build();
+//        }
 
         // 添加请求头  一丰的项目
-        String token = "39d5bf3e9b5fc7e41f949063fb139309";
-        if (!TextUtils.isEmpty(token)) {
-            request = request.newBuilder()
-                    .addHeader("Authorization", token)
-                    .addHeader("plat_number", "1")
-                    .build();
-        }
+//        String token = "39d5bf3e9b5fc7e41f949063fb139309";
+//        if (!TextUtils.isEmpty(token)) {
+//            request = request.newBuilder()
+//                    .addHeader("Authorization", token)
+//                    .addHeader("plat_number", "1")
+//                    .build();
+//        }
 
         if (request.method().equals("GET")) {
             request = addGetParams(request);
