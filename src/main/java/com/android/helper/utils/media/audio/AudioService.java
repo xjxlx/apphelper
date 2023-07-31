@@ -1,5 +1,14 @@
 package com.android.helper.utils.media.audio;
 
+import static android.media.MediaPlayer.MEDIA_ERROR_IO;
+import static com.android.helper.utils.media.audio.AudioConstant.STATUS_COMPLETE;
+import static com.android.helper.utils.media.audio.AudioConstant.STATUS_ERROR;
+import static com.android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
+import static com.android.helper.utils.media.audio.AudioConstant.STATUS_PAUSE;
+import static com.android.helper.utils.media.audio.AudioConstant.STATUS_PLAYING;
+import static com.android.helper.utils.media.audio.AudioConstant.STATUS_PREPARED;
+import static com.android.helper.utils.media.audio.AudioConstant.STATUS_STOP;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +20,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.httpclient.RxUtil;
-import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.ToastUtil;
 
 import java.io.IOException;
@@ -23,15 +32,6 @@ import io.reactivex.Flowable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Predicate;
 import io.reactivex.subscribers.DisposableSubscriber;
-
-import static android.media.MediaPlayer.MEDIA_ERROR_IO;
-import static com.android.helper.utils.media.audio.AudioConstant.STATUS_COMPLETE;
-import static com.android.helper.utils.media.audio.AudioConstant.STATUS_ERROR;
-import static com.android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
-import static com.android.helper.utils.media.audio.AudioConstant.STATUS_PAUSE;
-import static com.android.helper.utils.media.audio.AudioConstant.STATUS_PLAYING;
-import static com.android.helper.utils.media.audio.AudioConstant.STATUS_PREPARED;
-import static com.android.helper.utils.media.audio.AudioConstant.STATUS_STOP;
 
 public class AudioService extends Service {
 
@@ -158,8 +158,8 @@ public class AudioService extends Service {
 
                 // 指定参数为音频文件
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mediaPlayer.setDataSource(mAudioPath);//为多媒体对象设置播放路径
-                mediaPlayer.prepareAsync();//异步准备（准备播放
+                mediaPlayer.setDataSource(mAudioPath);// 为多媒体对象设置播放路径
+                mediaPlayer.prepareAsync();// 异步准备（准备播放
                 LogUtil.e(AudioConstant.TAG, "player--->重新重置了资源，并设置了数据！");
 
             } catch (IOException e) {
@@ -300,7 +300,8 @@ public class AudioService extends Service {
     public boolean isPlaying() {
         mediaPlayer = getMediaPlayer();
         boolean playing = false;
-        // LogUtil.e(AudioConstant.TAG, "isPlaying--->走入了isPlaying的方法中，initialized:" + initialized);
+        // LogUtil.e(AudioConstant.TAG, "isPlaying--->走入了isPlaying的方法中，initialized:" +
+        // initialized);
         try {
             if (mediaPlayer != null) {
                 if (initialized) {
@@ -450,11 +451,11 @@ public class AudioService extends Service {
                     break;
 
                 case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
-                    //超时
+                    // 超时
                     setErrorData(new Exception("链接超时"));
                     break;
 
-                default: //  默认的错误
+                default: // 默认的错误
                     // 如果一旦遇到了这个错误，则需要整体重置一下播放器
                     clear();
                     break;
@@ -499,17 +500,17 @@ public class AudioService extends Service {
         }
     };
 
-    //  播放信息的回调
+    // 播放信息的回调
     private final MediaPlayer.OnInfoListener mInfoListener = new MediaPlayer.OnInfoListener() {
         public boolean onInfo(MediaPlayer mp, int arg1, int arg2) {
 
             switch (arg1) {
                 case MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING:
-                    //   LogUtil.e("media_info_video_track_lagging:");
+                    // LogUtil.e("media_info_video_track_lagging:");
                     break;
 
                 case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
-                    //   LogUtil.e("视频准备渲染!");
+                    // LogUtil.e("视频准备渲染!");
                     break;
                 case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                     LogUtil.e("开始缓冲！");
@@ -519,43 +520,43 @@ public class AudioService extends Service {
                     break;
 
                 case MediaPlayer.MEDIA_INFO_BAD_INTERLEAVING:
-                    //    LogUtil.e("media_info_bad_interleaving:");
+                    // LogUtil.e("media_info_bad_interleaving:");
                     break;
                 case MediaPlayer.MEDIA_INFO_NOT_SEEKABLE:
                     // LogUtil.e("media_info_not_seekable:");
                     break;
                 case MediaPlayer.MEDIA_INFO_METADATA_UPDATE:
-                    //   LogUtil.e("media_info_metadata_update:");
+                    // LogUtil.e("media_info_metadata_update:");
                     break;
                 case MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE:
-                    //   LogUtil.e("media_info_unsupported_subtitle:");
+                    // LogUtil.e("media_info_unsupported_subtitle:");
                     break;
                 case MediaPlayer.MEDIA_INFO_SUBTITLE_TIMED_OUT:
-                    //   LogUtil.e("media_info_subtitle_timed_out:");
+                    // LogUtil.e("media_info_subtitle_timed_out:");
                     break;
 
                 case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
-                    //   LogUtil.e("media_error_timed_out:网络连接超时！");
+                    // LogUtil.e("media_error_timed_out:网络连接超时！");
                     setErrorData(new Exception("网络连接超时"));
                     break;
                 case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
-                    //     LogUtil.e("media_error_unsupported:数据不支持！");
+                    // LogUtil.e("media_error_unsupported:数据不支持！");
                     setErrorData(new Exception("数据不支持"));
                     break;
                 case MEDIA_ERROR_IO:
-                    //     LogUtil.e("media_error_unsupported:IO错误！");
+                    // LogUtil.e("media_error_unsupported:IO错误！");
                     setErrorData(new Exception("IO流错误"));
                     break;
                 case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-                    //     LogUtil.e("media_error_unsupported:视频中断，一般是视频源异常或者不支持的视频类型！");
+                    // LogUtil.e("media_error_unsupported:视频中断，一般是视频源异常或者不支持的视频类型！");
                     setErrorData(new Exception("视频中断，音频源异常"));
                     break;
                 case -1000:
-                    //      LogUtil.e("一般是视频源有问题或者数据格式不支持，比如音频不是AAC之类的！");
+                    // LogUtil.e("一般是视频源有问题或者数据格式不支持，比如音频不是AAC之类的！");
                     setErrorData(new Exception("视频中断，音频格式错误"));
                     break;
                 case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
-                    //     LogUtil.e("数据错误没有有效的回收！");
+                    // LogUtil.e("数据错误没有有效的回收！");
                     break;
             }
             return true;
@@ -573,7 +574,7 @@ public class AudioService extends Service {
             }
             // 计算出当前的缓冲比例
             double percentFloat = percent / 100d;// 注意：两个整数相除的结果是整数
-            // 缓冲比例 乘以 总数大小 ==  当前缓冲的进度
+            // 缓冲比例 乘以 总数大小 == 当前缓冲的进度
             double currentProgress = mDuration * percentFloat;
 
             if (mCallBackListener != null) {

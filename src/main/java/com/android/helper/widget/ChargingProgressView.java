@@ -1,15 +1,5 @@
 package com.android.helper.widget;
 
-import java.math.BigDecimal;
-
-import com.android.helper.R;
-import com.android.helper.base.BaseView;
-import com.android.helper.common.CommonConstants;
-import com.android.helper.utils.ConvertUtil;
-import com.android.helper.utils.CustomViewUtil;
-import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.NumberUtil;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -26,12 +16,25 @@ import android.view.MotionEvent;
 import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.LogUtil;
+import com.android.common.utils.LogWriteUtil;
+import com.android.helper.R;
+import com.android.helper.base.BaseView;
+import com.android.helper.common.CommonConstants;
+import com.android.helper.utils.ConvertUtil;
+import com.android.helper.utils.CustomViewUtil;
+import com.android.helper.utils.NumberUtil;
+
+import java.math.BigDecimal;
+
 /**
  * @author : 流星
  * @CreateDate: 2022/1/7-5:23 下午
  * @Description: 充电的进度条
  */
 public class ChargingProgressView extends BaseView {
+
+    private LogWriteUtil mWriteUtil = new LogWriteUtil(CommonConstants.FILE_CHARGING_CENTER_NAME + ".txt");
 
     private int mMaxWidth, mMaxHeight;
 
@@ -202,7 +205,8 @@ public class ChargingProgressView extends BaseView {
         mPaintScrollRound = new Paint();
         mPaintScrollRound.setColor(Color.parseColor("#FFF4F4F4"));
         mPaintScrollRound.setStyle(Paint.Style.FILL);
-        // mPaintScrollRound.setMaskFilter(new BlurMaskFilter(ConvertUtil.toDp(1), BlurMaskFilter.Blur.SOLID)); // 阴影
+        // mPaintScrollRound.setMaskFilter(new BlurMaskFilter(ConvertUtil.toDp(1),
+        // BlurMaskFilter.Blur.SOLID)); // 阴影
         mPaintScrollRound.setShadowLayer(20, 0, 0, Color.parseColor("#FFC9C9C9"));
         mPaintScrollRound.setAntiAlias(true);
 
@@ -480,8 +484,10 @@ public class ChargingProgressView extends BaseView {
 
             if (mCurrentChargingTextSize != null) {
 
-                // float dx = (mProgressWidth - mCurrentChargingTextSize[0]) / 2; // dx = (进度条宽度 - 文字宽度)/2
-                // float dy = mMaxHeight - mProgressHeight - mCurrentChargingTextInterval - mBottomInterval; // dy = 总高度
+                // float dx = (mProgressWidth - mCurrentChargingTextSize[0]) / 2; // dx = (进度条宽度
+                // - 文字宽度)/2
+                // float dy = mMaxHeight - mProgressHeight - mCurrentChargingTextInterval -
+                // mBottomInterval; // dy = 总高度
                 // - 进度条的高度 - 间距 - 底部间距
 
                 // x轴 = (进度条的宽度 - 文字的宽度) / 2
@@ -500,7 +506,8 @@ public class ChargingProgressView extends BaseView {
         // 绘制剩余的充电时间
         if (!TextUtils.isEmpty(mRemainingTimeText) && mRemainingTimeTextSize != null) {
             float dx = 0;
-            float dy = mMaxHeight - mProgressHeight - mRemainingTimeTextInterval - mBottomInterval; // dy = 总高度 - 进度条 - 间距 - 底部间距
+            float dy = mMaxHeight - mProgressHeight - mRemainingTimeTextInterval - mBottomInterval; // dy = 总高度 - 进度条 - 间距 -
+            // 底部间距
             canvas.drawText(mRemainingTimeText, 0, mRemainingTimeText.length(), dx, dy, mPaintChargingRemainingTimeText);
         }
 
@@ -567,12 +574,13 @@ public class ChargingProgressView extends BaseView {
             canvas.drawCircle(circleX, circleY, mRemainingTimeTextInterval, mPaintScrollRound);
             // log("绘制了圆形：！");
 
-            // 绘制SOC进度  改版---> 进度值改到左侧
-            float dx = circleX - mScrollTextWidth - (mRemainingTimeTextInterval * 2) - mScrollTextInterval; // dx = 圆角的dx轴 - 文字宽度 - 直径 - 距离
-            float dy = (circleY + mScrollTextHeight / 2); // dy =  圆角的y轴 +    文字的高度 /2 +
+            // 绘制SOC进度 改版---> 进度值改到左侧
+            float dx = circleX - mScrollTextWidth - (mRemainingTimeTextInterval * 2) - mScrollTextInterval; // dx = 圆角的dx轴 -
+            // 文字宽度 - 直径 - 距离
+            float dy = (circleY + mScrollTextHeight / 2); // dy = 圆角的y轴 + 文字的高度 /2 +
             canvas.drawText(mSocCurrentText, 0, mSocCurrentText.length(), dx, dy, mPaintScrollValue);
         } else {
-            LogUtil.writeAll(CommonConstants.FILE_CHARGING_CENTER_NAME, "充电中心：", "绘制滑动的区间值：小于0 ，不执行逻辑！");
+            mWriteUtil.write("绘制滑动的区间值：小于0 ，不执行逻辑！");
         }
 
         // 绘制最佳的进度
@@ -580,7 +588,8 @@ public class ChargingProgressView extends BaseView {
             // 改版：最佳进度值永远显示
             // if (mProgress < mOptimumPosition) {
             // }
-            // canvas.drawLine(mOptimumPosition, mTopInterval, mOptimumPosition, mMaxHeight - mBottomInterval, mPaintOptimum);
+            // canvas.drawLine(mOptimumPosition, mTopInterval, mOptimumPosition, mMaxHeight
+            // - mBottomInterval, mPaintOptimum);
             canvas.drawLine(mOptimumPosition, mTopInterval, mOptimumPosition, mProgressHeight + mTopInterval, mPaintOptimum);
 
             // 绘制最佳值文字
@@ -592,7 +601,8 @@ public class ChargingProgressView extends BaseView {
         // 绘制SOC
         // if (mBitmapSoc != null) {
         // // 绘制图标
-        // float dy = mTopInterval + mProgressHeight + mSocBitmapTopInterval; // 上方高度 + 进度条高度 + 间距
+        // float dy = mTopInterval + mProgressHeight + mSocBitmapTopInterval; // 上方高度 +
+        // 进度条高度 + 间距
         // canvas.drawBitmap(mBitmapSoc, 0, dy, mPaintSoc);
         //
         // // 绘制SOC文字
@@ -785,10 +795,10 @@ public class ChargingProgressView extends BaseView {
     public void setCurrentSoc(@FloatRange(from = 0.6f, to = 1.0f) float socValue) {
         if (socValue >= 0.6) {
             this.mBottomScrollProgress = socValue;
-            LogUtil.writeAll(CommonConstants.FILE_CHARGING_CENTER_NAME, "充电中心：", "充电中心--->接收到正常的SOC值！");
+            mWriteUtil.write("充电中心--->接收到正常的SOC值！");
         } else {
             this.mBottomScrollProgress = 0.6f;
-            LogUtil.writeAll(CommonConstants.FILE_CHARGING_CENTER_NAME, "充电中心：", "充电中心--->接收到异常的SOC值: " + socValue + "，默认设置成0.6");
+            mWriteUtil.write("充电中心--->接收到异常的SOC值: " + socValue + "，默认设置成0.6");
         }
         requestLayout();
         invalidate();

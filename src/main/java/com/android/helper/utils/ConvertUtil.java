@@ -11,6 +11,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.common.utils.LogUtil;
+
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;

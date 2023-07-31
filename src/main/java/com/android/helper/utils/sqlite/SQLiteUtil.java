@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.utils.ConvertUtil;
-import com.android.helper.utils.LogUtil;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -93,7 +93,7 @@ public class SQLiteUtil {
                     LogUtil.e(TAG, "插入数据库错误：" + e.getMessage());
                     e.printStackTrace();
                 } finally {
-                    //  关闭数据库
+                    // 关闭数据库
                     closeDb();
                 }
             }
@@ -120,26 +120,26 @@ public class SQLiteUtil {
             // 打开数据库
             // 查询数据
             /**
-             * String table,                        :表名
-             * String[] columns,                    ：查询哪些列 ,如果传null代表查询所有列
-             * String selection,                    ：查询的条件
-             * String[] selectionArgs,              ：条件占位符的值
-             * String groupBy,                      ：按什么分组
-             * String having,String orderBy         ：按什么排序
+             * String table, :表名
+             * String[] columns, ：查询哪些列 ,如果传null代表查询所有列
+             * String selection, ：查询的条件
+             * String[] selectionArgs, ：条件占位符的值
+             * String groupBy, ：按什么分组
+             * String having,String orderBy ：按什么排序
              */
 
             try {
                 cursor = getSqlDataBase().query(mTableName, query, (selection + ("=?")), new String[]{selectonValue}, null, null, null);
-                //4:解析cursor对象   getCount:返回结果集中的行数，如果为空的话就不必去查询了
+                // 4:解析cursor对象 getCount:返回结果集中的行数，如果为空的话就不必去查询了
                 if (cursor != null && cursor.getCount() > 0) {
                     list = new ArrayList<>();
-                    // 下一行是否还有数据   moveToNext：如果往后面移动返回就为true，否则就是数据没有了
+                    // 下一行是否还有数据 moveToNext：如果往后面移动返回就为true，否则就是数据没有了
                     while (cursor.moveToNext()) {
                         JsonObject object = new JsonObject();
 
                         for (int i = 0; i < query.length; i++) {
                             String key = query[i];
-                            // 根据列中对象的名称返回该列对象的索引   getColumnIndex（）：根据该列中对象的名称返回该列对象的索引
+                            // 根据列中对象的名称返回该列对象的索引 getColumnIndex（）：根据该列中对象的名称返回该列对象的索引
                             String value = cursor.getString(cursor.getColumnIndex(key));
                             object.addProperty(key, value);
                         }
@@ -165,20 +165,20 @@ public class SQLiteUtil {
         // 打开数据库
         // 查询数据
         /**
-         * String table,                        :表名
-         * String[] columns,                    ：查询哪些列 ,如果传null代表查询所有列
-         * String selection,                    ：查询的条件
-         * String[] selectionArgs,              ：条件占位符的值
-         * String groupBy,                      ：按什么分组
-         * String having,String orderBy         ：按什么排序
+         * String table, :表名
+         * String[] columns, ：查询哪些列 ,如果传null代表查询所有列
+         * String selection, ：查询的条件
+         * String[] selectionArgs, ：条件占位符的值
+         * String groupBy, ：按什么分组
+         * String having,String orderBy ：按什么排序
          */
 
         try {
             cursor = getSqlDataBase().query(mTableName, null, null, null, null, null, null);
-            //4:解析cursor对象   getCount:返回结果集中的行数，如果为空的话就不必去查询了
+            // 4:解析cursor对象 getCount:返回结果集中的行数，如果为空的话就不必去查询了
             if (cursor != null && cursor.getCount() > 0) {
                 list = new ArrayList<>();
-                // 下一行是否还有数据   moveToNext：如果往后面移动返回就为true，否则就是数据没有了
+                // 下一行是否还有数据 moveToNext：如果往后面移动返回就为true，否则就是数据没有了
                 while (cursor.moveToNext()) {
                     JsonObject object = new JsonObject();
                     String[] columnNames = cursor.getColumnNames();
@@ -209,21 +209,21 @@ public class SQLiteUtil {
         if ((!TextUtils.isEmpty(key)) && (!TextUtils.isEmpty(value))) {
             // 查询数据
             /**
-             * String table,                        :表名
-             * String[] columns,                    ：查询哪些列 ,如果传null代表查询所有列
-             * String selection,                    ：查询的条件
-             * String[] selectionArgs,              ：条件占位符的值
-             * String groupBy,                      ：按什么分组
-             * String having,String orderBy         ：按什么排序
+             * String table, :表名
+             * String[] columns, ：查询哪些列 ,如果传null代表查询所有列
+             * String selection, ：查询的条件
+             * String[] selectionArgs, ：条件占位符的值
+             * String groupBy, ：按什么分组
+             * String having,String orderBy ：按什么排序
              */
 
             try {
                 cursor = getSqlDataBase().query(mTableName, new String[]{key}, null, null, null, null, null);
-                //4:解析cursor对象   getCount:返回结果集中的行数，如果为空的话就不必去查询了
+                // 4:解析cursor对象 getCount:返回结果集中的行数，如果为空的话就不必去查询了
                 if (cursor != null && cursor.getCount() > 0) {
-                    // 下一行是否还有数据   moveToNext：如果往后面移动返回就为true，否则就是数据没有了
+                    // 下一行是否还有数据 moveToNext：如果往后面移动返回就为true，否则就是数据没有了
                     while (cursor.moveToNext()) {
-                        // 根据列中对象的名称返回该列对象的索引   getColumnIndex（）：根据该列中对象的名称返回该列对象的索引
+                        // 根据列中对象的名称返回该列对象的索引 getColumnIndex（）：根据该列中对象的名称返回该列对象的索引
                         String queryValues = cursor.getString(cursor.getColumnIndex(key));
                         if (value.equals(queryValues)) {
                             closeDb();
@@ -248,23 +248,23 @@ public class SQLiteUtil {
         if (columns != null && columns.length > 0) {
             // 查询数据
             /**
-             * String table,                        :表名
-             * String[] columns,                    ：查询哪些列 ,如果传null代表查询所有列
-             * String selection,                    ：查询的条件
-             * String[] selectionArgs,              ：条件占位符的值
-             * String groupBy,                      ：按什么分组
-             * String having,String orderBy         ：按什么排序
+             * String table, :表名
+             * String[] columns, ：查询哪些列 ,如果传null代表查询所有列
+             * String selection, ：查询的条件
+             * String[] selectionArgs, ：条件占位符的值
+             * String groupBy, ：按什么分组
+             * String having,String orderBy ：按什么排序
              */
 
             try {
                 cursor = getSqlDataBase().query(mTableName, columns, null, null, null, null, null);
 
-                //4:解析cursor对象   getCount:返回结果集中的行数，如果为空的话就不必去查询了
+                // 4:解析cursor对象 getCount:返回结果集中的行数，如果为空的话就不必去查询了
                 if (cursor != null && cursor.getCount() > 0) {
                     list = new ArrayList<>();
-                    // 下一行是否还有数据   moveToNext：如果往后面移动返回就为true，否则就是数据没有了
+                    // 下一行是否还有数据 moveToNext：如果往后面移动返回就为true，否则就是数据没有了
                     while (cursor.moveToNext()) {
-                        // 根据列中对象的名称返回该列对象的索引   getColumnIndex（）：根据该列中对象的名称返回该列对象的索引
+                        // 根据列中对象的名称返回该列对象的索引 getColumnIndex（）：根据该列中对象的名称返回该列对象的索引
                         JsonObject object = new JsonObject();
 
                         for (int i = 0; i < columns.length; i++) {
@@ -295,7 +295,8 @@ public class SQLiteUtil {
      */
     public boolean update(List<String> whereClause, List<String> whereArgs, String whereKey, String whereValue) {
         if ((whereClause != null) && (whereClause.size() > 0) && (whereArgs != null) && (whereArgs.size() == whereClause.size())) {
-            //  database.execSQL("update tableName set phone=? where name=?;", new Object[]{userInfoBean.phone, userInfoBean.name});
+            // database.execSQL("update tableName set phone=? where name=?;", new
+            // Object[]{userInfoBean.phone, userInfoBean.name});
 
             // 创建sql
             String sql = "update " + mTableName + " set ";

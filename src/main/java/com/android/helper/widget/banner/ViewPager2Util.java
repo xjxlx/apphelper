@@ -12,8 +12,8 @@ import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
-import com.android.helper.utils.LogUtil;
 
 /**
  * 这个ViewPager2的工具类，是为了做页面的无限轮播使用的，可以使用图片的轮播，也可以使用Fragment的轮播
@@ -66,14 +66,14 @@ public class ViewPager2Util implements BaseLifecycleObserver {
             super.onPageScrollStateChanged(state);
 
             if (mViewPager2 != null && mItemCount > 1) {
-                if (state == ViewPager2.SCROLL_STATE_DRAGGING) {  // 拖动的时候
+                if (state == ViewPager2.SCROLL_STATE_DRAGGING) { // 拖动的时候
                     onStop();
                     if (mCurrent == 0) {
                         mViewPager2.setCurrentItem(mItemCount - 2, false);
                     } else if (mCurrent == mItemCount - 1) {
                         mViewPager2.setCurrentItem(1, false);
                     }
-                } else if (state == ViewPager2.SCROLL_STATE_IDLE) {  // 停下的时候
+                } else if (state == ViewPager2.SCROLL_STATE_IDLE) { // 停下的时候
                     if (mCurrent == 0) {
                         mViewPager2.setCurrentItem(mItemCount - 2, false);
                     } else if (mCurrent == mItemCount - 1) {

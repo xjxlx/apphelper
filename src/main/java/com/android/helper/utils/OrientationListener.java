@@ -8,6 +8,7 @@ import android.view.OrientationEventListener;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.interfaces.TagListener;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 

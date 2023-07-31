@@ -8,8 +8,8 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.interfaces.listener.OnItemClickListener;
-import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -128,7 +128,7 @@ public class RandomLayout extends ViewGroup {
                 TextView child = mTemporaryViewList.get(i);
 
                 // 先测量子View的大小
-                int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.AT_MOST);//为子View准备测量的参数
+                int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.AT_MOST);// 为子View准备测量的参数
                 int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.AT_MOST);
                 child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 
@@ -203,7 +203,7 @@ public class RandomLayout extends ViewGroup {
     }
 
     /**
-     * @return 获取一个范围内的随机数组 xy【0】 获取 X轴的随机数  xy【1】 获取Y轴随机数
+     * @return 获取一个范围内的随机数组 xy【0】 获取 X轴的随机数 xy【1】 获取Y轴随机数
      */
     private int[] getViewLocal(int width, int height) {
         return createXY(width, height);

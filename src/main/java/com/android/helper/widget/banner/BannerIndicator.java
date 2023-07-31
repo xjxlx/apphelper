@@ -11,8 +11,8 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.R;
-import com.android.helper.utils.LogUtil;
 
 /**
  * BannerView的指示器，用于配合Banner的联动
@@ -116,7 +116,7 @@ public class BannerIndicator extends LinearLayout {
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 ImageView imageView = new ImageView(getContext());
 
-                //:从第二个开始设置
+                // :从第二个开始设置
                 if (mInterval > 0) {
                     if (i > 0) {
                         // 设置属性
@@ -125,7 +125,7 @@ public class BannerIndicator extends LinearLayout {
                 }
 
                 imageView.setLayoutParams(params);
-                //:3:把view添加到viewGroup中
+                // :3:把view添加到viewGroup中
                 addView(imageView);
             }
 
@@ -148,7 +148,7 @@ public class BannerIndicator extends LinearLayout {
      * viewPager选中时候的状态监听
      */
     public void onPageSelected(int position) {
-        //  LogUtil.e(TAG, "onPageSelected:" + position);
+        // LogUtil.e(TAG, "onPageSelected:" + position);
 
         if (mBannerView != null) {
             int childCount = getChildCount();
@@ -177,7 +177,7 @@ public class BannerIndicator extends LinearLayout {
      * 设置选中和没有选中的资源
      */
     private void setSelector(int position) {
-        //:首先将所有的子元素全部都设置为不点击
+        // :首先将所有的子元素全部都设置为不点击
         if (mUnSelectedResource != 0) {
             int childCount = getChildCount();
             for (int i = 0; i < childCount; i++) {
@@ -189,7 +189,7 @@ public class BannerIndicator extends LinearLayout {
             }
         }
 
-        //:当选中某个元素的时候设置为true
+        // :当选中某个元素的时候设置为true
         if (mSelectorResource != 0) {
             View childAt = getChildAt(position);
             if (childAt instanceof ImageView) {

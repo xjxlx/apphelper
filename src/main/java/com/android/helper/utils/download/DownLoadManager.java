@@ -14,11 +14,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
+import com.android.common.utils.LogUtil;
+import com.android.common.utils.SpUtil;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.interfaces.listener.ProgressListener;
 import com.android.helper.utils.FileUtil;
-import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.SpUtil1;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -184,7 +184,8 @@ public class DownLoadManager implements BaseLifecycleObserver {
 
         int currentStatus = getCurrentStatus(id);
         // 如果状态是在开始下载 或者下载中，就停止下载
-        if (currentStatus == DOWNLOAD_TYPE.DOWNLOADING || currentStatus == DOWNLOAD_TYPE.DOWNLOAD_START) {
+        // if (currentStatus == DOWNLOAD_TYPE.DOWNLOADING || currentStatus == DOWNLOAD_TYPE.DOWNLOAD_START) {
+        if (currentStatus == DOWNLOAD_TYPE.DOWNLOADING || currentStatus == 1) {
             LogUtil.e(TAG, "正在下载中，停止重复性下载！");
             return;
         }
@@ -200,7 +201,7 @@ public class DownLoadManager implements BaseLifecycleObserver {
         mTempDownloadLength = 0;
 
         // 获取总文件的大小
-        String maxLength = SpUtil1.getStringForMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id);
+        String maxLength = SpUtil.INSTANCE.getStringForMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id);
         if (!TextUtils.isEmpty(maxLength)) {
             // 获取long类型的总文件大小
             assert maxLength != null;
@@ -327,7 +328,7 @@ public class DownLoadManager implements BaseLifecycleObserver {
                         // 只记录原始文件长度
                         long contentLength = body.contentLength();
                         // 存入文件的总体长度
-                        SpUtil1.putMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id, String.valueOf(contentLength));
+                        SpUtil.INSTANCE.putMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id, String.valueOf(contentLength));
                         mContentLong = contentLength;
                     }
 
@@ -346,9 +347,11 @@ public class DownLoadManager implements BaseLifecycleObserver {
                         }
 
                         // 开始正式的下载
-                        setCurrentStatus(id, DOWNLOAD_TYPE.DOWNLOAD_START);
+                        // setCurrentStatus(id, DOWNLOAD_TYPE.DOWNLOAD_START);
+                        setCurrentStatus(id, 1);
                         Message message = mHandler.obtainMessage();
-                        message.what = DOWNLOAD_TYPE.DOWNLOAD_START;
+                        // message.what = DOWNLOAD_TYPE.DOWNLOAD_START;
+                        message.what = 1;
                         message.obj = mContentLong;
                         message.setData(bundle);
                         mHandler.sendMessage(message);
@@ -437,10 +440,11 @@ public class DownLoadManager implements BaseLifecycleObserver {
     }
 
     /**
-     * @return 获取当前车辆的状态： 1：正在下载中 ，2：下载完毕  3：下载错误  4：取消下载
+     * @return 获取当前下载的状态： 1：正在下载中 ，2：下载完毕  3：下载错误  4：取消下载
      */
     public int getCurrentStatus(String id) {
-        int status = DOWNLOAD_TYPE.DOWNLOAD_IDLE;
+        // int status = DOWNLOAD_TYPE.DOWNLOAD_IDLE;
+        int status = 6;
         if ((mMapStatus != null) && (mMapStatus.size() > 0) && (!TextUtils.isEmpty(id))) {
             Integer tempStatus = mMapStatus.get(id);
             if (tempStatus != null) {
@@ -536,7 +540,8 @@ public class DownLoadManager implements BaseLifecycleObserver {
                 assert mListener != null;
 
                 switch (msg.what) {
-                    case DOWNLOAD_TYPE.DOWNLOAD_START:
+                    // case DOWNLOAD_TYPE.DOWNLOAD_START:
+                    case 1:
                         LogUtil.e(TAG, "开始下载!");
 
                         mListener.onStart(id, (long) msg.obj);

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.text.TextUtils;
 
+import com.android.common.utils.LogUtil;
+import com.android.common.utils.SpUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -51,7 +53,7 @@ public class JsonUtil {
         if (key == null || (value == null) || (key.length != value.length)) {
             return;
         }
-        String json = SpUtil1.getString(spKey);
+        String json = SpUtil.INSTANCE.getString(spKey);
         if (TextUtils.isEmpty(json)) {
             map = new HashMap<>();
         } else {
@@ -67,7 +69,7 @@ public class JsonUtil {
         }
         if (map != null) {
             LogUtil.e("无线存储的map：" + map);
-            SpUtil1.putString(spKey, new Gson().toJson(map));
+            SpUtil.INSTANCE.putString(spKey, new Gson().toJson(map));
         }
     }
 
@@ -80,7 +82,7 @@ public class JsonUtil {
     public static <T> T spJsonMapToValue(String spKey, String key) {
         try {
             if (!TextUtils.isEmpty(key)) {
-                String json = SpUtil1.getString(spKey);
+                String json = SpUtil.INSTANCE.getString(spKey);
                 if (!TextUtils.isEmpty(json)) {
                     Map<String, Object> map = jsonToMap(json);
                     if (map != null) {
@@ -101,7 +103,7 @@ public class JsonUtil {
      */
     public static void spClearMap(String spKey) {
         if (!TextUtils.isEmpty(spKey)) {
-            SpUtil1.putString(spKey, "");
+            SpUtil.INSTANCE.putString(spKey, "");
             LogUtil.e("清空了sp中存储的key对应的值");
         }
     }

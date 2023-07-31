@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import com.android.common.utils.LogUtil;
+
 /**
  * 包类相关的工具类，用来获取本地包的信息
  */

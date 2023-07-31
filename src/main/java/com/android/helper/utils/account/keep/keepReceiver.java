@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.android.helper.utils.LogUtil;
+import com.android.common.utils.LogUtil;
 
 public class keepReceiver extends BroadcastReceiver {
 

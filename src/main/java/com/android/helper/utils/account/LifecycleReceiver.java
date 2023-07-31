@@ -4,11 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
 
+import com.android.common.utils.LogWriteUtil;
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
-import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
 import com.android.helper.utils.ServiceUtil;
 
@@ -17,11 +16,13 @@ import com.android.helper.utils.ServiceUtil;
  */
 public class LifecycleReceiver extends BroadcastReceiver {
 
+    private static final LogWriteUtil logWriteUtil = new LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
+
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         if (TextUtils.equals(action, "com.android.helper.lifecycle")) {
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "接收到了账号同步的信息！");
+            logWriteUtil.write("接收到了账号同步的信息！");
 
             sendNotification(context);
 
@@ -30,7 +31,7 @@ public class LifecycleReceiver extends BroadcastReceiver {
             if (!TextUtils.isEmpty(serviceName)) {
                 // 后台服务
                 boolean serviceRunning = ServiceUtil.isServiceRunning(context, serviceName);
-                LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "☆☆☆☆☆---我是广播通知，当前后台服务的状态为：" + serviceRunning);
+                logWriteUtil.write("☆☆☆☆☆---我是广播通知，当前后台服务的状态为：" + serviceRunning);
 
                 if (!serviceRunning) {
                     Intent intentService = new Intent();
@@ -44,7 +45,7 @@ public class LifecycleReceiver extends BroadcastReceiver {
             // 如果JobService没有运行着的时候，顺便把它也唤醒
             String jobServiceName = LifecycleManager.getInstance().getJobServiceName();
             boolean jobServiceRunning = ServiceUtil.isJobServiceRunning(context, jobServiceName);
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "☆☆☆☆☆---我是广播通知，当前JobService的状态为：" + jobServiceRunning);
+            logWriteUtil.write("☆☆☆☆☆---我是广播通知，当前JobService的状态为：" + jobServiceRunning);
             if (!jobServiceRunning) {
                 AppJobService.startJob(context, LifecycleAppEnum.FROM_ACCOUNT);
             }

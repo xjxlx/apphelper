@@ -20,9 +20,9 @@ import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.R;
 import com.android.helper.utils.ConvertUtil;
-import com.android.helper.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +97,7 @@ public class PassWordView extends ViewGroup {
         mDrawable_color = array.getColor(R.styleable.PassWordView_pd_drawable_color, Color.parseColor("#171B21"));
         // 密文的半径
         mDrawableSize = array.getDimension(R.styleable.PassWordView_pd_drawable_size, ConvertUtil.toDp(4.5F));
-        //明文的信息
+        // 明文的信息
         mContentColor = array.getColor(R.styleable.PassWordView_pd_content_color, Color.parseColor("#171B21"));
         mContentSize = array.getDimension(R.styleable.PassWordView_pd_content_size, ConvertUtil.toDp(16));
 
@@ -134,7 +134,7 @@ public class PassWordView extends ViewGroup {
             editText.setBackground(null);
             // 限制数据类型
             editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-            editText.setCursorVisible(false);//隐藏光标
+            editText.setCursorVisible(false);// 隐藏光标
 
             // 获取输入内容
             InputFilter inputFilter = (source, start, end, dest, dstart, dend) -> {
@@ -194,7 +194,7 @@ public class PassWordView extends ViewGroup {
             mStartX = (childWidth * i) + (padding * i);
             mStopX = (childWidth * (i + 1)) + (padding * i);
             // 绘制背景颜色
-            canvas.drawLine(mStartX, measuredHeight, mStopX, measuredHeight, mPaint_unSelector);        //绘制直线
+            canvas.drawLine(mStartX, measuredHeight, mStopX, measuredHeight, mPaint_unSelector); // 绘制直线
         }
 
         if (mList.size() > 0) {
@@ -209,7 +209,7 @@ public class PassWordView extends ViewGroup {
                     mPaint_selector.setColor(mSelectorColor);
                 }
                 // 绘制选中的颜色
-                canvas.drawLine(mStartX, measuredHeight, mStopX, measuredHeight, mPaint_selector);        //绘制直线
+                canvas.drawLine(mStartX, measuredHeight, mStopX, measuredHeight, mPaint_selector); // 绘制直线
 
                 // 是否展示密码
                 if (mShowPassWord) {
@@ -224,7 +224,7 @@ public class PassWordView extends ViewGroup {
 
                     // 求出每个text在中间的位置
                     float sta = (childWidth - width) / 2;
-                    // 设置text文字  x:表示左侧的X轴位置，y:表示基准线的位置，就是文字底部的位置
+                    // 设置text文字 x:表示左侧的X轴位置，y:表示基准线的位置，就是文字底部的位置
                     int y = (measuredHeight / 2) + (height / 2);
                     canvas.drawText(s, (mStartX + sta), y, mPaint_text);
                 } else {

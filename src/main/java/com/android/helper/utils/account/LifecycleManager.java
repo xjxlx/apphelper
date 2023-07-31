@@ -8,13 +8,14 @@ import android.text.TextUtils;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.android.common.utils.LogUtil;
+import com.android.common.utils.LogWriteUtil;
+import com.android.common.utils.SpUtil;
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.utils.ActivityUtil;
-import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
 import com.android.helper.utils.ServiceUtil;
-import com.android.helper.utils.SpUtil1;
 import com.android.helper.utils.SystemUtil;
 import com.android.helper.utils.account.keep.KeepManager;
 import com.android.helper.utils.dialog.DialogUtil;
@@ -25,6 +26,7 @@ import com.android.helper.utils.permission.RxPermissionsUtil;
  */
 public class LifecycleManager {
 
+    private final LogWriteUtil logWriteUtil = new LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
     private static LifecycleManager mLifecycleManager;
     private static String mServiceName, mJobServiceName;// 需要启动的服务名字
     private NotificationUtil mNotificationUtil;
@@ -51,17 +53,17 @@ public class LifecycleManager {
             mJobServiceName = jobName;
 
             // 保存名字
-            SpUtil1.putString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME, serviceName);
-            SpUtil1.putString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME, jobName);
+            SpUtil.INSTANCE.putString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME, serviceName);
+            SpUtil.INSTANCE.putString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME, jobName);
 
             // 1:账号保活
             AccountHelper accountHelper = AccountHelper.getInstance();
-            accountHelper.addAccountType(application.getResources().getString(R.string.account_type)).addAccountAuthority(application.getResources().getString(R.string.account_authority)).addAccountName(application.getResources().getString(R.string.account_name)).addAccountPassword(application.getResources().getString(R.string.account_password)).addAccount(application);//添加账户
+            accountHelper.addAccountType(application.getResources().getString(R.string.account_type)).addAccountAuthority(application.getResources().getString(R.string.account_authority)).addAccountName(application.getResources().getString(R.string.account_name)).addAccountPassword(application.getResources().getString(R.string.account_password)).addAccount(application);// 添加账户
             accountHelper.autoSync();
 
             // 2:后台服务写日志
             boolean serviceRunning = ServiceUtil.isServiceRunning(application, serviceName);
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "☆☆☆☆☆---我是Manager，当前后台服务的状态为：" + serviceRunning);
+            logWriteUtil.write("☆☆☆☆☆---我是Manager，当前后台服务的状态为：" + serviceRunning);
 
             if (!serviceRunning) {
                 mIntent = new Intent();
@@ -73,7 +75,7 @@ public class LifecycleManager {
 
             // 3:启动jobService
             boolean jobServiceRunning = ServiceUtil.isJobServiceRunning(application, jobName);
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "☆☆☆☆☆---我是Manager，当前JobService的状态为：" + jobServiceRunning);
+            logWriteUtil.write("☆☆☆☆☆---我是Manager，当前JobService的状态为：" + jobServiceRunning);
             if (!jobServiceRunning) {
                 AppJobService.startJob(application, LifecycleAppEnum.From_Intent);
             }
@@ -112,7 +114,8 @@ public class LifecycleManager {
     }
 
     /**
-     * 检测notification的权限， startActivityForResult的请求码为{NotificationUtil.CODE_REQUEST_ACTIVITY_NOTIFICATION}
+     * 检测notification的权限，
+     * startActivityForResult的请求码为{NotificationUtil.CODE_REQUEST_ACTIVITY_NOTIFICATION}
      */
     public void checkNotificationPermissions(FragmentActivity activity) {
         if (activity != null) {
@@ -182,7 +185,7 @@ public class LifecycleManager {
         }
 
         if (TextUtils.isEmpty(mServiceName)) {
-            mServiceName = SpUtil1.getString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME);
+            mServiceName = SpUtil.INSTANCE.getString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME);
         }
 
         return mServiceName;
@@ -194,7 +197,7 @@ public class LifecycleManager {
         }
 
         if (TextUtils.isEmpty(mJobServiceName)) {
-            mJobServiceName = SpUtil1.getString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME);
+            mJobServiceName = SpUtil.INSTANCE.getString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME);
         }
         return mJobServiceName;
     }

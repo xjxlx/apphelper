@@ -7,7 +7,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
-import com.android.helper.utils.LogUtil;
+import com.android.common.utils.LogUtil;
 
 /**
  * Created by Administrator on 2019/3/26.
@@ -27,31 +27,31 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     /**
-     * + "sing_id text, "    --------------->查询的唯一码
-     * + "mp3_name text, "    -------------->音乐的名字
-     * + "mp3_url text, "     ---------------->音乐的url
+     * + "sing_id text, " --------------->查询的唯一码
+     * + "mp3_name text, " -------------->音乐的名字
+     * + "mp3_url text, " ---------------->音乐的url
      * + "mp3_image_url text, " --------------> 音乐图片的url
-     * + "type text, "        ----------------> 下载的类型
-     * + "levele text, "     -----------------> level等级
-     * + "unit_name text, "  ----------------->单元的名字
+     * + "type text, " ----------------> 下载的类型
+     * + "levele text, " -----------------> level等级
+     * + "unit_name text, " ----------------->单元的名字
      * + "creat_time text)"; ------------------>创建的时间
      */
-//    public static final String CREATE_MUSIC = "create table " + "ABC" + " ("
-//            + "id integer primary key autoincrement, "
-//            + "sing_id text, "
-//            + "mp3_name text, "
-//            + "mp3_url text, "
-//            + "mp3_image_url text, "
-//            + "type text, "
-//            + "levele text, "
-//            + "unit_name text, "
-//            + "unit_type text, "
-//            + "creat_time text)";
+    // public static final String CREATE_MUSIC = "create table " + "ABC" + " ("
+    // + "id integer primary key autoincrement, "
+    // + "sing_id text, "
+    // + "mp3_name text, "
+    // + "mp3_url text, "
+    // + "mp3_image_url text, "
+    // + "type text, "
+    // + "levele text, "
+    // + "unit_name text, "
+    // + "unit_type text, "
+    // + "creat_time text)";
 
     /**
      * 构造方法
      * (Context context, String name, CursorFactory factory,int version)
-     * 数据库创建的构造方法  数据库名称  sql_table.db ，版本号为1
+     * 数据库创建的构造方法 数据库名称 sql_table.db ，版本号为1
      *
      * @param context  上下文对象
      * @param /name    数据库名称 secb.db
@@ -59,7 +59,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
      * @param /version 数据库版本
      */
     private SQLiteManager(Context context, @NonNull SQLEntity sqlEntity) {
-        //context :上下文   name： 数据库文件的名称  factory:用来创建cursor对象，默认传null   version:数据库的版本,从android4.0之后只能升不能降。
+        // context :上下文 name： 数据库文件的名称 factory:用来创建cursor对象，默认传null
+        // version:数据库的版本,从android4.0之后只能升不能降。
         // 数据库的版本号， 这个版本号只能增长，不能倒退
         super(context, (sqlEntity.getTableName() + ".db"), null, sqlEntity.getVersionCode());
     }

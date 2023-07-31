@@ -4,8 +4,8 @@ import android.annotation.SuppressLint;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.app.BaseApplication;
-import com.android.helper.utils.LogUtil;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -37,7 +37,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 @SuppressLint("BadHostnameVerifier,TrustAllX509TrustManager")
 public class RetrofitHelper {
 
-    private static final int DEFAULT_CONNECT_TIMEOUT = 15; //默认的请求和超时、以及连接时间
+    private static final int DEFAULT_CONNECT_TIMEOUT = 15; // 默认的请求和超时、以及连接时间
     public static int CUSTOM_TIMEOUT = 35; // 默认超时时间为35秒
 
     /**
@@ -61,10 +61,9 @@ public class RetrofitHelper {
 
         OkHttpClient.Builder httpBuilder = getHttpBuilder();
 
-        httpBuilder
-                .readTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS)//设置读取超时时间
-                .writeTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS)//设置写的超时时间
-                .connectTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS);//设置连接超时时间
+        httpBuilder.readTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS)// 设置读取超时时间
+                .writeTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS)// 设置写的超时时间
+                .connectTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS);// 设置连接超时时间
 
         // 获取拦截器
         Interceptor[] interceptors = BaseApplication.getInstance().getInterceptors();
@@ -86,7 +85,8 @@ public class RetrofitHelper {
     }
 
     /**
-     * @return 自定义超时时间的retrofit对象，默认读写超时未35秒，如果是一个固定的超时时间的话，可以在程序的入口处直接修改 CUSTOM_TIMEOUT的固定时间
+     * @return 自定义超时时间的retrofit对象，默认读写超时未35秒，如果是一个固定的超时时间的话，可以在程序的入口处直接修改
+     * CUSTOM_TIMEOUT的固定时间
      */
     private static synchronized Retrofit createRetrofitTimeOut() {
         LogUtil.e("createTimeOutRetrofitTime");
@@ -207,10 +207,9 @@ public class RetrofitHelper {
         // 设置SSL证书
         setSSLFactory(httpBuilder);
 
-        httpBuilder
-                .readTimeout(CUSTOM_TIMEOUT, TimeUnit.SECONDS)//设置读取超时时间
-                .writeTimeout(CUSTOM_TIMEOUT, TimeUnit.SECONDS)//设置写的超时时间
-                .connectTimeout(CUSTOM_TIMEOUT, TimeUnit.SECONDS);//设置连接超时时间
+        httpBuilder.readTimeout(CUSTOM_TIMEOUT, TimeUnit.SECONDS)// 设置读取超时时间
+                .writeTimeout(CUSTOM_TIMEOUT, TimeUnit.SECONDS)// 设置写的超时时间
+                .connectTimeout(CUSTOM_TIMEOUT, TimeUnit.SECONDS);// 设置连接超时时间
         return httpBuilder.build();
     }
 
@@ -281,10 +280,9 @@ public class RetrofitHelper {
 
         OkHttpClient.Builder httpBuilder = getHttpBuilder();
 
-        httpBuilder
-                .readTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS)//设置读取超时时间
-                .writeTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS)//设置写的超时时间
-                .connectTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS);//设置连接超时时间
+        httpBuilder.readTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS)// 设置读取超时时间
+                .writeTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS)// 设置写的超时时间
+                .connectTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.SECONDS);// 设置连接超时时间
 
         // 获取拦截器
         Interceptor[] interceptors = BaseApplication.getInstance().getInterceptors();

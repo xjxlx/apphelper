@@ -12,7 +12,7 @@ import android.widget.Scroller;
 
 import androidx.annotation.LayoutRes;
 
-import com.android.helper.utils.LogUtil;
+import com.android.common.utils.LogUtil;
 import com.android.helper.utils.ScreenUtil;
 import com.android.helper.utils.ViewUtil;
 
@@ -29,7 +29,7 @@ public class PageView extends ViewGroup {
     private int mMarginLeft;
     private int mMarginRight;
     private int mLayoutMeasuredWidth;// layout的宽度
-    private int mLayoutMeasuredHeight;     // layout的高度
+    private int mLayoutMeasuredHeight; // layout的高度
 
     private int mViewRows = 2; // view的行数
     private int mViewColumn = 4;// view的列数
@@ -89,7 +89,7 @@ public class PageView extends ViewGroup {
         if (mMarginRight <= 0) {
             mMarginRight = ViewUtil.getMarginRight(this);
         }
-        // view的宽度 =  屏幕的宽度 -  左右的margin值
+        // view的宽度 = 屏幕的宽度 - 左右的margin值
         mLayoutMeasuredWidth = mScreenWidth - mMarginLeft - mMarginRight;
 
         // 预设的值
@@ -197,7 +197,7 @@ public class PageView extends ViewGroup {
             int positionForRow = getPositionForRow(i);
             int page = getPageForPosition(i);
 
-            // （间距 *（列数 +1）） + （列数 * view的宽度）+ paddingLeft  = 一屏view的宽度
+            // （间距 *（列数 +1）） + （列数 * view的宽度）+ paddingLeft = 一屏view的宽度
             left += (((positionForColumn + 1) * mViewIntervalWidth) + (positionForColumn * mViewMeasuredWidth) + getPaddingLeft());
             // 增加 页数 =（屏幕的宽度 -左右的padding - 间距）
             left += (page * ((mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight()) - mViewIntervalWidth));

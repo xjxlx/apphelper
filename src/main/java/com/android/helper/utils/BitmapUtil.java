@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.httpclient.RxUtil;
 import com.android.helper.interfaces.listener.CallBackListener;
 import com.bumptech.glide.Glide;

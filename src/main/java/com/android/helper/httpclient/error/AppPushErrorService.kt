@@ -1,11 +1,11 @@
 package com.android.helper.httpclient.error
 
+import com.android.common.utils.LogUtil
+import com.android.common.utils.SpUtil
 import com.android.helper.httpclient.BaseException
 import com.android.helper.httpclient.BaseHttpDisposableObserver
 import com.android.helper.httpclient.RetrofitHelper
 import com.android.helper.httpclient.RxUtil
-import com.android.helper.utils.LogUtil
-import com.android.helper.utils.SpUtil1
 import io.reactivex.Observable
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -34,7 +34,7 @@ class AppPushErrorService {
         val requestFile: RequestBody = RequestBody.create("multipart/form-data".toMediaTypeOrNull(), file)
         val fileBody: MultipartBody.Part = MultipartBody.Part.createFormData("file", file.name, requestFile)
         val serviceBody = RequestBody.create("text/plain;charset=UTF-8".toMediaTypeOrNull(), "App.App2021.UploadLog")
-        val nameBody = RequestBody.create("text/plain;charset=UTF-8".toMediaTypeOrNull(), SpUtil1.getString(""))
+        val nameBody = RequestBody.create("text/plain;charset=UTF-8".toMediaTypeOrNull(), SpUtil.getString(""))
 
         ApiServices
             .uploadAppErrorLog(fileBody, serviceBody, nameBody)

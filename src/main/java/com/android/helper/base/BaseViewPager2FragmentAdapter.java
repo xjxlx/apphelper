@@ -8,8 +8,8 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.adapter.FragmentViewHolder;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.interfaces.listener.OnSelectorListener;
-import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 

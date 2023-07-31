@@ -5,10 +5,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.base.recycleview.RecycleViewFrameWork;
 import com.android.helper.httpclient.RxUtil;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
-import com.android.helper.utils.LogUtil;
 import com.scwang.smart.refresh.layout.SmartRefreshLayout;
 import com.scwang.smart.refresh.layout.api.RefreshFooter;
 import com.scwang.smart.refresh.layout.api.RefreshHeader;
@@ -31,46 +31,68 @@ import io.reactivex.disposables.Disposable;
  *               <ol>
  *               使用说明： 使用该工具类，必然是在请求接口的时候使用，否则没有任何意义
  *               <p>
- *               使用文档： 一：T 泛型，这个是数据请求数据的类型 二：请求页数，默认是从第0页开始的，如果有特殊的需求，调用方法{@link RefreshUtil#setFromPage(int)}去设置
+ *               使用文档： 一：T 泛型，这个是数据请求数据的类型
+ *               二：请求页数，默认是从第0页开始的，如果有特殊的需求，调用方法{@link RefreshUtil#setFromPage(int)}去设置
  *               三：请求数量，默认的是指是20条，如果有其他需求，调用方法{@link RefreshUtil#setPageSize(int)}去做设置
- *               四：刷新类型，默认的刷新类型是既能下拉刷新，也能上拉加载，如果要改变刷新类型，调用方法{@link RefreshUtil#setRefreshType(RefreshType)} 五：构造方法，
- *               1：需要传入参数： ①：SmartRefreshLayout 刷新的对象，这个是必填参数 ②：Activity ：上下文的对象，必填参数
+ *               四：刷新类型，默认的刷新类型是既能下拉刷新，也能上拉加载，如果要改变刷新类型，调用方法{@link RefreshUtil#setRefreshType(RefreshType)}
+ *               五：构造方法，
+ *               1：需要传入参数： ①：SmartRefreshLayout 刷新的对象，这个是必填参数 ②：Activity
+ *               ：上下文的对象，必填参数
  *               ③：RecycleViewFrameWork：适配器的对象，这个是针对列表使用的，传入了该对象，就可以主动去设置接口异常的占位图
- *               2：抽象方法{@link RefreshUtil#getObservable()} 这个方法是用来返回一个请求对象使用的，只要调用了构造方法，就必然要实现这个方法，
+ *               2：抽象方法{@link RefreshUtil#getObservable()}
+ *               这个方法是用来返回一个请求对象使用的，只要调用了构造方法，就必然要实现这个方法，
  *               值得注意的是，如果有分页的话，需要调用获取页数的方法{@link RefreshUtil#getCurrentPage()}去动态变化页数
  *               3：抽象方法{@link RefreshUtil#setNoMoreData(Object)}这个是用来检测是否有更多数据的方法，如果数据类型能统一的话，这个方法可以省略，目前
- *               接口不统一，需要手动去返回当前接口返回的集合对象，用于判定是否还有更多的数据 六：刷新方法，调用{@link RefreshUtil#refresh()},这里刷新的是第一页的数据
+ *               接口不统一，需要手动去返回当前接口返回的集合对象，用于判定是否还有更多的数据
+ *               六：刷新方法，调用{@link RefreshUtil#refresh()},这里刷新的是第一页的数据
  *               七：数据回调，调用{@link RefreshUtil#setCallBackListener(RefreshCallBack)}，会把接口获取到的数据返回出去
  *               八：调用刷新流程：使用方法{@link RefreshUtil#execute()}
  *               <p>
- *               使用例子： RefreshUtil mRefreshUtil = new RefreshUtil<Page<List<UserCollection>>>(this, sr) {
- * @Override public Observable<Page<List<UserCollection>>> getObservable() { return
- *           RetrofitUtils.getAPIInstance().create(TipAPI.class).getCollectListV2(id, getCurrentPage()); }
+ *               使用例子： RefreshUtil mRefreshUtil = new
+ *               RefreshUtil<Page<List<UserCollection>>>(this, sr) {
+ * @Override public Observable<Page<List<UserCollection>>> getObservable() {
+ *           return
+ *           RetrofitUtils.getAPIInstance().create(TipAPI.class).getCollectListV2(id,
+ *           getCurrentPage()); }
  *           <p>
- * @Override public List<?> setNoMoreData(Page<List<UserCollection>> listPage) { if (listPage != null) { return
+ * @Override public List<?> setNoMoreData(Page<List<UserCollection>> listPage) {
+ *           if (listPage != null) { return
  *           listPage.getContent(); } return null; } } .setCallBackListener(new
  *           RefreshCallBack<Page<List<UserCollection>>>() {
- * @Override public void onSuccess(@NotNull Page<List<UserCollection>> listPage) { if (listPage.getContent() != null) {
- *           adapter.setList(listPage.getContent(), mRefreshUtil.isRefresh()); } }
+ * @Override public void onSuccess(@NotNull Page<List<UserCollection>> listPage)
+ *           { if (listPage.getContent() != null) {
+ *           adapter.setList(listPage.getContent(), mRefreshUtil.isRefresh()); }
+ *           }
  *           <p>
- * @Override public void onError(@NotNull Throwable e) { ToastUtil.show(e.getMessage()); } }) .execute();
- * 
+ * @Override public void onError(@NotNull Throwable e) {
+ *           ToastUtil.show(e.getMessage()); } }) .execute();
+ *
  *           // demo
- *           mRefreshUtil = object : RefreshUtil<ConsecrateBean>(fragment, refreshLayout) { // 用来返回接口的数据 override fun
- *           getObservable(): Observable<ConsecrateBean> { val parameter = hashMapOf<String, Any>() parameter["pageNum"]
- *           = currentPage parameter["pageSize"] = 10 parameter["searchWords"] = searchWords parameter["tabletStatus"] =
- *           tabletStatus return RetrofitHelper .create(ApiInterface::class.java)
+ *           mRefreshUtil = object : RefreshUtil<ConsecrateBean>(fragment,
+ *           refreshLayout) { // 用来返回接口的数据 override fun
+ *           getObservable(): Observable<ConsecrateBean> { val parameter =
+ *           hashMapOf<String, Any>() parameter["pageNum"]
+ *           = currentPage parameter["pageSize"] = 10 parameter["searchWords"] =
+ *           searchWords parameter["tabletStatus"] =
+ *           tabletStatus return RetrofitHelper
+ *           .create(ApiInterface::class.java)
  *           .getConsecrateList2(RetrofitHelper.createBodyForMap(parameter)) }
  *
- *           // 告诉控制器当前是否还有数据，必须喝下面的setPageSize方法配合 override fun setNoMoreData(t: ConsecrateBean?):
- *           List<ConsecrateBean.Data.Row>? { if (t?.data?.rows != null) { return t.data.rows } return null } }
- *           .setCallBackListener(object : RefreshCallBack<ConsecrateBean>() { override fun onStart() { super.onStart()
+ *           // 告诉控制器当前是否还有数据，必须喝下面的setPageSize方法配合 override fun
+ *           setNoMoreData(t: ConsecrateBean?):
+ *           List<ConsecrateBean.Data.Row>? { if (t?.data?.rows != null) {
+ *           return t.data.rows } return null } }
+ *           .setCallBackListener(object : RefreshCallBack<ConsecrateBean>() {
+ *           override fun onStart() { super.onStart()
  *           this@ControllerConsecrate.onStart() }
  *
- *           override fun onSuccess(refreshUtil: RefreshUtil<ConsecrateBean>, t: ConsecrateBean) {
- *           this@ControllerConsecrate.onRefreshSuccess(t, refreshUtil.isRefresh) }
+ *           override fun onSuccess(refreshUtil: RefreshUtil<ConsecrateBean>, t:
+ *           ConsecrateBean) {
+ *           this@ControllerConsecrate.onRefreshSuccess(t,
+ *           refreshUtil.isRefresh) }
  *
- *           override fun onError(e: Throwable) { this@ControllerConsecrate.onFailure(e) } }) .setFromPage(1)
+ *           override fun onError(e: Throwable) {
+ *           this@ControllerConsecrate.onFailure(e) } }) .setFromPage(1)
  *           .setPageSize(10) ..execute()
  *           </ol>
  */
@@ -94,10 +116,8 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     private RecycleViewFrameWork<?, ?> mAdapter; // RecycleView的适配器
 
     /**
-     * @param activity
-     *            activity的对象
-     * @param refreshLayout
-     *            刷新布局的对象
+     * @param activity      activity的对象
+     * @param refreshLayout 刷新布局的对象
      */
     public RefreshUtil(FragmentActivity activity, SmartRefreshLayout refreshLayout) {
         if (activity != null) {
@@ -108,10 +128,8 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     }
 
     /**
-     * @param fragment
-     *            fragment的对象
-     * @param refreshLayout
-     *            刷新布局的对象
+     * @param fragment      fragment的对象
+     * @param refreshLayout 刷新布局的对象
      */
     public RefreshUtil(Fragment fragment, SmartRefreshLayout refreshLayout) {
         if (fragment != null) {
@@ -127,8 +145,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     }
 
     /**
-     * @param refreshHeader
-     *            刷新头的对象
+     * @param refreshHeader 刷新头的对象
      * @return 设置刷新头
      */
     public RefreshUtil<T> setRefreshHeader(RefreshHeader refreshHeader) {
@@ -140,8 +157,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     }
 
     /**
-     * @param refreshFooter
-     *            刷新脚的对象
+     * @param refreshFooter 刷新脚的对象
      * @return 设置刷新脚
      */
     public RefreshUtil<T> setRefreshFooter(RefreshFooter refreshFooter) {
@@ -153,8 +169,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     }
 
     /**
-     * @param autoLoad
-     *            是否自动刷新，默认自动刷新
+     * @param autoLoad 是否自动刷新，默认自动刷新
      */
     public RefreshUtil<T> setAutoRefresh(boolean autoLoad) {
         this.mAutoLoad = autoLoad;
@@ -162,8 +177,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     }
 
     /**
-     * @param size
-     *            每页查询的数量
+     * @param size 每页查询的数量
      * @return 设置每页查询的数据的条数，默认是一次查询二十条数据
      */
     public RefreshUtil<T> setPageSize(int size) {
@@ -180,7 +194,8 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
 
     /**
      * <p>
-     * 这个方法，用起来巨傻逼，还要每次自己去判断逻辑，检测是不是最后一个数据，如果后期数据结构能够统一的话，可以重新构造一个方法， 在这里直接判断好就行，就不用每次去手动判断了
+     * 这个方法，用起来巨傻逼，还要每次自己去判断逻辑，检测是不是最后一个数据，如果后期数据结构能够统一的话，可以重新构造一个方法，
+     * 在这里直接判断好就行，就不用每次去手动判断了
      * </p>
      *
      * @return 用来控制是否已经没有更多的数据了, 默认是还有数据
@@ -211,8 +226,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     }
 
     /**
-     * @param t
-     *            当前请求下来的数据对象
+     * @param t 当前请求下来的数据对象
      * @return 返回一个实际使用到的集合列表，去判断还有没有跟多的数据，这个方法只适合使用列表型的数据
      */
     public abstract List<?> setNoMoreData(T t);
@@ -230,16 +244,14 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     /**
      * 设置当前页面的数据，仅供内部使用
      *
-     * @param data
-     *            仅限于当前页面的数据
+     * @param data 仅限于当前页面的数据
      */
     private void setCurrentData(T data) {
         mData = data;
     }
 
     /**
-     * @param fromPage
-     *            从第几页开始刷新
+     * @param fromPage 从第几页开始刷新
      * @return 设置从第几页开始请求数据，这个是为了有些傻逼后台，不从0页开始查数据，非要从指定的页面去查数据，默认是从0页开始查数据
      */
     public RefreshUtil<T> setFromPage(int fromPage) {
@@ -280,10 +292,10 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     }
 
     /**
-     * @param refreshType
-     *            设置刷新的类型，默认是可以下拉刷新也可以上拉加载更多 单独刷新，使用：{@link RefreshType#TYPE_REFRESH} 刷新 +
-     *            下拉加载更多，使用{@link RefreshType#TYPE_REFRESH_LOAD_MORE}
-     *            不做刷新也不做加载更多，使用：{@link RefreshType#TYPE_REFRESH_LOAD_MORE}
+     * @param refreshType 设置刷新的类型，默认是可以下拉刷新也可以上拉加载更多
+     *                    单独刷新，使用：{@link RefreshType#TYPE_REFRESH} 刷新 +
+     *                    下拉加载更多，使用{@link RefreshType#TYPE_REFRESH_LOAD_MORE}
+     *                    不做刷新也不做加载更多，使用：{@link RefreshType#TYPE_REFRESH_LOAD_MORE}
      */
     public RefreshUtil<T> setRefreshType(RefreshType refreshType) {
         mRefreshType = refreshType;
@@ -429,8 +441,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     /**
      * 数据成功的操作
      *
-     * @param t
-     *            请求的数据
+     * @param t 请求的数据
      */
     public void setDataSuccess(T t) {
 
@@ -464,8 +475,7 @@ public abstract class RefreshUtil<T> implements OnRefreshListener, OnLoadMoreLis
     /**
      * 数据异常的操作
      *
-     * @param throwable
-     *            异常的对象
+     * @param throwable 异常的对象
      */
     public void setDataError(Throwable throwable) {
         if (mRefreshLayout != null) {

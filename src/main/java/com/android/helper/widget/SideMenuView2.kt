@@ -7,7 +7,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Scroller
-import com.android.helper.utils.LogUtil
+import com.android.common.utils.LogUtil
 import kotlin.math.abs
 
 /**
@@ -52,7 +52,7 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        LogUtil.e(" le: " + l + "  r: " + r)
+        LogUtil.run { e(" le: $l  r: $r") }
         mContentView?.let {
             if (mContentMarginLeft <= 0) {
                 val lp = it.layoutParams as MarginLayoutParams

@@ -24,6 +24,7 @@ import androidx.annotation.DrawableRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.R;
 import com.android.helper.interfaces.listener.ViewCallBackListener;
 

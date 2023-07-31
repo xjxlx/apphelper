@@ -1,17 +1,5 @@
 package com.android.helper.utils.dialog;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.HashSet;
-
-import org.greenrobot.eventbus.EventBus;
-
-import com.android.helper.R;
-import com.android.helper.common.CommonConstants;
-import com.android.helper.common.EventMessage;
-import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
-import com.android.helper.utils.LogUtil;
-
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.text.TextUtils;
@@ -30,6 +18,18 @@ import androidx.annotation.LayoutRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
+
+import com.android.common.utils.LogUtil;
+import com.android.helper.R;
+import com.android.helper.common.CommonConstants;
+import com.android.helper.common.EventMessage;
+import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.HashSet;
 
 /**
  * Dialog的工具类 使用的时候，要在activity 或者 fragment 中调用 getLifecycle.addObserver() 把自身
@@ -109,12 +109,10 @@ public class DialogUtil implements BaseLifecycleObserver {
 
     public DialogUtil show() {
         if (mActivity != null && mDialog != null) {
-            if ((!mActivity.isFinishing()) && (!mActivity.isDestroyed()) && (mDialog != null)
-                && (!mDialog.isShowing())) {
+            if ((!mActivity.isFinishing()) && (!mActivity.isDestroyed()) && (mDialog != null) && (!mDialog.isShowing())) {
                 mDialog.show();
             } else {
-                LogUtil.e("dialog打开失败：activity:" + mActivity + " isFinishing:" + (mActivity.isFinishing()) + " dialog:"
-                    + mDialog + " isShowing:" + (mDialog.isShowing()));
+                LogUtil.e("dialog打开失败：activity:" + mActivity + " isFinishing:" + (mActivity.isFinishing()) + " dialog:" + mDialog + " isShowing:" + (mDialog.isShowing()));
             }
         }
         return this;
@@ -139,17 +137,15 @@ public class DialogUtil implements BaseLifecycleObserver {
     }
 
     /**
-     * @param id
-     *            指定的id
-     * @param <T>
-     *            指定的类型
+     * @param id  指定的id
+     * @param <T> 指定的类型
      * @return 返回一个对象
      */
     public <T extends View> T getView(@IdRes int id) {
         if (mLayoutView != null) {
             View view = mLayoutView.findViewById(id);
             if (view != null) {
-                return (T)view;
+                return (T) view;
             }
         }
         return null;
@@ -187,10 +183,8 @@ public class DialogUtil implements BaseLifecycleObserver {
         private final int mTypeFrom;
 
         /**
-         * @param activity
-         *            依赖的activity
-         * @param contentView
-         *            布局的view
+         * @param activity    依赖的activity
+         * @param contentView 布局的view
          * @author : 流星
          * @CreateDate: 2021/9/27
          * @Description: 构造Dialog的参数
@@ -217,10 +211,8 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param activity
-         *            依赖的activity
-         * @param resource
-         *            布局的资源文件
+         * @param activity 依赖的activity
+         * @param resource 布局的资源文件
          * @author : 流星
          * @CreateDate: 2021/9/27
          * @Description: 构造Dialog的参数
@@ -254,10 +246,8 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param offsetX
-         *            偏移X轴
-         * @param offsetY
-         *            偏移Y轴
+         * @param offsetX 偏移X轴
+         * @param offsetY 偏移Y轴
          */
         public Builder setOffset(int offsetX, int offsetY) {
             this.mOffsetX = offsetX;
@@ -266,8 +256,7 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param id
-         *            指定的id
+         * @param id 指定的id
          * @return 点击指定id的时候，关闭弹窗
          */
         public Builder setClose(@IdRes int id) {
@@ -284,8 +273,7 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param view
-         *            指定的view
+         * @param view 指定的view
          * @return 点击指定id的时候，关闭弹窗
          */
         public Builder setClose(View view) {
@@ -299,8 +287,7 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param gravity
-         *            Gravity.CENTER ...
+         * @param gravity Gravity.CENTER ...
          * @return 设置位置，需要在setContentView()方法之前设置，否则不生效
          */
         public Builder setGravity(int gravity) {
@@ -309,8 +296,7 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param animation
-         *            设置动画
+         * @param animation 设置动画
          * @return 设置动画，需要在setContentView()方法之前设置，否则不生效，一般使用{R.style.base_dialog_animation}
          */
         public Builder setAnimation(int animation) {
@@ -319,8 +305,7 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param cancel
-         *            false时为点击周围空白处弹出层不自动消失
+         * @param cancel false时为点击周围空白处弹出层不自动消失
          * @return 弹窗点击周围空白处弹出层自动消失弹窗消失(false时为点击周围空白处弹出层不自动消失)
          */
         public Builder setCanceledOnTouchOutside(boolean cancel) {
@@ -329,8 +314,7 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param flag
-         *            true：可以取消，false ：不可以取消
+         * @param flag true：可以取消，false ：不可以取消
          * @return 设置点击返回键的时候，是否可以取消， true：可以取消，false ：不可以取消
          */
         public Builder setCancelable(boolean flag) {
@@ -347,9 +331,9 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param width
-         *            设置宽度 ,建议使用{@link android.view.ViewGroup.LayoutParams#MATCH_PARENT} or
-         *            {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
+         * @param width 设置宽度
+         *              ,建议使用{@link android.view.ViewGroup.LayoutParams#MATCH_PARENT} or
+         *              {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
          * @return 设置宽度
          */
         public Builder setWidth(int width) {
@@ -358,9 +342,9 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param mHeight
-         *            设置高度,建议使用{@link android.view.ViewGroup.LayoutParams#MATCH_PARENT} or
-         *            {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
+         * @param mHeight 设置高度,建议使用{@link android.view.ViewGroup.LayoutParams#MATCH_PARENT}
+         *                or
+         *                {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
          * @return 设置高度，需要在setContentView()方法之前设置，否则不生效
          */
         public Builder setHeight(int mHeight) {
@@ -369,9 +353,8 @@ public class DialogUtil implements BaseLifecycleObserver {
         }
 
         /**
-         * @param type:
-         *            dialog的类型，默认是带遮罩层的弹窗，使用的时候，只接收两个参数{@link DialogType#DEFAULT_DIALOG}
-         *            或者{@link DialogType#HINT_DIALOG}
+         * @param type: dialog的类型，默认是带遮罩层的弹窗，使用的时候，只接收两个参数{@link DialogType#DEFAULT_DIALOG}
+         *              或者{@link DialogType#HINT_DIALOG}
          */
         public Builder getDialogType(int type) {
             if ((type == DialogType.DEFAULT_DIALOG) || (type == DialogType.HINT_DIALOG)) {
@@ -433,7 +416,7 @@ public class DialogUtil implements BaseLifecycleObserver {
                 // 移除view的父类，避免布局重复添加时候的崩溃异常
                 ViewParent parent = mLayoutView.getParent();
                 if (parent instanceof ViewGroup) {
-                    ViewGroup group = (ViewGroup)parent;
+                    ViewGroup group = (ViewGroup) parent;
                     group.removeAllViews();
                 }
 
@@ -509,10 +492,8 @@ public class DialogUtil implements BaseLifecycleObserver {
     }
 
     /**
-     * @param id
-     *            指定view的id
-     * @param listener
-     *            点击事件
+     * @param id       指定view的id
+     * @param listener 点击事件
      * @return 响应view的点击事件
      */
     public DialogUtil setOnClickListener(@IdRes int id, DialogClickListener listener) {
@@ -524,10 +505,8 @@ public class DialogUtil implements BaseLifecycleObserver {
     }
 
     /**
-     * @param view
-     *            指定view
-     * @param listener
-     *            点击事件
+     * @param view     指定view
+     * @param listener 点击事件
      * @return 响应view的点击事件
      */
     public DialogUtil setOnClickListener(View view, DialogClickListener listener) {
@@ -543,12 +522,9 @@ public class DialogUtil implements BaseLifecycleObserver {
     }
 
     /**
-     * @param id
-     *            textView
-     * @param content
-     *            标题
-     * @param listener
-     *            点击事件
+     * @param id       textView
+     * @param content  标题
+     * @param listener 点击事件
      * @return 按钮设置文字，并设置点击事件
      */
     public DialogUtil setOnClickListener(@IdRes int id, String content, DialogClickListener listener) {
@@ -556,7 +532,7 @@ public class DialogUtil implements BaseLifecycleObserver {
             View view = mLayoutView.findViewById(id);
             if (!TextUtils.isEmpty(content)) {
                 if (view instanceof TextView) {
-                    TextView textView = (TextView)view;
+                    TextView textView = (TextView) view;
                     textView.setText(content);
                 }
             }
@@ -566,8 +542,7 @@ public class DialogUtil implements BaseLifecycleObserver {
     }
 
     /**
-     * @param text
-     *            内容
+     * @param text 内容
      * @return 设置title内容，title的id必须是：R.id.tv_title
      */
     public DialogUtil setText(@IdRes int id, String text) {
@@ -576,7 +551,7 @@ public class DialogUtil implements BaseLifecycleObserver {
                 View view = mLayoutView.findViewById(id);
                 if (view != null) {
                     if (view instanceof TextView) {
-                        TextView textView = (TextView)view;
+                        TextView textView = (TextView) view;
                         textView.setText(text);
                     }
                 }
@@ -586,10 +561,8 @@ public class DialogUtil implements BaseLifecycleObserver {
     }
 
     /**
-     * @param id
-     *            控件的资源id
-     * @param visibilityValue
-     *            true:可见 false:不可见
+     * @param id              控件的资源id
+     * @param visibilityValue true:可见 false:不可见
      * @return 设置view可见与不可见
      */
     public DialogUtil setVisibility(@IdRes int id, boolean visibilityValue) {
@@ -612,8 +585,7 @@ public class DialogUtil implements BaseLifecycleObserver {
     }
 
     /**
-     * @param text
-     *            内容
+     * @param text 内容
      * @return 设置title内容，title的id必须是：R.id.tv_title
      */
     public DialogUtil setText(TextView textView, String text) {

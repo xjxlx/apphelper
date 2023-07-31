@@ -1,11 +1,5 @@
 package com.android.helper.utils.account;
 
-import com.android.helper.R;
-import com.android.helper.common.CommonConstants;
-import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.NotificationUtil;
-import com.android.helper.utils.ServiceUtil;
-
 import android.annotation.SuppressLint;
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
@@ -17,10 +11,19 @@ import android.content.Intent;
 import android.os.Build;
 import android.text.TextUtils;
 
+import com.android.common.utils.LogUtil;
+import com.android.common.utils.LogWriteUtil;
+import com.android.helper.R;
+import com.android.helper.common.CommonConstants;
+import com.android.helper.utils.NotificationUtil;
+import com.android.helper.utils.ServiceUtil;
+
 /**
  * 轮询的后台服务进程
  */
 public class AppJobService extends JobService {
+
+    private static final LogWriteUtil logWriteUtil = new LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
 
     /**
      * job的id
@@ -40,8 +43,7 @@ public class AppJobService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
-        LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "onStartJob");
-
+        logWriteUtil.write("onStartJob");
         if (TextUtils.isEmpty(mServiceName)) {
             mServiceName = LifecycleManager.getInstance().getServiceName();
         }
@@ -49,10 +51,10 @@ public class AppJobService extends JobService {
         // 启动后台服务
         if (!TextUtils.isEmpty(mServiceName)) {
             boolean serviceRunning = ServiceUtil.isServiceRunning(getApplicationContext(), mServiceName);
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "☆☆☆☆☆---我是JobService服务，当前后台服务的状态为:" + serviceRunning);
+            logWriteUtil.write("☆☆☆☆☆---我是JobService服务，当前后台服务的状态为:" + serviceRunning);
 
             if (!serviceRunning) {
-                /*启动应用*/
+                /* 启动应用 */
                 Intent intent = new Intent();
                 intent.setClassName(getPackageName(), mServiceName);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -74,7 +76,7 @@ public class AppJobService extends JobService {
      * @param appEnum 启动的数据类型
      */
     public static void startJob(Context context, LifecycleAppEnum appEnum) {
-        LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "执行了startJob命令！");
+        logWriteUtil.write("执行了startJob命令！");
         mAppEnum = appEnum;
 
         // 1:发送对应的通知
@@ -115,15 +117,15 @@ public class AppJobService extends JobService {
 
         if (appEnum == LifecycleAppEnum.From_Intent) {
             builder.setContentText("我是JobService，我是被直接启动的");
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "我是JobService，我是被直接启动的");
+            logWriteUtil.write("我是JobService，我是被直接启动的");
 
         } else if (appEnum == LifecycleAppEnum.FROM_ACCOUNT) {
             builder.setContentText("我是JobService，我是被账号拉活的");
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "我是JobService，我是被账号拉活的");
+            logWriteUtil.write("我是JobService，我是被账号拉活的");
 
         } else if (appEnum == LifecycleAppEnum.FROM_SERVICE) {
             builder.setContentText("我是JobService，我是后台服务拉活的");
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "我是JobService，我是后台服务拉活的");
+            logWriteUtil.write("我是JobService，我是后台服务拉活的");
         }
 
         if (appEnum == LifecycleAppEnum.FROM_JOB) {

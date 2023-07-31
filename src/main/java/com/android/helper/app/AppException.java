@@ -10,9 +10,9 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.utils.ActivityManager;
 import com.android.helper.utils.FileUtil;
-import com.android.helper.utils.LogUtil;
 import com.google.gson.JsonParseException;
 
 import org.jetbrains.annotations.NotNull;
@@ -92,7 +92,8 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             }
             fw = new FileWriter(path);
             pw = new PrintWriter(fw);
-            pw.println("--------------------" + (DateFormat.getDateTimeInstance().format(new Date())) + "---------------------");
+            pw.println(
+                    "--------------------" + (DateFormat.getDateTimeInstance().format(new Date())) + "---------------------");
 
             Map<String, String> parameter = getParameter();
             for (Entry<String, String> entry : parameter.entrySet()) {
@@ -194,9 +195,11 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
                 File filesDir = mContext.getFilesDir();
                 parentFile = new File(filesDir + File.separator + "error" + File.separator);
             } else {
-                // 小于android 10 ,存入到sd卡的文件目录下 /storage/emulated/0/Documents/com.jollyeng.www/error/error.txt
+                // 小于android 10 ,存入到sd卡的文件目录下
+                // /storage/emulated/0/Documents/com.jollyeng.www/error/error.txt
                 String sdkPath = FileUtil.getInstance().getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS);
-                parentFile = new File(sdkPath + File.separator + mContext.getPackageName() + File.separator + "error" + File.separator);
+                parentFile = new File(
+                        sdkPath + File.separator + mContext.getPackageName() + File.separator + "error" + File.separator);
             }
 
             boolean exists = parentFile.exists();
@@ -220,7 +223,8 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
                 }
             }
             return file.getPath();
-        } return "";
+        }
+        return "";
     }
 
     public void setFileTag(String fileName) {

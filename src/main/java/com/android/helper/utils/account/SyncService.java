@@ -10,17 +10,22 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import com.android.common.utils.LogUtil;
+import com.android.common.utils.LogWriteUtil;
 import com.android.helper.common.CommonConstants;
-import com.android.helper.utils.LogUtil;
 
 /**
  * 用于执行账户同步，当系统执行账户同步时则会自动拉活所在的进程,不需要手动配置好之后，系统会自动绑定并调起，必须注册
- * <service android:name=".test.app.account.SyncService" android:enabled="true" android:exported="true"> <intent-filter>
+ * <service android:name=".test.app.account.SyncService" android:enabled="true"
+ * android:exported="true"> <intent-filter>
  * <action android:name="android.content.SyncAdapter" /> </intent-filter>
  * <p>
- * <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/sync_adapter" /> </service>
+ * <meta-data android:name="android.content.SyncAdapter" android:resource=
+ * "@xml/sync_adapter" /> </service>
  */
 public class SyncService extends Service {
+
+    private static final LogWriteUtil logWriteUtil = new LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
 
     private SyncAdapter syncAdapter;
 
@@ -51,9 +56,9 @@ public class SyncService extends Service {
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-            //与互联网 或者 本地数据库同步账户
+            // 与互联网 或者 本地数据库同步账户
             LogUtil.e("onPerformSync ---> 开始了账户的同步！" + account.toString());
-            LogUtil.writeAll(CommonConstants.FILE_LIFECYCLE_NAME, "应用保活：", "账号开始同步，数据开始更新！");
+            logWriteUtil.write("账号开始同步，数据开始更新！");
 
             // 1:意图都是通过Intent发送的，首先要新建一个Intent
             Intent intent = new Intent();

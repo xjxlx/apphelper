@@ -1,15 +1,5 @@
 package com.android.helper.base;
 
-import com.android.helper.httpclient.BaseHttpSubscriber;
-import com.android.helper.httpclient.RxUtil;
-import com.android.helper.httpclient.error.ProxyErrorImp;
-import com.android.helper.httpclient.error.ProxyErrorListener;
-import com.android.helper.interfaces.FragmentUiInterface;
-import com.android.helper.interfaces.UIInterface;
-import com.android.helper.interfaces.listener.HttpManagerListener;
-import com.android.helper.utils.ClickUtil;
-import com.android.helper.utils.LogUtil;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -24,6 +14,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.android.common.utils.LogUtil;
+import com.android.helper.httpclient.BaseHttpSubscriber;
+import com.android.helper.httpclient.RxUtil;
+import com.android.helper.httpclient.error.ProxyErrorImp;
+import com.android.helper.httpclient.error.ProxyErrorListener;
+import com.android.helper.interfaces.FragmentUiInterface;
+import com.android.helper.interfaces.UIInterface;
+import com.android.helper.interfaces.listener.HttpManagerListener;
+import com.android.helper.utils.ClickUtil;
+
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -32,10 +32,10 @@ import io.reactivex.disposables.Disposable;
  * fragment的基类，全面使用viewBinding
  */
 public abstract class AppBaseFragment extends Fragment
-    implements View.OnClickListener, HttpManagerListener, UIInterface, FragmentUiInterface, ProxyErrorListener {
+        implements View.OnClickListener, HttpManagerListener, UIInterface, FragmentUiInterface, ProxyErrorListener {
 
     /*
-     *此处不能写成静态的，否则就会和使用RxManager一样了
+     * 此处不能写成静态的，否则就会和使用RxManager一样了
      */
     protected final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     protected FragmentActivity mContext;
@@ -55,7 +55,7 @@ public abstract class AppBaseFragment extends Fragment
     public void onAttach(@NonNull Activity activity) {
         super.onAttach(activity);
         if (activity instanceof FragmentActivity) {
-            mContext = (FragmentActivity)activity;
+            mContext = (FragmentActivity) activity;
         }
     }
 
@@ -63,7 +63,7 @@ public abstract class AppBaseFragment extends Fragment
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof FragmentActivity) {
-            mContext = (FragmentActivity)context;
+            mContext = (FragmentActivity) context;
         }
     }
 
@@ -77,7 +77,7 @@ public abstract class AppBaseFragment extends Fragment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-        @Nullable Bundle savedInstanceState) {
+                             @Nullable Bundle savedInstanceState) {
 
         mFragment = this;
         onBeforeCreateView();
@@ -112,8 +112,7 @@ public abstract class AppBaseFragment extends Fragment
     /**
      * Fragment初始化view
      *
-     * @param rootView
-     *            fragment的根布局
+     * @param rootView fragment的根布局
      */
     @Override
     public void initView(View rootView) {
@@ -153,8 +152,8 @@ public abstract class AppBaseFragment extends Fragment
     public <T> Disposable net(@NonNull Flowable<T> flowAble, BaseHttpSubscriber<T> subscriber) {
 
         BaseHttpSubscriber<T> httpSubscriber = flowAble.compose(RxUtil.getSchedulerFlowable()) // 转换线程
-            .onBackpressureLatest() // 使用背压，保留最后一次的结果
-            .subscribeWith(subscriber); // 返回对象
+                .onBackpressureLatest() // 使用背压，保留最后一次的结果
+                .subscribeWith(subscriber); // 返回对象
 
         if (!mCompositeDisposable.isDisposed()) {
             mCompositeDisposable.add(httpSubscriber); // 添加到管理类中
@@ -165,8 +164,7 @@ public abstract class AppBaseFragment extends Fragment
     /**
      * 设置view的点击事件
      *
-     * @param ids
-     *            id的数组
+     * @param ids id的数组
      */
     protected void setViewClickListener(int... ids) {
         if (mRootView != null && ids != null && ids.length > 0) {
@@ -192,8 +190,7 @@ public abstract class AppBaseFragment extends Fragment
     /**
      * 过滤点击的事件
      *
-     * @param v
-     *            点击的view
+     * @param v 点击的view
      */
     private void onViewClick(View v) {
         boolean doubleClick = ClickUtil.isDoubleClick(1000);
@@ -260,7 +257,7 @@ public abstract class AppBaseFragment extends Fragment
 
     @Override
     public void errorCallBack(Throwable throwable) {
-        if (mContext instanceof AppBaseActivity){
+        if (mContext instanceof AppBaseActivity) {
             AppBaseActivity activity = (AppBaseActivity) this.mContext;
             activity.errorCallBack(throwable);
         }

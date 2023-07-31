@@ -11,10 +11,10 @@ import android.view.MotionEvent;
 import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.base.BaseView;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
-import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NumberUtil;
 
 /**
@@ -172,7 +172,7 @@ public class ElectricityView extends BaseView {
         // 圆心的x轴 = 进度的值 + 左侧的间距
         // 圆的X轴圆心
         float circleDx = mCurrentProgress + mPaddingLeft;
-        // 圆心的y轴 =  进度条高度 /2  + 进度条top 的值
+        // 圆心的y轴 = 进度条高度 /2 + 进度条top 的值
         // 圆的Y轴圆心
         float circleDY = mProgressHeight / 2 + mTopInterval + mPaddingTop;
 
@@ -193,8 +193,8 @@ public class ElectricityView extends BaseView {
 
         LogUtil.e("⭐️⭐️⭐️ mBottomTextValue：" + mBottomTextValue);
 
-        float dx = (circleDx - width / 2);// 圆球的X轴圆心  - 文字的宽度/2
-        float dy = (circleDY + mCircleRadius + mBottomValueInterval + mBaseLineBottomText); // dy  = 圆球的底部 + 间距 +baseLine
+        float dx = (circleDx - width / 2);// 圆球的X轴圆心 - 文字的宽度/2
+        float dy = (circleDY + mCircleRadius + mBottomValueInterval + mBaseLineBottomText); // dy = 圆球的底部 + 间距 +baseLine
         canvas.drawText(mBottomTextValue, 0, mBottomTextValue.length(), dx, dy, mPaintBottomRoundText);
     }
 
@@ -210,7 +210,7 @@ public class ElectricityView extends BaseView {
 
         // 限制范围区域
         mLeftBorder = mPaddingLeft;
-        // 右侧的范围 =  限定值 / 百分比
+        // 右侧的范围 = 限定值 / 百分比
         mRightBorder = mProgressEnd / mPercentage;
 
         // 如果小于这个区域，或者大于这个区域，则自己消耗掉这个事件，不继续往下面传递

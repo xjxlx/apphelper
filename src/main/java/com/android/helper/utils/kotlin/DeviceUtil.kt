@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import com.android.helper.utils.LogUtil
+import com.android.common.utils.LogUtil
 import com.android.helper.utils.MD5Utils
 import java.util.*
 

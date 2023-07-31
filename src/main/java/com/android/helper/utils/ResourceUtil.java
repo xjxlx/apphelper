@@ -14,6 +14,7 @@ import androidx.annotation.DrawableRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.app.BaseApplication;
 
 /**

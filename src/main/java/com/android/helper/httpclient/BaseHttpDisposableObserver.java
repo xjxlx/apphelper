@@ -2,7 +2,7 @@ package com.android.helper.httpclient;
 
 import android.text.TextUtils;
 
-import com.android.helper.utils.LogUtil;
+import com.android.common.utils.LogUtil;
 import com.android.helper.utils.NetworkUtil;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public abstract class BaseHttpDisposableObserver<T> extends DisposableObserver<T
 
     @Override
     public void onNext(T t) {
-        //  这种数据类型是最全面的，里面包含了请求头、请求体所有的数据，如果用的到请求头信息的，就可以用Response去包裹一下对象，就能获取到所有的数据信息了
+        // 这种数据类型是最全面的，里面包含了请求头、请求体所有的数据，如果用的到请求头信息的，就可以用Response去包裹一下对象，就能获取到所有的数据信息了
         if (t instanceof Response) {
             Response<?> response = (Response<?>) t;
             if (response.isSuccessful()) {

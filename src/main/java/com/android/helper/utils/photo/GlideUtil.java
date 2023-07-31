@@ -19,7 +19,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 
-import com.android.helper.utils.LogUtil;
+import com.android.common.utils.LogUtil;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
@@ -39,7 +39,7 @@ public class GlideUtil {
 
     private final String TAG = "GlideUtil";
     /**
-     * -------------------  重构-----------------------------
+     * ------------------- 重构-----------------------------
      */
     private int mErrorResource;
     private int mPlaceholderResource;
@@ -49,7 +49,7 @@ public class GlideUtil {
     private Context mContext;
     private View mView;
     private ImageView mImageView;
-    private boolean isDestroy = false;//页面是不是已经被销毁了；
+    private boolean isDestroy = false;// 页面是不是已经被销毁了；
     private RequestOptions mOptions;
     private String mUrl;
 
@@ -172,7 +172,7 @@ public class GlideUtil {
                 intoView(builder);
             }
 
-            //  context 这种情况，有可能会崩溃，但是目前无法处理，拿不到生命周期的对象就无法处理
+            // context 这种情况，有可能会崩溃，但是目前无法处理，拿不到生命周期的对象就无法处理
             if (mContext != null) {
                 RequestBuilder<Drawable> builder = Glide.with(mContext)
                         .load(mUrl)
@@ -262,17 +262,17 @@ public class GlideUtil {
      * <ul>
      * <p>
      * <p>
-     *                 Glide
-     *                         .with(context)
-     *                         .load(s.getLogo())
-     *                         .thumbnail(0.2f) // 图片未加载出来之前的缩略图展示
-     *                         .error(R.mipmap.icon_image_loading)
-     *                         .placeholder(R.mipmap.icon_image_loading) //加载成功前显示的图片
-     *                         .fallback(R.mipmap.icon_image_loading) //url为空的时候,显示的图片
-     *                         .fitCenter()
-     *                         .transform(new LoadImageUtils.GlideRoundTransform())
-     *                         .dontAnimate()
-     *                         .into(dealerHolder.img);
+     * Glide
+     * .with(context)
+     * .load(s.getLogo())
+     * .thumbnail(0.2f) // 图片未加载出来之前的缩略图展示
+     * .error(R.mipmap.icon_image_loading)
+     * .placeholder(R.mipmap.icon_image_loading) //加载成功前显示的图片
+     * .fallback(R.mipmap.icon_image_loading) //url为空的时候,显示的图片
+     * .fitCenter()
+     * .transform(new LoadImageUtils.GlideRoundTransform())
+     * .dontAnimate()
+     * .into(dealerHolder.img);
      *
      * </ul>
      */

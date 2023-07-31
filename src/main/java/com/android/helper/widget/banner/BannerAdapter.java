@@ -10,8 +10,8 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.R;
-import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +40,7 @@ public class BannerAdapter<T> extends PagerAdapter {
         return view == object;
     }
 
-    //:初始化每个Item的实布局，类似于getview
+    // :初始化每个Item的实布局，类似于getview
     // :viewpager会默认加载三个布局，上一页，本业，和下一页，其他页面会自动销毁，防止内存溢出
     @SuppressLint({"SetTextI18n", "InflateParams"})
     @NotNull
@@ -50,7 +50,7 @@ public class BannerAdapter<T> extends PagerAdapter {
         View view = null;
         if ((mListData != null) && (mListData.size() > 0)) {
             // String类型 或者Integer类型的处理
-            //:2:设置对象
+            // :2:设置对象
             view = LayoutInflater.from(container.getContext()).inflate(R.layout.base_banner, null);
 
             ImageView imageView = view.findViewById(R.id.iv_banner_image);
@@ -85,8 +85,8 @@ public class BannerAdapter<T> extends PagerAdapter {
      */
     @Override
     public void destroyItem(ViewGroup container, int position, @NotNull Object object) {
-        //  super.destroyItem(container, position, object);
-        //:从容器中溢出view
+        // super.destroyItem(container, position, object);
+        // :从容器中溢出view
         container.removeView((View) object);
         LogUtil.e(tag, "destroyItem: " + position);
     }

@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.app.BaseApplication;
 
 import java.net.Inet4Address;

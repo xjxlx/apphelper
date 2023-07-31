@@ -20,8 +20,8 @@ import android.view.animation.LinearInterpolator;
 
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.R;
-import com.android.helper.utils.LogUtil;
 
 /**
  * 圆形进度条的view
@@ -110,24 +110,24 @@ public class SendProgressView extends View {
         // 外层的画笔
         paint1 = new Paint();
         paint1.setColor(colorInner); // 设置颜色
-        paint1.setAlpha((int) (alphaInner * 255));   // 设置透明度
+        paint1.setAlpha((int) (alphaInner * 255)); // 设置透明度
         paint1.setStyle(Paint.Style.STROKE); // 设置为实体
-        paint1.setStrokeWidth(strokeWidthValue);  // 设置画笔的宽度
-        // 设置线段连接处样式  Join.MITER（结合处为锐角）Join.Round(结合处为圆弧) Join.BEVEL(结合处为直线)
+        paint1.setStrokeWidth(strokeWidthValue); // 设置画笔的宽度
+        // 设置线段连接处样式 Join.MITER（结合处为锐角）Join.Round(结合处为圆弧) Join.BEVEL(结合处为直线)
         paint1.setStrokeCap(Paint.Cap.ROUND); // 设置圆角
-        paint1.setAntiAlias(true);        // 防锯齿
+        paint1.setAntiAlias(true); // 防锯齿
 
         // 内层的画笔
         paint2 = new Paint();
         paint2.setColor(colorOuter); // 设置颜色
         paint2.setStyle(Paint.Style.STROKE); // 设置为实体
-        paint2.setStrokeWidth(strokeWidthValue);  // 设置画笔的宽度
-        // 设置线段连接处样式  Join.MITER（结合处为锐角）Join.Round(结合处为圆弧) Join.BEVEL(结合处为直线)
+        paint2.setStrokeWidth(strokeWidthValue); // 设置画笔的宽度
+        // 设置线段连接处样式 Join.MITER（结合处为锐角）Join.Round(结合处为圆弧) Join.BEVEL(结合处为直线)
         paint2.setStrokeCap(Paint.Cap.ROUND); // 设置圆角
-        paint2.setAntiAlias(true);        // 防锯齿
+        paint2.setAntiAlias(true); // 防锯齿
 
         paint3 = new Paint();
-        paint3.setAntiAlias(true);        // 防锯齿
+        paint3.setAntiAlias(true); // 防锯齿
 
         rectF = new RectF();
 
@@ -167,7 +167,7 @@ public class SendProgressView extends View {
             // 获取bitmap的高度
             int drawableHeight = bitmap.getHeight();
 
-            // 左侧：view的测量宽度 - bitmap的宽度  然后 /2
+            // 左侧：view的测量宽度 - bitmap的宽度 然后 /2
             int left = (width - drawableWidth) / 2;
             // 上侧：view的高度 - bitmap的高度 然后 /2
             int top = (height - drawableHeight) / 2;
@@ -176,7 +176,7 @@ public class SendProgressView extends View {
             // 下侧：上侧的位置 + bitmap的高度
             int bottom = top + drawableHeight;
 
-//        canvas.drawBitmap(bitmap, null, new RectF(left, top, right, bottom), paint3);
+            // canvas.drawBitmap(bitmap, null, new RectF(left, top, right, bottom), paint3);
             canvas.drawBitmap(bitmap, left, top, null);
         }
     }
@@ -203,7 +203,7 @@ public class SendProgressView extends View {
     }
 
     private Bitmap getBitmap() {
-        // todo  下次可以尝试这个方式 drawable.setBounds();
+        // todo 下次可以尝试这个方式 drawable.setBounds();
         if (drawable instanceof BitmapDrawable) {
             Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 

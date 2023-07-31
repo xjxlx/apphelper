@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.app.BaseApplication;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 

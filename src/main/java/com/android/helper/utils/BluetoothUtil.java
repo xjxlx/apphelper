@@ -1,14 +1,5 @@
 package com.android.helper.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.greenrobot.eventbus.EventBus;
-
-import com.android.helper.common.CommonConstants;
-import com.android.helper.common.EventMessage;
-
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -26,6 +17,16 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+
+import com.android.common.utils.LogUtil;
+import com.android.helper.common.CommonConstants;
+import com.android.helper.common.EventMessage;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 蓝牙的工具类

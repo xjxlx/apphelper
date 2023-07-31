@@ -1,5 +1,14 @@
 package com.android.helper.utils.media.audio;
 
+import static android.app.NotificationManager.IMPORTANCE_LOW;
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_LEFT;
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_PAUSE;
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_RIGHT;
+import static com.android.helper.utils.media.audio.AudioConstant.ACTION_START;
+import static com.android.helper.utils.media.audio.AudioConstant.CODE_SEND_BROADCAST_RECEIVER;
+import static com.android.helper.utils.media.audio.AudioConstant.STATUS_ERROR;
+import static com.android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Notification;
@@ -24,25 +33,16 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.R;
 import com.android.helper.utils.BitmapUtil;
 import com.android.helper.utils.DateUtil;
-import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
 import com.android.helper.utils.ServiceUtil;
 import com.android.helper.utils.TextViewUtil;
 import com.android.helper.utils.dialog.DialogUtil;
 
 import java.util.List;
-
-import static android.app.NotificationManager.IMPORTANCE_LOW;
-import static com.android.helper.utils.media.audio.AudioConstant.ACTION_LEFT;
-import static com.android.helper.utils.media.audio.AudioConstant.ACTION_PAUSE;
-import static com.android.helper.utils.media.audio.AudioConstant.ACTION_RIGHT;
-import static com.android.helper.utils.media.audio.AudioConstant.ACTION_START;
-import static com.android.helper.utils.media.audio.AudioConstant.CODE_SEND_BROADCAST_RECEIVER;
-import static com.android.helper.utils.media.audio.AudioConstant.STATUS_ERROR;
-import static com.android.helper.utils.media.audio.AudioConstant.STATUS_IDLE;
 
 /**
  * 音频播放的工具类
@@ -63,22 +63,22 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
     private String mAudioPath; // 播放的路径
     private boolean mAutoPlayer;// 是否自动播放
 
-    private int mNotificationStart;         // 消息通知栏开始的按钮
-    private int mNotificationPause;         // 消息通知栏暂停的按钮
-    private int mNotificationLeft;          // 消息通知栏左侧的按钮
-    private int mNotificationRight;         // 消息通知栏右侧的按钮
+    private int mNotificationStart; // 消息通知栏开始的按钮
+    private int mNotificationPause; // 消息通知栏暂停的按钮
+    private int mNotificationLeft; // 消息通知栏左侧的按钮
+    private int mNotificationRight; // 消息通知栏右侧的按钮
 
-    private String mNotificationImage;      // 消息通知栏左侧的图标
-    private String mNotificationTitle;      // 消息通知栏上方的标题
-    private int mNotificationSmallIcon;     // 设置小标题
-    private List<AudioEntity> mAudioList;   // 消息通知栏使用到的数据列表
+    private String mNotificationImage; // 消息通知栏左侧的图标
+    private String mNotificationTitle; // 消息通知栏上方的标题
+    private int mNotificationSmallIcon; // 设置小标题
+    private List<AudioEntity> mAudioList; // 消息通知栏使用到的数据列表
     private Class<? extends Activity> mPendingIntentActivity; // 点击【悬浮按钮通知】或者【锁屏通知】或者【状态栏】跳转的页面
     private NotificationUtil mNotificationUtil;
     private AudioReceiver mAudioReceiver;
     private int mNotificationLoopInterVal = 10000;// 消息轮训的时间，默认间隔是10秒
-    private int mAudioPosition = -1;             // 消息通知栏当前按播放音频的角标,默认的值是-1
+    private int mAudioPosition = -1; // 消息通知栏当前按播放音频的角标,默认的值是-1
     private RemoteViews mRemoteViews;
-    private AudioService mAudioService;     // 音乐播放器的服务类
+    private AudioService mAudioService; // 音乐播放器的服务类
     private DialogUtil mDialogUtil;
 
     public AudioPlayerUtil(FragmentActivity context) {
@@ -690,7 +690,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             if (mAudioPosition != -1) {
                 if (mAudioPosition < mAudioList.size() - 1) {
                     mAudioPosition += 1;
-                } else { //无限循环
+                } else { // 无限循环
                     mAudioPosition = 0;
                 }
 
@@ -723,7 +723,7 @@ public class AudioPlayerUtil extends AudioPlayerCallBackListener {
             if (mAudioPosition != -1) {
                 if (mAudioPosition > 0) {
                     mAudioPosition -= 1;
-                } else { //无限循环
+                } else { // 无限循环
                     mAudioPosition = mAudioList.size() - 1;
                 }
 

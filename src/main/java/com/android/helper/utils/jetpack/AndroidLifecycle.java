@@ -5,9 +5,9 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.interfaces.TagListener;
 import com.android.helper.utils.ClassUtil;
-import com.android.helper.utils.LogUtil;
 
 /**
  * 监听Activity 和 fragment 的生命周期

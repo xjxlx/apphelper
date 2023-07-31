@@ -10,8 +10,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.StateSet;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.app.BaseApplication;
 
 import org.json.JSONException;

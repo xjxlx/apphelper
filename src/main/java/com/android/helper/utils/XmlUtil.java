@@ -2,6 +2,8 @@ package com.android.helper.utils;
 
 import android.text.TextUtils;
 
+import com.android.common.utils.LogUtil;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

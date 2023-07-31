@@ -1,6 +1,6 @@
 package com.android.helper.utils.download;
 
-import com.android.helper.utils.LogUtil;
+import com.android.common.utils.LogUtil;
 import com.android.helper.utils.NumberUtil;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,9 +19,9 @@ import okio.Sink;
 public abstract class ProgressRequestBody extends RequestBody {
     private final String Tag = "ProgressRequestBody";
 
-    //实际的待包装响应体
+    // 实际的待包装响应体
     private final RequestBody requestBody;
-    //包装完成的BufferedSink
+    // 包装完成的BufferedSink
     private BufferedSink bufferedSink;
 
     public ProgressRequestBody(RequestBody requestBody) {
@@ -57,9 +57,9 @@ public abstract class ProgressRequestBody extends RequestBody {
     public void writeTo(@NotNull BufferedSink sink) {
         bufferedSink = Okio.buffer(sink(sink));
         try {
-            //写入
+            // 写入
             requestBody.writeTo(bufferedSink);
-            //必须调用flush，否则最后一部分数据可能不会被写入
+            // 必须调用flush，否则最后一部分数据可能不会被写入
             bufferedSink.flush();
             // 数据写入完成的回调
             onComplete();
@@ -79,19 +79,19 @@ public abstract class ProgressRequestBody extends RequestBody {
         // 开始上传数据
         onStart();
         return new ForwardingSink(sink) {
-            //当前写入字节数
+            // 当前写入字节数
             long bytesWritten = 0l;
-            //总字节长度，避免多次调用contentLength()方法
+            // 总字节长度，避免多次调用contentLength()方法
             long contentLength = 0L;
 
             @Override
             public void write(Buffer source, long byteCount) throws IOException {
                 super.write(source, byteCount);
                 if (contentLength == 0) {
-                    //获得contentLength的值，后续不再调用
+                    // 获得contentLength的值，后续不再调用
                     contentLength = contentLength();
                 }
-                //增加当前写入的字节数
+                // 增加当前写入的字节数
                 bytesWritten += byteCount;
                 // 转换格式
                 String digits = NumberUtil.formatDigitsForDouble(((bytesWritten * 0.1 / contentLength * 1000)), BigDecimal.ROUND_DOWN, 2);

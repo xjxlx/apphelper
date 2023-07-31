@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.android.common.utils.LogUtil
 import com.android.helper.R
 import com.android.helper.utils.*
 

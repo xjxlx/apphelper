@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.interfaces.listener.UploadProgressListener;
-import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +30,7 @@ public class UploadInterceptor<T> implements Interceptor {
     @NotNull
     @Override
     public Response intercept(Chain chain) throws IOException {
-        //封装request对象
+        // 封装request对象
         Request request = NetRequest(chain.request());
         return chain.proceed(request);
     }
@@ -40,7 +40,7 @@ public class UploadInterceptor<T> implements Interceptor {
             return request;
         }
         Request.Builder builder = request.newBuilder();
-        //封装requestBody，传入参数，获取数据进度回调
+        // 封装requestBody，传入参数，获取数据进度回调
         builder.method(request.method(), new ProgressRequestBody(request.body()) {
             @Override
             public void onStart() {
@@ -53,9 +53,11 @@ public class UploadInterceptor<T> implements Interceptor {
 
             @Override
             public void onProgress(long current, long contentLength, String percentage) {
-                UploadManagerRetrofit.UP_LOAD_TYPE = UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_PROGRESS;
+                // UploadManagerRetrofit.UP_LOAD_TYPE = UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_PROGRESS;
+                UploadManagerRetrofit.UP_LOAD_TYPE = 2;
                 Message message = mHandler.obtainMessage();
-                message.what = UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_PROGRESS;
+                // message.what = UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_PROGRESS;
+                message.what = 2;
                 Bundle bundle = new Bundle();
                 bundle.putString("percentage", percentage);
                 bundle.putLong("progress", current);
@@ -66,9 +68,11 @@ public class UploadInterceptor<T> implements Interceptor {
 
             @Override
             public void onComplete() {
-                UploadManagerRetrofit.UP_LOAD_TYPE = UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_DATA_COMPLETE;
+                // UploadManagerRetrofit.UP_LOAD_TYPE = UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_DATA_COMPLETE;
+                UploadManagerRetrofit.UP_LOAD_TYPE = 3;
                 Message message = mHandler.obtainMessage();
-                message.what = UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_DATA_COMPLETE;
+                // message.what = UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_DATA_COMPLETE;
+                message.what = 3;
                 mHandler.sendMessage(message);
             }
         });
@@ -86,7 +90,8 @@ public class UploadInterceptor<T> implements Interceptor {
                         mListener.onStart();
                         LogUtil.e("--------->onStart");
                         break;
-                    case UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_PROGRESS:
+                    // case UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_PROGRESS:
+                    case 2:
                         Bundle data = msg.getData();
                         long progress = data.getLong("progress");
                         long contentLength = data.getLong("contentLength");
@@ -94,7 +99,8 @@ public class UploadInterceptor<T> implements Interceptor {
 
                         mListener.onProgress(progress, contentLength, percentage);
                         break;
-                    case UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_DATA_COMPLETE: // 数据上传完成，但是接口为完成
+                    // case UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_DATA_COMPLETE: // 数据上传完成，但是接口为完成
+                    case 3: // 数据上传完成，但是接口为完成
                         mListener.onUploadComplete();
                         LogUtil.e("--------->UPLOAD_DATA_COMPLETE");
                         break;

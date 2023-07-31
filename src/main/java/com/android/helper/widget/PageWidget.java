@@ -19,7 +19,7 @@ import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.Scroller;
 
-import com.android.helper.utils.LogUtil;
+import com.android.common.utils.LogUtil;
 import com.android.helper.utils.ScreenUtil;
 
 /**
@@ -28,15 +28,15 @@ import com.android.helper.utils.ScreenUtil;
 public class PageWidget extends FrameLayout {
 
     /*
-     *  使用步骤：
-     *      PageWidget pageWidget = findViewById(R.id.page);
-     *      BaseAdapter adapter = new PageWidgetAdapter(this);
-     *      pageWidget.setAdapter(adapter);
+     * 使用步骤：
+     * PageWidget pageWidget = findViewById(R.id.page);
+     * BaseAdapter adapter = new PageWidgetAdapter(this);
+     * pageWidget.setAdapter(adapter);
      */
 
     private int mWidth = 0;
     private int mHeight = 0;
-    private int mCornerX = 0;  // 拖拽点对应的页脚
+    private int mCornerX = 0; // 拖拽点对应的页脚
     private int mCornerY = 0;
     private Path mPath0;
     private Path mPath1;
@@ -210,7 +210,7 @@ public class PageWidget extends FrameLayout {
                         if (currentPosition < 0) {
                             currentPosition = 0;
                         }
-//						Log.d("PageWidget->", "" + (currentPosition+1));
+                        // Log.d("PageWidget->", "" + (currentPosition+1));
                         nextView = mAdapter.getView(currentPosition + 1, nextView, null);
                         nextViewTranscript = mAdapter.getView(currentPosition + 1, nextViewTranscript, null);
 
@@ -342,7 +342,7 @@ public class PageWidget extends FrameLayout {
     }
 
     /**
-     * Author : hmg25 Version: 1.0 Description :  求解直线P1P2和直线P3P4的交点坐标
+     * Author : hmg25 Version: 1.0 Description : 求解直线P1P2和直线P3P4的交点坐标
      */
     public PointF getCross(PointF P1, PointF P2, PointF P3, PointF P4) {
         PointF CrossP = new PointF();
@@ -439,7 +439,7 @@ public class PageWidget extends FrameLayout {
         mPath0.close();
 
         canvas.save();
-//		canvas.clipPath(path, Region.Op.XOR);
+        // canvas.clipPath(path, Region.Op.XOR);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             canvas.clipOutPath(path);
         } else {
@@ -490,7 +490,7 @@ public class PageWidget extends FrameLayout {
      * Author : hmg25 Version: 1.0 Description :创建阴影的GradientDrawable
      */
     private void createDrawable() {
-//        int[] color = {0x333333, 0xb0333333};
+        // int[] color = {0x333333, 0xb0333333};
         int[] color = {00000000, 00000000};
         mFolderShadowDrawableRL = new GradientDrawable(GradientDrawable.Orientation.RIGHT_LEFT, color);
         mFolderShadowDrawableRL.setGradientType(GradientDrawable.LINEAR_GRADIENT);
@@ -498,7 +498,7 @@ public class PageWidget extends FrameLayout {
         mFolderShadowDrawableLR = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, color);
         mFolderShadowDrawableLR.setGradientType(GradientDrawable.LINEAR_GRADIENT);
 
-//        mBackShadowColors = new int[]{0xff111111, 0x111111};
+        // mBackShadowColors = new int[]{0xff111111, 0x111111};
         mBackShadowColors = new int[]{00000000, 00000000};
         mBackShadowDrawableRL = new GradientDrawable(GradientDrawable.Orientation.RIGHT_LEFT, mBackShadowColors);
         mBackShadowDrawableRL.setGradientType(GradientDrawable.LINEAR_GRADIENT);
@@ -508,7 +508,7 @@ public class PageWidget extends FrameLayout {
 
         // 翻页的阴影
         mFrontShadowColors = new int[]{0x80111111, 0x111111};
-//        mFrontShadowColors = new int[]{00000000, 00000000};
+        // mFrontShadowColors = new int[]{00000000, 00000000};
 
         mFrontShadowDrawableVLR = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, mFrontShadowColors);
         mFrontShadowDrawableVLR.setGradientType(GradientDrawable.LINEAR_GRADIENT);
@@ -523,7 +523,7 @@ public class PageWidget extends FrameLayout {
     }
 
     /**
-     * Author : hmg25 Version: 1.0 Description :  绘制翻起页的阴影
+     * Author : hmg25 Version: 1.0 Description : 绘制翻起页的阴影
      */
     private void drawCurrentPageShadow(Canvas canvas) {
         double degree;
@@ -556,7 +556,7 @@ public class PageWidget extends FrameLayout {
         float rotateDegrees;
         canvas.save();
 
-//		canvas.clipPath(mPath0, Region.Op.XOR);
+        // canvas.clipPath(mPath0, Region.Op.XOR);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             canvas.clipOutPath(mPath0);
         } else {
@@ -603,7 +603,7 @@ public class PageWidget extends FrameLayout {
         mPath1.lineTo(mBztempStart.x, mBztempStart.y);
         mPath1.close();
         canvas.save();
-//		canvas.clipPath(mPath0, Region.Op.XOR);
+        // canvas.clipPath(mPath0, Region.Op.XOR);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             canvas.clipOutPath(mPath0);
         } else {
@@ -633,8 +633,10 @@ public class PageWidget extends FrameLayout {
     private void drawCurrentBackArea(Canvas canvas, View view) {
         int i = (int) (mBezierStart1.x + mBezierControl1.x) / 2;
         float f1 = Math.abs(i - mBezierControl1.x);
-		/*int i1 = (int) (mBezierStart2.y + mBezierControl2.y) / 2;
-		float f2 = Math.abs(i1 - mBezierControl2.y);*/
+        /*
+         * int i1 = (int) (mBezierStart2.y + mBezierControl2.y) / 2;
+         * float f2 = Math.abs(i1 - mBezierControl2.y);
+         */
         float f3 = f1;
         mPath1.reset();
         mPath1.moveTo(mBeziervertex2.x, mBeziervertex2.y);
@@ -659,7 +661,7 @@ public class PageWidget extends FrameLayout {
         canvas.clipPath(mPath0);
         canvas.clipPath(mPath1, Region.Op.INTERSECT);
 
-        //mPaint.setColorFilter(mColorMatrixFilter);
+        // mPaint.setColorFilter(mColorMatrixFilter);
 
         float rotateDegrees = (float) Math.toDegrees(Math.PI / 2 + Math.atan2(mBezierControl2.y - mTouch.y, mBezierControl2.x - mTouch.x));
 
@@ -743,7 +745,7 @@ public class PageWidget extends FrameLayout {
     }
 
     /**
-     * Author : hmg25 Version: 1.0 Description :  是否从左边翻向右边
+     * Author : hmg25 Version: 1.0 Description : 是否从左边翻向右边
      */
     public boolean DragToRight() {
         if (mCornerX > 0) return false;

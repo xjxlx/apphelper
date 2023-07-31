@@ -8,8 +8,8 @@ package com.android.helper.httpclient;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
-import com.android.helper.utils.LogUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -31,10 +31,7 @@ public class RxUtil implements BaseLifecycleObserver {
      * @return 只做线程的转换，其实如果这里用了flatMap做一次数据转换其实会更好
      */
     public static <T> FlowableTransformer<T, T> getSchedulerFlowable() {
-        return upstream ->
-                upstream
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
+        return upstream -> upstream.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     /**
@@ -64,7 +61,7 @@ public class RxUtil implements BaseLifecycleObserver {
 
     /**
      * <ol>
-     *     倒计时的工具
+     * 倒计时的工具
      * </ol>
      *
      * @param totalTime    总的时长，单位是毫秒
@@ -73,10 +70,10 @@ public class RxUtil implements BaseLifecycleObserver {
      *                     <ui>
      *                     间隔时间的单位，TimeUnit是一个枚举类型，直接调用需要使用的单位即可，如：TimeUnit.MINUTES
      *                     1毫秒 ： {@link TimeUnit#MILLISECONDS}
-     *                     1秒   ： {@link TimeUnit#SECONDS}
+     *                     1秒 ： {@link TimeUnit#SECONDS}
      *                     1分钟 ：{@link TimeUnit#MINUTES}
      *                     1小时 ：{@link TimeUnit#HOURS}
-     *                     1天   ：{@link TimeUnit#DAYS}
+     *                     1天 ：{@link TimeUnit#DAYS}
      *                     </ui>
      */
     public void countdown(long totalTime, long initialDelay, long period, CountdownListener countdownListener) {
@@ -87,9 +84,7 @@ public class RxUtil implements BaseLifecycleObserver {
          */
         long[] countdown = {totalTime, 0, 0};
 
-        mSubscribeCountdown = Observable
-                .interval(initialDelay, period, TimeUnit.MILLISECONDS)
-                .compose(RxUtil.getSchedulerObservable())
+        mSubscribeCountdown = Observable.interval(initialDelay, period, TimeUnit.MILLISECONDS).compose(RxUtil.getSchedulerObservable())
 
                 .map(aLong -> { // 转换数据，把倒计时的数据发送出去
                     // 当前的计数器
@@ -99,12 +94,10 @@ public class RxUtil implements BaseLifecycleObserver {
                     countdown[0] -= 1000;
 
                     return countdown[0];
-                })
-                .takeUntil(aLong -> { // 条件处理器，用来中断倒计时
-                    //  takeUntil takeUntil
+                }).takeUntil(aLong -> { // 条件处理器，用来中断倒计时
+                    // takeUntil takeUntil
                     return countdown[0] < 0;
-                })
-                .subscribe(aLong -> {  // 发送结果
+                }).subscribe(aLong -> { // 发送结果
                     countdown[2] = aLong;
                     if (countdownListener != null) {
                         countdownListener.countdown(mSubscribeCountdown, countdown[1], countdown[2]);
@@ -119,21 +112,17 @@ public class RxUtil implements BaseLifecycleObserver {
      * @param counterListener 计数器的回调
      */
     public void counter(long totalTime, long initialDelay, long period, CounterListener counterListener) {
-        mSubscribeCountdown = Observable
-                .interval(initialDelay, period, TimeUnit.MILLISECONDS)
-                .compose(RxUtil.getSchedulerObservable())
-                .takeUntil(aLong -> { // 条件处理器，用来中断倒计时,
-                    if (totalTime != 0) {
-                        return aLong * period >= totalTime;
-                    } else {
-                        return false;
-                    }
-                })
-                .subscribe(aLong -> {  // 发送结果
-                    if (counterListener != null) {
-                        counterListener.counter(mSubscribeCountdown, aLong);
-                    }
-                });
+        mSubscribeCountdown = Observable.interval(initialDelay, period, TimeUnit.MILLISECONDS).compose(RxUtil.getSchedulerObservable()).takeUntil(aLong -> { // 条件处理器，用来中断倒计时,
+            if (totalTime != 0) {
+                return aLong * period >= totalTime;
+            } else {
+                return false;
+            }
+        }).subscribe(aLong -> { // 发送结果
+            if (counterListener != null) {
+                counterListener.counter(mSubscribeCountdown, aLong);
+            }
+        });
     }
 
     @Override

@@ -1,9 +1,5 @@
 package com.android.helper.widget;
 
-import com.android.helper.R;
-import com.android.helper.utils.BitmapUtil;
-import com.android.helper.utils.LogUtil;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -13,6 +9,10 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
+
+import com.android.common.utils.LogUtil;
+import com.android.helper.R;
+import com.android.helper.utils.BitmapUtil;
 
 /**
  * 只显示左侧图像的imageView
@@ -49,16 +49,18 @@ public class LeftImageView extends androidx.appcompat.widget.AppCompatImageView 
 
         // 得到图片的宽高
         Bitmap forImageView = BitmapUtil.getBitmapForImageView(this);
-        if (forImageView!=null){
+        if (forImageView != null) {
             int bitmapWidth = forImageView.getWidth();
             int bitmapHeight = forImageView.getHeight();
 
-            // LogUtil.e("measuredWidth: " + measuredWidth + " measuredHeight: " + measuredHeight + " bitmapWidth： " + bitmapWidth + "  bitmapHeight： " + bitmapHeight);
+            // LogUtil.e("measuredWidth: " + measuredWidth + " measuredHeight: " +
+            // measuredHeight + " bitmapWidth： " + bitmapWidth + " bitmapHeight： " +
+            // bitmapHeight);
 
             if (orientation == 1) {
                 // 图片 / 屏幕宽度
                 float ratio = (float) bitmapWidth / bitmapHeight;
-                // 比例：宽 / 高  --> 高 = 宽 / 比例
+                // 比例：宽 / 高 --> 高 = 宽 / 比例
                 int realHeight = (int) (measuredWidth * 2 / ratio);
                 LogUtil.e("realHeight: " + realHeight);
                 int interval = (measuredHeight - realHeight) / 2;
@@ -72,7 +74,7 @@ public class LeftImageView extends androidx.appcompat.widget.AppCompatImageView 
                 float i = (float) bitmapHeight / measuredHeight;
                 // 得到最大图片的宽度
                 float bitmapMaxWidth = bitmapWidth / i;
-                // view的宽度 * 2  - 图片的最大值， /2  得到两边的间距
+                // view的宽度 * 2 - 图片的最大值， /2 得到两边的间距
                 float interval = (measuredWidth * 2 - bitmapMaxWidth) / 2;
 
                 // 计算view高度和图片高度的比值

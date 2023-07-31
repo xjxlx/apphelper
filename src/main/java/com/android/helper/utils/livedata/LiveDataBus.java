@@ -12,8 +12,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.app.BaseApplication;
-import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -157,16 +157,16 @@ public class LiveDataBus implements LifecycleEventObserver {
 
     @Override
     public void onStateChanged(@NonNull @NotNull LifecycleOwner source, @NonNull @NotNull Lifecycle.Event event) {
-        //        E/ZHGJ: │ event:ON_CREATE
-        //        E/ZHGJ: │ event:ON_START
-        //        E/ZHGJ: │ event:ON_RESUME
-        //        E/ZHGJ: │ event:ON_PAUSE
-        //        E/ZHGJ: │ event:ON_STOP
-        //        E/ZHGJ: │ event:ON_START
-        //        E/ZHGJ: │ event:ON_RESUME
-        //        E/ZHGJ: │ event:ON_PAUSE
-        //        E/ZHGJ: │ event:ON_STOP
-        //        E/ZHGJ: │ event:ON_DESTROY
+        // E/ZHGJ: │ event:ON_CREATE
+        // E/ZHGJ: │ event:ON_START
+        // E/ZHGJ: │ event:ON_RESUME
+        // E/ZHGJ: │ event:ON_PAUSE
+        // E/ZHGJ: │ event:ON_STOP
+        // E/ZHGJ: │ event:ON_START
+        // E/ZHGJ: │ event:ON_RESUME
+        // E/ZHGJ: │ event:ON_PAUSE
+        // E/ZHGJ: │ event:ON_STOP
+        // E/ZHGJ: │ event:ON_DESTROY
         if (TextUtils.equals(event.name(), FLAG)) {
             if (mLiveData != null) {
                 if (mObserver != null) {

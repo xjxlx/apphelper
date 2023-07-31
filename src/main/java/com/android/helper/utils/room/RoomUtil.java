@@ -3,13 +3,13 @@ package com.android.helper.utils.room;
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.httpclient.RxUtil;
 import com.android.helper.interfaces.room.RoomDeleteListener;
 import com.android.helper.interfaces.room.RoomExecuteListener;
 import com.android.helper.interfaces.room.RoomInsertListener;
 import com.android.helper.interfaces.room.RoomQueryListener;
 import com.android.helper.interfaces.room.RoomUpdateListener;
-import com.android.helper.utils.LogUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -209,7 +209,7 @@ public class RoomUtil {
 
                         emitter.onComplete();
 
-                    }, BackpressureStrategy.LATEST) //create方法中多了一个BackpressureStrategy类型的参数
+                    }, BackpressureStrategy.LATEST) // create方法中多了一个BackpressureStrategy类型的参数
                     .compose(RxUtil.getSchedulerFlowable())
                     .subscribe(new DisposableSubscriber<T>() {
                         @Override
@@ -309,9 +309,10 @@ public class RoomUtil {
     /**
      * @param tableName      新创建的表名
      * @param primaryKey     主键的key
-     * @param primaryKeyUnit 主键的单位，建议使用 UNIT.TEXT 、UNIT.INTEGER  ,不能使用int
+     * @param primaryKeyUnit 主键的单位，建议使用 UNIT.TEXT 、UNIT.INTEGER ,不能使用int
      * @param autoincrement  在主键为 int 或者 long 类型的时候，是否允许自增长
-     * @param column         具体的参数集合，集合中的key为字段名，value为key的单位类型，如果单位中需要加入not null 的话，可以在后面进行拼接
+     * @param column         具体的参数集合，集合中的key为字段名，value为key的单位类型，如果单位中需要加入not null
+     *                       的话，可以在后面进行拼接
      * @return 返回一个创建 表的sql语句
      */
     public String createTable(String tableName, String primaryKey, String primaryKeyUnit, boolean autoincrement, HashMap<String, SQLEntity> column) {
@@ -319,11 +320,7 @@ public class RoomUtil {
 
         // 加入表名 和 指定主键
         if ((!TextUtils.isEmpty(tableName)) && (!TextUtils.isEmpty(primaryKey))) {
-            sql
-                    .append("CREATE TABLE IF NOT EXISTS ")
-                    .append("`")
-                    .append(tableName)
-                    .append("`");
+            sql.append("CREATE TABLE IF NOT EXISTS ").append("`").append(tableName).append("`");
         }
 
         // 加入左侧的括号

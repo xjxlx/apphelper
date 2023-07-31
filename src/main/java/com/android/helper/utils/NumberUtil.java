@@ -2,6 +2,8 @@ package com.android.helper.utils;
 
 import android.text.TextUtils;
 
+import com.android.common.utils.LogUtil;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;

@@ -1,8 +1,5 @@
 package com.android.helper.utils;
 
-import com.android.helper.R;
-import com.android.helper.app.BaseApplication;
-
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.graphics.Typeface;
@@ -13,6 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.common.utils.LogUtil;
+import com.android.helper.R;
+import com.android.helper.app.BaseApplication;
 
 @SuppressLint("StaticFieldLeak")
 public class ToastUtil {

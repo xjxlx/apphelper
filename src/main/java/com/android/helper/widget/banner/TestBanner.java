@@ -7,7 +7,7 @@ import android.view.ViewParent;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
-import com.android.helper.utils.LogUtil;
+import com.android.common.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -39,18 +39,18 @@ public class TestBanner extends PagerAdapter {
     public Object instantiateItem(@NonNull @NotNull ViewGroup container, int position) {
         View view = mList.get(position);
 
-//        if (view != null) {
-//            ViewParent parent = view.getParent();
-//            if (parent != null) {
-//                container.removeView(view);
-//            }
-//        }
-//        container.addView(view);
+        // if (view != null) {
+        // ViewParent parent = view.getParent();
+        // if (parent != null) {
+        // container.removeView(view);
+        // }
+        // }
+        // container.addView(view);
 
         if (view != null) {
             ViewParent parent = view.getParent();
             if (parent == null) {
-                //  container.removeView(view);
+                // container.removeView(view);
                 container.addView(view);
                 LogUtil.e("移除了相同的view");
             }
@@ -61,7 +61,7 @@ public class TestBanner extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        //super.destroyItem(container, position, object);
+        // super.destroyItem(container, position, object);
         container.removeView(mList.get(position));
     }
 

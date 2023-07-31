@@ -4,10 +4,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.app.BaseApplication;
 import com.android.helper.httpclient.RetrofitHelper;
 import com.android.helper.interfaces.listener.UploadProgressListener;
-import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +50,7 @@ public class UploadManagerRetrofit {
     private Retrofit retrofit;
 
     /**
-     * 当前下载的状态  1：正在上传中 ，2：上传完毕  3：上传错误  4：上传下载
+     * 当前下载的状态 1：正在上传中 ，2：上传完毕 3：上传错误 4：上传下载
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({UPLOAD_TYPE.UPLOAD_START, UPLOAD_TYPE.UPLOAD_COMPLETE, UPLOAD_TYPE.UPLOAD_ERROR, UPLOAD_TYPE.UPLOAD_CANCEL})
@@ -89,7 +89,6 @@ public class UploadManagerRetrofit {
     private UploadManagerRetrofit(int timeOut) {
         mTimeOut = timeOut;
     }
-
 
     /**
      * 添加一个普通的参数，例如：添加文本数据
@@ -159,29 +158,16 @@ public class UploadManagerRetrofit {
     public <T> Retrofit getRetrofit(UploadProgressListener<T> listener) {
         // 如果不使用进度监听对象的话，那么retrofit没有必要每次去构造
         OkHttpClient.Builder httpBuilder = RetrofitHelper.getHttpBuilder();
-        httpBuilder
-                .readTimeout(mTimeOut, TimeUnit.SECONDS)//设置读取超时时间
-                .writeTimeout(mTimeOut, TimeUnit.SECONDS)//设置写的超时时间
-                .connectTimeout(mTimeOut, TimeUnit.SECONDS);//设置连接超时时间
+        httpBuilder.readTimeout(mTimeOut, TimeUnit.SECONDS)// 设置读取超时时间
+                .writeTimeout(mTimeOut, TimeUnit.SECONDS)// 设置写的超时时间
+                .connectTimeout(mTimeOut, TimeUnit.SECONDS);// 设置连接超时时间
 
         if (listener != null) {
             httpBuilder.addInterceptor(new UploadInterceptor<>(listener));
-            retrofit = new Retrofit
-                    .Builder()
-                    .client(httpBuilder.build())
-                    .baseUrl(BaseApplication.getInstance().getBaseUrl())
-                    .addConverterFactory(ScalarsConverterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+            retrofit = new Retrofit.Builder().client(httpBuilder.build()).baseUrl(BaseApplication.getInstance().getBaseUrl()).addConverterFactory(ScalarsConverterFactory.create()).addConverterFactory(GsonConverterFactory.create()).build();
         } else {
             if (retrofit == null) {
-                retrofit = new Retrofit
-                        .Builder()
-                        .client(httpBuilder.build())
-                        .baseUrl(BaseApplication.getInstance().getBaseUrl())
-                        .addConverterFactory(ScalarsConverterFactory.create())
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
+                retrofit = new Retrofit.Builder().client(httpBuilder.build()).baseUrl(BaseApplication.getInstance().getBaseUrl()).addConverterFactory(ScalarsConverterFactory.create()).addConverterFactory(GsonConverterFactory.create()).build();
             }
         }
         return retrofit;

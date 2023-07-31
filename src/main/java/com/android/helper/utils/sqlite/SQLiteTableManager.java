@@ -2,7 +2,7 @@ package com.android.helper.utils.sqlite;
 
 import android.text.TextUtils;
 
-import com.android.helper.utils.LogUtil;
+import com.android.common.utils.LogUtil;
 
 /**
  * Sqlite数据库表的工具类,

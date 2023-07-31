@@ -10,8 +10,8 @@ import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.base.BaseView;
-import com.android.helper.utils.LogUtil;
 
 /**
  * @author : 流星
@@ -70,16 +70,17 @@ public class CircleView extends BaseView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-          /*四个参数：
-                参数一：圆心的x坐标
-                参数二：圆心的y坐标
-                参数三：圆的半径
-                参数四：定义好的画笔
-                */
-//        canvas.drawCircle(getWidth() / 2, getHeight() / 2, 200, paint);
+        /*
+         * 四个参数：
+         * 参数一：圆心的x坐标
+         * 参数二：圆心的y坐标
+         * 参数三：圆的半径
+         * 参数四：定义好的画笔
+         */
+        // canvas.drawCircle(getWidth() / 2, getHeight() / 2, 200, paint);
 
         if (mMeasuredWidth > 0 && mMeasuredHeight > 0) {
-            canvas.drawText(text, mMeasuredWidth / 2 -mWidth/2, mMeasuredHeight / 2, paint);
+            canvas.drawText(text, mMeasuredWidth / 2 - mWidth / 2, mMeasuredHeight / 2, paint);
         }
     }
 }

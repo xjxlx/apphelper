@@ -10,6 +10,8 @@ import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 
+import com.android.common.utils.LogUtil;
+
 public class ActivityUtil {
 
     /**

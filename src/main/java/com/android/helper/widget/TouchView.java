@@ -17,10 +17,10 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.R;
 import com.android.helper.utils.BitmapUtil;
 import com.android.helper.utils.ConvertUtil;
-import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.ToastUtil;
 
 import java.util.ArrayList;
@@ -47,9 +47,9 @@ public class TouchView extends View {
     private int mTop;
     private int mBottom;
 
-    private int mCenterX;       // view的X轴中心
-    private int mCenterY;       // view的Y轴中心
-    private int mBitmapRadius;  // 圆形的半径
+    private int mCenterX; // view的X轴中心
+    private int mCenterY; // view的Y轴中心
+    private int mBitmapRadius; // 圆形的半径
     private int mMaxRadius = 0; // 最大的半径值
 
     private Rect mRectSrc, mRectDes;
@@ -137,7 +137,7 @@ public class TouchView extends View {
         mPaint.setColor(Color.parseColor("#979797"));
 
         // 求出每一份view占据的透明度
-        mAlphasZoom = 255f / (mMaxRadius - mBitmapRadius); //注意这里 如果为int类型就会为0,除数中f一定要加,默认int ;
+        mAlphasZoom = 255f / (mMaxRadius - mBitmapRadius); // 注意这里 如果为int类型就会为0,除数中f一定要加,默认int ;
     }
 
     @Override

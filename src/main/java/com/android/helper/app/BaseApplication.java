@@ -7,12 +7,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
+import com.android.common.utils.SpUtil;
 import com.android.helper.R;
 import com.android.helper.base.refresh.BaseRefreshFooter;
 import com.android.helper.base.refresh.BaseRefreshHeader;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.utils.ScreenUtil;
-import com.android.helper.utils.SpUtil1;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
@@ -32,7 +32,8 @@ import org.jetbrains.annotations.NotNull;
 import okhttp3.Interceptor;
 
 /**
- * 初始化CommonApplication的实现类，作用是为了避免多次继承Application，但是在基类中 好多地方要进行一次初始化的设置，这里使用接口的实现去控制，所有Application的初始化工作
+ * 初始化CommonApplication的实现类，作用是为了避免多次继承Application，但是在基类中
+ * 好多地方要进行一次初始化的设置，这里使用接口的实现去控制，所有Application的初始化工作
  * 都将在这里去实际的完成。使用的时候，固定的调用方法{@link BaseApplication#getInstance()}
  */
 public class BaseApplication {
@@ -75,7 +76,7 @@ public class BaseApplication {
 
     public void initApp() {
         ScreenUtil.getScreenHeight(getApplication());
-        boolean logFlag = SpUtil1.getBoolean(CommonConstants.KEY_LOG_FLAG);
+        boolean logFlag = SpUtil.INSTANCE.getBoolean(CommonConstants.KEY_LOG_FLAG);
         if (!logFlag) {
             initLogger();
         }
@@ -140,7 +141,7 @@ public class BaseApplication {
                 return isDebug(); // 只有在 Debug模式下才会打印
             }
         });
-        SpUtil1.putBoolean(CommonConstants.KEY_LOG_FLAG, true);
+        SpUtil.INSTANCE.putBoolean(CommonConstants.KEY_LOG_FLAG, true);
     }
 
     public int getAppBarStatusColor() {
@@ -192,7 +193,8 @@ public class BaseApplication {
                 // 开始设置全局的基本参数（可以被下面的DefaultRefreshHeaderCreator覆盖）
                 // refreshLayout.setReboundDuration(300);//回弹动画时长（毫秒）
                 // 设置刷新的背景颜色和字体的颜色
-                // refreshLayout.setPrimaryColorsId(R.color.colorPrimary, R.color.base_refresh_foot_background);
+                // refreshLayout.setPrimaryColorsId(R.color.colorPrimary,
+                // R.color.base_refresh_foot_background);
 
                 // refreshLayout.setHeaderHeight(100);//Header标准高度（显示下拉高度>=标准高度 触发刷新）
                 // refreshLayout.setFooterHeight(100);// Footer标准高度（显示上拉高度>=标准高度 触发加载）
@@ -200,10 +202,13 @@ public class BaseApplication {
                 // refreshLayout.setEnableScrollContentWhenLoaded(true);//是否在加载完成时滚动列表显示新的内容
                 // refreshLayout.setEnableHeaderTranslationContent(true);//是否下拉Header的时候向下平移列表或者内容
                 // refreshLayout.setEnableFooterTranslationContent(true);//是否上拉Footer的时候向上平移列表或者内容
-                // refreshLayout.setEnableLoadMoreWhenContentNotFull(true);// 是否在列表不满一页时候开启上拉加载功能
-                // refreshLayout.setEnableFooterFollowWhenNoMoreData(false);// 是否在全部加载结束之后Footer跟随内容1.0.4
+                // refreshLayout.setEnableLoadMoreWhenContentNotFull(true);//
+                // 是否在列表不满一页时候开启上拉加载功能
+                // refreshLayout.setEnableFooterFollowWhenNoMoreData(false);//
+                // 是否在全部加载结束之后Footer跟随内容1.0.4
                 // refreshLayout.setEnableOverScrollDrag(false);// 是否启用越界拖动（仿苹果效果）1.0.4
-                // refreshLayout.setEnableScrollContentWhenRefreshed(false);// 是否在刷新完成时滚动列表显示新的内容 1.0.5
+                // refreshLayout.setEnableScrollContentWhenRefreshed(false);//
+                // 是否在刷新完成时滚动列表显示新的内容 1.0.5
                 // refreshLayout.setDisableContentWhenRefresh(true);// 是否在刷新的时候禁止列表的操作
                 // refreshLayout.setDisableContentWhenLoading(true);// 是否在加载的时候禁止列表的操作
                 // refreshLayout.setEnableOverScrollBounce(true); // 设置是否启用越界回弹

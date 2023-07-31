@@ -2,8 +2,8 @@ package com.android.helper.httpclient;
 
 import android.text.TextUtils;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.app.BaseApplication;
-import com.android.helper.utils.LogUtil;
 import com.google.gson.JsonObject;
 
 import java.io.EOFException;
@@ -146,7 +146,7 @@ public class HttpLogInterceptor implements Interceptor {
             }
         }
 
-        //  解析成最新的请求头
+        // 解析成最新的请求头
         try {
             if (mHeards != null && mHeards.size() > 0) {
                 decodeHeard = URLDecoder.decode(mHeards.toString(), "UTF-8");
@@ -156,33 +156,16 @@ public class HttpLogInterceptor implements Interceptor {
         } catch (Exception ignored) {
         }
 
-        LogUtil.e(String.format(Locale.CHINA,
-                "请求方式:【 %s 】" +
-                        "%n请求地址:【 %s 】" +
-                        "%n请求域名:【 %s 】" +
-                        "%n请求路径:【 %s 】" +
-                        "%n请求头  :【 %s 】" +
-                        "%n请求参数:【 %s 】" +
-                        "%n响应时间:【 %s ms 】" +
-                        "%n响应码: 【 %s 】" +
-                        "%n返回内容:【 %s 】 ",
-                mMethod,
-                url,
-                host,
-                mPath,
-                decodeHeard,
-                mParameter,
-                tookMs,
-                code,
-                mRequestBody
-        ));
+        LogUtil.e(String.format(Locale.CHINA, "请求方式:【 %s 】" + "%n请求地址:【 %s 】" + "%n请求域名:【 %s 】" + "%n请求路径:【 %s 】" + "%n请求头  :【 %s 】" + "%n请求参数:【 %s 】" + "%n响应时间:【 %s ms 】" + "%n响应码: 【 %s 】" + "%n返回内容:【 %s 】 ", mMethod, url, host, mPath, decodeHeard, mParameter, tookMs, code, mRequestBody));
 
         return response;
     }
 
     /**
-     * Returns true if the body in question probably contains human readable text. Uses a small sample
-     * of code points to detect unicode control characters commonly used in binary file signatures.
+     * Returns true if the body in question probably contains human readable text.
+     * Uses a small sample
+     * of code points to detect unicode control characters commonly used in binary
+     * file signatures.
      */
     static boolean isPlaintext(Buffer buffer) {
         try {

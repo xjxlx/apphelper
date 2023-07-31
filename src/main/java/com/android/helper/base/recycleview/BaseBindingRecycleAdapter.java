@@ -10,10 +10,10 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.base.BaseBindingVH;
 import com.android.helper.interfaces.BindingViewListener;
 import com.android.helper.interfaces.listener.ItemClickListener;
-import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -89,8 +89,8 @@ public abstract class BaseBindingRecycleAdapter<T, V extends ViewBinding> extend
                 /*
                  * 空数据点击item的事件回调
                  * <ol>
-                 *     1:如果是默认的布局的话，回调的时候，会回调id{ R.id.base_placeholder }
-                 *     2:如果是指定的布局的话，肯定自己写的布局，自己会知道
+                 * 1:如果是默认的布局的话，回调的时候，会回调id{ R.id.base_placeholder }
+                 * 2:如果是指定的布局的话，肯定自己写的布局，自己会知道
                  * </ol>
                  */
                 if (mBottomParentView != null) {

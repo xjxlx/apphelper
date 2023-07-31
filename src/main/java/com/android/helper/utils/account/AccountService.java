@@ -3,15 +3,12 @@ package com.android.helper.utils.account;
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
-import android.accounts.AccountManager;
 import android.accounts.NetworkErrorException;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-
-import com.android.helper.utils.LogUtil;
 
 /**
  * 添加账号服务实现类,用来添加账号使用，此服务模式实现就行，必须在清单文件中去注册

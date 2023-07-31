@@ -6,9 +6,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.utils.AppUtil;
-import com.android.helper.utils.LogUtil;
 import com.tbruyelle.rxpermissions3.RxPermissions;
 
 import java.util.ArrayList;
@@ -20,12 +20,14 @@ import io.reactivex.rxjava3.disposables.Disposable;
 /**
  * 简单封装的权限工具类
  * <ol>
- *     权限的描述：
- *         Dangerous Permission：还是得写在xml文件里，但是App安装时具体如果执行授权分以下几种情况：
- *      1、targetSDKVersion < 23 & API(手机系统) < 6.0 ：安装时默认获得权限，且用户无法在安装App之后取消权限。
- *      2、targetSDKVersion >= 23 & API(手机系统) < 6.0 ：安装时默认获得权限，且用户无法在安装App之后取消权限。
- *      3、targetSDKVersion < 23 & API(手机系统) >= 6.0 ：安装时默认获得权限，但是用户可以在安装App完成后动态取消授权（ 取消时手机会弹出提醒，告诉用户这个是为旧版手机打造的应用，让用户谨慎操作 ）。
- *      4、targetSDKVersion >= 23 & API(手机系统) >= 6.0 ：安装时不会获得权限，可以在运行时向用户申请权限。用户授权以后仍然可以在设置界面中取消授权，用户主动在设置界面取消后，在app运行过程中可能会出现crash。
+ * 权限的描述：
+ * Dangerous Permission：还是得写在xml文件里，但是App安装时具体如果执行授权分以下几种情况：
+ * 1、targetSDKVersion < 23 & API(手机系统) < 6.0 ：安装时默认获得权限，且用户无法在安装App之后取消权限。
+ * 2、targetSDKVersion >= 23 & API(手机系统) < 6.0 ：安装时默认获得权限，且用户无法在安装App之后取消权限。
+ * 3、targetSDKVersion < 23 & API(手机系统) >= 6.0 ：安装时默认获得权限，但是用户可以在安装App完成后动态取消授权（
+ * 取消时手机会弹出提醒，告诉用户这个是为旧版手机打造的应用，让用户谨慎操作 ）。
+ * 4、targetSDKVersion >= 23 & API(手机系统) >= 6.0
+ * ：安装时不会获得权限，可以在运行时向用户申请权限。用户授权以后仍然可以在设置界面中取消授权，用户主动在设置界面取消后，在app运行过程中可能会出现crash。
  * </ol>
  */
 public class RxPermissionsUtil implements BaseLifecycleObserver {
@@ -58,7 +60,7 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
             this.mAllPermissionsListener = builder.mAllPermissionsListener;
             this.mSinglePermissionsListener = builder.mSinglePermissionsListener;
 
-            //1:activity  2:Fragment
+            // 1:activity 2:Fragment
             int type = builder.type;
 
             if (type == 1) {
@@ -80,10 +82,15 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
     /**
      * @return 检测默认的版本是否需要权限，如果用户的手机版本大于6.0，且目标版本也大于6.0,就都需要去检测，否则就默认拥有权限
      * <p>
-     * 1、targetSDKVersion < 23 & API(手机系统) < 6.0 ：安装时默认获得权限，且用户无法在安装App之后取消权限。
-     * 2、targetSDKVersion >= 23 & API(手机系统) < 6.0 ：安装时默认获得权限，且用户无法在安装App之后取消权限。
-     * 3、targetSDKVersion < 23 & API(手机系统) >= 6.0 ：安装时默认获得权限，但是用户可以在安装App完成后动态取消授权（ 取消时手机会弹出提醒，告诉用户这个是为旧版手机打造的应用，让用户谨慎操作 ）。
-     * 4、targetSDKVersion >= 23 & API(手机系统) >= 6.0 ：安装时不会获得权限，可以在运行时向用户申请权限。用户授权以后仍然可以在设置界面中取消授权，用户主动在设置界面取消后，在app运行过程中可能会出现crash。
+     * 1、targetSDKVersion < 23 & API(手机系统) < 6.0
+     * ：安装时默认获得权限，且用户无法在安装App之后取消权限。
+     * 2、targetSDKVersion >= 23 & API(手机系统) < 6.0
+     * ：安装时默认获得权限，且用户无法在安装App之后取消权限。
+     * 3、targetSDKVersion < 23 & API(手机系统) >= 6.0
+     * ：安装时默认获得权限，但是用户可以在安装App完成后动态取消授权（
+     * 取消时手机会弹出提醒，告诉用户这个是为旧版手机打造的应用，让用户谨慎操作 ）。
+     * 4、targetSDKVersion >= 23 & API(手机系统) >= 6.0
+     * ：安装时不会获得权限，可以在运行时向用户申请权限。用户授权以后仍然可以在设置界面中取消授权，用户主动在设置界面取消后，在app运行过程中可能会出现crash。
      */
     private boolean checkMustVersion() {
         boolean mustVersion = false;
@@ -254,7 +261,7 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
         private FilterPerMission[] mFilterMission;
         private PermissionsCallBackListener mAllPermissionsListener;
         private SinglePermissionsCallBackListener mSinglePermissionsListener;
-        private final int type; //1:activity  2:Fragment
+        private final int type; // 1:activity 2:Fragment
 
         /**
          * @param permissions 举例：Manifest.permission.ACCESS_FINE_LOCATION
@@ -296,9 +303,9 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
 
         /**
          * <ol>
-         *     某些权限，只有在固定的版本上，才会有，在其他的版本上不会出现，因此需要判断版本，过滤掉不符合版本的权限，避免返回异常
-         *     例如：后台定位权限：FOREGROUND_SERVICE,这个权限是在28上面才有的，低于这个版本就不应该去判断，否则就会导致权限的
-         *          回调异常，所有需要对版本进行匹配，过滤掉不适用的权限
+         * 某些权限，只有在固定的版本上，才会有，在其他的版本上不会出现，因此需要判断版本，过滤掉不符合版本的权限，避免返回异常
+         * 例如：后台定位权限：FOREGROUND_SERVICE,这个权限是在28上面才有的，低于这个版本就不应该去判断，否则就会导致权限的
+         * 回调异常，所有需要对版本进行匹配，过滤掉不适用的权限
          * </ol>
          *
          * @return 过滤权限
@@ -307,7 +314,7 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
             mFilterMission = filterPerMissions;
             return this;
         }
-        //</editor-fold>
+        // </editor-fold>
 
         public RxPermissionsUtil build() {
             return new RxPermissionsUtil(this);

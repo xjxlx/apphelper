@@ -9,9 +9,9 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.httpclient.RetrofitHelper;
 import com.android.helper.interfaces.listener.UploadProgressOkHttpListener;
-import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -48,7 +48,7 @@ public class UploadManagerOkHttp {
     private int mUploadType = 0;
 
     /**
-     * 当前下载的状态  1：正在上传中 ，2：上传完毕  3：上传错误  4：上传下载
+     * 当前下载的状态 1：正在上传中 ，2：上传完毕 3：上传错误 4：上传下载
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({UPLOAD_TYPE.UPLOAD_START, UPLOAD_TYPE.UPLOAD_COMPLETE, UPLOAD_TYPE.UPLOAD_ERROR, UPLOAD_TYPE.UPLOAD_CANCEL})
@@ -82,7 +82,7 @@ public class UploadManagerOkHttp {
     private MultipartBody.Builder getBuilder() {
         if (builder == null) {
             builder = new MultipartBody.Builder();
-            //一定要设置这句
+            // 一定要设置这句
             builder.setType(MultipartBody.FORM);
         }
         return builder;
@@ -103,8 +103,7 @@ public class UploadManagerOkHttp {
      *
      * @param name     key
      * @param filename 文件名字
-     * @param body     RequestBody 的对象，这里要区分类型的不同，音频的使用音频，视频的使用视频{@link com.xjx.helper.httpclient.RetrofitHelper#createBodyForMp4(File)}或者
-     *                 {@link com.xjx.helper.httpclient.RetrofitHelper#createBodyForJpg(File)}
+     * @param body     RequestBody
      */
     public void addParameter(String name, String filename, RequestBody body) {
         getBuilder().addFormDataPart(name, filename, body);
@@ -146,8 +145,7 @@ public class UploadManagerOkHttp {
             // 获取一个RequestBody的对象
             MultipartBody multipartBody = builder.build();
 
-            Request.Builder builder = new Request.Builder()
-                    .url(url)//请求的url
+            Request.Builder builder = new Request.Builder().url(url)// 请求的url
                     .post(new ProgressRequestBody(multipartBody) {
                         @Override
                         public void onStart() {
@@ -161,9 +159,11 @@ public class UploadManagerOkHttp {
 
                         @Override
                         public void onProgress(long current, long contentLength, String percentage) {
-                            mUploadType = UPLOAD_TYPE.UPLOAD_PROGRESS;
+                            // mUploadType = UPLOAD_TYPE.UPLOAD_PROGRESS;
+                            mUploadType = 2;
                             Message message = mHandler.obtainMessage();
-                            message.what = UPLOAD_TYPE.UPLOAD_PROGRESS;
+                            // message.what = UPLOAD_TYPE.UPLOAD_PROGRESS;
+                            message.what = 2;
                             Bundle bundle = new Bundle();
                             bundle.putString("percentage", percentage);
                             bundle.putLong("progress", current);
@@ -176,9 +176,11 @@ public class UploadManagerOkHttp {
 
                         @Override
                         public void onComplete() {
-                            mUploadType = UPLOAD_TYPE.UPLOAD_DATA_COMPLETE;
+                            // mUploadType = UPLOAD_TYPE.UPLOAD_DATA_COMPLETE;
+                            mUploadType = 3;
                             Message message = mHandler.obtainMessage();
-                            message.what = UPLOAD_TYPE.UPLOAD_DATA_COMPLETE;
+                            // message.what = UPLOAD_TYPE.UPLOAD_DATA_COMPLETE;
+                            message.what = 3;
                             mHandler.sendMessage(message);
                             LogUtil.e("--------->UPLOAD_DATA_COMPLETE");
                         }
@@ -273,7 +275,8 @@ public class UploadManagerOkHttp {
                 case UPLOAD_TYPE.UPLOAD_START:
                     mListener.onStart();
                     break;
-                case UPLOAD_TYPE.UPLOAD_PROGRESS:
+                // case UPLOAD_TYPE.UPLOAD_PROGRESS:
+                case 2:
                     Bundle data = msg.getData();
 
                     long progress = data.getLong("progress");
@@ -282,7 +285,8 @@ public class UploadManagerOkHttp {
 
                     mListener.onProgress(progress, contentLength, percentage);
                     break;
-                case UPLOAD_TYPE.UPLOAD_DATA_COMPLETE: // 数据上传完成，但是接口为完成
+                // case UPLOAD_TYPE.UPLOAD_DATA_COMPLETE: // 数据上传完成，但是接口为完成
+                case 3: // 数据上传完成，但是接口为完成
                     mListener.onUploadComplete();
                     break;
                 case UPLOAD_TYPE.UPLOAD_COMPLETE:

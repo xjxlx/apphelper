@@ -16,8 +16,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager.widget.ViewPager;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
-import com.android.helper.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +33,8 @@ import java.util.List;
  * 3：调用{@link BannerView#show(Activity)}方法去开启轮播
  * 三：其他的方法，都是公用的方法，可以随意使用。、
  * 四：注意
- * 1：如果父类是NestedScrollView包裹的话，一定要给NestedScrollView的布局上加入： android:fillViewport="true"
+ * 1：如果父类是NestedScrollView包裹的话，一定要给NestedScrollView的布局上加入：
+ * android:fillViewport="true"
  * 让ScrollView去允许子view自控扩展高度
  */
 public class BannerView extends ViewPager implements BaseLifecycleObserver {
@@ -48,7 +49,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private BannerIndicator mIndicator;
     private int mMaxWidth, mMaxHeight;
     private int mCurrent;// 当前的position
-    private boolean isLast = true; //滑动是否可用
+    private boolean isLast = true; // 滑动是否可用
     private boolean mIsParentIntercept = false;// 父类是否拦截的标记
     private int mStartX, mStartY; // 开始滑动的x轴位置
     private BannerAdapter mBannerAdapter;
@@ -160,7 +161,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 // 只有数据大于1的时候，才会去执行indicator的选中
                 if (mListData != null) {
                     if (mListData.size() > 1) {
-                        // 0 -> size -2  (0/3)--->:3
+                        // 0 -> size -2 (0/3)--->:3
                         if ((mCurrent == 0) || (mCurrent == mListData.size() - 2)) {
                             // 因为indicator 是从0开始的，所以要减掉1
                             selectorIndicator(mListData.size() - 3);
@@ -178,7 +179,8 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                //  LogUtil.e(TAG, "----->current---onPageScrollStateChanged: current: " + getCurrentItem() + "  mCurrent:" + mCurrent);
+                // LogUtil.e(TAG, "----->current---onPageScrollStateChanged: current: " +
+                // getCurrentItem() + " mCurrent:" + mCurrent);
 
                 if (mListData != null && mListData.size() > 1) {
                     if (state == ViewPager.SCROLL_STATE_IDLE) {
@@ -220,15 +222,15 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
      */
     private void selectorIndicator(int position) {
         if (mIndicator != null) {
-            //    LogUtil.e(TAG, "indicator当前的选中为：" + position);
+            // LogUtil.e(TAG, "indicator当前的选中为：" + position);
             mIndicator.onPageSelected(position);
         }
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        //:进行判断：如果是第一页或者是最后一页的话，就不要拦截，其他的都拦截
-        //:如果是上下滑动的话，就需要拦截
+        // :进行判断：如果是第一页或者是最后一页的话，就不要拦截，其他的都拦截
+        // :如果是上下滑动的话，就需要拦截
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 onStop();
@@ -239,28 +241,28 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 onStop();
                 int x = (int) ev.getX();
                 int y = (int) ev.getY();
-                //:得到左右上下的偏移量
+                // :得到左右上下的偏移量
                 int dx = x - mStartX;
                 int dy = y - mStartY;
 
                 if (dx > 0) {
                     // LogUtil.e("向右滑动 dx :" + dx);
                 } else {
-                    //  LogUtil.e("向左滑动 dx: " + dx);
+                    // LogUtil.e("向左滑动 dx: " + dx);
                 }
 
-                //:判断
+                // :判断
                 if (Math.abs(dx) > Math.abs(dy)) {
-                    //:如果左右的偏量大于上下的偏移量的话，那木就能确定是左右滑动
-                    //:获得当前的页面
+                    // :如果左右的偏量大于上下的偏移量的话，那木就能确定是左右滑动
+                    // :获得当前的页面
                     int currentItem = getCurrentItem();
-                    //:如果是第一个，或者最后一的话，不需要拦截
-//                    if (mListData != null) {
-//                        if ((currentItem == 0) || (currentItem == mListData.size() - 1)) {
-//                            LogUtil.e(TAG, "current:" + currentItem + "  请求父类不要拦截我");
-//                            getParent().requestDisallowInterceptTouchEvent(true);//:请求父类以及祖宗类要去拦截
-//                        }
-//                    }
+                    // :如果是第一个，或者最后一的话，不需要拦截
+                    // if (mListData != null) {
+                    // if ((currentItem == 0) || (currentItem == mListData.size() - 1)) {
+                    // LogUtil.e(TAG, "current:" + currentItem + " 请求父类不要拦截我");
+                    // getParent().requestDisallowInterceptTouchEvent(true);//:请求父类以及祖宗类要去拦截
+                    // }
+                    // }
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -344,12 +346,12 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             super.handleMessage(msg);
             LogUtil.e(TAG, "----->Banner---mHandler:" + getCurrentItem() + "    mCurrent：" + mCurrent);
 
-            //:移除掉所有的回调和message的消息，如果传入null的话
+            // :移除掉所有的回调和message的消息，如果传入null的话
             onStop();
 
             if (mListData != null) {
                 if (msg.what == CODE_WHAT_LOOP) {
-                    if (mListData.size() <= 1) {  // 如果数据小于1，则停止
+                    if (mListData.size() <= 1) { // 如果数据小于1，则停止
                         setCurrentItem(0);
                     } else { // 数据大于1
                         // 自动轮询下一个数据

@@ -1,5 +1,16 @@
 package com.android.helper.base;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
+
+import com.android.common.utils.LogUtil;
 import com.android.helper.R;
 import com.android.helper.app.BaseApplication;
 import com.android.helper.httpclient.BaseHttpSubscriber;
@@ -13,18 +24,7 @@ import com.android.helper.interfaces.listener.HttpManagerListener;
 import com.android.helper.utils.ActivityManager;
 import com.android.helper.utils.ClassUtil;
 import com.android.helper.utils.ClickUtil;
-import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.statusBar.StatusBarUtil;
-
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 
 import io.reactivex.Flowable;
 import io.reactivex.annotations.NonNull;
@@ -34,12 +34,11 @@ import io.reactivex.disposables.Disposable;
 /**
  * 最基层的Activity
  */
-public abstract class AppBaseActivity extends AppCompatActivity
-    implements View.OnClickListener, HttpManagerListener, TagListener, UIInterface, ActivityUiInterface , ProxyErrorListener {
+public abstract class AppBaseActivity extends AppCompatActivity implements View.OnClickListener, HttpManagerListener, TagListener, UIInterface, ActivityUiInterface, ProxyErrorListener {
 
     public FragmentActivity mActivity;
     /*
-     *此处不能写成静态的，否则就会和使用RxManager一样了
+     * 此处不能写成静态的，否则就会和使用RxManager一样了
      */
     public final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
@@ -67,12 +66,11 @@ public abstract class AppBaseActivity extends AppCompatActivity
         }
     }
 
-
     @SuppressLint("CheckResult")
     public <T> Disposable net(@NonNull Flowable<T> flowAble, BaseHttpSubscriber<T> subscriber) {
         BaseHttpSubscriber<T> httpSubscriber = flowAble.compose(RxUtil.getSchedulerFlowable()) // 转换线程
-            .onBackpressureLatest() // 使用背压，保留最后一次的结果
-            .subscribeWith(subscriber); // 返回对象
+                .onBackpressureLatest() // 使用背压，保留最后一次的结果
+                .subscribeWith(subscriber); // 返回对象
 
         if (!mCompositeDisposable.isDisposed()) {
             mCompositeDisposable.add(httpSubscriber); // 添加到管理类中
@@ -92,7 +90,8 @@ public abstract class AppBaseActivity extends AppCompatActivity
      * 在setContentView之前的调用方法，用于特殊的使用
      */
     @Override
-    public void onBeforeCreateView() {}
+    public void onBeforeCreateView() {
+    }
 
     /**
      * 初始化状态栏
@@ -114,25 +113,27 @@ public abstract class AppBaseActivity extends AppCompatActivity
      * Activity初始化view
      */
     @Override
-    public void initView() {}
+    public void initView() {
+    }
 
     /**
      * 初始化点击事件
      */
     @Override
-    public void initListener() {}
+    public void initListener() {
+    }
 
     /**
      * 初始化initData之后的操作，在某些场景中去使用
      */
     @Override
-    public void initDataAfter() {}
+    public void initDataAfter() {
+    }
 
     /**
      * 新建一个Intent，然后跳转到指定的界面
      *
-     * @param cls
-     *            指定跳转的界面
+     * @param cls 指定跳转的界面
      */
     protected void startActivity(Class<? extends Activity> cls) {
         Intent intent = new Intent();
@@ -141,10 +142,8 @@ public abstract class AppBaseActivity extends AppCompatActivity
     }
 
     /**
-     * @param intent
-     *            指定的intent
-     * @param cls
-     *            指定的界面
+     * @param intent 指定的intent
+     * @param cls    指定的界面
      */
     protected void startActivity(Intent intent, Class<? extends Activity> cls) {
         if (intent != null && cls != null) {
@@ -155,8 +154,7 @@ public abstract class AppBaseActivity extends AppCompatActivity
     /**
      * 设置view的点击事件
      *
-     * @param ids
-     *            id的数组
+     * @param ids id的数组
      */
     protected void setonClickListener(int... ids) {
         if (ids != null && ids.length > 0) {
@@ -172,8 +170,7 @@ public abstract class AppBaseActivity extends AppCompatActivity
     /**
      * 设置view的点击事件,检测点击的时间间隔
      *
-     * @param array
-     *            view的数组
+     * @param array view的数组
      */
     protected void setonClickListener(View... array) {
         if (array != null && array.length > 0) {
@@ -188,8 +185,7 @@ public abstract class AppBaseActivity extends AppCompatActivity
     /**
      * 过滤点击的事件
      *
-     * @param v
-     *            点击的view
+     * @param v 点击的view
      */
     public void onViewClick(View v) {
         // 在指定的间隔时间内是否做了双击
@@ -252,7 +248,6 @@ public abstract class AppBaseActivity extends AppCompatActivity
     public String getTag() {
         return ClassUtil.getClassName(this);
     }
-
 
     @Override
     public void errorCallBack(Throwable throwable) {

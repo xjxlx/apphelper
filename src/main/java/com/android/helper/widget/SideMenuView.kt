@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
-import com.android.helper.utils.LogUtil
+import com.android.common.utils.LogUtil
 import com.android.helper.utils.ScreenUtil
 
 /**
@@ -54,7 +54,7 @@ class SideMenuView : ViewGroup {
 
         // 5：限制横向滑动的范围，不能让view无限制的滑动，否则没有意义
         override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int {
-            LogUtil.e("clampViewPositionHorizontal: dx: $dx  mDx:$mDx" + "  mMenuViewWidth： " + mMenuViewWidth + "  left：" + left)
+            LogUtil.e("clampViewPositionHorizontal: dx: $dx  mDx:$mDx  mMenuViewWidth： $mMenuViewWidth  left：$left")
 
             // 处理手势的拦截事件
             if (left > 0) { // 往右滑动，不拦截

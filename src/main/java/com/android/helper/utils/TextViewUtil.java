@@ -6,6 +6,8 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.widget.TextView;
 
+import com.android.common.utils.LogUtil;
+
 /**
  * Created by spc on 2017/4/13.
  */
