@@ -12,7 +12,7 @@ import com.android.helper.base.refresh.BaseRefreshFooter;
 import com.android.helper.base.refresh.BaseRefreshHeader;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.utils.ScreenUtil;
-import com.android.helper.utils.SpUtil;
+import com.android.helper.utils.SpUtil1;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
@@ -75,7 +75,7 @@ public class BaseApplication {
 
     public void initApp() {
         ScreenUtil.getScreenHeight(getApplication());
-        boolean logFlag = SpUtil.getBoolean(CommonConstants.KEY_LOG_FLAG);
+        boolean logFlag = SpUtil1.getBoolean(CommonConstants.KEY_LOG_FLAG);
         if (!logFlag) {
             initLogger();
         }
@@ -140,7 +140,7 @@ public class BaseApplication {
                 return isDebug(); // 只有在 Debug模式下才会打印
             }
         });
-        SpUtil.putBoolean(CommonConstants.KEY_LOG_FLAG, true);
+        SpUtil1.putBoolean(CommonConstants.KEY_LOG_FLAG, true);
     }
 
     public int getAppBarStatusColor() {

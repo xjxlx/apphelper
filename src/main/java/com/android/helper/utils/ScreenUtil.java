@@ -103,7 +103,7 @@ public class ScreenUtil {
         }
         if (statusBarHeight > 0) {
             // 把状态栏高度存入到sp中
-            SpUtil.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
+            SpUtil1.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
             LogUtil.e("获取状态栏的高度为：【1】--->" + statusBarHeight);
         } else {
             // 第二种方法
@@ -117,7 +117,7 @@ public class ScreenUtil {
             }
 
             if (statusBarHeight > 0) {
-                SpUtil.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
+                SpUtil1.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
                 LogUtil.e("获取状态栏的高度为：【2】--->" + statusBarHeight);
             } else {
                 // 第三种方法
@@ -133,7 +133,7 @@ public class ScreenUtil {
 
                     // 存入本地sp中状态栏高度
                     if (statusBarHeight > 0) {
-                        SpUtil.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
+                        SpUtil1.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
                         LogUtil.e("获取状态栏的高度为：【3】--->" + statusBarHeight);
                     } else {
                         // 第四种方法
@@ -141,7 +141,7 @@ public class ScreenUtil {
                         float v1 = ConvertUtil.toDp(25);
                         // 四舍五入取整数
                         int round = Math.round(v1);
-                        SpUtil.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, round);
+                        SpUtil1.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, round);
                         LogUtil.e("获取状态栏的高度为：【4】--->" + statusBarHeight);
                     }
                 } catch (Exception e) {
@@ -153,7 +153,7 @@ public class ScreenUtil {
     }
 
     public static int getStatusBarHeight() {
-        return SpUtil.getInt(CommonConstants.KEY_STATUS_BAR_HEIGHT);
+        return SpUtil1.getInt(CommonConstants.KEY_STATUS_BAR_HEIGHT);
     }
 
     /**

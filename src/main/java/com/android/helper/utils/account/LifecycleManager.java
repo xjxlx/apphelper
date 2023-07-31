@@ -14,7 +14,7 @@ import com.android.helper.utils.ActivityUtil;
 import com.android.helper.utils.LogUtil;
 import com.android.helper.utils.NotificationUtil;
 import com.android.helper.utils.ServiceUtil;
-import com.android.helper.utils.SpUtil;
+import com.android.helper.utils.SpUtil1;
 import com.android.helper.utils.SystemUtil;
 import com.android.helper.utils.account.keep.KeepManager;
 import com.android.helper.utils.dialog.DialogUtil;
@@ -51,8 +51,8 @@ public class LifecycleManager {
             mJobServiceName = jobName;
 
             // 保存名字
-            SpUtil.putString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME, serviceName);
-            SpUtil.putString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME, jobName);
+            SpUtil1.putString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME, serviceName);
+            SpUtil1.putString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME, jobName);
 
             // 1:账号保活
             AccountHelper accountHelper = AccountHelper.getInstance();
@@ -182,7 +182,7 @@ public class LifecycleManager {
         }
 
         if (TextUtils.isEmpty(mServiceName)) {
-            mServiceName = SpUtil.getString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME);
+            mServiceName = SpUtil1.getString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME);
         }
 
         return mServiceName;
@@ -194,7 +194,7 @@ public class LifecycleManager {
         }
 
         if (TextUtils.isEmpty(mJobServiceName)) {
-            mJobServiceName = SpUtil.getString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME);
+            mJobServiceName = SpUtil1.getString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME);
         }
         return mJobServiceName;
     }

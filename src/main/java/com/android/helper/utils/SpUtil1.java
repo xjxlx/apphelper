@@ -17,7 +17,7 @@ import java.util.HashMap;
  * <p>创建时间：2019/1/14<p>
  * <p>更改时间：2019/1/14<p>
  */
-public class SpUtil {
+public class SpUtil1 {
     /**
      * Sp 存储的文件名
      */

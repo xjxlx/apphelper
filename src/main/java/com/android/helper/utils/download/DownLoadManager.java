@@ -1,5 +1,7 @@
 package com.android.helper.utils.download;
 
+import static com.android.helper.httpclient.RetrofitHelper.CUSTOM_TIMEOUT;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +18,7 @@ import com.android.helper.interfaces.lifecycle.BaseLifecycleObserver;
 import com.android.helper.interfaces.listener.ProgressListener;
 import com.android.helper.utils.FileUtil;
 import com.android.helper.utils.LogUtil;
-import com.android.helper.utils.SpUtil;
+import com.android.helper.utils.SpUtil1;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,8 +39,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-
-import static com.android.helper.httpclient.RetrofitHelper.CUSTOM_TIMEOUT;
 
 /**
  * 带进度的上传和下载的工具类
@@ -200,7 +200,7 @@ public class DownLoadManager implements BaseLifecycleObserver {
         mTempDownloadLength = 0;
 
         // 获取总文件的大小
-        String maxLength = SpUtil.getStringForMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id);
+        String maxLength = SpUtil1.getStringForMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id);
         if (!TextUtils.isEmpty(maxLength)) {
             // 获取long类型的总文件大小
             assert maxLength != null;
@@ -327,7 +327,7 @@ public class DownLoadManager implements BaseLifecycleObserver {
                         // 只记录原始文件长度
                         long contentLength = body.contentLength();
                         // 存入文件的总体长度
-                        SpUtil.putMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id, String.valueOf(contentLength));
+                        SpUtil1.putMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id, String.valueOf(contentLength));
                         mContentLong = contentLength;
                     }
 
