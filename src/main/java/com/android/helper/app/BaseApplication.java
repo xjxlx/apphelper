@@ -1,11 +1,18 @@
 package com.android.helper.app;
 
-import org.jetbrains.annotations.NotNull;
+import android.app.Application;
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import com.android.helper.R;
 import com.android.helper.base.refresh.BaseRefreshFooter;
 import com.android.helper.base.refresh.BaseRefreshHeader;
+import com.android.helper.common.CommonConstants;
 import com.android.helper.utils.ScreenUtil;
+import com.android.helper.utils.SpUtil;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
@@ -20,12 +27,7 @@ import com.scwang.smart.refresh.layout.listener.DefaultRefreshFooterCreator;
 import com.scwang.smart.refresh.layout.listener.DefaultRefreshHeaderCreator;
 import com.scwang.smart.refresh.layout.listener.DefaultRefreshInitializer;
 
-import android.app.Application;
-import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
+import org.jetbrains.annotations.NotNull;
 
 import okhttp3.Interceptor;
 
@@ -73,7 +75,10 @@ public class BaseApplication {
 
     public void initApp() {
         ScreenUtil.getScreenHeight(getApplication());
-        initLogger();
+        boolean logFlag = SpUtil.getBoolean(CommonConstants.KEY_LOG_FLAG);
+        if (!logFlag) {
+            initLogger();
+        }
         initSmartRefreshLayout();
     }
     // </editor-fold>
@@ -124,17 +129,18 @@ public class BaseApplication {
 
     private void initLogger() {
         FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder().showThreadInfo(false) // （可选）是否显示线程信息。
-            // 默认值为true
-            .methodCount(0) // （可选）要显示的方法行数。 默认2
-            .methodOffset(0) // （可选）设置调用堆栈的函数偏移值，0的话则从打印该Log的函数开始输出堆栈信息，默认是0
-            .tag(mApplication.logTag()) // （可选）每个日志的全局标记。 默认PRETTY_LOGGER（如上图）
-            .build();
+                // 默认值为true
+                .methodCount(0) // （可选）要显示的方法行数。 默认2
+                .methodOffset(0) // （可选）设置调用堆栈的函数偏移值，0的话则从打印该Log的函数开始输出堆栈信息，默认是0
+                .tag(mApplication.logTag()) // （可选）每个日志的全局标记。 默认PRETTY_LOGGER（如上图）
+                .build();
         Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy) {
             @Override
             public boolean isLoggable(int priority, @Nullable String tag) {
                 return isDebug(); // 只有在 Debug模式下才会打印
             }
         });
+        SpUtil.putBoolean(CommonConstants.KEY_LOG_FLAG, true);
     }
 
     public int getAppBarStatusColor() {

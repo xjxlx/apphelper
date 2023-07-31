@@ -43,6 +43,9 @@ public class CommonConstants {
      */
     public static final String FILE_LIFECYCLE_JOB_SERVICE_NAME = "file_lifecycle_job_service_name";
 
+    public static final String KEY_LOG_FLAG = "key_log_flag";
+
+
     /* *************************************** key end **********************************************/
 
     /* *************************************** code start **********************************************/
