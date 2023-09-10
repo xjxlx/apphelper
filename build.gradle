@@ -7,15 +7,14 @@ plugins {
 apply from: "config.gradle"
 
 android {
-    def compile = rootProject.ext.android
-    compileSdkVersion compile.compileSdkVersion
+    compileSdkVersion Config.compileSdkVersion
 
     // 此处暂时先别打开
-    buildToolsVersion compile.buildToolsVersion
+    buildToolsVersion Config.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion compile.minSdkVersion
-        targetSdkVersion compile.targetSdkVersion
+        minSdkVersion Config.minSdkVersion
+        targetSdkVersion Config.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
