@@ -1,8 +1,8 @@
 import com.android.build.api.dsl.LibraryDefaultConfig
 
-plugins {
-    id("com.android.library")
-    id("kotlin-android")
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
+    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.com.android.library)
     id("maven-publish") //用来推送到jitpack
 }
 
