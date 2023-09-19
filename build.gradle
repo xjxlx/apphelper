@@ -4,16 +4,11 @@ plugins {
     id 'maven-publish'//用来推送到jitpack
 }
 
-apply from: "config.gradle"
-
 android {
-    compileSdkVersion Config.compileSdkVersion
-
-    // 此处暂时先别打开
-    buildToolsVersion Config.buildToolsVersion
+    compileSdk = Config.compileSdk
 
     defaultConfig {
-        minSdkVersion Config.minSdkVersion
+        minSdkVersion Config.minSdk
         targetSdkVersion Config.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -42,6 +37,12 @@ android {
 
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 }
 
