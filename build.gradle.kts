@@ -4,6 +4,7 @@ import com.android.build.api.dsl.LibraryDefaultConfig
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.com.android.library)
     id("maven-publish") //用来推送到jitpack
+    id("io.github.xjxlx.catalog")
 }
 
 android {
