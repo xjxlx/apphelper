@@ -8,9 +8,9 @@ import com.android.build.api.dsl.LibraryDefaultConfig
 }
 
 android {
-    compileSdk = Config.compileSdk
+    compileSdk = libs.versions.compileSdks.get().toInt()
     defaultConfig {
-        minSdk = Config.minSdk
+        minSdk = libs.versions.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
@@ -21,7 +21,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
