@@ -4,13 +4,14 @@ import com.android.build.api.dsl.LibraryDefaultConfig
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.com.android.library)
     id("maven-publish") //用来推送到jitpack
-    id("io.github.xjxlx.catalog")
 }
 
 android {
-    compileSdk = libs.versions.compileSdks.get().toInt()
+    compileSdk = libs.versions.compileSdks.get()
+        .toInt()
     defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
+        minSdk = libs.versions.minSdk.get()
+            .toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
@@ -21,10 +22,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 
@@ -59,14 +57,13 @@ fun initSystemInfo(build: LibraryDefaultConfig) {
 }
 
 dependencies {
-    implementation(libs.appcompat)
+    implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
 
     // 系统级类库
-    implementation(libs.constraintlayout)
+    implementation(libs.androidx.constraintlayout)
     implementation(libs.recyclerview)
 
     api(libs.refresh.header.classics)   // 经典刷新头
