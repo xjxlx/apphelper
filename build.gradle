@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    compileSdkVersion 29
 
     defaultConfig {
 
@@ -35,12 +36,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
+//    publishing {
+//        singleVariant("release") {
+//            withSourcesJar()
+//            withJavadocJar()
+//        }
+//    }
 }
 
 void initSystemInfo() {
@@ -124,17 +125,17 @@ dependencies {
 //    }
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                groupId = 'com.github.apphelper'//插件id，格式：com.gitee/github.用户名
-                artifactId = 'apphelper'//插件名称
-                version = '3.0.7'//版本号
-                //引用使用格式：implementation 'com.gitee.xiaweifeng:JitPackTest11:1.0'
-            }
-        }
-    }
-}
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            release(MavenPublication) {
+//                from components.release
+//                groupId = 'com.github.apphelper'//插件id，格式：com.gitee/github.用户名
+//                artifactId = 'apphelper'//插件名称
+//                version = '3.0.7'//版本号
+//                //引用使用格式：implementation 'com.gitee.xiaweifeng:JitPackTest11:1.0'
+//            }
+//        }
+//    }
+//}
 
