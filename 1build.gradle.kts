@@ -1,3 +1,5 @@
+import Config.compileSdk
+import Config.minSdk
 import com.android.build.api.dsl.LibraryDefaultConfig
 
 @Suppress("DSL_SCOPE_VIOLATION") plugins {
