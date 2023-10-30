@@ -44,12 +44,12 @@ fun initSystemInfo() {
 }
 
 dependencies {
-    implementation(libs.androidx.appcompat)
+    implementation(libs.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     // 系统级类库
-    implementation(libs.androidx.constraintlayout)
+    implementation(libs.constraintlayout)
     implementation(libs.recyclerview)
 
     api(libs.refresh.header.classics)   // 经典刷新头
@@ -72,13 +72,13 @@ dependencies {
     api(libs.adapter.rxjava2)  // 必要依赖，和Rxjava结合必须用到，下面会提到
     api(libs.converter.gson) // 必要依赖，解析json字符所用
     api(libs.converter.scalars) // 必要依赖，把数据转产成字符串使用
-    api(libs.okhttp)  // okHttp的依赖
+    api(libs.okhttp3)  // okHttp的依赖
     api(libs.rxjava2) // 必要rxjava2依赖
     implementation(libs.rxjava3) { // 禁止依赖的传递
         isTransitive = false
     }
 
-    api(libs.rxandroid)  // 必要rxAndroid依赖，切线程时需要用到
+    api(libs.rxandroid2)  // 必要rxAndroid依赖，切线程时需要用到
     api(libs.glide)   // glide 图片加载库 ，尽量自己使用，避免版本冲突
     annotationProcessor(libs.glide.compiler)
 
