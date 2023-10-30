@@ -1,24 +1,16 @@
-import Config.compileSdk
-import Config.minSdk
-import com.android.build.api.dsl.LibraryDefaultConfig
-
-@Suppress("DSL_SCOPE_VIOLATION") plugins {
-    alias(libs.plugins.org.jetbrains.kotlin.android)
-    alias(libs.plugins.com.android.library)
-    id("maven-publish") //用来推送到jitpack
+plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
 }
 
 android {
-    compileSdk = libs.versions.compileSdks.get()
-        .toInt()
+    compileSdk = libs.versions.compileSdks.get().toInt()
     defaultConfig {
-        minSdk = libs.versions.minSdk.get()
-            .toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        minSdk = libs.versions.minSdk.get().toInt()
         consumerProguardFiles("consumer-rules.pro")
 
         // 初始化系统设置
-        initSystemInfo(this)
+        initSystemInfo()
     }
 
     buildTypes {
@@ -40,21 +32,14 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
 }
 
-fun initSystemInfo(build: LibraryDefaultConfig) {
+fun initSystemInfo() {
     var system = System.getenv("USERDOMAIN_ROAMINGPROFILE") // windows
     if (system == null) {
         system = System.getenv("USER")// mac
     }
-    build.buildConfigField("String", "SYSTEM_NAME", "\"${system}\"")
+//    build.buildConfigField("String", "SYSTEM_NAME", "\"${system}\"")
     println("SYSTEM_NAME:$system")
 }
 
@@ -63,7 +48,6 @@ dependencies {
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
-
     // 系统级类库
     implementation(libs.androidx.constraintlayout)
     implementation(libs.recyclerview)
@@ -119,18 +103,5 @@ dependencies {
 //    }
 }
 
-afterEvaluate {
-    publishing { // 发布配置
-        publications {// 发布内容
-            create<MavenPublication>("release") {// 注册一个名字为 release 的发布内容
-                // 从当前 module 的 release 包中发布
-                from(components["release"])
-                groupId = "com.github.apphelper"
-                artifactId = "apphelper" // 插件名称
-                version = "3.0.7" // 版本号
-            }
-        }
-    }
-}
 
 
