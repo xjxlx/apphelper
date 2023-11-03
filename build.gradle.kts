@@ -5,9 +5,11 @@ plugins {
 }
 
 android {
-    compileSdk = libs.versions.compileSdks.get().toInt()
+    compileSdk = libs.versions.compileSdks.get()
+        .toInt()
     defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
+        minSdk = libs.versions.minSdk.get()
+            .toInt()
         consumerProguardFiles("consumer-rules.pro")
 
         // 初始化系统设置
