@@ -1,10 +1,11 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("io.github.xjxlx.publish")
+    id("io.github.xjxlx.publish") version "1.0.1"
 }
 
 android {
+    namespace = "com.android.helper"
     compileSdk = libs.versions.compileSdks.get()
         .toInt()
     defaultConfig {
