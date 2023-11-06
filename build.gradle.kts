@@ -1,7 +1,12 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("io.github.xjxlx.publish") version "1.0.1"
+    // id("com.android.library")
+    // id("org.jetbrains.kotlin.android")
+    // id("io.github.xjxlx.publish") version "1.0.1"
+
+    alias(libs.plugins.com.android.library)
+    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.io.github.xjxlx.publish)
 }
 
 android {
