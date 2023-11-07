@@ -1,5 +1,4 @@
-@Suppress("DSL_SCOPE_VIOLATION")
-plugins {
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
     alias(libs.plugins.com.android.library)
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.io.github.xjxlx.publishing)
@@ -15,7 +14,9 @@ android {
         consumerProguardFiles("consumer-rules.pro")
 
         // 初始化系统设置
-        initSystemInfo()
+        val systemInfo = initSystemInfo()
+        println("SYSTEM_NAME:$systemInfo")
+        buildConfigField("String", "SYSTEM_NAME", "\"${systemInfo}\"")
     }
 
     buildTypes {
@@ -32,6 +33,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     kotlinOptions {
@@ -39,13 +41,12 @@ android {
     }
 }
 
-fun initSystemInfo() {
+fun initSystemInfo(): String {
     var system = System.getenv("USERDOMAIN_ROAMINGPROFILE") // windows
     if (system == null) {
         system = System.getenv("USER")// mac
     }
-//    build.buildConfigField("String", "SYSTEM_NAME", "\"${system}\"")
-    println("SYSTEM_NAME:$system")
+    return system
 }
 
 dependencies {
