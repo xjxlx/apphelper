@@ -1,10 +1,12 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("io.github.xjxlx.publish")
+    alias(libs.plugins.com.android.library)
+    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.io.github.xjxlx.publishing)
 }
 
 android {
+    namespace = "com.android.helper"
     compileSdk = libs.versions.compileSdks.get()
         .toInt()
     defaultConfig {
