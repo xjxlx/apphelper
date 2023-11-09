@@ -10,6 +10,7 @@ import io.reactivex.Observable
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -33,8 +34,9 @@ class AppPushErrorService {
 
         val requestFile: RequestBody = RequestBody.create("multipart/form-data".toMediaTypeOrNull(), file)
         val fileBody: MultipartBody.Part = MultipartBody.Part.createFormData("file", file.name, requestFile)
-        val serviceBody = RequestBody.create("text/plain;charset=UTF-8".toMediaTypeOrNull(), "App.App2021.UploadLog")
-        val nameBody = RequestBody.create("text/plain;charset=UTF-8".toMediaTypeOrNull(), SpUtil.getString(""))
+        val serviceBody = "App.App2021.UploadLog".toRequestBody("text/plain;charset=UTF-8".toMediaTypeOrNull())
+        val nameBody = SpUtil.getString("")
+            .toRequestBody("text/plain;charset=UTF-8".toMediaTypeOrNull())
 
         ApiServices
             .uploadAppErrorLog(fileBody, serviceBody, nameBody)
