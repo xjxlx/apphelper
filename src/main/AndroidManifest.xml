@@ -27,7 +27,6 @@
         android:maxSdkVersion="22" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.REORDER_TASKS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
     <!--打开屏幕的权限-->
