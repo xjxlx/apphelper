@@ -65,7 +65,7 @@ dependencies {
 
     implementation(libs.android.pickerview)  // 日历选择器
     implementation(libs.viewpager2)
-    implementation(project(":apphelper:refresh"))
+    implementation(project(":refresh"))
 
     // room数据库的依赖
 //    implementation()("androidx.room:room-runtime:2.4.2") {// 禁止依赖的传递
