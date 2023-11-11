@@ -11,8 +11,8 @@ import android.view.View;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.LogUtil;
 import com.android.helper.BuildConfig;
-import com.orhanobut.logger.Logger;
 
 /**
  * 基类的View,以后所有的view都集成他，避免重写很多的袋面
@@ -92,7 +92,7 @@ public abstract class BaseView extends View {
     public void log(String value) {
         if (BuildConfig.DEBUG) {
             if (!TextUtils.isEmpty(value)) {
-                Logger.e(value);
+                LogUtil.e(value);
             }
         }
     }

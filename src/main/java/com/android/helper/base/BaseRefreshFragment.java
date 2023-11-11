@@ -7,13 +7,13 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 
 import com.android.helper.R;
-import com.android.helper.base.refresh.BaseRefreshFooter;
-import com.android.helper.base.refresh.BaseRefreshHeader;
-import com.android.helper.base.refresh.BaseRefreshLayout;
 import com.android.helper.httpclient.BaseException;
 import com.android.helper.httpclient.BaseHttpSubscriber;
 import com.android.helper.interfaces.HttpClientListener;
 import com.android.helper.widget.BasePlaceholderView;
+import com.android.refresh.base.BaseRefreshFooter;
+import com.android.refresh.base.BaseRefreshHeader;
+import com.android.refresh.base.BaseRefreshLayout;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener;
 

@@ -4,10 +4,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.android.helper.R;
-import com.android.helper.base.refresh.BaseRefreshFooter;
-import com.android.helper.base.refresh.BaseRefreshHeader;
-import com.android.helper.base.refresh.BaseRefreshLayout;
 import com.android.helper.widget.BasePlaceholderView;
+import com.android.refresh.base.BaseRefreshFooter;
+import com.android.refresh.base.BaseRefreshHeader;
+import com.android.refresh.base.BaseRefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener;
 
 /**
@@ -51,19 +51,19 @@ public abstract class BaseRefreshActivity extends AppBaseActivity implements OnR
         super.onBeforeCreateView();
 
         // refresh layout
-        mBrlBaseRefresh = (BaseRefreshLayout) findViewById(R.id.brl_base_refresh);
+        mBrlBaseRefresh = findViewById(R.id.brl_base_refresh);
         // refresh  header
-        mBrhBaseRefreshHeader = (BaseRefreshHeader) findViewById(R.id.brh_base_refresh_header);
+        // mBrhBaseRefreshHeader = findViewById(R.id.brh_base_refresh_header);
         // 顶部固定不动的view
         mFlBaseRefreshTopContent = findViewById(R.id.fl_base_refresh_top_content);
         // content
-        mBaseRefreshContent = (FrameLayout) findViewById(R.id.fl_base_refresh_content);
+        mBaseRefreshContent = findViewById(R.id.fl_base_refresh_content);
         // 底部固定不动的view
         mFlBaseRefreshBottomContent = findViewById(R.id.fl_base_refresh_bottom_content);
         // refresh footer
-        mBrfBaseRefreshFooter = (BaseRefreshFooter) findViewById(R.id.brf_base_refresh_footer);
+        // mBrfBaseRefreshFooter = findViewById(R.id.brf_base_refresh_footer);
         // BasePlaceholderView
-        mBpvBasePlaceholder = (BasePlaceholderView) findViewById(R.id.bpv_base_placeholder);
+        mBpvBasePlaceholder = findViewById(R.id.bpv_base_placeholder);
 
         // 把继承baseRefresh的基类放入到 content中去
         mBaseRefreshLayout = getLayoutInflater().inflate(getRefreshLayout(), mBaseRefreshContent);
