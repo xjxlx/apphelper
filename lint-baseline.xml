@@ -1,0 +1,1199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.1.1" type="baseline" client="gradle" dependencies="false" name="AGP (8.1.1)" variant="all" version="8.1.1">
+
+    <issue
+        id="AnnotateVersionCheck"
+        message="This field should be annotated with `ChecksSdkIntAtLeast(extension=0)`"
+        errorLine1="    private final int SDK_INT = Build.VERSION.SDK_INT;"
+        errorLine2="                      ~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/location/LocationUtil.java"
+            line="60"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="AnnotateVersionCheck"
+        message="This field should be annotated with `ChecksSdkIntAtLeast(extension=0)`"
+        errorLine1="    private final int SDK_INT = Build.VERSION.SDK_INT;"
+        errorLine2="                      ~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/permission/RxPermissionsUtil.java"
+            line="50"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        errorLine1="        editor.commit();"
+        errorLine2="               ~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/PreferenceHelper.java"
+            line="17"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        errorLine1="        editor.commit();"
+        errorLine2="               ~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/PreferenceHelper.java"
+            line="26"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        errorLine1="        editor.commit();"
+        errorLine2="               ~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/PreferenceHelper.java"
+            line="35"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        errorLine1="        editor.commit();"
+        errorLine2="               ~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/PreferenceHelper.java"
+            line="43"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        errorLine1="        editor.commit();"
+        errorLine2="               ~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/PreferenceHelper.java"
+            line="103"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        errorLine1="        editor.commit();"
+        errorLine2="               ~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/PreferenceHelper.java"
+            line="111"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="CustomViewStyleable"
+        message="By convention, the custom view (`ViewPager2Indicator`) and the declare-styleable (`BannerIndicator`) should have the same name (various editor features rely on this convention)"
+        errorLine1="            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerIndicator);"
+        errorLine2="                                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/widget/banner/ViewPager2Indicator.java"
+            line="47"
+            column="75"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="            return Build.BRAND.toLowerCase().equals(&quot;huawei&quot;) || Build.BRAND.toLowerCase().equals(&quot;honor&quot;);"
+        errorLine2="                               ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ActivityUtil.java"
+            line="103"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="            return Build.BRAND.toLowerCase().equals(&quot;huawei&quot;) || Build.BRAND.toLowerCase().equals(&quot;honor&quot;);"
+        errorLine2="                                                                             ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ActivityUtil.java"
+            line="103"
+            column="78"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; ((Build.BRAND.toLowerCase().equals(&quot;xiaomi&quot;)) || (Build.BRAND.toLowerCase().equals(&quot;redmi&quot;)));"
+        errorLine2="                                                    ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ActivityUtil.java"
+            line="149"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; ((Build.BRAND.toLowerCase().equals(&quot;xiaomi&quot;)) || (Build.BRAND.toLowerCase().equals(&quot;redmi&quot;)));"
+        errorLine2="                                                                                                    ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ActivityUtil.java"
+            line="149"
+            column="101"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;oppo&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ActivityUtil.java"
+            line="158"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;vivo&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ActivityUtil.java"
+            line="178"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;meizu&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ActivityUtil.java"
+            line="186"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;samsung&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ActivityUtil.java"
+            line="194"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;letv&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ActivityUtil.java"
+            line="206"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;smartisan&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ActivityUtil.java"
+            line="215"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="            return value.toLowerCase();"
+        errorLine2="                         ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/NumberUtil.java"
+            line="310"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toUpperCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="            return value.toUpperCase();"
+        errorLine2="                         ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/NumberUtil.java"
+            line="322"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="            return Build.BRAND.toLowerCase().equals(&quot;huawei&quot;) || Build.BRAND.toLowerCase().equals(&quot;honor&quot;);"
+        errorLine2="                               ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="117"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="            return Build.BRAND.toLowerCase().equals(&quot;huawei&quot;) || Build.BRAND.toLowerCase().equals(&quot;honor&quot;);"
+        errorLine2="                                                                             ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="117"
+            column="78"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; ((Build.BRAND.toLowerCase().equals(&quot;xiaomi&quot;)) || (Build.BRAND.toLowerCase().equals(&quot;redmi&quot;)));"
+        errorLine2="                                                    ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="132"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; ((Build.BRAND.toLowerCase().equals(&quot;xiaomi&quot;)) || (Build.BRAND.toLowerCase().equals(&quot;redmi&quot;)));"
+        errorLine2="                                                                                                    ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="132"
+            column="101"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;oppo&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="141"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;vivo&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="161"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;meizu&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="169"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;samsung&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="177"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;letv&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="189"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        return Build.BRAND != null &amp;&amp; Build.BRAND.toLowerCase().equals(&quot;smartisan&quot;);"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="198"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/rl_base_title_root, defined or included multiple times in layout/activity_base_title.xml: [layout/activity_base_title.xml defines @+id/rl_base_title_root, layout/activity_base_title.xml => layout/base_title.xml defines @+id/rl_base_title_root]"
+        errorLine1="    &lt;include layout=&quot;@layout/base_title&quot; />"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_base_title.xml"
+            line="12"
+            column="5"
+            message="Duplicate id @+id/rl_base_title_root, defined or included multiple times in layout/activity_base_title.xml: [layout/activity_base_title.xml defines @+id/rl_base_title_root, layout/activity_base_title.xml => layout/base_title.xml defines @+id/rl_base_title_root]"/>
+        <location
+            file="src/main/res/layout/activity_base_title.xml"
+            line="4"
+            column="5"
+            message="Defined here"/>
+        <location
+            file="src/main/res/layout/base_title.xml"
+            line="4"
+            column="5"
+            message="Defined here, included via layout/activity_base_title.xml => layout/base_title.xml defines @+id/rl_base_title_root"/>
+    </issue>
+
+    <issue
+        id="InternalInsetResource"
+        message="Using internal inset dimension resource `status_bar_height` is not supported"
+        errorLine1="        int resourceId = activity.getResources()"
+        errorLine2="                         ^">
+        <location
+            file="src/main/java/com/android/helper/utils/ScreenUtil.java"
+            line="99"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="KotlinNullnessAnnotation"
+        message="Do not use `@NotNull` in Kotlin; the nullability is already implied by the Kotlin type `Calendar` **not** ending with `?`"
+        errorLine1="    fun setCurrentCalendar(@NotNull currentCalendar: Calendar): CalendarChooser {"
+        errorLine2="                           ~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/kotlin/CalendarChooser.kt"
+            line="159"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="KotlinNullnessAnnotation"
+        message="Do not use `@NotNull` in Kotlin; the nullability is already implied by the Kotlin type `Calendar` **not** ending with `?`"
+        errorLine1="    fun setEndCalendar(@NotNull endCalendar: Calendar): CalendarChooser {"
+        errorLine2="                       ~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/kotlin/CalendarChooser.kt"
+            line="167"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="KotlinNullnessAnnotation"
+        message="Do not use `@NotNull` in Kotlin; the nullability is already implied by the Kotlin type `OnClickListener` **not** ending with `?`"
+        errorLine1="    fun setSaveTitleClickListener(@NotNull saveListener: OnClickListener) {"
+        errorLine2="                                  ~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/kotlin/CalendarChooser.kt"
+            line="975"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="PrivateApi"
+        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
+        errorLine1="            Field f = winParams.getClass().getDeclaredField(flagName);"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarColorUtil.java"
+            line="128"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="PrivateApi"
+        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
+        errorLine1="            Field f2 = winParams.getClass().getDeclaredField(&quot;meizuFlags&quot;);"
+        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarColorUtil.java"
+            line="131"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="PrivateApi"
+        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
+        errorLine1="                    Class layoutParams = Class.forName(&quot;android.view.MiuiWindowManager$LayoutParams&quot;);"
+        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="188"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="PrivateApi"
+        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
+        errorLine1="                Field darkFlag = WindowManager.LayoutParams.class.getDeclaredField(&quot;MEIZU_FLAG_DARK_STATUS_BAR_ICON&quot;);"
+        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="207"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="PrivateApi"
+        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
+        errorLine1="                Field meizuFlags = WindowManager.LayoutParams.class.getDeclaredField(&quot;meizuFlags&quot;);"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="208"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="Range"
+        message="Value must be ≥ 0 but `getColumnIndex` can be -1"
+        errorLine1="                        String value = cursor.getString(cursor.getColumnIndex(columnName));"
+        errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/sqlite/SQLiteUtil.java"
+            line="188"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="Range"
+        message="Value must be ≥ 0 but `getColumnIndex` can be -1"
+        errorLine1="                        String queryValues = cursor.getString(cursor.getColumnIndex(key));"
+        errorLine2="                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/sqlite/SQLiteUtil.java"
+            line="228"
+            column="63"/>
+    </issue>
+
+    <issue
+        id="Range"
+        message="Value must be ≥ 0 but `getColumnIndex` can be -1"
+        errorLine1="                            String queryValue = cursor.getString(cursor.getColumnIndex(column));"
+        errorLine2="                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/sqlite/SQLiteUtil.java"
+            line="275"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="BatteryLife"
+        message="Use of `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` violates the Play Store Content Policy regarding acceptable use cases, as described in https://developer.android.com/training/monitoring-device-state/doze-standby.html"
+        errorLine1="                Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);"
+        errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="79"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="InflateParams"
+        message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)"
+        errorLine1="        mInflate = LayoutInflater.from(context).inflate(R.layout.custom_shopping_number, null, false);"
+        errorLine2="                                                                                         ~~~~">
+        <location
+            file="src/main/java/com/android/helper/widget/ShoppingNumber.java"
+            line="52"
+            column="90"/>
+    </issue>
+
+    <issue
+        id="InflateParams"
+        message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)"
+        errorLine1="                    .inflate(R.layout.indicator_tab, null);"
+        errorLine2="                                                     ~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/TabLayoutUtil.java"
+            line="160"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="SourceLockedOrientationActivity"
+        message="You should not lock orientation of your activities, so that you can support a good user experience for any device or orientation"
+        errorLine1="                    mContext.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/OrientationListener.java"
+            line="43"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="SourceLockedOrientationActivity"
+        message="You should not lock orientation of your activities, so that you can support a good user experience for any device or orientation"
+        errorLine1="                    mContext.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/OrientationListener.java"
+            line="58"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="HardwareIds"
+        message="Using `getDeviceId` to get device identifiers is not recommended"
+        errorLine1="                        deviceId = systemService.deviceId"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/DeviceUtil.kt"
+            line="56"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="HardwareIds"
+        message="Using `SERIAL` to get device identifiers is not recommended"
+        errorLine1="                    deviceId = Build.SERIAL"
+        errorLine2="                                     ~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/DeviceUtil.kt"
+            line="62"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="CustomX509TrustManager"
+        message="Implementing a custom `X509TrustManager` is error-prone and likely to be insecure. It is likely to disable certificate validation altogether, and is non-trivial to implement correctly without calling Android&apos;s default implementation."
+        errorLine1="        X509TrustManager mX509TrustManager = new X509TrustManager() {"
+        errorLine2="                                                 ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/httpclient/RetrofitHelper.java"
+            line="234"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="InsecureBaseConfiguration"
+        message="Insecure Base Configuration"
+        errorLine1="    &lt;base-config cleartextTrafficPermitted=&quot;true&quot;>"
+        errorLine2="                                            ~~~~">
+        <location
+            file="src/main/res/xml/network_security_config.xml"
+            line="3"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="UnspecifiedRegisterReceiverFlag"
+        message="`mAudioReceiver` \&#xA;is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected \&#xA;broadcasts registered for com.audio.start, com.audio.pause, com.audio.left, com.audio.right"
+        errorLine1="                        mContext.registerReceiver(mAudioReceiver, intentFilter);"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/media/audio/AudioPlayerUtil.java"
+            line="238"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="UnspecifiedRegisterReceiverFlag"
+        message="`mBluetoothReceiver` \&#xA;is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected \&#xA;broadcasts registered for android.bluetoothReceiver.BluetoothAdapter.STATE_OFF, android.bluetoothReceiver.BluetoothAdapter.STATE_ON"
+        errorLine1="                mIntentBluetooth = mContext.registerReceiver(mBluetoothReceiver, intentFilter);"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/BluetoothUtil.java"
+            line="89"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="DrawAllocation"
+        message="Avoid object allocations during draw/layout operations (preallocate and reuse instead)"
+        errorLine1="        List&lt;Integer> availAreas = new ArrayList&lt;Integer>(mAreaCount);"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/widget/RandomHmLayout.java"
+            line="208"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
+        errorLine1="        notifyDataSetChanged();"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/base/recycleview/RecycleViewFrameWork.java"
+            line="167"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
+        errorLine1="                notifyDataSetChanged();"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/base/recycleview/RecycleViewFrameWork.java"
+            line="187"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
+        errorLine1="        notifyDataSetChanged();"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/base/recycleview/RecycleViewFrameWork.java"
+            line="473"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is never &lt; 24"
+        errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.N) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/account/AppJobService.java"
+            line="96"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { //1.1:如果有权限，直接显示"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/DeviceUtil.kt"
+            line="48"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/account/LifecycleManager.java"
+            line="150"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ScreenUtil.java"
+            line="181"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ScreenUtil.java"
+            line="192"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/ShareFile.kt"
+            line="34"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="            if (Build.VERSION.SDK_INT > 22) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarColorUtil.java"
+            line="108"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is never &lt; 24"
+        errorLine1="        if (Build.VERSION.SDK_INT &lt; 23) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarColorUtil.java"
+            line="203"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 19"
+        errorLine1="    @TargetApi(19)"
+        errorLine2="    ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="44"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="47"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="57"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 19"
+        errorLine1="    @TargetApi(19)"
+        errorLine2="    ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="83"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= 21) {// 21表示5.0"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="100"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        } else if (Build.VERSION.SDK_INT >= 19) {// 19表示4.4"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="106"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="141"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="171"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="43"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="60"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23"
+        errorLine1="    @RequiresApi(api = Build.VERSION_CODES.M)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/SystemUtil.java"
+            line="75"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="Do not place Android context classes in static fields (static reference to `StatusBarUtil` which has field `mActivity` pointing to `Activity`); this is a memory leak"
+        errorLine1="    private static StatusBarUtil util;"
+        errorLine2="            ~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/utils/statusBar/StatusBarUtil.java"
+            line="26"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `@color/transparent` with a theme that also paints a background (inferred theme is `@android:style/Theme.Holo`)"
+        errorLine1="    android:background=&quot;@color/transparent&quot;>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/base_default_dialog.xml"
+            line="7"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `@color/base_title_background_color` with a theme that also paints a background (inferred theme is `@android:style/Theme.Holo`)"
+        errorLine1="    android:background=&quot;@color/base_title_background_color&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/base_title.xml"
+            line="7"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `@color/white` with a theme that also paints a background (inferred theme is `@android:style/Theme.Holo`)"
+        errorLine1="    android:background=&quot;@color/white&quot;>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/notification_audio.xml"
+            line="6"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="IconMissingDensityFolder"
+        message="Missing density variation folders in `src/main/res`: drawable-hdpi, drawable-mdpi, drawable-xhdpi">
+        <location
+            file="src/main/res"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`FingerTouchListener#onTouch` should call `View#performClick` when a click is detected"
+        errorLine1="        public boolean onTouch(View v, MotionEvent event) {"
+        errorLine2="                       ~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/widget/PageWidget.java"
+            line="156"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `SideMenuView2` overrides `onTouchEvent` but not `performClick`"
+        errorLine1="    override fun onTouchEvent(event: MotionEvent?): Boolean {"
+        errorLine2="                 ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/widget/SideMenuView2.kt"
+            line="114"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `SwipeItemLayout` overrides `onTouchEvent` but not `performClick`"
+        errorLine1="    public boolean onTouchEvent(MotionEvent ev) {"
+        errorLine2="                   ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/android/helper/widget/SwipeItemLayout.java"
+            line="309"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="    &lt;ImageView"
+        errorLine2="     ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/base_banner.xml"
+            line="8"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="    &lt;ImageView"
+        errorLine2="     ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/base_empty_view.xml"
+            line="22"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="    &lt;ImageView"
+        errorLine2="     ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/base_recycleview_empty.xml"
+            line="11"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="        &lt;ImageView"
+        errorLine2="         ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/base_title.xml"
+            line="16"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="        &lt;ImageView"
+        errorLine2="         ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/custom_shopping_number.xml"
+            line="22"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="        &lt;ImageView"
+        errorLine2="         ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/custom_shopping_number.xml"
+            line="56"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="    &lt;ImageView"
+        errorLine2="     ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/notification_audio.xml"
+            line="8"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="            &lt;ImageView"
+        errorLine2="             ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/notification_audio.xml"
+            line="46"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="            &lt;ImageView"
+        errorLine2="             ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/notification_audio.xml"
+            line="54"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="            &lt;ImageView"
+        errorLine2="             ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/notification_audio.xml"
+            line="61"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;22222&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;22222&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/base_banner.xml"
+            line="21"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;提示&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;提示&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/base_default_dialog.xml"
+            line="42"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;取消&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;取消&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/base_default_dialog.xml"
+            line="90"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;确定&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;确定&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/base_default_dialog.xml"
+            line="118"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;点击刷新&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;点击刷新&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/base_empty_view.xml"
+            line="83"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;取消&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;取消&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/custom_calendar_chooser.xml"
+            line="27"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;开始时间&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;开始时间&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/custom_calendar_chooser.xml"
+            line="36"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;储存&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;储存&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/custom_calendar_chooser.xml"
+            line="50"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;➖&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;➖&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/custom_shopping_number.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;1&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;1&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/custom_shopping_number.xml"
+            line="38"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;➕&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;➕&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/custom_shopping_number.xml"
+            line="52"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Consider replacing `android:layout_alignParentRight` with `android:layout_alignParentEnd=&quot;true&quot;` to better support right-to-left layouts"
+        errorLine1="            android:layout_alignParentRight=&quot;true&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/custom_calendar_chooser.xml"
+            line="45"
+            column="13"/>
+    </issue>
+
+</issues>

@@ -1,5 +1,6 @@
 package com.android.helper.utils.sqlite;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -140,7 +141,7 @@ public class SQLiteUtil {
                         for (int i = 0; i < query.length; i++) {
                             String key = query[i];
                             // 根据列中对象的名称返回该列对象的索引 getColumnIndex（）：根据该列中对象的名称返回该列对象的索引
-                            String value = cursor.getString(cursor.getColumnIndex(key));
+                            @SuppressLint("Range") String value = cursor.getString(cursor.getColumnIndex(key));
                             object.addProperty(key, value);
                         }
                         list.add(object);
@@ -184,7 +185,7 @@ public class SQLiteUtil {
                     String[] columnNames = cursor.getColumnNames();
                     for (int i = 0; i < columnNames.length; i++) {
                         String columnName = columnNames[i];
-                        String value = cursor.getString(cursor.getColumnIndex(columnName));
+                        @SuppressLint("Range") String value = cursor.getString(cursor.getColumnIndex(columnName));
                         object.addProperty(columnName, value);
                     }
 
@@ -224,7 +225,7 @@ public class SQLiteUtil {
                     // 下一行是否还有数据 moveToNext：如果往后面移动返回就为true，否则就是数据没有了
                     while (cursor.moveToNext()) {
                         // 根据列中对象的名称返回该列对象的索引 getColumnIndex（）：根据该列中对象的名称返回该列对象的索引
-                        String queryValues = cursor.getString(cursor.getColumnIndex(key));
+                        @SuppressLint("Range") String queryValues = cursor.getString(cursor.getColumnIndex(key));
                         if (value.equals(queryValues)) {
                             closeDb();
                             return true;
@@ -271,7 +272,7 @@ public class SQLiteUtil {
                             // 查询的列
                             String column = columns[i];
                             // 列中对应的数据
-                            String queryValue = cursor.getString(cursor.getColumnIndex(column));
+                            @SuppressLint("Range") String queryValue = cursor.getString(cursor.getColumnIndex(column));
                             object.addProperty(column, queryValue);
                         }
                         list.add(object);
