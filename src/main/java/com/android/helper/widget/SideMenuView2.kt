@@ -86,12 +86,13 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
 
     private var mDx: Int = 0
     private var mGestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-        override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+        override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
             mDx = distanceX.toInt()
 
             mContentView?.let {
                 val left = it.left
-                LogUtil.e("left: " + left + "  dx: " + mDx + "  （left - mDx）" + (left - mDx) + "  mMenuViewWidth: " + mMenuViewWidth + " mContentMarginLeft: " + mContentMarginLeft)
+                LogUtil.e(
+                    "left: " + left + "  dx: " + mDx + "  （left - mDx）" + (left - mDx) + "  mMenuViewWidth: " + mMenuViewWidth + " mContentMarginLeft: " + mContentMarginLeft)
                 if (mDx > 0) { // 向左
                     if (abs(left) + mDx < (mMenuViewWidth)) {
                         LogUtil.e("<----")
@@ -111,7 +112,9 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
     })
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        mGestureDetector.onTouchEvent(event)
+        event?.let {
+            mGestureDetector.onTouchEvent(event)
+        }
         if (event?.action == MotionEvent.ACTION_CANCEL || event?.action == MotionEvent.ACTION_UP) {
             mContentView?.let {
                 val left = it.left
