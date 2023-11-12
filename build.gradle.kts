@@ -62,11 +62,7 @@ dependencies {
     implementation(libs.rxjava3) { // 禁止依赖的传递
         isTransitive = false
     }
-
     implementation(libs.rxandroid2)  // 必要rxAndroid依赖，切线程时需要用到
-    implementation(libs.glide)   // glide 图片加载库 ，尽量自己使用，避免版本冲突
-    annotationProcessor(libs.glide.compiler)
-
     implementation(libs.android.pickerview)  // 日历选择器
     implementation(libs.viewpager2)
     api(project(":refresh"))
