@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.fragment.app.FragmentActivity;
 
 import com.android.helper.utils.ScreenUtil;
+import com.android.refresh.app.ApplicationManager;
 
 import okhttp3.Interceptor;
 
@@ -52,6 +53,7 @@ public class BaseApplication {
     // <editor-fold desc="initData" defaultstate="collapsed">
 
     public void initApp() {
+        ApplicationManager.INSTANCE.init(getApplication());
         ScreenUtil.getScreenHeight(getApplication());
     }
     // </editor-fold>
