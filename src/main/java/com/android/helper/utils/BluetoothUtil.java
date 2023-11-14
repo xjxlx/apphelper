@@ -1,6 +1,5 @@
 package com.android.helper.utils;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -14,13 +13,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-
-import androidx.core.app.ActivityCompat;
 
 import com.android.common.utils.LogUtil;
 import com.android.helper.common.CommonConstants;
@@ -158,7 +154,6 @@ public class BluetoothUtil {
                 if (device != null) {
                     String address = device.getAddress();
                     String name = device.getName();
-
                     LogUtil.e("蓝牙扫描回调---成功：" + name + "  描到的蓝牙地址为：" + address);
                     LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME, "->蓝牙扫描回调---成功：" + name + "  描到的蓝牙地址为：" + address);
 
