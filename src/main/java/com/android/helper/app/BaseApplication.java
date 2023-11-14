@@ -53,7 +53,7 @@ public class BaseApplication {
     // <editor-fold desc="initData" defaultstate="collapsed">
 
     public void initApp() {
-        ApplicationManager.INSTANCE.init(getApplication());
+        ApplicationManager.init(getApplication());
         ScreenUtil.getScreenHeight(getApplication());
     }
     // </editor-fold>
