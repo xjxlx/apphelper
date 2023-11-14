@@ -49,20 +49,14 @@ dependencies {
     // 系统级类库
     implementation(libs.constraintlayout)
     implementation(libs.recyclerview)
-    implementation(libs.okhttp3) // okHttp的依赖
-    implementation(libs.retrofit2) // 必要retrofit依赖
-    implementation(libs.converter.scalars)// 必要依赖，把数据转产成字符串使用
 
     // 私有的类库引用
     implementation(libs.eventbus) { isTransitive = false }
     implementation(libs.rxpermissions) { isTransitive = false } // rxjava3 版本
 
-    implementation(libs.adapter.rxjava2)  // 必要依赖，和Rxjava结合必须用到，下面会提到
-    implementation(libs.rxjava2) // 必要rxjava2依赖
     implementation(libs.rxjava3) { // 禁止依赖的传递
         isTransitive = false
     }
-    implementation(libs.rxandroid2)  // 必要rxAndroid依赖，切线程时需要用到
     implementation(libs.android.pickerview)  // 日历选择器
     implementation(libs.viewpager2)
     api(project(":refresh"))

@@ -113,14 +113,6 @@ public class BluetoothUtil {
         if (openBluetooth) {
             Intent enable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             if (mContext != null) {
-                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
                 mContext.startActivity(enable);
             }
         }
@@ -165,14 +157,6 @@ public class BluetoothUtil {
                 BluetoothDevice device = result.getDevice();
                 if (device != null) {
                     String address = device.getAddress();
-                    if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
-                    }
                     String name = device.getName();
 
                     LogUtil.e("蓝牙扫描回调---成功：" + name + "  描到的蓝牙地址为：" + address);
@@ -201,14 +185,6 @@ public class BluetoothUtil {
                     BluetoothDevice device = scanResult.getDevice();
                     if (device != null) {
                         String address = device.getAddress();
-                        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
-                            return;
-                        }
                         String name = device.getName();
                         LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME, "蓝牙扫描回调---批量成功：" + name + "  描到的蓝牙地址为：" + address);
                         LogUtil.e("蓝牙扫描回调---批量成功：" + name + "  描到的蓝牙地址为：" + address);
@@ -227,14 +203,6 @@ public class BluetoothUtil {
 
             if (mScanner != null) {
                 if (isOpenBluetooth()) {
-                    if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
-                    }
                     mScanner.stopScan(mScanCallback);
                 }
             }
@@ -287,14 +255,6 @@ public class BluetoothUtil {
                         if (parcelableExtra instanceof BluetoothDevice) {
                             BluetoothDevice device = (BluetoothDevice) parcelableExtra;
                             String address = device.getAddress();
-                            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                                // here to request the missing permissions, and then overriding
-                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                //                                          int[] grantResults)
-                                // to handle the case where the user grants the permission. See the documentation
-                                // for ActivityCompat#requestPermissions for more details.
-                                return;
-                            }
                             String name = device.getName();
                             LogUtil.e(" --> 发现的蓝牙名字：" + name + "  发现到的蓝牙地址：" + address);
 
@@ -335,14 +295,6 @@ public class BluetoothUtil {
      */
     public void getPdList() {
         if (mAdapter != null) {
-            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
             Set<BluetoothDevice> pairedDevices = mAdapter.getBondedDevices();
             if (pairedDevices.size() > 0) {
                 for (BluetoothDevice device : pairedDevices) {
@@ -358,14 +310,6 @@ public class BluetoothUtil {
             if (isScan) {
                 long end = System.currentTimeMillis();
                 if (((end - mStartScan) / 1000) > 20) {
-                    if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
-                    }
                     mAdapter.cancelDiscovery();
                     LogUtil.e("扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
                     LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME, "扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
@@ -397,14 +341,6 @@ public class BluetoothUtil {
             if (((end - mStartScan) / 1000) > 20) {
                 if (mScanner != null) {
                     if (isOpenBluetooth()) {
-                        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
-                            return;
-                        }
                         mScanner.stopScan(mScanCallback);
                         LogUtil.e("扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
                         LogUtil.writeAll(CommonConstants.FILE_BLUETOOTH_NAME, "扫描的时候，发现20秒还没有扫描到，就先关闭，下次重新再扫描！");
@@ -454,14 +390,6 @@ public class BluetoothUtil {
     private void sendDevice(BluetoothDevice device) {
         EventMessage message = new EventMessage(111);
         Bundle bundle = new Bundle();
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
         bundle.putString("name", device.getName());
         bundle.putString("address", device.getAddress());
         message.setBundle(bundle);
@@ -473,14 +401,6 @@ public class BluetoothUtil {
      */
     private void canOtherUser() {
         if (mAdapter != null) {
-            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
             if (mAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
                 // 不在可被搜索的范围
                 Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
