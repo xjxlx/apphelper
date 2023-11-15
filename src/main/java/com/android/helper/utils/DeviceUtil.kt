@@ -37,6 +37,7 @@ class DeviceUtil private constructor() {
      * android 11 以上，额外另加一个权限
      *      <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
      */
+    @SuppressLint("HardwareIds")
     @RequiresPermission("android.permission.READ_PRIVILEGED_PHONE_STATE")
     private fun getDeviceId(context: Context?): String {
         var deviceId: String = ""
@@ -45,7 +46,7 @@ class DeviceUtil private constructor() {
             if (systemService is TelephonyManager) {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // android 10 以上，只能通过系统权限获取
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { //1.1:如果有权限，直接显示
+                } else //1.1:如果有权限，直接显示
                     // 8.0 以下可以用deviceId，8.0以上要使用 imeiId
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // 只适用于手机，依赖于sim卡
                         deviceId = systemService.imei // 设备的SN 序列号
@@ -55,7 +56,6 @@ class DeviceUtil private constructor() {
                     } else {
                         deviceId = systemService.deviceId
                     }
-                }
 
                 // 设备的SN 序列号
                 if (TextUtils.isEmpty(deviceId)) {
