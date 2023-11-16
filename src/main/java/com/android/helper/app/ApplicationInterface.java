@@ -2,6 +2,8 @@ package com.android.helper.app;
 
 import android.app.Application;
 
+import com.android.common.app.ApplicationManager;
+
 import okhttp3.Interceptor;
 
 /**
@@ -46,4 +48,6 @@ public interface ApplicationInterface {
      */
     Interceptor[] getInterceptors();
 
+//    com.android.common.app.ApplicationManager.Builder
+    ApplicationManager.Builder getBuilder();
 }
