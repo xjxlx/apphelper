@@ -12,9 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
+import com.android.common.base.BaseActivity;
 import com.android.helper.R;
 import com.android.helper.app.AppException;
-import com.android.helper.base.AppBaseActivity;
 import com.android.helper.base.recycleview.PlaceholderResource;
 import com.android.helper.utils.NetworkUtil;
 import com.android.helper.utils.TextViewUtil;
@@ -41,12 +41,13 @@ import com.android.helper.utils.ViewUtil;
  *       4: 左侧的点击事件，会回调方法{@link #onTitleLeftClick(View)}
  *       6：具体的Api设置方法，都在{@link PageLayoutBuilder }的方法中有具体的说明，可以去按需求使用
  */
-public abstract class AppBaseTitleActivity extends AppBaseActivity {
+public abstract class AppBaseTitleActivity extends BaseActivity {
 
     /**
      * 当前view的标题栏对象
      */
-    private PageLayoutManager mPageLayoutManager = PageLayoutManager.getGlobalTitleBarBuilder().build(this);
+    private PageLayoutManager mPageLayoutManager = PageLayoutManager.getGlobalTitleBarBuilder()
+            .build(this);
     /**
      * 顶部titleBar的布局
      */
@@ -142,20 +143,12 @@ public abstract class AppBaseTitleActivity extends AppBaseActivity {
                         // 设置布局
                         setContentView(mTitleRootLayout);
 
-                        // 只有设置完了布局，才会去走初始化方法，避免加载顺序异常
-                        initView();
                         initListener();
                         initData(savedInstanceState);
-                        initDataAfter();
                     }
                 }
             }
         }
-    }
-
-    @Override
-    protected int getBaseLayout() {
-        return 0;
     }
 
     /**

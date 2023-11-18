@@ -3,6 +3,7 @@ package com.android.helper.base;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.android.common.base.BaseActivity;
 import com.android.helper.R;
 import com.android.helper.widget.BasePlaceholderView;
 import com.android.refresh.base.BaseRefreshFooter;
@@ -13,7 +14,7 @@ import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener;
 /**
  * 带刷新工具的activity
  */
-public abstract class BaseRefreshActivity extends AppBaseActivity implements OnRefreshLoadMoreListener {
+public abstract class BaseRefreshActivity extends BaseActivity implements OnRefreshLoadMoreListener {
 
     protected View mBaseRefreshLayout;
 
@@ -35,6 +36,11 @@ public abstract class BaseRefreshActivity extends AppBaseActivity implements OnR
     // 默认可以刷新
     private RefreshType mRefreshType = RefreshType.TYPE_REFRESH;
 
+    @Override
+    public int getLayout() {
+        return R.layout.view_base_refresh;
+    }
+
     public enum RefreshType {
         TYPE_NONE, // 不执行任何的操作
         TYPE_REFRESH,// 只能刷新
@@ -42,14 +48,8 @@ public abstract class BaseRefreshActivity extends AppBaseActivity implements OnR
     }
 
     @Override
-    protected int getBaseLayout() {
-        return R.layout.view_base_refresh;
-    }
-
-    @Override
-    public void onBeforeCreateView() {
-        super.onBeforeCreateView();
-
+    public void initView() {
+        super.initView();
         // refresh layout
         mBrlBaseRefresh = findViewById(R.id.brl_base_refresh);
         // refresh  header

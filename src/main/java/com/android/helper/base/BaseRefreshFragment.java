@@ -6,9 +6,8 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
+import com.android.common.base.BaseFragment;
 import com.android.helper.R;
-import com.android.helper.httpclient.BaseException;
-import com.android.helper.httpclient.BaseHttpSubscriber;
 import com.android.helper.interfaces.HttpClientListener;
 import com.android.helper.widget.BasePlaceholderView;
 import com.android.refresh.base.BaseRefreshFooter;
@@ -31,7 +30,7 @@ import retrofit2.Call;
  * @param <T>  网络请求数据类型的对象类型
  * @param <T2> 数据列表的对象类型，如果是不带类表的情况，java可以使用object，Kotlin使用Any
  */
-public abstract class BaseRefreshFragment<T, T2> extends AppBaseFragment implements HttpClientListener<T>, OnRefreshLoadMoreListener {
+public abstract class BaseRefreshFragment<T, T2> extends BaseFragment implements HttpClientListener<T>, OnRefreshLoadMoreListener {
 
     protected FrameLayout mFlBaseRefreshContent;
     private BaseRefreshLayout mRefreshLayout;
@@ -93,11 +92,11 @@ public abstract class BaseRefreshFragment<T, T2> extends AppBaseFragment impleme
     }
 
     @Override
-    protected int getBaseLayout() {
+    public int getLayout() {
         return R.layout.view_base_refresh;
     }
 
-//    @Override
+    //    @Override
 //    protected void onInitViewBefore(LayoutInflater inflater, View container) {
 //        super.onInitViewBefore(inflater, container);
 //
@@ -205,47 +204,46 @@ public abstract class BaseRefreshFragment<T, T2> extends AppBaseFragment impleme
 
         Flowable<T> apiService = getApiService();
         if (apiService != null) {
-            disposable = net(apiService, new BaseHttpSubscriber<T>() {
-                @Override
-                protected void onStart() {
-                    super.onStart();
-                    // 回调子页面的处理事件
-                    onHttpStart();
-
-                    if (filterForDialog()) {
-                        // 开始 弹窗
-
-                    }
-                }
-
-                @Override
-                public void onSuccess(T t) {
-                    // 标记已经加载过首次了
-                    isShowLoading = true;
-
-                    if (filterForPage(t)) {
-                        // 加载完所有的数据
-                        mRefreshLayout.finishLoadMoreWithNoMoreData();//设置之后，将不会再触发加载事件
-                    }
-                    BaseRefreshFragment.this.onSuccess(t);
-                }
-
-                @Override
-                public void onFailure(BaseException e) {
-
-                    BaseRefreshFragment.this.onFailure(e);
-                }
-
-                @Override
-                public void onComplete() {
-                    super.onComplete();
-                    // 回调子页面的处理事件
-                    onHttpComplete();
-                    // 2：关闭刷新和加载
-                    mRefreshLayout.finishLoadMore();
-                    mRefreshLayout.finishRefresh();
-                }
-            });
+//            disposable = net(apiService, new BaseHttpSubscriber<T>() {
+//                @Override
+//                protected void onStart() {
+//                    super.onStart();
+//                    // 回调子页面的处理事件
+//                    onHttpStart();
+//
+//                    if (filterForDialog()) {
+//                        // 开始 弹窗
+//                    }
+//                }
+//
+//                @Override
+//                public void onSuccess(T t) {
+//                    // 标记已经加载过首次了
+//                    isShowLoading = true;
+//
+//                    if (filterForPage(t)) {
+//                        // 加载完所有的数据
+//                        mRefreshLayout.finishLoadMoreWithNoMoreData();//设置之后，将不会再触发加载事件
+//                    }
+//                    BaseRefreshFragment.this.onSuccess(t);
+//                }
+//
+//                @Override
+//                public void onFailure(BaseException e) {
+//
+//                    BaseRefreshFragment.this.onFailure(e);
+//                }
+//
+//                @Override
+//                public void onComplete() {
+//                    super.onComplete();
+//                    // 回调子页面的处理事件
+//                    onHttpComplete();
+//                    // 2：关闭刷新和加载
+//                    mRefreshLayout.finishLoadMore();
+//                    mRefreshLayout.finishRefresh();
+//                }
+//            });
         }
         return disposable;
     }
