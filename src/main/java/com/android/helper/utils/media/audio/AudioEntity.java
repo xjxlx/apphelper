@@ -1,11 +1,11 @@
 package com.android.helper.utils.media.audio;
 
-import com.android.helper.base.BaseEntity;
+import java.io.Serializable;
 
 /**
  * 音频播放列表的实体类
  */
-public class AudioEntity extends BaseEntity {
+public class AudioEntity implements Serializable {
 
     private String audio;      // 音频的路径地址
     private String cover;   // 音频对用的图片

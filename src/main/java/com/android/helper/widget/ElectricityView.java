@@ -11,8 +11,8 @@ import android.view.MotionEvent;
 import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 
+import com.android.common.base.BaseView;
 import com.android.common.utils.LogUtil;
-import com.android.helper.base.BaseView;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
 import com.android.helper.utils.NumberUtil;
@@ -24,38 +24,32 @@ import com.android.helper.utils.NumberUtil;
  */
 public class ElectricityView extends BaseView {
 
-    private float mProgressWidth; // 进度条的宽度
     private final float mProgressHeight = ConvertUtil.toDp(8); // 进度条的高度
     private final float mProgressRound = ConvertUtil.toDp(5);
-
+    // 进度条
+    private final float mBottomValueInterval = ConvertUtil.toDp(8);
+    // 中间圆
+    private final float mCircleRadius = ConvertUtil.toDp(12);// 圆的半径
+    private final float mPaddingLeft = ConvertUtil.toDp(20); // view的左间距 = 圆的半径
+    private final float mPaddingTop = ConvertUtil.toDp(8);// view的上方padding值，避免遮挡阴影
+    private final float mRightInterval = ConvertUtil.toDp(4) + mPaddingLeft;
+    private float mProgressWidth; // 进度条的宽度
     private Paint mPaintProgressBackground;
     private Paint mPaintProgress;
-
     // 进度条的范围值
     private int mProgressStart = 5; // 最小的进度值
     private int mProgressEnd = 62; // 最大的进度值
     private int mProgressTarget = 0; // 目标的进度值
-
     private Paint mPaintRound;
     private Paint mPaintBottomRoundText;
     private float mCurrentProgress;
     private float mTopInterval; // 进度条距离顶部的高度
     private String mBottomTextValue = "";// 圆球底部的文字
-
-    // 进度条
-    private final float mBottomValueInterval = ConvertUtil.toDp(8);
     private float mPercentage; // 进度条的百分比
-
-    // 中间圆
-    private final float mCircleRadius = ConvertUtil.toDp(12);// 圆的半径
     private float mBaseLineBottomText;
-    private final float mPaddingLeft = ConvertUtil.toDp(20); // view的左间距 = 圆的半径
-    private final float mPaddingTop = ConvertUtil.toDp(8);// view的上方padding值，避免遮挡阴影
-
     // 右侧的电流值
     private Paint mPaintRightText;
     private String mRightTextValue = "";
-    private final float mRightInterval = ConvertUtil.toDp(4) + mPaddingLeft;
     private float mBaseLineRightText; // 右侧文字的高度
 
     private ProgressListener mProgressListener;

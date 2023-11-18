@@ -16,10 +16,10 @@ import android.view.MotionEvent;
 import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
 
+import com.android.common.base.BaseView;
 import com.android.common.utils.LogUtil;
 import com.android.common.utils.LogWriteUtil;
 import com.android.helper.R;
-import com.android.helper.base.BaseView;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
@@ -34,53 +34,50 @@ import java.math.BigDecimal;
  */
 public class ChargingProgressView extends BaseView {
 
-    private LogWriteUtil mWriteUtil = new LogWriteUtil(CommonConstants.FILE_CHARGING_CENTER_NAME + ".txt");
-
-    private int mMaxWidth, mMaxHeight;
-
     private final float mLineWidth = ConvertUtil.toDp(1);
-
     private final float mAngle = ConvertUtil.toDp(10);
     private final float mIntervalLayer = ConvertUtil.toDp(4);// 外层和内层圆形的间距
-
     private final float mRightRectWidth = ConvertUtil.toDp(6);// 右侧view的宽高
     private final float mRightRectHeight = ConvertUtil.toDp(15);// 右侧view的宽高
-
-    private Paint mPaintBackground; // 底层进度条
-    private RectF mRectFBackground;
-
-    private Paint mPaintRight; // 右侧进度条
-    private RectF mRectFRight;
-
-    private RectF mRectFOuterLayer; // 外层矩形
-    private Paint mPaintRoundOuterLayer;
     private final float[] mAngleArray = new float[]{mAngle, mAngle, 0, 0, 0, 0, mAngle, mAngle};
     private final float[] mAngleArrayRight = new float[]{0, 0, mAngle, mAngle, mAngle, mAngle, 0, 0};
     private final float[] mAngleArrayLeftRight = new float[]{mAngle, mAngle, mAngle, mAngle, mAngle, mAngle, mAngle, mAngle};
-
-    private float mProgressWidth;// 进度条的宽度
     private final int mProgressHeight = (int) ConvertUtil.toDp(60); // 进度条的高度
-
+    private final float mOptimumTextInterval = ConvertUtil.toDp(13);// 最佳值和进度条的间隔高度
+    private final float mCurrentChargingTextInterval = ConvertUtil.toDp(8);
+    private final float mRemainingTimeTextInterval = ConvertUtil.toDp(8); // 运动球的半径
+    private final float mScrollTextInterval = ConvertUtil.toDp(6);
+    // private final String mSocText = "目标SOC";
+    private final float mSocLeftInterval = ConvertUtil.toDp(4f);
+    private final float mSocTextTopInterval = ConvertUtil.toDp(8.5f);
+    private final float mSocBitmapTopInterval = ConvertUtil.toDp(11.5f);
+    private final float mPaddingRight = mRemainingTimeTextInterval;// 右侧的间距
+    private final float mPaddingBottom = ConvertUtil.toDp(5); // 底部的间距
+    private LogWriteUtil mWriteUtil = new LogWriteUtil(CommonConstants.FILE_CHARGING_CENTER_NAME + ".txt");
+    private int mMaxWidth, mMaxHeight;
+    private Paint mPaintBackground; // 底层进度条
+    private RectF mRectFBackground;
+    private Paint mPaintRight; // 右侧进度条
+    private RectF mRectFRight;
+    private RectF mRectFOuterLayer; // 外层矩形
+    private Paint mPaintRoundOuterLayer;
+    private float mProgressWidth;// 进度条的宽度
     private RectF mRectFNerLayer; // 内层矩形
     private Paint mPaintRoundNerLayer;
-
     private float mPercentage = 0f;// 进度条的百分比
     private float mProgress = 0F;// 进度条的进度
     private Path mPath_w;
     private Path mPath_n;
-
     // 绘制闪电符号
     private Bitmap mBitmap;
     private Rect mRectSrc;
     private RectF mRectDsc;
-
     // 区间值的百分比
     private float mPercentageStart = 0f; // 区间的开始值
     private float mPercentageEnd = 0f; // 区间的结束值
     private Paint mPaintSection;
     private RectF mRectFSection;
     private Path mPath_qj;
-
     // 最佳进度值
     private boolean mShowOptimum = true; // 是否展示最佳的电量值
     private float mPercentageOptimum = 0f;// 最佳电量值 ---> 固定值
@@ -88,23 +85,16 @@ public class ChargingProgressView extends BaseView {
     private float mOptimumPosition;
     private String OptimumContent = "";// 最佳的文字值
     private float[] mOptimumTextSize;
-    private final float mOptimumTextInterval = ConvertUtil.toDp(13);// 最佳值和进度条的间隔高度
-
     private float mTopInterval = 0;// 上侧最大的高度
     private float mBottomInterval = 0;// 下方的最大高度
-
     // 当前电量的进度
     private Paint mPaintCharging;
     private String mCurrentChargingText = "";// 当前电量的进度条
-    private final float mCurrentChargingTextInterval = ConvertUtil.toDp(8);
     private float[] mCurrentChargingTextSize; // 当前进度的
-
     // 充电剩余时间
     private Paint mPaintChargingRemainingTimeText;
     private String mRemainingTimeText = ""; // 临时的充电时间
-    private final float mRemainingTimeTextInterval = ConvertUtil.toDp(8); // 运动球的半径
     private float[] mRemainingTimeTextSize;
-
     // 底部的滑动条
     private float mBottomScrollProgress = 0.6f; // 默认的区间值
     private Paint mPaintBottomScrollLine;
@@ -112,28 +102,17 @@ public class ChargingProgressView extends BaseView {
     private Paint mPaintScrollRound;// 滑动的圆
     private String mSocCurrentText = ""; // 当前滑动进度的值
     private Paint mPaintScrollValue;
-    private final float mScrollTextInterval = ConvertUtil.toDp(6);
-
     // 底部SOC
     private Paint mPaintSoc;
     private Bitmap mBitmapSoc;
-    // private final String mSocText = "目标SOC";
-    private final float mSocLeftInterval = ConvertUtil.toDp(4f);
-    private final float mSocTextTopInterval = ConvertUtil.toDp(8.5f);
-    private final float mSocBitmapTopInterval = ConvertUtil.toDp(11.5f);
     private float[] mSocTextSize;
-
     private float mScrollTextHeight;
     private float mStartBorder;
     private float mEndBorder;
     private float mScrollTextWidth; // 底部滑动文字的宽度
-    private final float mPaddingRight = mRemainingTimeTextInterval;// 右侧的间距
-
     private boolean isCharging = false;// 是否在充电中，控制闪电符号是否显示
     private float mLeft = 0;
     private float mRight = 0;
-    private final float mPaddingBottom = ConvertUtil.toDp(5); // 底部的间距
-
     private ProgressListener mProgressListener;
     private boolean mScroll = true;// 是否可以触摸
     private String mMultiply;
@@ -804,6 +783,10 @@ public class ChargingProgressView extends BaseView {
         invalidate();
     }
 
+    public void setProgressListener(ProgressListener progressListener) {
+        mProgressListener = progressListener;
+    }
+
     public interface ProgressListener {
         /**
          * @param progress 手指抬起时候，当前的百分比
@@ -811,10 +794,6 @@ public class ChargingProgressView extends BaseView {
         void onTouchUp(String progress);
 
         void onMove(String progress);
-    }
-
-    public void setProgressListener(ProgressListener progressListener) {
-        mProgressListener = progressListener;
     }
 
 }

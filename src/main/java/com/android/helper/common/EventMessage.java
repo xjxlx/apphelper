@@ -2,12 +2,12 @@ package com.android.helper.common;
 
 import android.os.Bundle;
 
-import com.android.helper.base.BaseEntity;
+import java.io.Serializable;
 
 /**
  * EventBus的消息类
  */
-public class EventMessage extends BaseEntity {
+public class EventMessage implements Serializable {
 
     private int code;
     private String msg;
@@ -45,16 +45,16 @@ public class EventMessage extends BaseEntity {
         return bundle;
     }
 
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
+    }
+
     public int getCode() {
         return code;
     }
 
     public void setCode(int code) {
         this.code = code;
-    }
-
-    public void setBundle(Bundle bundle) {
-        this.bundle = bundle;
     }
 
     public Object getObject() {
