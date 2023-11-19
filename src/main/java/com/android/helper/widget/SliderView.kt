@@ -87,7 +87,6 @@ class SliderView(context: Context?, attrs: AttributeSet?) : View(context, attrs)
                 mMaxScrollValue = (measuredWidth - bitmap!!.width)
             }
         }
-
     }
 
     @SuppressLint("DrawAllocation")
@@ -117,7 +116,8 @@ class SliderView(context: Context?, attrs: AttributeSet?) : View(context, attrs)
                 }
 
                 // 绘制滑动过的颜色
-                it.drawRoundRect(0f, 0f, (b.width + paddingLeft + mLeft).toFloat(), measuredHeight.toFloat(), mRadius, mRadius, mPaintSelectorBackground)
+                it.drawRoundRect(0f, 0f, (b.width + paddingLeft + mLeft).toFloat(), measuredHeight.toFloat(), mRadius, mRadius,
+                    mPaintSelectorBackground)
 
                 val rectSrc = Rect(0, 0, b.width, b.height)
                 val top = (measuredHeight - b.height) / 2
@@ -188,13 +188,13 @@ class SliderView(context: Context?, attrs: AttributeSet?) : View(context, attrs)
                         mLeft = 0
                         dxValue = 0f
                         invalidate()
-
                     } else {
                         if (mListener != null) {
                             mListener?.onScrollMaxValue()
                         }
                     }
                 }
+
                 MotionEvent.ACTION_CANCEL -> {
                     ToastUtil.show("异常")
                 }
@@ -209,7 +209,7 @@ class SliderView(context: Context?, attrs: AttributeSet?) : View(context, attrs)
     }
 
     private var mListener: ScrollChangeListener? = null
-    public fun setChangeListener(listener: ScrollChangeListener) {
+    fun setChangeListener(listener: ScrollChangeListener) {
         this.mListener = listener
     }
 }

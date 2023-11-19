@@ -70,17 +70,13 @@ class PopupWindowUtil {
     }
 
     fun setContentView(fragment: Fragment, resource: Int): PopupWindowUtil {
-        val inflate = LayoutInflater
-            .from(fragment.activity)
-            .inflate(resource, null, false)
+        val inflate = LayoutInflater.from(fragment.activity).inflate(resource, null, false)
         setContentView(fragment, inflate)
         return this
     }
 
     fun setContentView(activity: FragmentActivity, resource: Int): PopupWindowUtil {
-        val inflate = LayoutInflater
-            .from(activity)
-            .inflate(resource, null, false)
+        val inflate = LayoutInflater.from(activity).inflate(resource, null, false)
         setContentView(activity, inflate)
         return this
     }
@@ -340,5 +336,4 @@ class PopupWindowUtil {
     interface OnDismissListener {
         fun onDismiss(view: View?, popupWindow: PopupWindowUtil)
     }
-
 }

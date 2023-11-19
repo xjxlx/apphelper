@@ -58,7 +58,6 @@ public class SQLiteTableManager {
             sqlResult = content;
             LogUtil.e("更新数据库的SQL语句为：" + content);
         }
-
         return sqlResult;
     }
 }

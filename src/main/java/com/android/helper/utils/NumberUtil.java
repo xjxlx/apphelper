@@ -25,12 +25,10 @@ public class NumberUtil {
      */
     public static String formatDouble(double d, int digits) {
         NumberFormat nf = NumberFormat.getNumberInstance();
-
         // 保留两位小数
         nf.setMaximumFractionDigits(2);
         // 如果不需要四舍五入，可以使用RoundingMode.DOWN
         nf.setRoundingMode(RoundingMode.UP);
-
         return nf.format(d);
     }
 
@@ -48,7 +46,6 @@ public class NumberUtil {
      * @return 根据传入进来的数组，随机改变position位置，生成一个新的数组
      */
     public static int[] RandomSortToInt(int[] array) {
-
         if (array == null) {
             return null;
         } else {
@@ -56,24 +53,20 @@ public class NumberUtil {
             for (int s : array) {
                 buffer.append(s + "，");
             }
-            LogUtil.e("原来：array:" + buffer.toString());
-
+            LogUtil.e("原来：array:" + buffer);
             Random random = new Random();
             for (int i = 0; i < array.length; i++) {
                 // 随机产生一个 0 - n（不包含n）的随机数
                 int p = random.nextInt(i + 1);
-
                 int tmp = array[i];
                 array[i] = array[p];
                 array[p] = tmp;
             }
-
             StringBuffer buffer1 = new StringBuffer();
             for (int s : array) {
                 buffer1.append(s + "，");
             }
-            LogUtil.e("后来：array:" + buffer1.toString());
-
+            LogUtil.e("后来：array:" + buffer1);
             return array;
         }
     }
@@ -87,11 +80,8 @@ public class NumberUtil {
             return -1;
         } else {
             int size = list.size();
-
             int index = (int) (Math.random() * (size));
-
             LogUtil.e("list --->size:" + list.size() + " 随机数：" + index);
-
             return index;
         }
     }
@@ -105,11 +95,8 @@ public class NumberUtil {
             return null;
         } else {
             int size = list.size();
-
             int index = (int) (Math.random() * (size));
-
             LogUtil.e("list --->size:" + list.size() + " 随机数：" + index);
-
             return list.get(index);
         }
     }
@@ -119,7 +106,6 @@ public class NumberUtil {
      * @return 随机改变传入数组的位置，产生一个新的随机数组
      */
     public static String[] RandomSortToString(String[] array) {
-
         if (array == null) {
             return null;
         } else {
@@ -127,28 +113,23 @@ public class NumberUtil {
             for (String s : array) {
                 buffer.append(s + "，");
             }
-            LogUtil.e("原来：array:" + buffer.toString());
-
+            LogUtil.e("原来：array:" + buffer);
             Random random = new Random();
             for (int i = 0; i < array.length; i++) {
                 // 随机产生一个 0 - n（不包含n）的随机数
                 int p = random.nextInt(i + 1);
-
                 String tmp = array[i];
                 array[i] = array[p];
                 array[p] = tmp;
             }
-
             StringBuffer buffer1 = new StringBuffer();
             for (String s : array) {
                 buffer1.append(s + "，");
             }
-            LogUtil.e("后来：array:" + buffer1.toString());
-
+            LogUtil.e("后来：array:" + buffer1);
             return array;
         }
     }
-
     /********************************************* 新的开始 *************************************/
 
     /**
@@ -206,7 +187,6 @@ public class NumberUtil {
         if ((!TextUtils.isEmpty(dividend)) && (divisor > 0)) {
             BigDecimal dividendDecimal = new BigDecimal(dividend);
             BigDecimal divisorDecimal = new BigDecimal(divisor);
-
             // 转换为大整形运算
             String result = dividendDecimal.
                     divide(divisorDecimal, digits, roundingMode)  // 除数、保留位数、模式
@@ -231,7 +211,6 @@ public class NumberUtil {
         if ((!TextUtils.isEmpty(dividend)) && (!TextUtils.isEmpty(divisor))) {
             BigDecimal dividendDecimal = new BigDecimal(dividend);
             BigDecimal divisorDecimal = new BigDecimal(divisor);
-
             result = dividendDecimal
                     .divide(divisorDecimal, roundingMode)
                     .stripTrailingZeros()// 去掉多余的0
@@ -249,7 +228,6 @@ public class NumberUtil {
         String result = "";
         BigDecimal decimal1 = null;
         BigDecimal decimal2 = null;
-
         if (value1 != null) {
             if (value1 instanceof Double) {
                 decimal1 = BigDecimal.valueOf((Double) value1);
@@ -261,7 +239,6 @@ public class NumberUtil {
                 decimal1 = BigDecimal.valueOf((Long) value1);
             }
         }
-
         if (value2 != null) {
             if (value2 instanceof Double) {
                 decimal2 = BigDecimal.valueOf((Double) value2);
@@ -273,7 +250,6 @@ public class NumberUtil {
                 decimal2 = BigDecimal.valueOf((Long) value2);
             }
         }
-
         if (decimal1 != null && decimal2 != null) {
             // 转换为大整形运算
             result = decimal1
@@ -294,7 +270,6 @@ public class NumberUtil {
         BigDecimal decimal2 = new BigDecimal(value2);
         //  加法
         BigDecimal multiply = decimal1.multiply(decimal2);
-
         result = multiply
                 .stripTrailingZeros()// 去掉多余的0;
                 .toPlainString();// 科学计数法;

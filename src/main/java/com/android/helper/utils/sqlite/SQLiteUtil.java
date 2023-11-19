@@ -38,10 +38,14 @@ import java.util.List;
 
 public class SQLiteUtil {
     private final String TAG = "SQL";
+    private final SQLiteManager sqliteHelper;
     private String mTableName;// 数据库的表名
-    private SQLiteManager sqliteHelper;
     private SQLiteDatabase mDataBase;
     private Cursor cursor;
+
+    private SQLiteUtil(Context context, SQLEntity sqlEntity) {
+        sqliteHelper = SQLiteManager.getInstance(context, sqlEntity);
+    }
 
     /**
      * @param sqlEntity sql的具体对象
@@ -49,10 +53,6 @@ public class SQLiteUtil {
      */
     public static SQLiteUtil getInstance(Context context, SQLEntity sqlEntity) {
         return new SQLiteUtil(context, sqlEntity);
-    }
-
-    private SQLiteUtil(Context context, SQLEntity sqlEntity) {
-        sqliteHelper = SQLiteManager.getInstance(context, sqlEntity);
     }
 
     /**
@@ -72,7 +72,6 @@ public class SQLiteUtil {
                 // 更新数据
                 List<String> keys = ConvertUtil.filterList(ConvertUtil.ArrayToList(attributeKey), selectorKey);
                 List<String> values = ConvertUtil.filterList(ConvertUtil.ArrayToList(attributeValue), selectorValue);
-
                 update(keys, values, selectorKey, selectorValue);
                 isSuccess = true;
             } else {
@@ -103,7 +102,6 @@ public class SQLiteUtil {
         }
         return isSuccess;
     }
-
     /**
      * @param key
      * @return 根据unid查询单个的条目
@@ -128,7 +126,6 @@ public class SQLiteUtil {
              * String groupBy, ：按什么分组
              * String having,String orderBy ：按什么排序
              */
-
             try {
                 cursor = getSqlDataBase().query(mTableName, query, (selection + ("=?")), new String[]{selectonValue}, null, null, null);
                 // 4:解析cursor对象 getCount:返回结果集中的行数，如果为空的话就不必去查询了
@@ -137,7 +134,6 @@ public class SQLiteUtil {
                     // 下一行是否还有数据 moveToNext：如果往后面移动返回就为true，否则就是数据没有了
                     while (cursor.moveToNext()) {
                         JsonObject object = new JsonObject();
-
                         for (int i = 0; i < query.length; i++) {
                             String key = query[i];
                             // 根据列中对象的名称返回该列对象的索引 getColumnIndex（）：根据该列中对象的名称返回该列对象的索引
@@ -173,7 +169,6 @@ public class SQLiteUtil {
          * String groupBy, ：按什么分组
          * String having,String orderBy ：按什么排序
          */
-
         try {
             cursor = getSqlDataBase().query(mTableName, null, null, null, null, null, null);
             // 4:解析cursor对象 getCount:返回结果集中的行数，如果为空的话就不必去查询了
@@ -188,7 +183,6 @@ public class SQLiteUtil {
                         @SuppressLint("Range") String value = cursor.getString(cursor.getColumnIndex(columnName));
                         object.addProperty(columnName, value);
                     }
-
                     list.add(object);
                 }
             }
@@ -217,7 +211,6 @@ public class SQLiteUtil {
              * String groupBy, ：按什么分组
              * String having,String orderBy ：按什么排序
              */
-
             try {
                 cursor = getSqlDataBase().query(mTableName, new String[]{key}, null, null, null, null, null);
                 // 4:解析cursor对象 getCount:返回结果集中的行数，如果为空的话就不必去查询了
@@ -256,10 +249,8 @@ public class SQLiteUtil {
              * String groupBy, ：按什么分组
              * String having,String orderBy ：按什么排序
              */
-
             try {
                 cursor = getSqlDataBase().query(mTableName, columns, null, null, null, null, null);
-
                 // 4:解析cursor对象 getCount:返回结果集中的行数，如果为空的话就不必去查询了
                 if (cursor != null && cursor.getCount() > 0) {
                     list = new ArrayList<>();
@@ -267,7 +258,6 @@ public class SQLiteUtil {
                     while (cursor.moveToNext()) {
                         // 根据列中对象的名称返回该列对象的索引 getColumnIndex（）：根据该列中对象的名称返回该列对象的索引
                         JsonObject object = new JsonObject();
-
                         for (int i = 0; i < columns.length; i++) {
                             // 查询的列
                             String column = columns[i];
@@ -298,10 +288,8 @@ public class SQLiteUtil {
         if ((whereClause != null) && (whereClause.size() > 0) && (whereArgs != null) && (whereArgs.size() == whereClause.size())) {
             // database.execSQL("update tableName set phone=? where name=?;", new
             // Object[]{userInfoBean.phone, userInfoBean.name});
-
             // 创建sql
             String sql = "update " + mTableName + " set ";
-
             for (int i = 0; i < whereClause.size(); i++) {
                 String key = whereClause.get(i);
                 if (!TextUtils.isEmpty(key) && !key.equals(whereKey)) {

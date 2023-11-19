@@ -15,6 +15,10 @@ import java.util.Set;
 
 public class RandomHmLayout extends ViewGroup {
 
+    /**
+     * 计算重叠时候的间距
+     */
+    private final int mOverlapAdd = 2;
     private Random mRdm;
     /**
      * X分布规则性，该值越高，子view在x方向的分布越规则、平均。最小值为1。
@@ -48,10 +52,6 @@ public class RandomHmLayout extends ViewGroup {
      * 是否已经layout
      */
     private boolean mLayouted;
-    /**
-     * 计算重叠时候的间距
-     */
-    private int mOverlapAdd = 2;
 
     public RandomHmLayout(Context context) {
         super(context);
@@ -209,16 +209,13 @@ public class RandomHmLayout extends ViewGroup {
         for (int i = 0; i < mAreaCount; i++) {
             availAreas.add(i);
         }
-
         int areaCapacity = (count + 1) / mAreaCount + 1;  //区域密度，表示一个区域内可以放几个View，+1表示至少要放一个
         int availAreaCount = mAreaCount; //可用的区域个数
-
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() == View.GONE) { // gone掉的view是不参与布局
                 continue;
             }
-
             if (!mFixedViews.contains(child)) {//mFixedViews用于存放已经确定好位置的View，存到了就没必要再次存放
                 LayoutParams params = (LayoutParams) child.getLayoutParams();
                 // 先测量子View的大小
@@ -231,7 +228,6 @@ public class RandomHmLayout extends ViewGroup {
                 // 用自身的高度去除以分配值，可以算出每一个区域的宽和高
                 float colW = thisW / (float) mXRegularity;
                 float rowH = thisH / (float) mYRegularity;
-
                 while (availAreaCount > 0) { //如果使用区域大于0，就可以为子View尝试分配
                     int arrayIdx = mRdm.nextInt(availAreaCount);//随机一个list中的位置
                     int areaIdx = availAreas.get(arrayIdx);//再根据list中的位置获取一个区域编号
@@ -253,14 +249,12 @@ public class RandomHmLayout extends ViewGroup {
                             params.mLeft = rightEdge;
                         }
                         params.mRight = params.mLeft + childW;
-
                         params.mTop = getPaddingTop() + (int) (rowH * row + mRdm.nextInt(yOffset));
                         int bottomEdge = contentBottom - childH;
                         if (params.mTop > bottomEdge) {//加上子View的宽度后不能超出右边界
                             params.mTop = bottomEdge;
                         }
                         params.mBottom = params.mTop + childH;
-
                         if (!isOverlap(params)) {//判断是否和别的View重叠了
                             mAreaDensity[row][col]++;//没有重叠，把该区域的密度加1
                             child.layout(params.mLeft, params.mTop, params.mRight, params.mBottom);//布局子View
@@ -288,9 +282,7 @@ public class RandomHmLayout extends ViewGroup {
         int t = params.mTop - mOverlapAdd;
         int r = params.mRight + mOverlapAdd;
         int b = params.mBottom + mOverlapAdd;
-
         Rect rect = new Rect();
-
         for (View v : mFixedViews) {
             int vl = v.getLeft() - mOverlapAdd;
             int vt = v.getTop() - mOverlapAdd;
@@ -310,11 +302,11 @@ public class RandomHmLayout extends ViewGroup {
     /**
      * 内部类、接口
      */
-    public static interface Adapter {
+    public interface Adapter {
 
-        public abstract int getCount();
+        int getCount();
 
-        public abstract View getView(int position, View convertView);
+        View getView(int position, View convertView);
     }
 
     public static class LayoutParams extends ViewGroup.LayoutParams {

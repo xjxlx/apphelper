@@ -36,29 +36,51 @@ public class UploadManagerOkHttp {
 
     private static final String TAG = "UploadManager";
     private static UploadManagerOkHttp manager;
-    private MultipartBody.Builder builder;
-    private OkHttpClient mHttpClient;
     /**
      * 封装Request请求对象的群，用来取消下载使用
      */
     private final HashMap<String, Call> mClientMap;
+    private final OkHttpClient mHttpClient;
     private UploadProgressOkHttpListener mListener;
-
+    @SuppressLint("HandlerLeak")
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case UPLOAD_TYPE.UPLOAD_START:
+                    mListener.onStart();
+                    break;
+                // case UPLOAD_TYPE.UPLOAD_PROGRESS:
+                case 2:
+                    Bundle data = msg.getData();
+                    long progress = data.getLong("progress");
+                    long contentLength = data.getLong("contentLength");
+                    String percentage = data.getString("percentage");
+                    mListener.onProgress(progress, contentLength, percentage);
+                    break;
+                // case UPLOAD_TYPE.UPLOAD_DATA_COMPLETE: // 数据上传完成，但是接口为完成
+                case 3: // 数据上传完成，但是接口为完成
+                    mListener.onUploadComplete();
+                    break;
+                case UPLOAD_TYPE.UPLOAD_COMPLETE:
+                    Response response = (Response) msg.obj;
+                    mListener.onComplete(response);
+                    break;
+                case UPLOAD_TYPE.UPLOAD_ERROR:
+                    Exception exception = (Exception) msg.obj;
+                    mListener.onError(exception);
+                    break;
+            }
+        }
+    };
+    private MultipartBody.Builder builder;
     // 当前上传的状态
     private int mUploadType = 0;
 
-    /**
-     * 当前下载的状态 1：正在上传中 ，2：上传完毕 3：上传错误 4：上传下载
-     */
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({UPLOAD_TYPE.UPLOAD_START, UPLOAD_TYPE.UPLOAD_COMPLETE, UPLOAD_TYPE.UPLOAD_ERROR, UPLOAD_TYPE.UPLOAD_CANCEL})
-    public @interface UPLOAD_TYPE {
-        int UPLOAD_START = 1;
-        int UPLOAD_PROGRESS = 2;
-        int UPLOAD_DATA_COMPLETE = 3;
-        int UPLOAD_COMPLETE = 4;
-        int UPLOAD_ERROR = 5;
-        int UPLOAD_CANCEL = 6;
+    public UploadManagerOkHttp() {
+        mClientMap = new HashMap<>();
+        mHttpClient = RetrofitHelper.getTimeOutClient();
     }
 
     /**
@@ -69,11 +91,6 @@ public class UploadManagerOkHttp {
             manager = new UploadManagerOkHttp();
         }
         return manager;
-    }
-
-    public UploadManagerOkHttp() {
-        mClientMap = new HashMap<>();
-        mHttpClient = RetrofitHelper.getTimeOutClient();
     }
 
     /**
@@ -136,15 +153,12 @@ public class UploadManagerOkHttp {
             return;
         }
         mListener = progressListener;
-
         if (builder == null) {
             throw new NullPointerException("请设置完参数后再提交！");
         }
-
         try {
             // 获取一个RequestBody的对象
             MultipartBody multipartBody = builder.build();
-
             Request.Builder builder = new Request.Builder().url(url)// 请求的url
                     .post(new ProgressRequestBody(multipartBody) {
                         @Override
@@ -170,7 +184,6 @@ public class UploadManagerOkHttp {
                             bundle.putLong("contentLength", contentLength);
                             message.setData(bundle);
                             mHandler.sendMessage(message);
-
                             LogUtil.e("--------->onProgress ：" + percentage);
                         }
 
@@ -185,18 +198,15 @@ public class UploadManagerOkHttp {
                             LogUtil.e("--------->UPLOAD_DATA_COMPLETE");
                         }
                     });
-
             // 如果不使用取消功能，可以不传tag
             if (!TextUtils.isEmpty(tag)) {
                 // 根据tag,存入对应的请求对象，用于取消请求使用
                 builder.tag(tag);
             }
-
             Call call = mHttpClient.newCall(builder.build());
             if (!TextUtils.isEmpty(tag)) {
                 mClientMap.put(tag, call);
             }
-
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -215,7 +225,6 @@ public class UploadManagerOkHttp {
                     LogUtil.e("--------->onResponse");
                     UploadManagerOkHttp.this.builder = null;
                     clearParameter();
-
                     // 上传结束的标记
                     mUploadType = UPLOAD_TYPE.UPLOAD_COMPLETE;
                     Message message = mHandler.obtainMessage();
@@ -266,38 +275,17 @@ public class UploadManagerOkHttp {
         return mUploadType;
     }
 
-    @SuppressLint("HandlerLeak")
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case UPLOAD_TYPE.UPLOAD_START:
-                    mListener.onStart();
-                    break;
-                // case UPLOAD_TYPE.UPLOAD_PROGRESS:
-                case 2:
-                    Bundle data = msg.getData();
-
-                    long progress = data.getLong("progress");
-                    long contentLength = data.getLong("contentLength");
-                    String percentage = data.getString("percentage");
-
-                    mListener.onProgress(progress, contentLength, percentage);
-                    break;
-                // case UPLOAD_TYPE.UPLOAD_DATA_COMPLETE: // 数据上传完成，但是接口为完成
-                case 3: // 数据上传完成，但是接口为完成
-                    mListener.onUploadComplete();
-                    break;
-                case UPLOAD_TYPE.UPLOAD_COMPLETE:
-                    Response response = (Response) msg.obj;
-                    mListener.onComplete(response);
-                    break;
-                case UPLOAD_TYPE.UPLOAD_ERROR:
-                    Exception exception = (Exception) msg.obj;
-                    mListener.onError(exception);
-                    break;
-            }
-        }
-    };
+    /**
+     * 当前下载的状态 1：正在上传中 ，2：上传完毕 3：上传错误 4：上传下载
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({UPLOAD_TYPE.UPLOAD_START, UPLOAD_TYPE.UPLOAD_COMPLETE, UPLOAD_TYPE.UPLOAD_ERROR, UPLOAD_TYPE.UPLOAD_CANCEL})
+    public @interface UPLOAD_TYPE {
+        int UPLOAD_START = 1;
+        int UPLOAD_PROGRESS = 2;
+        int UPLOAD_DATA_COMPLETE = 3;
+        int UPLOAD_COMPLETE = 4;
+        int UPLOAD_ERROR = 5;
+        int UPLOAD_CANCEL = 6;
+    }
 }

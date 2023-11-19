@@ -75,7 +75,6 @@ public class OrientationListener extends OrientationEventListener implements Tag
             // 1:开启了自动旋转的功能  0：没有开启自动旋转的功能
             boolean autoRotateOn = (enableValue == 1);
             LogUtil.e(getTag(), "是否开启了自动旋转的功能:" + autoRotateOn);
-
             //检查系统是否开启自动旋转
             if (autoRotateOn) {
                 // 当设备方向改变的时候，监听方向的传感器数据的调用
@@ -86,22 +85,18 @@ public class OrientationListener extends OrientationEventListener implements Tag
 
     @Override
     public void onStart() {
-
     }
 
     @Override
     public void onResume() {
-
     }
 
     @Override
     public void onPause() {
-
     }
 
     @Override
     public void onStop() {
-
     }
 
     @Override

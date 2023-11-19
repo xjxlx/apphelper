@@ -61,16 +61,13 @@ public class GlideUtil {
             this.mFragment = builder.mFragment;
             this.mActivity = builder.mActivity;
             this.mContext = builder.mContext;
-
             // 观察生命周期
             if (mActivity != null) {
                 addObserverActivity();
             }
-
             if (mFragment != null) {
                 addObserverFragment();
             }
-
             // 配置参数
             addOptions();
         }
@@ -103,18 +100,15 @@ public class GlideUtil {
         if (mOptions == null) {
             mOptions = new RequestOptions().fitCenter();
         }
-
         // 占位图
         if (mPlaceholderResource != 0) {
             mOptions.placeholder(mPlaceholderResource);
         }
-
         // 错误图片
         if (mErrorResource != 0) {
             mOptions.error(mErrorResource);
             mOptions.fallback(mErrorResource);
         }
-
         // 指定圆角
         if (mAngle > 0) {
             mOptions.transform(new GlideRoundTransform(mAngle));
@@ -141,7 +135,6 @@ public class GlideUtil {
             this.mView = null;
             this.mImageView = imageView;
             this.mUrl = url;
-
             // 加载view
             loadView();
         } else {
@@ -158,20 +151,16 @@ public class GlideUtil {
                         .load(mUrl)
                         .thumbnail(0.2f) // 图片未加载出来之前的缩略图展示
                         .apply(mOptions);
-
                 intoView(builder);
             }
-
             // fragment
             if (mFragment != null && !isDestroy) {
                 RequestBuilder<Drawable> builder = Glide.with(mFragment)
                         .load(mUrl)
                         .thumbnail(0.2f) // 图片未加载出来之前的缩略图展示
                         .apply(mOptions);
-
                 intoView(builder);
             }
-
             // context 这种情况，有可能会崩溃，但是目前无法处理，拿不到生命周期的对象就无法处理
             if (mContext != null) {
                 RequestBuilder<Drawable> builder = Glide.with(mContext)
@@ -199,7 +188,6 @@ public class GlideUtil {
 
                 @Override
                 public void onLoadCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
-
                 }
             });
         }
@@ -289,11 +277,6 @@ public class GlideUtil {
             radius = dp;
         }
 
-        @Override
-        protected Bitmap transform(@NotNull BitmapPool pool, @NotNull Bitmap toTransform, int outWidth, int outHeight) {
-            return roundCrop(pool, toTransform);
-        }
-
         private static Bitmap roundCrop(BitmapPool pool, Bitmap source) {
             if (source == null) return null;
             Bitmap result = pool.get(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
@@ -307,8 +290,12 @@ public class GlideUtil {
         }
 
         @Override
-        public void updateDiskCacheKey(@NotNull MessageDigest messageDigest) {
+        protected Bitmap transform(@NotNull BitmapPool pool, @NotNull Bitmap toTransform, int outWidth, int outHeight) {
+            return roundCrop(pool, toTransform);
+        }
 
+        @Override
+        public void updateDiskCacheKey(@NotNull MessageDigest messageDigest) {
         }
     }
 }

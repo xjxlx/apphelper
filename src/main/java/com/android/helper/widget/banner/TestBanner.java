@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class TestBanner extends PagerAdapter {
-    private List<View> mList;
+    private final List<View> mList;
 
     public TestBanner(List<View> list) {
         mList = list;
@@ -38,7 +38,6 @@ public class TestBanner extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull @NotNull ViewGroup container, int position) {
         View view = mList.get(position);
-
         // if (view != null) {
         // ViewParent parent = view.getParent();
         // if (parent != null) {
@@ -46,7 +45,6 @@ public class TestBanner extends PagerAdapter {
         // }
         // }
         // container.addView(view);
-
         if (view != null) {
             ViewParent parent = view.getParent();
             if (parent == null) {
@@ -55,7 +53,6 @@ public class TestBanner extends PagerAdapter {
                 LogUtil.e("移除了相同的view");
             }
         }
-
         return view;
     }
 

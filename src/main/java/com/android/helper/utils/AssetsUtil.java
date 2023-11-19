@@ -42,21 +42,21 @@ public class AssetsUtil {
      */
     public void initJson(Context context, String fileName, CallBackListener<String> callBackListener) {
         Flowable.create(new FlowableOnSubscribe<String>() {
-            @Override
-            public void subscribe(@NonNull FlowableEmitter<String> emitter) throws Exception {
-                if (context == null || (TextUtils.isEmpty(fileName))) {
-                    emitter.onError(new NullPointerException("对象为空"));
-                } else {
-                    String jsonForAssets = getJsonForAssets(context, fileName);
-                    if (TextUtils.isEmpty(jsonForAssets)) {
-                        emitter.onError(new NullPointerException("获取数据为空"));
-                    } else {
-                        emitter.onNext(jsonForAssets);
+                    @Override
+                    public void subscribe(@NonNull FlowableEmitter<String> emitter) throws Exception {
+                        if (context == null || (TextUtils.isEmpty(fileName))) {
+                            emitter.onError(new NullPointerException("对象为空"));
+                        } else {
+                            String jsonForAssets = getJsonForAssets(context, fileName);
+                            if (TextUtils.isEmpty(jsonForAssets)) {
+                                emitter.onError(new NullPointerException("获取数据为空"));
+                            } else {
+                                emitter.onNext(jsonForAssets);
+                            }
+                        }
+                        emitter.onComplete();
                     }
-                }
-                emitter.onComplete();
-            }
-        }, BackpressureStrategy.LATEST)
+                }, BackpressureStrategy.LATEST)
                 .compose(RxUtil.getSchedulerFlowable())
                 .subscribe(new DisposableSubscriber<String>() {
                     @Override
@@ -69,7 +69,6 @@ public class AssetsUtil {
 
                     @Override
                     public void onNext(String s) {
-
                         if (callBackListener != null) {
                             callBackListener.onBack(true, "数据获取成功", s);
                         }
@@ -97,7 +96,6 @@ public class AssetsUtil {
      */
     public String getJsonForAssets(Context context, String fileName) {
         String result = "";  // 数据的结果
-
         if ((context != null) && (!TextUtils.isEmpty(fileName))) {
             StringBuilder stringBuilder = new StringBuilder();
             try {
@@ -155,6 +153,5 @@ public class AssetsUtil {
     }
 
     public void clear() {
-
     }
 }

@@ -42,22 +42,18 @@ public class RightImageView extends androidx.appcompat.widget.AppCompatImageView
         Rect src = null;
         Rect des = null;
         Bitmap scaleBitmap = null;
-
         // 得到view的宽高
         int measuredWidth = getMeasuredWidth();
         int measuredHeight = getMeasuredHeight();
-
         // 得到图片的宽高
         Bitmap forImageView = BitmapUtil.getBitmapForImageView(this);
         if (forImageView != null) {
             int bitmapWidth = forImageView.getWidth();
             int bitmapHeight = forImageView.getHeight();
             int screenWidth = ScreenUtil.getScreenWidth(getContext());
-
             // LogUtil.e("measuredWidth: " + measuredWidth + " measuredHeight: " +
             // measuredHeight + " bitmapWidth： " + bitmapWidth + " bitmapHeight： " +
             // bitmapHeight);
-
             if (orientation == 1) {
                 // 图片 / 屏幕宽度
                 float ratio = (float) bitmapWidth / bitmapHeight;
@@ -77,21 +73,17 @@ public class RightImageView extends androidx.appcompat.widget.AppCompatImageView
                 float bitmapMaxWidth = bitmapWidth / i;
                 // view的宽度 * 2 - 图片的最大值， /2 得到两边的间距
                 float interval = (measuredWidth * 2 - bitmapMaxWidth) / 2;
-
                 // 计算view高度和图片高度的比值
                 float ratio = (float) measuredHeight / bitmapHeight;
                 // 得到图片的真实宽度
                 int realWidth = (int) (bitmapWidth / ratio);
                 // LogUtil.e("realWidth: " + realWidth + " realHeight: " + measuredHeight);
-
                 // 缩放bitmap
                 scaleBitmap = BitmapUtil.getBitmapForScale(forImageView, realWidth, measuredHeight);
-
                 // x轴的偏移
                 int dx = realWidth / 2;
                 // 计算开始的偏移
                 // LogUtil.e("realWidth: " + realWidth + " measuredWidth: " + measuredWidth);
-
                 src = new Rect(dx, 0, realWidth, measuredHeight);
                 des = new Rect(0, 0, (int) (measuredWidth - interval), measuredHeight);
                 canvas.drawBitmap(scaleBitmap, src, des, null);

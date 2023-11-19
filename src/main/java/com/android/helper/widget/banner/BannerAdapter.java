@@ -21,8 +21,8 @@ import java.util.List;
  * banner的图片适配器，适用于加载单独的图片
  */
 public class BannerAdapter<T> extends PagerAdapter {
-    String tag = "Adapter ---> ";
     private final List<T> mListData;
+    String tag = "Adapter ---> ";
     private BannerLoadListener<T> mLoadListener;
     private BannerItemClickListener<T> mItemClickListener;// 点击事件
 
@@ -52,13 +52,11 @@ public class BannerAdapter<T> extends PagerAdapter {
             // String类型 或者Integer类型的处理
             // :2:设置对象
             view = LayoutInflater.from(container.getContext()).inflate(R.layout.base_banner, null);
-
             ImageView imageView = view.findViewById(R.id.iv_banner_image);
             // 此处为了兼容多种处理方式，以一个imageView的形式，把图片给传递出去，让用户手动选择怎么去处理
             if (mLoadListener != null) {
                 mLoadListener.onLoadView(imageView, position, mListData.get(position));
             }
-
             // 整个view的点击事件
             View finalView = view;
             view.setOnClickListener(v -> {
@@ -67,7 +65,6 @@ public class BannerAdapter<T> extends PagerAdapter {
                 }
             });
         }
-
         // 先移除，后添加
         if (view != null) {
             ViewParent parent = view.getParent();

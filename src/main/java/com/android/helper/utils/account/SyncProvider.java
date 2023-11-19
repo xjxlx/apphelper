@@ -10,10 +10,10 @@ import androidx.annotation.Nullable;
 
 /**
  * 账号同步的ContentProvider，用来共享同步数据，必须注册：
- *         此处的authorities 必须和string中的account_authority数据保持一致
- *         <provider
- *             android:name=".test.app.account.SyncProvider"
- *             android:authorities="com.android.app.account.authority" />
+ * 此处的authorities 必须和string中的account_authority数据保持一致
+ * <provider
+ * android:name=".test.app.account.SyncProvider"
+ * android:authorities="com.android.app.account.authority" />
  */
 public class SyncProvider extends ContentProvider {
 

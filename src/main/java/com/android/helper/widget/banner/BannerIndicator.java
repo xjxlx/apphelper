@@ -19,12 +19,12 @@ import com.android.helper.R;
  */
 public class BannerIndicator extends LinearLayout {
 
+    private final String TAG = "BannerIndicator ---> ";
     private float mInterval;
     private int mSelectorResource, mUnSelectedResource;
     private int mMaxWidth, mMaxHeight;
     private BannerView mBannerView;
     private int mWidth, mHeight;
-    private String TAG = "BannerIndicator ---> ";
 
     public BannerIndicator(Context context) {
         super(context);
@@ -38,10 +38,8 @@ public class BannerIndicator extends LinearLayout {
 
     private void initView(Context context, AttributeSet attrs) {
         LogUtil.e(TAG, "initView:");
-
         // 固定设置横向
         setOrientation(LinearLayout.HORIZONTAL);
-
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerIndicator);
             // 获取间距
@@ -50,7 +48,6 @@ public class BannerIndicator extends LinearLayout {
             mSelectorResource = typedArray.getResourceId(R.styleable.BannerIndicator_bi_selector_resource, 0);
             // 未选中的图形
             mUnSelectedResource = typedArray.getResourceId(R.styleable.BannerIndicator_bi_unselected_resource, 0);
-
             typedArray.recycle();
         }
     }
@@ -59,7 +56,6 @@ public class BannerIndicator extends LinearLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         LogUtil.e(TAG, "onMease:");
-
         if (isInEditMode()) {
             // 解决预览模式不显示的问题
             int mode = MeasureSpec.getMode(heightMeasureSpec);
@@ -84,16 +80,13 @@ public class BannerIndicator extends LinearLayout {
                         mHeight = childAt.getMeasuredHeight();
                     }
                 }
-
                 // 总体宽度 = view 的个数 * 宽度 + view的个数 -1 * 间距
                 mMaxWidth = (int) (((childCount - 1) * mInterval) + (mWidth * childCount));
                 mMaxHeight = mHeight;
-
                 widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY);
                 heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.EXACTLY);
             }
         }
-
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -103,19 +96,16 @@ public class BannerIndicator extends LinearLayout {
     public void setViewPager(BannerView bannerView, int count) {
         this.mBannerView = bannerView;
         // LogUtil.e(TAG, "setViewPager: ");
-
         // 先清空，在加入
         int childCount = getChildCount();
         if (childCount > 0) {
             removeAllViews();
         }
-
         // 添加指示器
         if (count > 1) { // 只有数据大于1的时候，才去添加，否则就不添加数据
             for (int i = 0; i < count - 2; i++) {
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 ImageView imageView = new ImageView(getContext());
-
                 // :从第二个开始设置
                 if (mInterval > 0) {
                     if (i > 0) {
@@ -123,15 +113,12 @@ public class BannerIndicator extends LinearLayout {
                         params.leftMargin = (int) mInterval;
                     }
                 }
-
                 imageView.setLayoutParams(params);
                 // :3:把view添加到viewGroup中
                 addView(imageView);
             }
-
             // 默认的选中
             onPageSelected(0);
-
             // 设置数据后，重新测量view的宽高
             post(this::requestLayout);
 
@@ -149,14 +136,11 @@ public class BannerIndicator extends LinearLayout {
      */
     public void onPageSelected(int position) {
         // LogUtil.e(TAG, "onPageSelected:" + position);
-
         if (mBannerView != null) {
             int childCount = getChildCount();
             if (childCount > 0) {
-
                 // 重新设置数据
                 setSelector(position);
-
                 for (int i = 0; i < childCount; i++) {
                     View childAt = getChildAt(i);
                     // 设置点击事件
@@ -188,7 +172,6 @@ public class BannerIndicator extends LinearLayout {
                 }
             }
         }
-
         // :当选中某个元素的时候设置为true
         if (mSelectorResource != 0) {
             View childAt = getChildAt(position);

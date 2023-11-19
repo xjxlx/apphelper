@@ -1,33 +1,5 @@
 package com.android.helper.utils;
 
-import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanFilter;
-import android.bluetooth.le.ScanResult;
-import android.bluetooth.le.ScanSettings;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.location.LocationManager;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcelable;
-
-import com.android.common.utils.LogUtil;
-import com.android.helper.common.CommonConstants;
-import com.android.helper.common.EventMessage;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 /**
  * 蓝牙的工具类
  */

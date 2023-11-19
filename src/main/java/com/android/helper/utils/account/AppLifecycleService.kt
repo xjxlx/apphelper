@@ -52,19 +52,15 @@ class AppLifecycleService : Service() {
     }
 
     private fun sendNotification(type: String) {
-        val builder = NotificationUtil
-            .Builder(applicationContext)
-            .setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME)
+        val builder = NotificationUtil.Builder(applicationContext).setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME)
             .setSmallIcon(R.mipmap.ic_launcher)
 
         if (TextUtils.equals(type, LifecycleAppEnum.From_Intent.from)) {
             builder.setContentText("我是后台服务，我是被直接启动的")
             mWriteUtil.write("我是后台服务，我是被直接启动的")
-
         } else if (TextUtils.equals(type, LifecycleAppEnum.FROM_JOB.from)) {
             builder.setContentText("我是后台服务，我是被JobService启动的")
             mWriteUtil.write("我是后台服务，我是被JobService启动的")
-
         } else if (TextUtils.equals(type, LifecycleAppEnum.FROM_ACCOUNT.from)) {
             builder.setContentText("我是后台服务，我是被账号拉活的")
             mWriteUtil.write("我是后台服务，我是被账号拉活的")
@@ -76,19 +72,10 @@ class AppLifecycleService : Service() {
 
     private fun startNotificationForeground() {
 
-        NotificationUtil
-            .Builder(baseContext)
-            .setWhen(System.currentTimeMillis())
-            .setChannelName("应用保活")
-            .setChannelImportance(NotificationManager.IMPORTANCE_HIGH)
-            .setChannelDescription("应用保活的服务")
-            .setContentTitle("应用全局保活")
-            .setAutoCancel(false)
-            .setContentText("应用全局保活进行中...")
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setNotificationLevel(NotificationManager.IMPORTANCE_HIGH)
-            .setService(AppLifecycleService::class.java)
-            .build()
+        NotificationUtil.Builder(baseContext).setWhen(System.currentTimeMillis()).setChannelName("应用保活")
+            .setChannelImportance(NotificationManager.IMPORTANCE_HIGH).setChannelDescription("应用保活的服务")
+            .setContentTitle("应用全局保活").setAutoCancel(false).setContentText("应用全局保活进行中...").setSmallIcon(R.mipmap.ic_launcher)
+            .setNotificationLevel(NotificationManager.IMPORTANCE_HIGH).setService(AppLifecycleService::class.java).build()
             .startLoopForeground(CODE_NOTIFICATION, CODE_INTERVAL.toLong(), this)
     }
 

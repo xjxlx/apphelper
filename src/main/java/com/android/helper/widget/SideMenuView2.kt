@@ -125,7 +125,6 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
                 } else {
                     close()
                     LogUtil.e("---> close: ")
-
                 }
             }
         }
@@ -151,8 +150,8 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
     override fun computeScroll() {
         super.computeScroll()
         if (mScroller.computeScrollOffset()) {
-            scrollTo(mScroller.currX, mScroller.currY);
-            invalidate();
+            scrollTo(mScroller.currX, mScroller.currY)
+            invalidate()
         }
     }
 
@@ -167,5 +166,4 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
     override fun generateDefaultLayoutParams(): LayoutParams {
         return MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     }
-
 }

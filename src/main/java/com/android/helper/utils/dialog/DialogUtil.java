@@ -58,13 +58,6 @@ public class DialogUtil implements BaseLifecycleObserver {
     private Dialog mDialog;
     private boolean isAutoDismiss;// 在点击按钮的时候，是否自定关闭dialog
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({DialogType.DEFAULT_DIALOG, DialogType.HINT_DIALOG})
-    public @interface DialogType {
-        int DEFAULT_DIALOG = 1;
-        int HINT_DIALOG = 2;
-    }
-
     private DialogUtil(Builder builder) {
         if (builder != null) {
             this.mBuilder = builder;
@@ -87,7 +80,6 @@ public class DialogUtil implements BaseLifecycleObserver {
             isAutoDismiss = mBuilder.isAutoDismiss;
             mShowListener = mBuilder.mShowListener;
             mDismissListener = mBuilder.mDismissListener;
-
             // 添加生命周期的控制
             if (typeFrom == 1) {
                 mActivity = mBuilder.mActivity;
@@ -158,7 +150,280 @@ public class DialogUtil implements BaseLifecycleObserver {
         return mDialog;
     }
 
+    /**
+     * 构建dialog 对象
+     */
+    private void initDialog() {
+        if ((mActivity != null) && (!mActivity.isFinishing()) && (!mActivity.isDestroyed())) {
+            // 避免重复出现弹窗
+            if (mDialog != null) {
+                if (mDialog.isShowing()) {
+                    mDialog.dismiss();
+                }
+            }
+            // 设置dialog的方式
+            if (mDialogType == DialogType.DEFAULT_DIALOG) {
+                mDialog = new Dialog(mActivity, R.style.base_dialog_default);
+            } else if (mDialogType == DialogType.HINT_DIALOG) {
+                mDialog = new Dialog(mActivity, R.style.base_dialog_hint);
+            }
+            // 设置布局
+            if ((mLayoutView != null) && (mDialog != null)) {
+                // 移除view的父类，避免布局重复添加时候的崩溃异常
+                ViewParent parent = mLayoutView.getParent();
+                if (parent instanceof ViewGroup) {
+                    ViewGroup group = (ViewGroup) parent;
+                    group.removeAllViews();
+                }
+                // 设置布局
+                mDialog.setContentView(mLayoutView);
+                // 设置属性，如果没有猜错，这个设置的属性，必须要在设置布局之前才可以，否则可能会卡死，出现异常
+                setWindowAttributes();
+                // 点击关闭dialog
+                if (mListCloseView != null && mListCloseView.size() > 0) {
+                    for (View next : mListCloseView) {
+                        next.setOnClickListener(v -> dismiss());
+                    }
+                }
+                // dialog展示时候的监听
+                mDialog.setOnShowListener(dialog -> {
+                    if (mShowListener != null) {
+                        mShowListener.onShow(dialog);
+                    }
+                    EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_SHOW));
+                });
+                // dialog 关闭时候的监听
+                mDialog.setOnDismissListener(dialog -> {
+                    if (mDismissListener != null) {
+                        mDismissListener.onDismiss(dialog);
+                    }
+                    EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_DISMISS));
+                });
+            }
+        }
+    }
+
+    /**
+     * 设置dialog的属性
+     */
+    private void setWindowAttributes() {
+        if (mDialog != null) {
+            // 按下返回键是否可以取消dialog
+            mDialog.setCancelable(mCancelable);
+            // dialog点击区域外的时候，是否可以取消dialog
+            mDialog.setCanceledOnTouchOutside(mCanceledOnTouchOutside);
+            Window window = mDialog.getWindow();
+            if (window != null) {
+                window.setGravity(mGravity);
+                WindowManager.LayoutParams attributes = window.getAttributes();
+                if (attributes != null) {
+                    attributes.width = mWidth;
+                    attributes.height = mHeight;
+                    attributes.x = mOffsetX;
+                    attributes.y = mOffsetY;
+                    if (mAnimation != 0) {
+                        attributes.windowAnimations = mAnimation;
+                    }
+                    // 解决android 9.0水滴屏/刘海屏有黑边的问题
+                    // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    // attributes.layoutInDisplayCutoutMode =
+                    // WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                    // }
+                }
+                // 设置属性
+                window.setAttributes(attributes);
+            }
+        }
+    }
+
+    /**
+     * @param id       指定view的id
+     * @param listener 点击事件
+     * @return 响应view的点击事件
+     */
+    public DialogUtil setOnClickListener(@IdRes int id, DialogClickListener listener) {
+        if (mLayoutView != null) {
+            View view = mLayoutView.findViewById(id);
+            setOnClickListener(view, listener);
+        }
+        return this;
+    }
+
+    /**
+     * @param view     指定view
+     * @param listener 点击事件
+     * @return 响应view的点击事件
+     */
+    public DialogUtil setOnClickListener(View view, DialogClickListener listener) {
+        if (listener != null && view != null) {
+            view.setOnClickListener(v -> {
+                listener.onClick(v, this);
+                if (isAutoDismiss) {
+                    dismiss();
+                }
+            });
+        }
+        return this;
+    }
+
+    /**
+     * @param id       textView
+     * @param content  标题
+     * @param listener 点击事件
+     * @return 按钮设置文字，并设置点击事件
+     */
+    public DialogUtil setOnClickListener(@IdRes int id, String content, DialogClickListener listener) {
+        if (mLayoutView != null) {
+            View view = mLayoutView.findViewById(id);
+            if (!TextUtils.isEmpty(content)) {
+                if (view instanceof TextView) {
+                    TextView textView = (TextView) view;
+                    textView.setText(content);
+                }
+            }
+            setOnClickListener(view, listener);
+        }
+        return this;
+    }
+
+    /**
+     * @param text 内容
+     * @return 设置title内容，title的id必须是：R.id.tv_title
+     */
+    public DialogUtil setText(@IdRes int id, String text) {
+        if (!TextUtils.isEmpty(text)) {
+            if (mLayoutView != null) {
+                View view = mLayoutView.findViewById(id);
+                if (view != null) {
+                    if (view instanceof TextView) {
+                        TextView textView = (TextView) view;
+                        textView.setText(text);
+                    }
+                }
+            }
+        }
+        return this;
+    }
+
+    /**
+     * @param id              控件的资源id
+     * @param visibilityValue true:可见 false:不可见
+     * @return 设置view可见与不可见
+     */
+    public DialogUtil setVisibility(@IdRes int id, boolean visibilityValue) {
+        if (mLayoutView != null) {
+            View view = mLayoutView.findViewById(id);
+            if (view != null) {
+                int visibility = view.getVisibility();
+                if (visibilityValue) {
+                    if (visibility != View.VISIBLE) {
+                        view.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if (visibility != View.GONE) {
+                        view.setVisibility(View.GONE);
+                    }
+                }
+            }
+        }
+        return this;
+    }
+
+    /**
+     * @param text 内容
+     * @return 设置title内容，title的id必须是：R.id.tv_title
+     */
+    public DialogUtil setText(TextView textView, String text) {
+        if (!TextUtils.isEmpty(text) && textView != null) {
+            textView.setText(text);
+        }
+        return this;
+    }
+
+    /**
+     * @return 设置加载view成功的监听
+     */
+    public DialogUtil setOnViewCreatedListener(OnViewCreatedListener listener) {
+        // view布局设置之后的回调
+        if (listener != null) {
+            listener.onViewCreated(mLayoutView);
+        }
+        return this;
+    }
+
+    /**
+     * 释放掉dialog，
+     */
+    public void release() {
+        dismiss();
+        if (mLayoutView != null) {
+            mLayoutView = null;
+        }
+        if (mListCloseView != null) {
+            mListCloseView = null;
+        }
+        if (mShowListener != null) {
+            mShowListener = null;
+        }
+        if (mDismissListener != null) {
+            mDismissListener = null;
+        }
+        if (mDialog != null) {
+            mDialog = null;
+        }
+        if (mFragment != null) {
+            mFragment = null;
+        }
+        if (mActivity != null) {
+            mActivity = null;
+        }
+        if (mBuilder != null) {
+            mBuilder = null;
+        }
+    }
+
+    @Override
+    public void onCreate() {
+    }
+
+    @Override
+    public void onStart() {
+    }
+
+    @Override
+    public void onResume() {
+    }
+
+    @Override
+    public void onPause() {
+    }
+
+    @Override
+    public void onStop() {
+        LogUtil.e("dialog--->stop:");
+        if (stopDialog) {
+            dismiss();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        // 在页面不可见的时候，自动关闭dialog
+        release();
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({DialogType.DEFAULT_DIALOG, DialogType.HINT_DIALOG})
+    public @interface DialogType {
+        int DEFAULT_DIALOG = 1;
+        int HINT_DIALOG = 2;
+    }
+
     public static class Builder {
+        /**
+         * 1：来源于activity，2：来源于fragment
+         */
+        private final int mTypeFrom;
         private int mAnimation = R.style.base_dialog_animation;// 动画
         private int mDialogType = DialogType.DEFAULT_DIALOG;
         private View mLayoutView; // dialog的布局
@@ -176,11 +441,6 @@ public class DialogUtil implements BaseLifecycleObserver {
         private boolean isAutoDismiss = true;// 在点击按钮的时候，是否自定关闭dialog
         private DialogInterface.OnShowListener mShowListener;
         private DialogInterface.OnDismissListener mDismissListener;
-
-        /**
-         * 1：来源于activity，2：来源于fragment
-         */
-        private final int mTypeFrom;
 
         /**
          * @param activity    依赖的activity
@@ -235,7 +495,6 @@ public class DialogUtil implements BaseLifecycleObserver {
             if (fragment != null) {
                 mFragment = fragment;
                 FragmentActivity activity = fragment.getActivity();
-
                 if ((resource != 0) && (activity != null)) {
                     View inflate = LayoutInflater.from(activity).inflate(resource, null, false);
                     if (inflate != null) {
@@ -390,289 +649,6 @@ public class DialogUtil implements BaseLifecycleObserver {
         public DialogUtil Build() {
             return new DialogUtil(this);
         }
-    }
-
-    /**
-     * 构建dialog 对象
-     */
-    private void initDialog() {
-        if ((mActivity != null) && (!mActivity.isFinishing()) && (!mActivity.isDestroyed())) {
-            // 避免重复出现弹窗
-            if (mDialog != null) {
-                if (mDialog.isShowing()) {
-                    mDialog.dismiss();
-                }
-            }
-
-            // 设置dialog的方式
-            if (mDialogType == DialogType.DEFAULT_DIALOG) {
-                mDialog = new Dialog(mActivity, R.style.base_dialog_default);
-            } else if (mDialogType == DialogType.HINT_DIALOG) {
-                mDialog = new Dialog(mActivity, R.style.base_dialog_hint);
-            }
-
-            // 设置布局
-            if ((mLayoutView != null) && (mDialog != null)) {
-                // 移除view的父类，避免布局重复添加时候的崩溃异常
-                ViewParent parent = mLayoutView.getParent();
-                if (parent instanceof ViewGroup) {
-                    ViewGroup group = (ViewGroup) parent;
-                    group.removeAllViews();
-                }
-
-                // 设置布局
-                mDialog.setContentView(mLayoutView);
-
-                // 设置属性，如果没有猜错，这个设置的属性，必须要在设置布局之前才可以，否则可能会卡死，出现异常
-                setWindowAttributes();
-
-                // 点击关闭dialog
-                if (mListCloseView != null && mListCloseView.size() > 0) {
-                    for (View next : mListCloseView) {
-                        next.setOnClickListener(v -> dismiss());
-                    }
-                }
-
-                // dialog展示时候的监听
-                mDialog.setOnShowListener(dialog -> {
-                    if (mShowListener != null) {
-                        mShowListener.onShow(dialog);
-                    }
-                    EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_SHOW));
-                });
-
-                // dialog 关闭时候的监听
-                mDialog.setOnDismissListener(dialog -> {
-                    if (mDismissListener != null) {
-                        mDismissListener.onDismiss(dialog);
-                    }
-                    EventBus.getDefault().post(new EventMessage(CommonConstants.CODE_DIALOG_DISMISS));
-                });
-            }
-        }
-    }
-
-    /**
-     * 设置dialog的属性
-     */
-    private void setWindowAttributes() {
-        if (mDialog != null) {
-
-            // 按下返回键是否可以取消dialog
-            mDialog.setCancelable(mCancelable);
-
-            // dialog点击区域外的时候，是否可以取消dialog
-            mDialog.setCanceledOnTouchOutside(mCanceledOnTouchOutside);
-
-            Window window = mDialog.getWindow();
-            if (window != null) {
-                window.setGravity(mGravity);
-                WindowManager.LayoutParams attributes = window.getAttributes();
-                if (attributes != null) {
-                    attributes.width = mWidth;
-                    attributes.height = mHeight;
-                    attributes.x = mOffsetX;
-                    attributes.y = mOffsetY;
-
-                    if (mAnimation != 0) {
-                        attributes.windowAnimations = mAnimation;
-                    }
-
-                    // 解决android 9.0水滴屏/刘海屏有黑边的问题
-                    // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    // attributes.layoutInDisplayCutoutMode =
-                    // WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-                    // }
-                }
-
-                // 设置属性
-                window.setAttributes(attributes);
-            }
-        }
-    }
-
-    /**
-     * @param id       指定view的id
-     * @param listener 点击事件
-     * @return 响应view的点击事件
-     */
-    public DialogUtil setOnClickListener(@IdRes int id, DialogClickListener listener) {
-        if (mLayoutView != null) {
-            View view = mLayoutView.findViewById(id);
-            setOnClickListener(view, listener);
-        }
-        return this;
-    }
-
-    /**
-     * @param view     指定view
-     * @param listener 点击事件
-     * @return 响应view的点击事件
-     */
-    public DialogUtil setOnClickListener(View view, DialogClickListener listener) {
-        if (listener != null && view != null) {
-            view.setOnClickListener(v -> {
-                listener.onClick(v, this);
-                if (isAutoDismiss) {
-                    dismiss();
-                }
-            });
-        }
-        return this;
-    }
-
-    /**
-     * @param id       textView
-     * @param content  标题
-     * @param listener 点击事件
-     * @return 按钮设置文字，并设置点击事件
-     */
-    public DialogUtil setOnClickListener(@IdRes int id, String content, DialogClickListener listener) {
-        if (mLayoutView != null) {
-            View view = mLayoutView.findViewById(id);
-            if (!TextUtils.isEmpty(content)) {
-                if (view instanceof TextView) {
-                    TextView textView = (TextView) view;
-                    textView.setText(content);
-                }
-            }
-            setOnClickListener(view, listener);
-        }
-        return this;
-    }
-
-    /**
-     * @param text 内容
-     * @return 设置title内容，title的id必须是：R.id.tv_title
-     */
-    public DialogUtil setText(@IdRes int id, String text) {
-        if (!TextUtils.isEmpty(text)) {
-            if (mLayoutView != null) {
-                View view = mLayoutView.findViewById(id);
-                if (view != null) {
-                    if (view instanceof TextView) {
-                        TextView textView = (TextView) view;
-                        textView.setText(text);
-                    }
-                }
-            }
-        }
-        return this;
-    }
-
-    /**
-     * @param id              控件的资源id
-     * @param visibilityValue true:可见 false:不可见
-     * @return 设置view可见与不可见
-     */
-    public DialogUtil setVisibility(@IdRes int id, boolean visibilityValue) {
-        if (mLayoutView != null) {
-            View view = mLayoutView.findViewById(id);
-            if (view != null) {
-                int visibility = view.getVisibility();
-                if (visibilityValue) {
-                    if (visibility != View.VISIBLE) {
-                        view.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    if (visibility != View.GONE) {
-                        view.setVisibility(View.GONE);
-                    }
-                }
-            }
-        }
-        return this;
-    }
-
-    /**
-     * @param text 内容
-     * @return 设置title内容，title的id必须是：R.id.tv_title
-     */
-    public DialogUtil setText(TextView textView, String text) {
-        if (!TextUtils.isEmpty(text) && textView != null) {
-            textView.setText(text);
-        }
-        return this;
-    }
-
-    /**
-     * @return 设置加载view成功的监听
-     */
-    public DialogUtil setOnViewCreatedListener(OnViewCreatedListener listener) {
-        // view布局设置之后的回调
-        if (listener != null) {
-            listener.onViewCreated(mLayoutView);
-        }
-        return this;
-    }
-
-    /**
-     * 释放掉dialog，
-     */
-    public void release() {
-        dismiss();
-
-        if (mLayoutView != null) {
-            mLayoutView = null;
-        }
-        if (mListCloseView != null) {
-            mListCloseView = null;
-        }
-        if (mShowListener != null) {
-            mShowListener = null;
-        }
-        if (mDismissListener != null) {
-            mDismissListener = null;
-        }
-
-        if (mDialog != null) {
-            mDialog = null;
-        }
-
-        if (mFragment != null) {
-            mFragment = null;
-        }
-        if (mActivity != null) {
-            mActivity = null;
-        }
-
-        if (mBuilder != null) {
-            mBuilder = null;
-        }
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onStart() {
-
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onStop() {
-        LogUtil.e("dialog--->stop:");
-        if (stopDialog) {
-            dismiss();
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        // 在页面不可见的时候，自动关闭dialog
-        release();
     }
 
 }

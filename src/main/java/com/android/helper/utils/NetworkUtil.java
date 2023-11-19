@@ -22,8 +22,8 @@ import java.util.Enumeration;
 public class NetworkUtil {
 
     private static NetworkUtil networkUtil;
-    private Application application;
     private static ConnectivityManager connectivityManager;
+    private Application application;
 
     private NetworkUtil() {
         if (connectivityManager == null) {
@@ -44,45 +44,6 @@ public class NetworkUtil {
     }
 
     /**
-     * @return 当前网络是否连接中
-     */
-    public boolean isNetworkConnected() {
-        if (connectivityManager != null) {
-            NetworkInfo wifiInfo = connectivityManager.getActiveNetworkInfo();
-            if (wifiInfo != null) {
-                return wifiInfo.isConnected();
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @return 判断WIFI网络是否连接
-     */
-    public boolean isWifiConnect() {
-        if (connectivityManager != null) {
-            NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            if (wifiInfo != null) {
-                return wifiInfo.isConnected();
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @return 判断手机网络是否连接
-     */
-    public boolean isMobileConnect() {
-        if (connectivityManager != null) {
-            NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-            if (wifiInfo != null) {
-                return wifiInfo.isConnected();
-            }
-        }
-        return false;
-    }
-
-    /**
      * @param context 上下文对象
      * @return 获取ip地址的字符串，如果是WIFI网络下，获取到的是192.168.0.x 的地址，如果是手机网络的情况下，获取到的是10.x.x.x的数据
      */
@@ -92,7 +53,6 @@ public class NetworkUtil {
             if (!(context instanceof Application)) {
                 applicationContext = context.getApplicationContext();
             }
-
             if (applicationContext != null) {
                 NetworkInfo info = ((ConnectivityManager) applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
                 if (info != null && info.isConnected()) {
@@ -134,6 +94,45 @@ public class NetworkUtil {
                 ((ip >> 8) & 0xFF) + "." +
                 ((ip >> 16) & 0xFF) + "." +
                 (ip >> 24 & 0xFF);
+    }
+
+    /**
+     * @return 当前网络是否连接中
+     */
+    public boolean isNetworkConnected() {
+        if (connectivityManager != null) {
+            NetworkInfo wifiInfo = connectivityManager.getActiveNetworkInfo();
+            if (wifiInfo != null) {
+                return wifiInfo.isConnected();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return 判断WIFI网络是否连接
+     */
+    public boolean isWifiConnect() {
+        if (connectivityManager != null) {
+            NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (wifiInfo != null) {
+                return wifiInfo.isConnected();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return 判断手机网络是否连接
+     */
+    public boolean isMobileConnect() {
+        if (connectivityManager != null) {
+            NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if (wifiInfo != null) {
+                return wifiInfo.isConnected();
+            }
+        }
+        return false;
     }
 
 }

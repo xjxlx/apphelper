@@ -98,18 +98,15 @@ public class DateUtil {
 
     public static String parse(long longTime) {
         String result = "";
-
         long hh = longTime / 60 / 60 % 60;
         long mm = longTime / 60 % 60;
         long ss = longTime % 60;
-
         LogUtil.e("hh:" + hh + "  mm:" + mm + "   ss:" + ss);
         if (hh > 0) {
             result = hh + ":" + mm + ":" + ss;
         } else {
             result = "00:" + mm + ":" + ss;
         }
-
         return result;
     }
 
@@ -128,26 +125,22 @@ public class DateUtil {
         long minute = (timeMillis - day * (1000 * 60 * 60 * 24) - hour * (1000 * 60 * 60)) / (1000 * 60);
         //获取秒数
         long second = (timeMillis - day * (1000 * 60 * 60 * 24) - hour * (1000 * 60 * 60) - minute * (1000 * 60)) / 1000;
-
         if (anEnum == DataEnum.DAY_HOURS_MINUTES_SECONDS) { // 显示固定的 天、小时、分钟、秒，如果没有就使用00：补全
             if (day < 10) {
                 result += ("0" + day + ":");
             } else {
                 result += (day + ":");
             }
-
             if (hour < 10) {
                 result += ("0" + hour + ":");
             } else {
                 result += (hour + ":");
             }
-
             if (minute < 10) {
                 result += ("0" + minute + ":");
             } else {
                 result += (minute + ":");
             }
-
             if (second < 10) {
                 result += ("0" + second);
             } else {
@@ -160,13 +153,11 @@ public class DateUtil {
             } else {
                 result += (hour + ":");
             }
-
             if (minute < 10) {
                 result += ("0" + minute + ":");
             } else {
                 result += (minute + ":");
             }
-
             if (second < 10) {
                 result += ("0" + second);
             } else {
@@ -179,7 +170,6 @@ public class DateUtil {
             } else {
                 result += (minute + ":");
             }
-
             if (second < 10) {
                 result += ("0" + second);
             } else {
@@ -187,7 +177,6 @@ public class DateUtil {
             }
 
         } else if (anEnum == DataEnum.AUTO_DIGITS) { // 动态显示 天、小时、分钟、秒、 如果没有，前面的数据，就使用00：去补全，最低的限制要显示分钟和秒
-
             if (day > 0) {
                 if (day < 10) {
                     result += ("0" + day + ":");
@@ -195,7 +184,6 @@ public class DateUtil {
                     result += (day + ":");
                 }
             }
-
             if (hour > 0) {
                 if (hour < 10) {
                     result += ("0" + hour + ":");
@@ -203,13 +191,11 @@ public class DateUtil {
                     result += (hour + ":");
                 }
             }
-
             if (minute < 10) {
                 result += ("0" + minute + ":");
             } else {
                 result += (minute + ":");
             }
-
             if (second < 10) {
                 result += ("0" + second);
             } else {
@@ -235,7 +221,6 @@ public class DateUtil {
 //        instance.set(Calendar.HOUR_OF_DAY, 23)
 //        instance.set(Calendar.MINUTE, 59)
 //        instance.set(Calendar.SECOND, 59)
-
         if ((calendar != null) && !TextUtils.isEmpty(pattern)) {
             return DateFormat.format(pattern, calendar).toString();
         }
@@ -261,7 +246,6 @@ public class DateUtil {
 //        calendar.set(Calendar.MINUTE, 59)
 //        // 秒
 //        calendar.set(Calendar.SECOND, 59)
-
         // 设置具体的内容
         if (calendar != null) {
             calendar.set(field, value);
@@ -271,10 +255,10 @@ public class DateUtil {
 
     /**
      * @param dateValue 日期的字符串，例如"2022-12-12"
-     * @param pattern 转换规则，例如：yyyy-MM-dd HH:mm:ss
+     * @param pattern   转换规则，例如：yyyy-MM-dd HH:mm:ss
      * @return 把字符串转换成一个 Date 对象
      */
-    public static Date getDate(String dateValue,String pattern){
+    public static Date getDate(String dateValue, String pattern) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         try {
             return simpleDateFormat.parse(dateValue);

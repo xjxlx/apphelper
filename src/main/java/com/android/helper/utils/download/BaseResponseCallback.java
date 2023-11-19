@@ -1,6 +1,5 @@
 package com.android.helper.utils.download;
 
-
 import com.android.helper.interfaces.ResponseCallBackListener;
 
 import org.jetbrains.annotations.NotNull;

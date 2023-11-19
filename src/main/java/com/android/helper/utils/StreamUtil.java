@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 数据流的工具类
@@ -19,17 +20,14 @@ public class StreamUtil {
     public static String InputStreamToString(@NotNull InputStream inputStream) {
         InputStreamReader streamReader = null;
         BufferedReader reader = null;
-
         try {
-            streamReader = new InputStreamReader(inputStream, "UTF-8");
+            streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             reader = new BufferedReader(streamReader);
             String line = null;
             StringBuilder buffer = new StringBuilder();
-
             while ((line = reader.readLine()) != null) {
                 buffer.append(line);
             }
-
             return buffer.toString();
         } catch (Exception e) {
             e.printStackTrace();
@@ -39,7 +37,6 @@ public class StreamUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             if (streamReader != null) {
                 try {
                     streamReader.close();

@@ -7,7 +7,8 @@ package com.android.helper.utils
  */
 object GradientUtil {
 
-    fun getDistance(currentTime: Float, startTime: Float, endTime: Float, startDistance: Float, endDistance: Float, isReverse: Boolean): Float {
+    fun getDistance(currentTime: Float, startTime: Float, endTime: Float, startDistance: Float, endDistance: Float,
+                    isReverse: Boolean): Float {
         val distance: Float
 
         val intervalTim = endTime - startTime

@@ -14,7 +14,7 @@ import com.android.helper.utils.ClassUtil;
  */
 public class AndroidLifecycle implements LifecycleEventObserver, TagListener {
 
-    private Object mObj;
+    private final Object mObj;
 
     /**
      * 监听Activity 和 fragment 的生命周期

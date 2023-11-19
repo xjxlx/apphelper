@@ -1,9 +1,9 @@
 package com.android.helper.utils;
 
+import android.text.TextUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import android.text.TextUtils;
 
 /**
  * 正则表达式工具类  校验的工具列

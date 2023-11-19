@@ -41,36 +41,6 @@ public class AppJobService extends JobService {
     public AppJobService() {
     }
 
-    @Override
-    public boolean onStartJob(JobParameters jobParameters) {
-        logWriteUtil.write("onStartJob");
-        if (TextUtils.isEmpty(mServiceName)) {
-            mServiceName = LifecycleManager.getInstance().getServiceName();
-        }
-
-        // 启动后台服务
-        if (!TextUtils.isEmpty(mServiceName)) {
-            boolean serviceRunning = ServiceUtil.isServiceRunning(getApplicationContext(), mServiceName);
-            logWriteUtil.write("☆☆☆☆☆---我是JobService服务，当前后台服务的状态为:" + serviceRunning);
-
-            if (!serviceRunning) {
-                /* 启动应用 */
-                Intent intent = new Intent();
-                intent.setClassName(getPackageName(), mServiceName);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(CommonConstants.KEY_LIFECYCLE_FROM, mAppEnum);
-                ServiceUtil.startService(getApplicationContext(), intent);
-            }
-
-            // 重新开始执行
-            startJob(getApplicationContext(), mAppEnum);
-
-            // 任务已经结束了
-            jobFinished(jobParameters, true);
-        }
-        return true;
-    }
-
     /**
      * @param context 上下文
      * @param appEnum 启动的数据类型
@@ -78,20 +48,16 @@ public class AppJobService extends JobService {
     public static void startJob(Context context, LifecycleAppEnum appEnum) {
         logWriteUtil.write("执行了startJob命令！");
         mAppEnum = appEnum;
-
         // 1:发送对应的通知
         sendNotification(context, appEnum);
-
         if (mJobScheduler == null) {
             mJobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         }
-
         // 创建JobService的类对象
         @SuppressLint("JobSchedulerService") ComponentName appJobComponentName = new ComponentName(context, AppJobService.class);
         // 2：设置JobInfo 的参数信息
         JobInfo.Builder builder = new JobInfo.Builder(AppJobService.APP_JOB_ID, appJobComponentName);
         builder.setPersisted(true); // 设置设备重启时，执行该任务
-
         // 7.0 之前没有任何的限制
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             builder.setPeriodic(CODE_INTERVAL); // 轮询的间隔
@@ -112,9 +78,8 @@ public class AppJobService extends JobService {
     }
 
     private static void sendNotification(Context context, LifecycleAppEnum appEnum) {
-
-        NotificationUtil.Builder builder = new NotificationUtil.Builder(context).setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME).setSmallIcon(R.mipmap.ic_launcher);
-
+        NotificationUtil.Builder builder = new NotificationUtil.Builder(context).setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME)
+                .setSmallIcon(R.mipmap.ic_launcher);
         if (appEnum == LifecycleAppEnum.From_Intent) {
             builder.setContentText("我是JobService，我是被直接启动的");
             logWriteUtil.write("我是JobService，我是被直接启动的");
@@ -127,13 +92,38 @@ public class AppJobService extends JobService {
             builder.setContentText("我是JobService，我是后台服务拉活的");
             logWriteUtil.write("我是JobService，我是后台服务拉活的");
         }
-
         if (appEnum == LifecycleAppEnum.FROM_JOB) {
             return;
         }
         builder.setWhen(System.currentTimeMillis());
         NotificationUtil notificationUtil = builder.build();
         notificationUtil.sendNotification(222);
+    }
+
+    @Override
+    public boolean onStartJob(JobParameters jobParameters) {
+        logWriteUtil.write("onStartJob");
+        if (TextUtils.isEmpty(mServiceName)) {
+            mServiceName = LifecycleManager.getInstance().getServiceName();
+        }
+        // 启动后台服务
+        if (!TextUtils.isEmpty(mServiceName)) {
+            boolean serviceRunning = ServiceUtil.isServiceRunning(getApplicationContext(), mServiceName);
+            logWriteUtil.write("☆☆☆☆☆---我是JobService服务，当前后台服务的状态为:" + serviceRunning);
+            if (!serviceRunning) {
+                /* 启动应用 */
+                Intent intent = new Intent();
+                intent.setClassName(getPackageName(), mServiceName);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra(CommonConstants.KEY_LIFECYCLE_FROM, mAppEnum);
+                ServiceUtil.startService(getApplicationContext(), intent);
+            }
+            // 重新开始执行
+            startJob(getApplicationContext(), mAppEnum);
+            // 任务已经结束了
+            jobFinished(jobParameters, true);
+        }
+        return true;
     }
 
     @Override

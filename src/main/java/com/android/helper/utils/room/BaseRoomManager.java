@@ -1,7 +1,5 @@
 package com.android.helper.utils.room;
-
 //import androidx.room.RoomDatabase;
-
 /**
  * Room数据库管理对象的基类
  * 使用：
@@ -15,29 +13,28 @@ package com.android.helper.utils.room;
 //public abstract class BaseRoomManager extends RoomDatabase {
 
 
-    /* 一：创建一个对象
-     * public static RoomManager getInstance() {
-     *      if (INSTANCE == null) {
-     *          synchronized (RoomManager.class) {
-     *              if (INSTANCE == null) {
-     *                  INSTANCE = Room.databaseBuilder(
-     *                          App.getInstance().getApplicationContext(),
-     *                          RoomManager.class,
-     *                          "room_table_2.db"
-     *                          ).build();
-     *                  }
-     *              }
-     *          }
-     *      return INSTANCE;
-     * }
-     *
-     *
-     * 二：返回一个操作表结构的对象
-     *
-     *      abstract DaoTable1 getDao();
-     *
-     *
-     * /
-     */
-
+/* 一：创建一个对象
+ * public static RoomManager getInstance() {
+ *      if (INSTANCE == null) {
+ *          synchronized (RoomManager.class) {
+ *              if (INSTANCE == null) {
+ *                  INSTANCE = Room.databaseBuilder(
+ *                          App.getInstance().getApplicationContext(),
+ *                          RoomManager.class,
+ *                          "room_table_2.db"
+ *                          ).build();
+ *                  }
+ *              }
+ *          }
+ *      return INSTANCE;
+ * }
+ *
+ *
+ * 二：返回一个操作表结构的对象
+ *
+ *      abstract DaoTable1 getDao();
+ *
+ *
+ * /
+ */
 //}

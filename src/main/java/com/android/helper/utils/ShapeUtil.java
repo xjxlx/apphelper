@@ -3,7 +3,6 @@ package com.android.helper.utils;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.provider.CalendarContract.Colors;
 
 import androidx.annotation.ColorInt;
 
@@ -21,7 +20,7 @@ public class ShapeUtil {
         GradientDrawable gradientDrawable = null;
         if (drawable != null) {
             if (drawable instanceof GradientDrawable) {
-                gradientDrawable = (GradientDrawable)drawable;
+                gradientDrawable = (GradientDrawable) drawable;
             }
         }
         return gradientDrawable;

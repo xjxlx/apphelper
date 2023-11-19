@@ -47,7 +47,7 @@ class DeviceUtil private constructor() {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // android 10 以上，只能通过系统权限获取
                 } else //1.1:如果有权限，直接显示
-                    // 8.0 以下可以用deviceId，8.0以上要使用 imeiId
+                // 8.0 以下可以用deviceId，8.0以上要使用 imeiId
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // 只适用于手机，依赖于sim卡
                         deviceId = systemService.imei // 设备的SN 序列号
                         if (TextUtils.isEmpty(deviceId)) {
@@ -76,15 +76,16 @@ class DeviceUtil private constructor() {
         val SDK = Build.VERSION.SDK // 系统 版本
         val RELEASE = Build.VERSION.RELEASE
 
-        LogUtil.e("fingerprint:$fingerprint\r\n 系统品牌:$BRAND \r\n 型号: $MODEL \n 系统制造商:$MANUFACTURER \n 设备参数:$DEVICE \n 手机制造商:$PRODUCT\n sdk 版本:$SDK\n 系统 版本:$RELEASE")
+        LogUtil.e(
+            "fingerprint:$fingerprint\r\n 系统品牌:$BRAND \r\n 型号: $MODEL \n 系统制造商:$MANUFACTURER \n 设备参数:$DEVICE \n 手机制造商:$PRODUCT\n sdk 版本:$SDK\n 系统 版本:$RELEASE")
 
-        val deviceId = uniqueId + "_" + Build.BRAND + "_" + Build.MODEL + "_" + Build.MANUFACTURER + "_" + Build.DEVICE + "_" + Build.PRODUCT
+        val deviceId =
+            uniqueId + "_" + Build.BRAND + "_" + Build.MODEL + "_" + Build.MANUFACTURER + "_" + Build.DEVICE + "_" + Build.PRODUCT
         LogUtil.e("deviceId --------->$deviceId")
     }
 
     fun getSdPath(): String {
-        return FileUtil.getInstance()
-            .getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
+        return FileUtil.getInstance().getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
     }
 
     fun getFilesDirPath(context: Context?): String {
@@ -107,8 +108,7 @@ class DeviceUtil private constructor() {
         var content = ""
         val file = File(path + File.separator, fileName)
         if (file.exists()) {
-            content = FileUtil.getInstance()
-                .getContentForFile(file)
+            content = FileUtil.getInstance().getContentForFile(file)
         }
         return content
     }
@@ -150,8 +150,7 @@ class DeviceUtil private constructor() {
 
                 if (childFile.exists()) {
                     // 写入数据
-                    val success = FileUtil.getInstance()
-                        .writeContentToFile(childFile, androidId)
+                    val success = FileUtil.getInstance().writeContentToFile(childFile, androidId)
                     LogUtil.e(TAG, "Device 文件写入成功：$success")
                 } else {
                     LogUtil.e(TAG, "Device 子类文件创建失败！")

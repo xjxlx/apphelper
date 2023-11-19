@@ -23,6 +23,9 @@ import java.util.ArrayList;
  */
 public class PageView extends ViewGroup {
 
+    private final int mViewRows = 2; // view的行数
+    private final int mViewColumn = 4;// view的列数
+    private final int mRowInterval = 30;// view行的间距
     private Context mContext;
     private int mResource;// 资源文件
     private int mScreenWidth; // 屏幕的宽度
@@ -30,11 +33,6 @@ public class PageView extends ViewGroup {
     private int mMarginRight;
     private int mLayoutMeasuredWidth;// layout的宽度
     private int mLayoutMeasuredHeight; // layout的高度
-
-    private int mViewRows = 2; // view的行数
-    private int mViewColumn = 4;// view的列数
-    private int mRowInterval = 30;// view行的间距
-
     private int mScrollPresetValue;// 滑动预设的值
     private int mViewIntervalWidth;// 宽度的间距
     private int mOnePageCount;// 一页的个数
@@ -47,6 +45,11 @@ public class PageView extends ViewGroup {
     private int mViewMeasuredHeight;// view的高度
     private int mViewMeasuredWidth;// view的宽度
     private ItemClickListener mListener;
+    private float mInterceptDown;
+    private float mInterceptDx;// 移动的偏移量
+    private float mDownDx;
+    private float mDownStartX;
+    private int mCurrentPage;// 当前是第几页
 
     public PageView(Context context) {
         super(context);
@@ -62,11 +65,9 @@ public class PageView extends ViewGroup {
         mContext = context;
         mOnePageCount = mViewRows * mViewColumn;
         mScroller = new Scroller(context);
-
         // 屏幕的宽度
         mScreenWidth = ScreenUtil.getScreenWidth(getContext());
         getMargin();
-
         mDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
@@ -91,7 +92,6 @@ public class PageView extends ViewGroup {
         }
         // view的宽度 = 屏幕的宽度 - 左右的margin值
         mLayoutMeasuredWidth = mScreenWidth - mMarginLeft - mMarginRight;
-
         // 预设的值
         // mScrollPresetValue = ViewConfiguration.get(mContext).getScaledTouchSlop();
         mScrollPresetValue = (mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight()) / 4;
@@ -101,9 +101,7 @@ public class PageView extends ViewGroup {
      * @param dataList 设置数据
      */
     public <T> void setDataList(ArrayList<T> dataList) {
-
         getMargin();
-
         LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         if ((dataList != null) && (dataList.size() > 0)) {
             int size = dataList.size();
@@ -134,7 +132,6 @@ public class PageView extends ViewGroup {
                 mPageCount = value;
             }
         }
-
         requestLayout();
     }
 
@@ -145,34 +142,26 @@ public class PageView extends ViewGroup {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
         getMargin();
-
         LogUtil.e("screenWidth:" + mScreenWidth + " marginLeft:" + mMarginLeft + "  marginRight: " + mMarginRight + "  result:" + mLayoutMeasuredWidth);
-
         int mChildCount = getChildCount();
         if (mChildCount > 0) {
-
             // 测量每一个view的宽高
             for (int i = 0; i < mChildCount; i++) {
                 View childAt = getChildAt(i);
                 measureChild(childAt, widthMeasureSpec, heightMeasureSpec);
             }
-
             if (mViewMeasuredHeight <= 0) {
                 mViewMeasuredHeight = getChildAt(0).getMeasuredHeight();
             }
-
             if (mViewMeasuredWidth <= 0) {
                 mViewMeasuredWidth = getChildAt(0).getMeasuredWidth();
             }
-
             if (mChildCount > (mViewColumn)) {
                 mLayoutMeasuredHeight = mViewMeasuredHeight * mViewRows;// 说明大于一行就需要叠加view的高度
             } else {
                 mLayoutMeasuredHeight = mViewMeasuredHeight;// 小于一行，一个view的高度就可以了
             }
-
             // 加入行高
             mLayoutMeasuredHeight += ((Math.abs(mViewRows - 1)) * mRowInterval);
             // 重新设置
@@ -186,32 +175,24 @@ public class PageView extends ViewGroup {
         // 重新布局
         int right, top, bottom;
         int childCount = getChildCount();
-
         for (int i = 0; i < childCount; i++) {
             View childAt = getChildAt(i);
             int left = 0;
             // 列间距 = view的宽度 - 一排view的宽度和 除以 列数 +1
             mViewIntervalWidth = (mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight() - (mViewColumn * mViewMeasuredWidth)) / (mViewColumn + 1);
-
             int positionForColumn = getPositionForColumn(i);
             int positionForRow = getPositionForRow(i);
             int page = getPageForPosition(i);
-
             // （间距 *（列数 +1）） + （列数 * view的宽度）+ paddingLeft = 一屏view的宽度
             left += (((positionForColumn + 1) * mViewIntervalWidth) + (positionForColumn * mViewMeasuredWidth) + getPaddingLeft());
             // 增加 页数 =（屏幕的宽度 -左右的padding - 间距）
             left += (page * ((mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight()) - mViewIntervalWidth));
-
             right = left + mViewMeasuredWidth;
             top = positionForRow * mViewMeasuredHeight + (positionForRow * mRowInterval) + getPaddingTop();
             bottom = top + mViewMeasuredHeight;
-
             childAt.layout(left, top, right, bottom);
         }
     }
-
-    private float mInterceptDown;
-    private float mInterceptDx;// 移动的偏移量
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -221,7 +202,6 @@ public class PageView extends ViewGroup {
                  * 此处必须要增加手势识别器的事件，因为在move的时候，已经做了返回，此处如果不做的，会固定返回false，导致手势的动作被拦截，导致出现异常情况
                  */
                 mDetector.onTouchEvent(ev);
-
                 mInterceptDown = ev.getX();
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -241,10 +221,6 @@ public class PageView extends ViewGroup {
         return super.onInterceptTouchEvent(ev);
     }
 
-    private float mDownDx;
-    private float mDownStartX;
-    private int mCurrentPage;// 当前是第几页
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -257,7 +233,6 @@ public class PageView extends ViewGroup {
                 // 求出当前的页面是哪一个page
                 mCurrentPage = getScrollX() / (mLayoutMeasuredWidth - getPaddingLeft() - mViewIntervalWidth - getPaddingRight());
                 break;
-
             case MotionEvent.ACTION_MOVE:
                 float eventX = event.getX();
                 float dx = eventX - mDownStartX;
@@ -267,24 +242,19 @@ public class PageView extends ViewGroup {
                 } else if (dx > 1) {
                     isToLeft = 2;
                 }
-
                 // 右侧的边距
                 float rightInterval = (mPageCount - 1) * (mLayoutMeasuredWidth - mViewIntervalWidth - getPaddingLeft() - getPaddingRight());
-
                 int scrollX = getScrollX();
                 if (scrollX < 0) {
                     scrollTo(0, 0);
                 } else if (scrollX >= (rightInterval)) {
                     scrollTo((int) rightInterval, 0);
                 }
-
                 LogUtil.e("isToLeft:" + isToLeft + "   sx:" + mDownStartX + "  ex:" + eventX + "   rx:" + dx);
                 mDownStartX = eventX; // 这句话的含义是为了更快的测量出来手指的方向
                 break;
-
             case MotionEvent.ACTION_UP:
                 LogUtil.e("mScrollInterval:" + mScrollInterval + "   mCurrentPage:" + mCurrentPage);
-
                 float dxUp = event.getX();
                 mScrollInterval = dxUp - mDownDx;
                 int scrollX1 = getScrollX();
@@ -301,9 +271,7 @@ public class PageView extends ViewGroup {
                         }
                     }
                 }
-
                 startScrollX(scrollX1, mCurrentPage * (mLayoutMeasuredWidth - getPaddingLeft() - getPaddingRight() - mViewIntervalWidth));
-
                 // 清空数据
                 isToLeft = 0;
                 mScrollInterval = 0;

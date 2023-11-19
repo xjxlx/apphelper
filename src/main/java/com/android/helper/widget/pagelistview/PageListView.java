@@ -16,11 +16,11 @@ import com.android.helper.utils.ScreenUtil;
  * @author : 流星
  * @CreateDate: 2022/1/5-2:54 下午
  * @Description: 绘制一个可以左右分页滑动的列表View
- *               <ol>
- *               思路：
- *               1：创建一个adapter,用来绑定数据和视图
- *               2：创建viewHolder，用来缓存和复用
- *               </ol>
+ * <ol>
+ * 思路：
+ * 1：创建一个adapter,用来绑定数据和视图
+ * 2：创建viewHolder，用来缓存和复用
+ * </ol>
  */
 public class PageListView extends HorizontalScrollView {
 
@@ -50,7 +50,6 @@ public class PageListView extends HorizontalScrollView {
     }
 
     private void initView(Context context, AttributeSet attrs) {
-
     }
 
     public void setAdapter(PageListAdapter<?> adapter) {
@@ -58,23 +57,19 @@ public class PageListView extends HorizontalScrollView {
             // 获取数量，根据数量去区分排列
             mCount = adapter.getCount();
             mConvertView = adapter.getView(0, mConvertView, this);
-
             // 刷新列表，重新加载
             invalidate();
-
             addViews();
         }
     }
 
     private void addViews() {
-
     }
 
     /**
      * 刷新全部数据
      */
     public void notifyDataSetChanged() {
-
     }
 
     /**
@@ -83,37 +78,30 @@ public class PageListView extends HorizontalScrollView {
      * @param position 指定的位置角标
      */
     public void notifyItemChanged(int position) {
-
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mChildHeight = 50;
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
         // 计算页面的宽高
         if (mConvertView != null) {
             // 获取单个view的宽高
             // mChildWidth = mConvertView.getMeasuredWidth();
             // mChildHeight = mConvertView.getMeasuredHeight();
-
             int paddingTop = getPaddingTop();
             int paddingBottom = getPaddingBottom();
             int paddingLeft = getPaddingLeft();
             int paddingRight = getPaddingRight();
-
             // 计算出每个view所占用的平均宽度
             int screenWidth = ScreenUtil.getScreenWidth(getContext());
             if (screenWidth > 0 && mColumn > 0) {
                 mAverageWidth = screenWidth / mColumn;
             }
-
             // 计算出最大的宽度
             getMaxWidth(screenWidth);
-
             // 计算出最大的高度
             getMaxHeight();
-
             LogUtil.e("最大的宽度：" + mMaxWidth + "   最大的高度：" + mMaxHeight);
             setMeasuredDimension(mMaxWidth, mMaxHeight);
         }
@@ -154,7 +142,6 @@ public class PageListView extends HorizontalScrollView {
             } else {
                 int divisor = mCount / pageCount; // 获取除数
                 int remainder = mCount % pageCount; // 获取余数
-
                 // 回去多页时候具体的页数
                 if (remainder <= 0) {
                     // 说明正好是整页的数量，宽度 = 屏幕宽度 * 除数
@@ -170,7 +157,6 @@ public class PageListView extends HorizontalScrollView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
         /**
          * 绘制流程：
          * 1：计算行和列
@@ -187,7 +173,6 @@ public class PageListView extends HorizontalScrollView {
             // 获取单个view的宽高
             mChildWidth = mConvertView.getMeasuredWidth();
             mChildHeight = mConvertView.getMeasuredHeight();
-
             LogUtil.e("onDraw ---> mChildWidth:" + mChildWidth + "  mChildHeight:" + mChildHeight);
         }
     }

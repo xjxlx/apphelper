@@ -38,9 +38,9 @@ import java.util.List;
  * 让ScrollView去允许子view自控扩展高度
  */
 public class BannerView extends ViewPager implements BaseLifecycleObserver {
-    private String TAG = "";
-
     private final int CODE_WHAT_LOOP = 1000;// 轮询的code值
+    private final boolean isLast = true; // 滑动是否可用
+    private String TAG = "";
     private int CODE_LOOP_INTERVAL = 3 * 1000;// 轮询的时间间隔，默认5s
     private boolean mAutoLoop = true;// 是否开启轮询，默认开启
     private List mListData;// 数据的集合
@@ -49,7 +49,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     private BannerIndicator mIndicator;
     private int mMaxWidth, mMaxHeight;
     private int mCurrent;// 当前的position
-    private boolean isLast = true; // 滑动是否可用
     private boolean mIsParentIntercept = false;// 父类是否拦截的标记
     private int mStartX, mStartY; // 开始滑动的x轴位置
     private BannerAdapter mBannerAdapter;
@@ -91,7 +90,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             FragmentActivity fragmentActivity = (FragmentActivity) activity;
             Lifecycle lifecycle = fragmentActivity.getLifecycle();
             lifecycle.addObserver(this);
-
             seBannerAdapter();
         }
     }
@@ -104,27 +102,21 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             LogUtil.e(TAG, "---: setAdapter");
             if ((mListData != null) && (mListData.size() > 0)) {
                 mBannerAdapter = new BannerAdapter(mListData);
-
                 if (mLoadListener != null) {
                     mBannerAdapter.setBannerLoadListener(mLoadListener);
                 }
                 if (mBannerItemClickListener != null) {
                     mBannerAdapter.setItemClickListener(mBannerItemClickListener);
                 }
-
                 // 预加载的数量
                 // setOffscreenPageLimit(mListData.size());
-
                 // 设置adapter
                 setAdapter(mBannerAdapter);
-
                 // 添加指示器
                 if (mIndicator != null) {
                     mIndicator.setViewPager(BannerView.this, mListData.size());
                 }
-
                 isSetAdapter = true;
-
                 // 发送轮询
                 mHandler.sendEmptyMessage(CODE_WHAT_LOOP);
             }
@@ -149,7 +141,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         addOnPageChangeListener(new OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
@@ -157,7 +148,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 LogUtil.e(TAG, "----->current---onPageSelected: current: " + getCurrentItem() + "  position:" + position);
                 // 处理点击事件
                 mCurrent = position;
-
                 // 只有数据大于1的时候，才会去执行indicator的选中
                 if (mListData != null) {
                     if (mListData.size() > 1) {
@@ -181,7 +171,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             public void onPageScrollStateChanged(int state) {
                 // LogUtil.e(TAG, "----->current---onPageScrollStateChanged: current: " +
                 // getCurrentItem() + " mCurrent:" + mCurrent);
-
                 if (mListData != null && mListData.size() > 1) {
                     if (state == ViewPager.SCROLL_STATE_IDLE) {
                         if (mCurrent == 0) { //
@@ -192,7 +181,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                              * 3：在设置了转移数据之后，再次去重新开启轮询
                              */
                             setCurrentItem(mListData.size() - 2, false);
-
                             // 再次去轮询
                             onStart();
 
@@ -205,7 +193,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                              * 3：在设置了转移数据之后，再次去重新开启轮询
                              */
                             setCurrentItem(1, false);
-
                             // 再次去轮询
                             onStart();
                         }
@@ -244,13 +231,11 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 // :得到左右上下的偏移量
                 int dx = x - mStartX;
                 int dy = y - mStartY;
-
                 if (dx > 0) {
                     // LogUtil.e("向右滑动 dx :" + dx);
                 } else {
                     // LogUtil.e("向左滑动 dx: " + dx);
                 }
-
                 // :判断
                 if (Math.abs(dx) > Math.abs(dy)) {
                     // :如果左右的偏量大于上下的偏移量的话，那木就能确定是左右滑动
@@ -269,7 +254,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
                 sendMessage();
                 break;
         }
-
         return super.dispatchTouchEvent(ev);
     }
 
@@ -339,16 +323,26 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
         return this;
     }
 
-    @SuppressLint("HandlerLeak")
+    @Override
+    public void onCreate() {
+    }
+
+    @Override
+    public void onStart() {
+        sendMessage();
+    }
+
+    @Override
+    public void onResume() {
+        onStart();
+    }    @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull @NotNull Message msg) {
             super.handleMessage(msg);
             LogUtil.e(TAG, "----->Banner---mHandler:" + getCurrentItem() + "    mCurrent：" + mCurrent);
-
             // :移除掉所有的回调和message的消息，如果传入null的话
             onStop();
-
             if (mListData != null) {
                 if (msg.what == CODE_WHAT_LOOP) {
                     if (mListData.size() <= 1) { // 如果数据小于1，则停止
@@ -365,21 +359,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     };
 
     @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onStart() {
-        sendMessage();
-    }
-
-    @Override
-    public void onResume() {
-        onStart();
-    }
-
-    @Override
     public void onPause() {
         onStop();
     }
@@ -393,7 +372,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
 
     @Override
     public void onDestroy() {
-
         onStop();
         if (mListData != null) {
             mListData.clear();
@@ -424,7 +402,6 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         LogUtil.e(TAG, "onSizeChanged: w:" + w + " h:" + h + "  oldw:" + oldw + "  olh:" + oldh);
-
         if (getVisibility() == View.VISIBLE) {
             isVisibility = true;
         }
@@ -432,4 +409,7 @@ public class BannerView extends ViewPager implements BaseLifecycleObserver {
             seBannerAdapter();
         }
     }
+
+
+
 }

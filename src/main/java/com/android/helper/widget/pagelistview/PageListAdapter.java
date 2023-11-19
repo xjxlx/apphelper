@@ -11,7 +11,7 @@ import java.util.List;
  * @Description:
  */
 public abstract class PageListAdapter<T> extends BaseAdapter {
-    private Activity mActivity;// 上下文
+    private final Activity mActivity;// 上下文
     protected List<T> mList;// 指定的数据集合
 
     public PageListAdapter(Activity activity, List<T> list) {

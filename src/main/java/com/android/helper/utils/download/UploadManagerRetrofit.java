@@ -34,8 +34,10 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 public class UploadManagerRetrofit {
 
     private static final String TAG = "UploadManager";
+    // 当前上传的状态
+    public static int UP_LOAD_TYPE = 0;
     private static int mTimeOut = 60 * 10; // 默认10分钟，应该是足够了的，可以自定义
-
+    private static UploadManagerRetrofit manager;
     /**
      * 封装Call请求对象的群，用来取消上传使用
      */
@@ -44,23 +46,19 @@ public class UploadManagerRetrofit {
      * 参数的集合
      */
     private final List<MultipartBody.Part> mListPart = new ArrayList<>();// 参数的集合
-    // 当前上传的状态
-    public static int UP_LOAD_TYPE = 0;
-    private static UploadManagerRetrofit manager;
     private Retrofit retrofit;
 
     /**
-     * 当前下载的状态 1：正在上传中 ，2：上传完毕 3：上传错误 4：上传下载
+     * 普通的构造方法
      */
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({UPLOAD_TYPE.UPLOAD_START, UPLOAD_TYPE.UPLOAD_COMPLETE, UPLOAD_TYPE.UPLOAD_ERROR, UPLOAD_TYPE.UPLOAD_CANCEL})
-    public @interface UPLOAD_TYPE {
-        int UPLOAD_START = 1;
-        int UPLOAD_PROGRESS = 2;
-        int UPLOAD_DATA_COMPLETE = 3;
-        int UPLOAD_COMPLETE = 4;
-        int UPLOAD_ERROR = 5;
-        int UPLOAD_CANCEL = 6;
+    private UploadManagerRetrofit() {
+    }
+
+    /**
+     * @param timeOut 带超时时间的构造方法
+     */
+    private UploadManagerRetrofit(int timeOut) {
+        mTimeOut = timeOut;
     }
 
     public static UploadManagerRetrofit getInstance() {
@@ -75,19 +73,6 @@ public class UploadManagerRetrofit {
             manager = new UploadManagerRetrofit(outTime);
         }
         return manager;
-    }
-
-    /**
-     * 普通的构造方法
-     */
-    private UploadManagerRetrofit() {
-    }
-
-    /**
-     * @param timeOut 带超时时间的构造方法
-     */
-    private UploadManagerRetrofit(int timeOut) {
-        mTimeOut = timeOut;
     }
 
     /**
@@ -161,13 +146,14 @@ public class UploadManagerRetrofit {
         httpBuilder.readTimeout(mTimeOut, TimeUnit.SECONDS)// 设置读取超时时间
                 .writeTimeout(mTimeOut, TimeUnit.SECONDS)// 设置写的超时时间
                 .connectTimeout(mTimeOut, TimeUnit.SECONDS);// 设置连接超时时间
-
         if (listener != null) {
             httpBuilder.addInterceptor(new UploadInterceptor<>(listener));
-            retrofit = new Retrofit.Builder().client(httpBuilder.build()).baseUrl(BaseApplication.getInstance().getBaseUrl()).addConverterFactory(ScalarsConverterFactory.create()).addConverterFactory(GsonConverterFactory.create()).build();
+            retrofit = new Retrofit.Builder().client(httpBuilder.build()).baseUrl(BaseApplication.getInstance().getBaseUrl())
+                    .addConverterFactory(ScalarsConverterFactory.create()).addConverterFactory(GsonConverterFactory.create()).build();
         } else {
             if (retrofit == null) {
-                retrofit = new Retrofit.Builder().client(httpBuilder.build()).baseUrl(BaseApplication.getInstance().getBaseUrl()).addConverterFactory(ScalarsConverterFactory.create()).addConverterFactory(GsonConverterFactory.create()).build();
+                retrofit = new Retrofit.Builder().client(httpBuilder.build()).baseUrl(BaseApplication.getInstance().getBaseUrl())
+                        .addConverterFactory(ScalarsConverterFactory.create()).addConverterFactory(GsonConverterFactory.create()).build();
             }
         }
         return retrofit;
@@ -180,7 +166,6 @@ public class UploadManagerRetrofit {
      * @param call call对象
      */
     public <T> void uploadFiles(String tag, Call<T> call, UploadProgressListener<T> progressListener) {
-
         // 取消上一个对象
         if (mClientMap.size() > 0) {
             Call cancel = mClientMap.get(tag);
@@ -190,17 +175,14 @@ public class UploadManagerRetrofit {
                 return;
             }
         }
-
         if (mListPart.size() <= 0) {
             LogUtil.e("请设置完参数后再提交！");
             return;
         }
-
         // 开始请求数据
         if (call != null) {
             // 把call对象存到集合中去
             mClientMap.put(tag, call);
-
             // 开始异步执行
             call.enqueue(new BaseResponseCallback<T>() {
                 @Override
@@ -208,7 +190,6 @@ public class UploadManagerRetrofit {
                     LogUtil.e("--------->onSuccess" + t);
                     // 清空参数
                     clearParameter();
-
                     // 上传结束的标记
                     UP_LOAD_TYPE = UPLOAD_TYPE.UPLOAD_COMPLETE;
                     if (progressListener != null) {
@@ -230,5 +211,19 @@ public class UploadManagerRetrofit {
                 }
             });
         }
+    }
+
+    /**
+     * 当前下载的状态 1：正在上传中 ，2：上传完毕 3：上传错误 4：上传下载
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({UPLOAD_TYPE.UPLOAD_START, UPLOAD_TYPE.UPLOAD_COMPLETE, UPLOAD_TYPE.UPLOAD_ERROR, UPLOAD_TYPE.UPLOAD_CANCEL})
+    public @interface UPLOAD_TYPE {
+        int UPLOAD_START = 1;
+        int UPLOAD_PROGRESS = 2;
+        int UPLOAD_DATA_COMPLETE = 3;
+        int UPLOAD_COMPLETE = 4;
+        int UPLOAD_ERROR = 5;
+        int UPLOAD_CANCEL = 6;
     }
 }

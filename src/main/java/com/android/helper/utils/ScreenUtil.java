@@ -117,7 +117,6 @@ public class ScreenUtil {
                         .getWindowVisibleDisplayFrame(localRect);
                 statusBarHeight = localRect.top;
             }
-
             if (statusBarHeight > 0) {
                 SpUtil.INSTANCE.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
                 LogUtil.e("获取状态栏的高度为：【2】--->" + statusBarHeight);
@@ -132,7 +131,6 @@ public class ScreenUtil {
                             .toString());
                     statusBarHeight = activity.getResources()
                             .getDimensionPixelSize(i5);
-
                     // 存入本地sp中状态栏高度
                     if (statusBarHeight > 0) {
                         SpUtil.INSTANCE.putInt(CommonConstants.KEY_STATUS_BAR_HEIGHT, statusBarHeight);
@@ -171,30 +169,25 @@ public class ScreenUtil {
         if (activity == null) {
             throw new NullPointerException("activity为空，解锁失败");
         }
-
         // 添加Window的flag
         Window win = activity.getWindow();
         win.addFlags(
                 WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-
         if (pm == null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 pm = (PowerManager) activity.getSystemService(POWER_SERVICE);
             }
         }
-
         @SuppressLint("InvalidWakeLockTag") PowerManager.WakeLock wakelock = pm.newWakeLock(
                 PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "xx");
         wakelock.acquire(10 * 60 * 1000L /*10 minutes*/);
         wakelock.release();
-
         if (keyguardManager == null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 keyguardManager = (KeyguardManager) activity.getApplicationContext()
                         .getSystemService(KEYGUARD_SERVICE);
             }
         }
-
         // 请求打开没有解锁的屏幕
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             keyguardManager.requestDismissKeyguard(activity, new KeyguardManager.KeyguardDismissCallback() {
@@ -220,7 +213,6 @@ public class ScreenUtil {
     }
 
     public void toString(Context context) {
-
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
         wm.getDefaultDisplay()
@@ -232,7 +224,6 @@ public class ScreenUtil {
         // 屏幕宽度算法:屏幕宽度（像素）/屏幕密度
         int screenWidth = (int) (width / density);  // 屏幕宽度(dp)
         int screenHeight = (int) (height / density);// 屏幕高度(dp)
-
         LogUtil.e("screenWidth:" + screenWidth + "  screenHeight:" + screenHeight);
     }
 

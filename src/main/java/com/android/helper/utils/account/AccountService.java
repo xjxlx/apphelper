@@ -29,15 +29,15 @@ public class AccountService extends Service {
 
     private AccountAuthenticator myAccount;
 
+    public AccountService() {
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         if (myAccount == null) {
             myAccount = new AccountAuthenticator(getBaseContext());
         }
-    }
-
-    public AccountService() {
     }
 
     @Override

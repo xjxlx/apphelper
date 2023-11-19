@@ -63,14 +63,11 @@ public class PopupUtil implements BaseLifecycleObserver {
         mActivity = builder.mActivity;
         Fragment fragment = builder.mFragment;
         mLayout = builder.mLayout;
-
         ViewCreatedListener createdListener = builder.mCreatedListener;
-
         mGravity = builder.mGravity;
         mAlpha = builder.mAlpha;
         // 1:fragmentActivity 2:fragment
         int typeFromPage = builder.mTypeFromPage;
-
         // 局部使用的对象
         int width = builder.mWidth;
         int height = builder.mHeight;
@@ -80,7 +77,6 @@ public class PopupUtil implements BaseLifecycleObserver {
         boolean touchable = builder.mTouchable;
         // 是否可以超出屏幕显示，默认false:表示可以遮罩
         boolean clippingEnabled = builder.mClippingEnabled;
-
         // 释放掉原来的pop
         if (mPopupWindow != null) {
             if (mPopupWindow.isShowing()) {
@@ -88,7 +84,6 @@ public class PopupUtil implements BaseLifecycleObserver {
             }
             mPopupWindow = null;
         }
-
         mPopupWindow = new PopupWindow(width, height);
         // 设置布局
         if (mLayout != null) {
@@ -97,7 +92,6 @@ public class PopupUtil implements BaseLifecycleObserver {
                 ViewGroup viewGroup = (ViewGroup) parent;
                 viewGroup.removeAllViews();
             }
-
             //解决android 9.0水滴屏/刘海屏有黑边的问题
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 Window window = mActivity.getWindow();
@@ -105,7 +99,6 @@ public class PopupUtil implements BaseLifecycleObserver {
                 attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
                 window.setAttributes(attributes);
             }
-
             // 添加管理
             if (typeFromPage == 1) {
                 Lifecycle lifecycle = mActivity.getLifecycle();
@@ -116,11 +109,9 @@ public class PopupUtil implements BaseLifecycleObserver {
                     lifecycle.addObserver(this);
                 }
             }
-
             if (createdListener != null) {
                 createdListener.onViewCreated(mLayout);
             }
-
             // 点击外部是否关闭popupWindow
             if (touchable) {
                 //: pop背景（如果不设置就不会点击消失）
@@ -132,16 +123,12 @@ public class PopupUtil implements BaseLifecycleObserver {
             }
             //: 设置可以点击pop以外的区域
             mPopupWindow.setOutsideTouchable(touchable);
-
             //: 设置PopupWindow可触摸
             mPopupWindow.setTouchable(true);
-
             //: 设置超出屏幕显示
             mPopupWindow.setClippingEnabled(clippingEnabled);
-
             mPopupWindow.setContentView(mLayout);
         }
-
         // 关闭布局的view集合
         if (closeView != null) {
             for (int i = 0; i < closeView.size(); i++) {
@@ -149,7 +136,6 @@ public class PopupUtil implements BaseLifecycleObserver {
                 view.setOnClickListener(v -> dismiss());
             }
         }
-
         // 关闭的监听
         mPopupWindow.setOnDismissListener(() -> {
             if (mAlpha > 0) {
@@ -204,7 +190,6 @@ public class PopupUtil implements BaseLifecycleObserver {
                         openAlpha();
                     }
                     mPopupWindow.showAsDropDown(anchor, xoff, yoff);
-
                     if (mShowListener != null) {
                         mShowListener.onShow(mLayout);
                     }
@@ -261,6 +246,78 @@ public class PopupUtil implements BaseLifecycleObserver {
      */
     public PopupWindow getPopupWindow() {
         return mPopupWindow;
+    }
+
+    public void dismiss() {
+        if (mPopupWindow != null) {
+            mPopupWindow.dismiss();
+        }
+    }
+
+    @Override
+    public void onCreate() {
+    }
+
+    @Override
+    public void onStart() {
+    }
+
+    @Override
+    public void onResume() {
+    }
+
+    @Override
+    public void onPause() {
+    }
+
+    @Override
+    public void onStop() {
+    }
+
+    private void openAlpha() {
+        if (mActivity != null) {
+            Window window = mActivity.getWindow();
+            WindowManager.LayoutParams attributes = window.getAttributes();
+            attributes.alpha = mAlpha;
+            window.setAttributes(attributes);
+        }
+    }
+
+    private void closeAlpha() {
+        if (mActivity != null) {
+            Window window = mActivity.getWindow();
+            WindowManager.LayoutParams attributes = window.getAttributes();
+            attributes.alpha = 1.0f;
+            window.setAttributes(attributes);
+        }
+    }
+
+    /**
+     * 窗口打开和关闭的监听
+     */
+    public PopupUtil setOnDismissListener(PopupWindow.OnDismissListener dismissListener) {
+        this.mOnDismissListener = dismissListener;
+        return this;
+    }
+
+    /**
+     * 窗口打开的监听
+     */
+    public PopupUtil setOnShowListener(OnShowListener showListener) {
+        this.mShowListener = showListener;
+        return this;
+    }
+
+    @Override
+    public void onDestroy() {
+        // 手动关闭弹窗，避免崩溃
+        if (isShowing()) {
+            dismiss();
+        }
+        if (mPopupWindow != null) {
+            mPopupWindow = null;
+        }
+
     }
 
     public static class Builder {
@@ -479,82 +536,5 @@ public class PopupUtil implements BaseLifecycleObserver {
         public PopupUtil Build() {
             return new PopupUtil(this);
         }
-    }
-
-    public void dismiss() {
-        if (mPopupWindow != null) {
-            mPopupWindow.dismiss();
-        }
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onStart() {
-
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    private void openAlpha() {
-        if (mActivity != null) {
-            Window window = mActivity.getWindow();
-            WindowManager.LayoutParams attributes = window.getAttributes();
-            attributes.alpha = mAlpha;
-            window.setAttributes(attributes);
-        }
-    }
-
-    private void closeAlpha() {
-        if (mActivity != null) {
-            Window window = mActivity.getWindow();
-            WindowManager.LayoutParams attributes = window.getAttributes();
-            attributes.alpha = 1.0f;
-            window.setAttributes(attributes);
-        }
-    }
-
-    /**
-     * 窗口打开和关闭的监听
-     */
-    public PopupUtil setOnDismissListener(PopupWindow.OnDismissListener dismissListener) {
-        this.mOnDismissListener = dismissListener;
-        return this;
-    }
-
-    /**
-     * 窗口打开的监听
-     */
-    public PopupUtil setOnShowListener(OnShowListener showListener) {
-        this.mShowListener = showListener;
-        return this;
-    }
-
-    @Override
-    public void onDestroy() {
-        // 手动关闭弹窗，避免崩溃
-        if (isShowing()) {
-            dismiss();
-        }
-        if (mPopupWindow != null) {
-            mPopupWindow = null;
-        }
-
     }
 }

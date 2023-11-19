@@ -18,7 +18,7 @@ public class StatusBarColorUtil {
     private static Method mSetStatusBarDarkIcon;
     private static Field mStatusBarColorFiled;
     private static int SYSTEM_UI_FLAG_LIGHT_STATUS_BAR = 0;
-    
+
     static {
         try {
             mSetStatusBarColorIcon = Activity.class.getMethod("setStatusBarDarkIcon", int.class);
@@ -44,7 +44,7 @@ public class StatusBarColorUtil {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * 判断颜色是否偏黑色
      *
@@ -56,7 +56,7 @@ public class StatusBarColorUtil {
         int grey = toGrey(color);
         return grey < level;
     }
-    
+
     /**
      * 颜色转换成灰度值
      *
@@ -69,7 +69,7 @@ public class StatusBarColorUtil {
         int red = (rgb & 0x00FF0000) >> 16;
         return (red * 38 + green * 75 + blue * 15) >> 7;
     }
-    
+
     /**
      * 设置状态栏字体图标颜色
      *
@@ -95,7 +95,7 @@ public class StatusBarColorUtil {
             }
         }
     }
-    
+
     /**
      * 设置状态栏字体图标颜色(只限全屏非activity情况)
      *
@@ -112,7 +112,7 @@ public class StatusBarColorUtil {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * 设置状态栏字体图标颜色
      *
@@ -122,7 +122,7 @@ public class StatusBarColorUtil {
     public static void setStatusBarDarkIcon(Activity activity, boolean dark) {
         setStatusBarDarkIcon(activity, dark, true);
     }
-    
+
     private static boolean changeMeizuFlag(WindowManager.LayoutParams winParams, String flagName, boolean on) {
         try {
             Field f = winParams.getClass().getDeclaredField(flagName);
@@ -152,7 +152,7 @@ public class StatusBarColorUtil {
         }
         return false;
     }
-    
+
     /**
      * 设置状态栏颜色
      *
@@ -171,7 +171,7 @@ public class StatusBarColorUtil {
             view.setSystemUiVisibility(newVis);
         }
     }
-    
+
     /**
      * 设置状态栏颜色
      *
@@ -192,7 +192,7 @@ public class StatusBarColorUtil {
             }
         }
     }
-    
+
     /**
      * 设置状态栏字体图标颜色(只限全屏非activity情况)
      *
@@ -210,7 +210,7 @@ public class StatusBarColorUtil {
             }
         }
     }
-    
+
     private static void setStatusBarDarkIcon(Activity activity, boolean dark, boolean flag) {
         if (mSetStatusBarDarkIcon != null) {
             try {

@@ -5,13 +5,13 @@ import java.util.TimerTask;
 
 public class CountdownTimer extends Timer {
 
-    private long interval; // time in milliseconds
-    private long totalTime; // time in milliseconds
+    private final long interval; // time in milliseconds
+    private final long totalTime; // time in milliseconds
+    private final Callback callback;
+    private final CountdownTimer this_;
+    public boolean pause = false;
     private long remainTime;
     private long elapsedTime = 0;
-    private Callback callback;
-    public boolean pause = false;
-    private CountdownTimer this_;
 
     public CountdownTimer(int interval, int countdownTime, Callback callback) {
         this.interval = interval;

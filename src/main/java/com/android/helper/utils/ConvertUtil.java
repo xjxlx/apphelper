@@ -169,9 +169,7 @@ public class ConvertUtil {
         if (set == null) {
             return null;
         }
-
         ArrayList<T> result = new ArrayList<T>(set);
-
         return result;
     }
 
@@ -212,7 +210,6 @@ public class ConvertUtil {
      */
     public static Map<String, String> getParameterForUrl(String url) {
         Map<String, String> map = new HashMap<>();
-
         if (url.contains("?")) {
             String trim = url.trim();
             String[] split = trim.split("[?]");

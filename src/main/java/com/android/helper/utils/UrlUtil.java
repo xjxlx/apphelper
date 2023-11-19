@@ -37,13 +37,11 @@ public class UrlUtil {
         List<String> result = new ArrayList<>();
         if (!TextUtils.isEmpty(value) && (pattern != null) && (scheme != null)) {
             String trim = value.trim();
-
             SpannableString spannableString = SpannableString.valueOf(trim);
             Linkify.addLinks(spannableString, pattern, scheme);
-
             if (spannableString != null) {
                 URLSpan[] urlSpans = spannableString.getSpans(0, trim.length(), URLSpan.class);
-                if (urlSpans != null && urlSpans.length > 0) {
+                if (urlSpans != null) {
                     for (URLSpan urlSpan : urlSpans) {
                         if (urlSpan != null) {
                             String url = urlSpan.getURL();

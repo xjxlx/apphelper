@@ -16,13 +16,12 @@ import androidx.annotation.RequiresApi;
 
 public class SystemUtil {
 
-    public static Application mApp;
-    public static SystemUtil systemUtil;
-
     /**
      * 跳转activity的请求码
      */
     public static final int CODE_REQUEST_ACTIVITY_BATTERY = NotificationUtil.CODE_REQUEST_ACTIVITY_NOTIFICATION + 1;
+    public static Application mApp;
+    public static SystemUtil systemUtil;
 
     public static SystemUtil getInstance(Application application) {
         if (application != null) {
@@ -114,7 +113,7 @@ public class SystemUtil {
         if (Build.BRAND == null) {
             return false;
         } else {
-            return Build.BRAND.toLowerCase().equals("huawei") || Build.BRAND.toLowerCase().equals("honor");
+            return Build.BRAND.equalsIgnoreCase("huawei") || Build.BRAND.equalsIgnoreCase("honor");
         }
     }
 
@@ -129,7 +128,7 @@ public class SystemUtil {
     }
 
     public boolean isXiaomi() {
-        return Build.BRAND != null && ((Build.BRAND.toLowerCase().equals("xiaomi")) || (Build.BRAND.toLowerCase().equals("redmi")));
+        return Build.BRAND != null && ((Build.BRAND.equalsIgnoreCase("xiaomi")) || (Build.BRAND.equalsIgnoreCase("redmi")));
     }
 
     public void goXiaomiSetting() {
@@ -138,7 +137,7 @@ public class SystemUtil {
     }
 
     public boolean isOPPO() {
-        return Build.BRAND != null && Build.BRAND.toLowerCase().equals("oppo");
+        return Build.BRAND != null && Build.BRAND.equalsIgnoreCase("oppo");
     }
 
     public void goOPPOSetting() {
@@ -158,7 +157,7 @@ public class SystemUtil {
     }
 
     public boolean isVIVO() {
-        return Build.BRAND != null && Build.BRAND.toLowerCase().equals("vivo");
+        return Build.BRAND != null && Build.BRAND.equalsIgnoreCase("vivo");
     }
 
     public void goVIVOSetting() {
@@ -166,7 +165,7 @@ public class SystemUtil {
     }
 
     public boolean isMeizu() {
-        return Build.BRAND != null && Build.BRAND.toLowerCase().equals("meizu");
+        return Build.BRAND != null && Build.BRAND.equalsIgnoreCase("meizu");
     }
 
     public void goMeizuSetting() {
@@ -174,7 +173,7 @@ public class SystemUtil {
     }
 
     public boolean isSamsung() {
-        return Build.BRAND != null && Build.BRAND.toLowerCase().equals("samsung");
+        return Build.BRAND != null && Build.BRAND.equalsIgnoreCase("samsung");
     }
 
     public void goSamsungSetting() {
@@ -186,7 +185,7 @@ public class SystemUtil {
     }
 
     public boolean isLeTV() {
-        return Build.BRAND != null && Build.BRAND.toLowerCase().equals("letv");
+        return Build.BRAND != null && Build.BRAND.equalsIgnoreCase("letv");
     }
 
     public void goLetvSetting() {
@@ -195,7 +194,7 @@ public class SystemUtil {
     }
 
     public boolean isSmartisan() {
-        return Build.BRAND != null && Build.BRAND.toLowerCase().equals("smartisan");
+        return Build.BRAND != null && Build.BRAND.equalsIgnoreCase("smartisan");
     }
 
     public void goSmartisanSetting() {

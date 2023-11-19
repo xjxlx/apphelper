@@ -77,9 +77,7 @@ public class PassWordView extends ViewGroup {
     }
 
     void initView(Context context, @Nullable AttributeSet attrs) {
-
         setWillNotDraw(false);
-
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.PassWordView);
         // 输入密码的个数
         size = array.getInteger(R.styleable.PassWordView_pd_size, 4);
@@ -100,48 +98,38 @@ public class PassWordView extends ViewGroup {
         // 明文的信息
         mContentColor = array.getColor(R.styleable.PassWordView_pd_content_color, Color.parseColor("#171B21"));
         mContentSize = array.getDimension(R.styleable.PassWordView_pd_content_size, ConvertUtil.toDp(16));
-
         // 是否显示密码，默认为true
         mShowPassWord = array.getBoolean(R.styleable.PassWordView_pd_show_password, true);
         // 是否可以展示输入框
         mShowInput = array.getBoolean(R.styleable.PassWordView_pd_show_input, true);
         // 错误颜色的color
         mErrorColor = array.getColor(R.styleable.PassWordView_pd_selector_error_color, Color.parseColor("#B60004"));
-
         // 释放对象
         array.recycle();
-
         mPaint_unSelector = new Paint();
         mPaint_unSelector.setColor(mUnSelectorColor);
         mPaint_unSelector.setStrokeWidth(mUnSelectorHeight);
-
         mPaint_selector = new Paint();
         mPaint_selector.setColor(mSelectorColor);
         mPaint_selector.setStrokeWidth(mSelectorHeight);
-
         mPaint_text = new Paint();
         mPaint_text.setTextSize(mContentSize);
         mPaint_text.setColor(mContentColor);
-
         mPaint_drawable = new Paint();
         mPaint_drawable.setStyle(Paint.Style.FILL);
         mPaint_drawable.setAntiAlias(true);
-
         if (mShowInput) {
-
             editText = new EditText(context);
             // 去掉背景
             editText.setBackground(null);
             // 限制数据类型
             editText.setInputType(InputType.TYPE_CLASS_NUMBER);
             editText.setCursorVisible(false);// 隐藏光标
-
             // 获取输入内容
             InputFilter inputFilter = (source, start, end, dest, dstart, dend) -> {
                 // 限制输入长度
                 if ((!TextUtils.isEmpty(source)) && (mList.size() < size)) {
                     mList.add(source + "");
-
                     // 重新刷新布局
                     invalidate();
                 }
@@ -149,14 +137,12 @@ public class PassWordView extends ViewGroup {
             };
             // 设置输入的最大长度
             editText.setFilters(new InputFilter[]{inputFilter});
-
             // EditText删除的监听
             editText.setOnKeyListener((v, keyCode, event) -> {
                 if ((keyCode == KeyEvent.KEYCODE_DEL) && (event.getAction() == KeyEvent.ACTION_UP)) {
                     int position = mList.size() - 1;
                     if (position >= 0) {
                         mList.remove(position);
-
                         // 重置正确和错误的状态
                         if (mIsError) {
                             setErrorBackGround(false);
@@ -169,7 +155,6 @@ public class PassWordView extends ViewGroup {
                 }
                 return false;
             });
-
             addView(editText);
         }
     }
@@ -181,7 +166,6 @@ public class PassWordView extends ViewGroup {
         // 测量出控件的宽高
         measuredWidth = getMeasuredWidth();
         measuredHeight = getMeasuredHeight();
-
         // 每隔view的宽度
         childWidth = (measuredWidth - (padding * (size - 1))) / size;
     }
@@ -189,18 +173,15 @@ public class PassWordView extends ViewGroup {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
         for (int i = 0; i <= size; i++) {
             mStartX = (childWidth * i) + (padding * i);
             mStopX = (childWidth * (i + 1)) + (padding * i);
             // 绘制背景颜色
             canvas.drawLine(mStartX, measuredHeight, mStopX, measuredHeight, mPaint_unSelector); // 绘制直线
         }
-
         if (mList.size() > 0) {
             // 货值文字和选中的背景色
             for (int j = 0; j < mList.size(); j++) {
-
                 mStartX = (childWidth * j) + (padding * j);
                 mStopX = (childWidth * (j + 1)) + (padding * j);
                 if (mIsError) {
@@ -210,7 +191,6 @@ public class PassWordView extends ViewGroup {
                 }
                 // 绘制选中的颜色
                 canvas.drawLine(mStartX, measuredHeight, mStopX, measuredHeight, mPaint_selector); // 绘制直线
-
                 // 是否展示密码
                 if (mShowPassWord) {
                     // 绘制文字
@@ -221,7 +201,6 @@ public class PassWordView extends ViewGroup {
                     // 求出textView的宽高
                     int width = rect.width();
                     int height = rect.height();
-
                     // 求出每个text在中间的位置
                     float sta = (childWidth - width) / 2;
                     // 设置text文字 x:表示左侧的X轴位置，y:表示基准线的位置，就是文字底部的位置
@@ -232,7 +211,6 @@ public class PassWordView extends ViewGroup {
                     for (int i = 0; i < mList.size(); i++) {
                         // 计算开始的X轴坐标
                         float startX = (childWidth / 2) + (childWidth * i) + (padding * i);
-
                         canvas.drawCircle(startX, measuredHeight / 2, mDrawableSize, mPaint_drawable);
                     }
                 }

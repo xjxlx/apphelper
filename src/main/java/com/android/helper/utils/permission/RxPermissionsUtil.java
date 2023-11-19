@@ -32,22 +32,20 @@ import io.reactivex.rxjava3.disposables.Disposable;
  */
 public class RxPermissionsUtil implements BaseLifecycleObserver {
 
+    /**
+     * 开发的目标版本
+     */
+    private final int TARGET_VERSION = AppUtil.getInstance().getTargetSdkVersion();
+    /**
+     * 手机系统的当前版本
+     */
+    private final int SDK_INT = Build.VERSION.SDK_INT;
     private String[] mPermissions;
     private FilterPerMission[] mFilterMission;
     private PermissionsCallBackListener mAllPermissionsListener;
     private SinglePermissionsCallBackListener mSinglePermissionsListener;
     private RxPermissions mRxPermissions;
     private Disposable mSubscribe;
-
-    /**
-     * 开发的目标版本
-     */
-    private final int TARGET_VERSION = AppUtil.getInstance().getTargetSdkVersion();
-
-    /**
-     * 手机系统的当前版本
-     */
-    private final int SDK_INT = Build.VERSION.SDK_INT;
 
     public RxPermissionsUtil(Builder builder) {
         FragmentActivity mFragmentActivity = null;
@@ -59,10 +57,8 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
             this.mFilterMission = builder.mFilterMission;
             this.mAllPermissionsListener = builder.mAllPermissionsListener;
             this.mSinglePermissionsListener = builder.mSinglePermissionsListener;
-
             // 1:activity 2:Fragment
             int type = builder.type;
-
             if (type == 1) {
                 if (mFragmentActivity != null) {
                     mRxPermissions = new RxPermissions(mFragmentActivity);
@@ -94,7 +90,6 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
      */
     private boolean checkMustVersion() {
         boolean mustVersion = false;
-
         // Android 6.0的分割线
         int m = Build.VERSION_CODES.M;
 
@@ -117,19 +112,16 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
             // 把数组权限，转换为集合权限，用于删除数据
             ArrayList<String> tempPermission = new ArrayList<>();
             Collections.addAll(tempPermission, mPermissions);
-
             // 过滤数据
             for (FilterPerMission filter : mFilterMission) {
                 String filterPermission = filter.getPermission();
                 int targetVersion = filter.getTargetVersion();
-
                 // 如果项目的目标版本 小于 限定的版本，则无需去请求这个权限
                 if (TARGET_VERSION < targetVersion) {
                     // 删除掉指定的权限
                     tempPermission.remove(filterPermission);
                 }
             }
-
             // 如果数据发生了改变，就去重新赋值对象
             if (tempPermission.size() != mPermissions.length) {
                 // 把数组重新转换集合
@@ -151,11 +143,9 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
         String[] filterPermission = filterPermission();
         if (mRxPermissions != null && filterPermission != null && filterPermission.length > 0) {
             LogUtil.e("过滤后的权限为：" + Arrays.toString(filterPermission));
-
             // 版本满足的时候才会去检测权限
             boolean mustVersion = checkMustVersion();
             if (mustVersion) {
-
                 if (mAllPermissionsListener != null) { // 请求全部权限
                     mSubscribe = mRxPermissions
                             .request(filterPermission)
@@ -170,7 +160,6 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
                             });
 
                 } else if (mSinglePermissionsListener != null) { // 请求单个权限
-
                     mSubscribe = mRxPermissions
                             .requestEach(filterPermission)
                             .subscribe(permission -> { // will emit 2 Permission objects
@@ -204,48 +193,38 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
 
     @Override
     public void onCreate() {
-
     }
 
     @Override
     public void onStart() {
-
     }
 
     @Override
     public void onResume() {
-
     }
 
     @Override
     public void onPause() {
-
     }
 
     @Override
     public void onStop() {
-
     }
 
     @Override
     public void onDestroy() {
-
         if (mPermissions != null) {
             mPermissions = null;
         }
-
         if (mAllPermissionsListener != null) {
             mAllPermissionsListener = null;
         }
-
         if (mRxPermissions != null) {
             mRxPermissions = null;
         }
-
         if (mSinglePermissionsListener != null) {
             mSinglePermissionsListener = null;
         }
-
         if (mSubscribe != null) {
             if (!mSubscribe.isDisposed()) {
                 mSubscribe.dispose();
@@ -255,13 +234,13 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
     }
 
     public static class Builder {
+        private final String[] mPermissions;
+        private final int type; // 1:activity 2:Fragment
         private FragmentActivity mFragmentActivity;
         private Fragment mFragment;
-        private final String[] mPermissions;
         private FilterPerMission[] mFilterMission;
         private PermissionsCallBackListener mAllPermissionsListener;
         private SinglePermissionsCallBackListener mSinglePermissionsListener;
-        private final int type; // 1:activity 2:Fragment
 
         /**
          * @param permissions 举例：Manifest.permission.ACCESS_FINE_LOCATION
@@ -298,7 +277,6 @@ public class RxPermissionsUtil implements BaseLifecycleObserver {
             mAllPermissionsListener = null;
             return this;
         }
-
         // <editor-fold desc="过滤权限">
 
         /**

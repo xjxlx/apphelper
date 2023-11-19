@@ -16,7 +16,6 @@ public class ClickUtil {
     public static boolean isDoubleClick(int time) {
         long currentTime = System.currentTimeMillis();
         long timeInterval = currentTime - lastClickTime;
-
         if (timeInterval > 0 && timeInterval < time) {
             return true;
         }

@@ -5,9 +5,9 @@ package com.android.helper.utils.room;
  */
 public class SQLEntity {
 
+    public final String notNULL = "NOT NULL";
     private String unit;        // 添加字段的单位
     private String defaultValue; // 默认的值
-    public final String notNULL = "NOT NULL";
 
     public SQLEntity(String unit) {
         this.unit = unit;

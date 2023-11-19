@@ -12,7 +12,6 @@ public class keepReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-
         // 开始锁屏
         if (TextUtils.equals(action, Intent.ACTION_SCREEN_OFF)) {
             LogUtil.e("关闭了屏幕");

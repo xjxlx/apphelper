@@ -59,7 +59,6 @@ public class SyncService extends Service {
             // 与互联网 或者 本地数据库同步账户
             LogUtil.e("onPerformSync ---> 开始了账户的同步！" + account.toString());
             logWriteUtil.write("账号开始同步，数据开始更新！");
-
             // 1:意图都是通过Intent发送的，首先要新建一个Intent
             Intent intent = new Intent();
             // 2:设置一个动作，为了让对方能知道是谁发出的，要做一个标记

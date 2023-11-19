@@ -23,6 +23,13 @@ public class ToastUtil {
     private static int yOffset;
     private static Application context;
     private static View view;
+    private static int mLeft = 0;
+    private static int mTop = 0;
+    private static int mRight = 0;
+    private static int mBottom = 0;
+    private static int mTextSize = 0;
+    private static boolean mIsBOLD = false;
+    private static boolean isPadding = false;
 
     /**
      * 私有化构造
@@ -41,7 +48,6 @@ public class ToastUtil {
                     .getInstance()
                     .getApplication();
         }
-
         if (yOffset <= 0) {
             int screenHeight = ScreenUtil.getScreenHeight(context);
             yOffset = screenHeight / 5;
@@ -58,26 +64,21 @@ public class ToastUtil {
      */
     @SuppressLint("InflateParams")
     public static void show(String text, int duration, int gravity, int xOffset, int yOffset) {
-
         if (context == null) {
             context = BaseApplication
                     .getInstance()
                     .getApplication();
         }
-
         if (context == null) {
             LogUtil.e(TAG, "context为空！");
             return;
         }
-
         if (TextUtils.isEmpty(text)) {
             return;
         }
-
         if (toast != null) {
             toast.cancel();
         }
-
         toast = new Toast(context);
         if (view == null) {
             view = LayoutInflater
@@ -87,33 +88,21 @@ public class ToastUtil {
         TextView textView = view.findViewById(R.id.message);
         // 4:设置布局的内容
         textView.setText(text);
-        if (isPadding){
+        if (isPadding) {
             textView.setPadding(mLeft, mTop, mRight, mBottom);
         }
-
-        if (mTextSize!=0){
+        if (mTextSize != 0) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
         }
-
         if (mIsBOLD) {
             textView.setTypeface(Typeface.DEFAULT_BOLD);
         }
-
         // 5:设置Toast的参数
         toast.setGravity(gravity, xOffset, yOffset);
         toast.setView(view);
-
         toast.setDuration(duration);
         toast.show();
     }
-
-    private static int mLeft = 0;
-    private static int mTop = 0;
-    private static int mRight = 0;
-    private static int mBottom = 0;
-    private static int mTextSize = 0;
-    private static boolean mIsBOLD = false;
-    private static boolean isPadding =false;
 
     public static void setPadding(int left, int top, int right, int bottom) {
         mLeft = left;

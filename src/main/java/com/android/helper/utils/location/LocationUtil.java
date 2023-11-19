@@ -35,6 +35,15 @@ import java.util.List;
  */
 public class LocationUtil implements BaseLifecycleObserver {
 
+    private final List<String> mListPermission = new ArrayList<>();
+    /**
+     * 开发的目标版本
+     */
+    private final int TARGET_VERSION = AppUtil.getInstance().getTargetSdkVersion();
+    /**
+     * 手机系统的当前版本
+     */
+    private final int SDK_INT = Build.VERSION.SDK_INT;
     private boolean isLoop; // 是否轮询
     private int interval; // 间隔的时间
     private FragmentActivity mFragmentActivity;
@@ -42,23 +51,10 @@ public class LocationUtil implements BaseLifecycleObserver {
     private Context mContext;
     private LocationListener mLocationListener;
     private boolean isBackgroundRunning;// 后台更新
-
     // 定位请求的对象
     // public AMapLocationClient mClient;
     private int mType;
     private RxPermissionsUtil.Builder mPermissionBuilder;
-    private final List<String> mListPermission = new ArrayList<>();
-
-    /**
-     * 开发的目标版本
-     */
-    private final int TARGET_VERSION = AppUtil.getInstance().getTargetSdkVersion();
-
-    /**
-     * 手机系统的当前版本
-     */
-    private final int SDK_INT = Build.VERSION.SDK_INT;
-
     // public LocationUtil(Builder builder) {
     // if (builder != null) {
     // this.interval = builder.interval;
@@ -79,7 +75,6 @@ public class LocationUtil implements BaseLifecycleObserver {
     // checkPermission();
     // }
     // }
-
     /**
      * 数据回调的监听
      */
@@ -128,7 +123,6 @@ public class LocationUtil implements BaseLifecycleObserver {
     // }
     // }
     // };
-
     /**
      * 逆地理编码（坐标转地址）
      *
@@ -199,7 +193,6 @@ public class LocationUtil implements BaseLifecycleObserver {
     // } catch (Exception ignored) {
     // }
     // }
-
     /**
      * @param context        上下文
      * @param address        指定的地址
@@ -255,7 +248,6 @@ public class LocationUtil implements BaseLifecycleObserver {
     // } catch (Exception ignored) {
     // }
     // }
-
     /**
      * 接口可以用来判断指定位置是否在大陆以及港、澳地区。
      *
@@ -267,7 +259,6 @@ public class LocationUtil implements BaseLifecycleObserver {
     // //第一个参数为纬度，第二个为经度，纬度和经度均为高德坐标系。
     // return CoordinateConverter.isAMapDataAvailable(latitude, longitude);
     // }
-
     /**
      * @return 转换国内GPS原生的坐标
      */
@@ -294,7 +285,6 @@ public class LocationUtil implements BaseLifecycleObserver {
     // }
     // return dPoint;
     // }
-
     /**
      * 计算两个地方之间的距离，这个是直线距离
      */
@@ -341,7 +331,6 @@ public class LocationUtil implements BaseLifecycleObserver {
     // e.printStackTrace();
     // }
     // }
-
     /**
      * @return 检测权限，true:拥有定位的权限，false:没有定位的权限
      */
@@ -455,7 +444,6 @@ public class LocationUtil implements BaseLifecycleObserver {
             onPause();
         }
     }
-
     // <editor-fold desc="区分设置的类型" defaultstate="collapsed">
     // private void switchType(int type) {
     // // 添加页面绑定
@@ -486,7 +474,6 @@ public class LocationUtil implements BaseLifecycleObserver {
     // }
     // }
     // </editor-fold>
-
     // <editor-fold desc="返回当前的定位信息" defaultstate="collapsed">
 
     /**
@@ -538,17 +525,90 @@ public class LocationUtil implements BaseLifecycleObserver {
     // mClient.startLocation();
     // }
     // </editor-fold>
+    @Override
+    public void onCreate() {
+    }
+
+    @Override
+    public void onStart() {
+        LogUtil.e("LocationUtil---onStart");
+    }
+
+    @Override
+    public void onResume() {
+        LogUtil.e("LocationUtil---onResume");
+        // if (mClient != null) {
+        //
+        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        // // 开启后台定位功能 enableBackgroundLocation(int notificationId, Notification
+        // notification)
+        // // mClient.enableBackgroundLocation(true);
+        // }
+        //
+        // if (!mClient.isStarted()) { // 没有启动的时候，去启动一下
+        // mClient.startLocation();
+        // }
+        // }
+    }
+
+    @Override
+    public void onPause() {
+        LogUtil.e("LocationUtil---onPause");
+        if (!isBackgroundRunning) {
+            // if (mClient != null) {
+            // mClient.stopLocation();
+            //
+            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // // 关闭后台定位功能
+            // mClient.disableBackgroundLocation(true);
+            // }
+            // }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        LogUtil.e("LocationUtil---onStop");
+        onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        LogUtil.e("LocationUtil---onDestroy");
+        // if (mClient != null) {
+        // // 移除定位监听
+        // if (mAMapLocationListener != null) {
+        // mClient.unRegisterLocationListener(mAMapLocationListener);
+        // mAMapLocationListener = null;
+        // }
+        // // 释放所有定位资源
+        // mClient.onDestroy();
+        // mClient = null;
+        // }
+        if (mFragmentActivity != null) {
+            mFragmentActivity = null;
+        }
+        if (mFragment != null) {
+            mFragment = null;
+        }
+        if (mContext != null) {
+            mContext = null;
+        }
+        if (mLocationListener != null) {
+            mLocationListener = null;
+        }
+    }
 
     /**
      * 采用builder的设计模式去处理
      */
     public static class Builder {
+        private final int type; // 1:Activity 2:fragment
         private boolean isLoop; // 是否轮询
         private int interval; // 间隔的时间
         private FragmentActivity mFragmentActivity;
         private Fragment mFragment;
         private LocationListener mLocationListener;
-        private final int type; // 1:Activity 2:fragment
         private boolean isBackgroundRunning;// 后台更新
 
         public Builder(FragmentActivity fragmentActivity) {
@@ -602,87 +662,8 @@ public class LocationUtil implements BaseLifecycleObserver {
             mLocationListener = locationListener;
             return this;
         }
-
         // public LocationUtil build() {
         // return new LocationUtil(this);
         // }
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onStart() {
-        LogUtil.e("LocationUtil---onStart");
-    }
-
-    @Override
-    public void onResume() {
-        LogUtil.e("LocationUtil---onResume");
-        // if (mClient != null) {
-        //
-        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        // // 开启后台定位功能 enableBackgroundLocation(int notificationId, Notification
-        // notification)
-        // // mClient.enableBackgroundLocation(true);
-        // }
-        //
-        // if (!mClient.isStarted()) { // 没有启动的时候，去启动一下
-        // mClient.startLocation();
-        // }
-        // }
-    }
-
-    @Override
-    public void onPause() {
-        LogUtil.e("LocationUtil---onPause");
-        if (!isBackgroundRunning) {
-            // if (mClient != null) {
-            // mClient.stopLocation();
-            //
-            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // // 关闭后台定位功能
-            // mClient.disableBackgroundLocation(true);
-            // }
-            // }
-        }
-    }
-
-    @Override
-    public void onStop() {
-        LogUtil.e("LocationUtil---onStop");
-        onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        LogUtil.e("LocationUtil---onDestroy");
-
-        // if (mClient != null) {
-        // // 移除定位监听
-        // if (mAMapLocationListener != null) {
-        // mClient.unRegisterLocationListener(mAMapLocationListener);
-        // mAMapLocationListener = null;
-        // }
-        // // 释放所有定位资源
-        // mClient.onDestroy();
-        // mClient = null;
-        // }
-
-        if (mFragmentActivity != null) {
-            mFragmentActivity = null;
-        }
-
-        if (mFragment != null) {
-            mFragment = null;
-        }
-        if (mContext != null) {
-            mContext = null;
-        }
-        if (mLocationListener != null) {
-            mLocationListener = null;
-        }
     }
 }

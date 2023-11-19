@@ -30,7 +30,6 @@ public class ExpandableUtil {
                     } else {
                         // 打开自己
                         parent.expandGroup(groupPosition, false);
-
                         // 滑动到当前group的最订单
                         int h1 = parent.getHeight();
                         int h2 = parent.getHeight();

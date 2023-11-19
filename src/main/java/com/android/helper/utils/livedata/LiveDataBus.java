@@ -25,17 +25,16 @@ import org.jetbrains.annotations.NotNull;
 public class LiveDataBus implements LifecycleEventObserver {
 
     private static LiveDataBus liveDataBus;
-    private Observer<LiveDataMessage> mObserver;
-    private MutableLiveData<LiveDataMessage> mLiveData;
     private final String FLAG = "ON_DESTROY";
     private final String TAG = "LiveDataBus --->";
+    private Observer<LiveDataMessage> mObserver;
+    private MutableLiveData<LiveDataMessage> mLiveData;
 
     private LiveDataBus() {
         FragmentActivity commonLivedata = BaseApplication.getInstance().getCommonLivedata();
         if (commonLivedata != null) {
             LiveDataModel liveDataModel = new ViewModelProvider(commonLivedata).get(LiveDataModel.class);
             mLiveData = liveDataModel.getLiveData();
-
             // 公共类数据的监听
             commonLivedata.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
                 if (TextUtils.equals(event.name(), FLAG)) {
@@ -72,7 +71,7 @@ public class LiveDataBus implements LifecycleEventObserver {
      */
     public void postMessage(LiveDataMessage message) {
         if (mLiveData != null && message != null) {
-            LogUtil.e(TAG, "发送了数据的对象：" + message.toString());
+            LogUtil.e(TAG, "发送了数据的对象：" + message);
             mLiveData.postValue(message);
         }
     }
@@ -119,14 +118,12 @@ public class LiveDataBus implements LifecycleEventObserver {
         if (activity != null) {
             activity.getLifecycle().addObserver(this);
         }
-
         if (mLiveData != null) {
             mObserver = message -> {
                 if (listener != null) {
                     listener.onLiveDataBus(message);
                 }
             };
-
             // 不关联生命周期的数据监听
             mLiveData.observeForever(mObserver);
         }
@@ -142,14 +139,12 @@ public class LiveDataBus implements LifecycleEventObserver {
         if (fragment != null) {
             fragment.getLifecycle().addObserver(this);
         }
-
         if (mLiveData != null) {
             mObserver = message -> {
                 if (listener != null) {
                     listener.onLiveDataBus(message);
                 }
             };
-
             // 不关联生命周期的数据监听
             mLiveData.observeForever(mObserver);
         }

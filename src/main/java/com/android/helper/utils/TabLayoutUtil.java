@@ -70,7 +70,6 @@ public class TabLayoutUtil {
         this.mViewPager = viewPager;
         this.mTabLayout = tabLayout;
         if ((mViewPager != null) && (tabLayout != null)) {
-
             mContext = mViewPager.getContext();
             if (mContext != null) {
                 mResources = mContext.getResources();
@@ -79,10 +78,8 @@ public class TabLayoutUtil {
             if (mAdapter != null) {
                 mAdapterCount = mAdapter.getCount();
             }
-
             // 关联
             tabLayout.setupWithViewPager(mViewPager);
-
             // 添加tab
             addTab();
             // 添加监听器
@@ -104,7 +101,6 @@ public class TabLayoutUtil {
         this.mViewPager2 = viewPager;
         this.mTabLayout = tabLayout;
         if ((mViewPager2 != null) && (tabLayout != null)) {
-
             mContext = mViewPager2.getContext();
             if (mContext != null) {
                 mResources = mContext.getResources();
@@ -113,7 +109,6 @@ public class TabLayoutUtil {
             if (mViewPager2Adapter != null) {
                 mAdapterCount = mViewPager2Adapter.getItemCount();
             }
-
             // 关联
             if (mViewPager2 != null) {
                 //tab与下面的viewpager对应
@@ -125,7 +120,6 @@ public class TabLayoutUtil {
                 });
                 tabLayoutMediator.attach();
             }
-
             // 添加tab
             addTab();
             // 添加监听器
@@ -159,12 +153,10 @@ public class TabLayoutUtil {
                     .from(mContext)
                     .inflate(R.layout.indicator_tab, null);
             TextView textView = view.findViewById(R.id.tv_indicator);
-
             if (mViewPagerType == 1) {
                 if ((mAdapter != null) && (mContext != null)) {
                     CharSequence pageTitle = mAdapter.getPageTitle(currentPosition);
                     TextViewUtil.setText(textView, pageTitle);
-
                     // 设置不选中的样式
                     setTextViewSelector(textView, false);
                 }
@@ -172,7 +164,6 @@ public class TabLayoutUtil {
                 if (mListViewPager2Title != null && mListViewPager2Title.size() > 0) {
                     String title = mListViewPager2Title.get(currentPosition);
                     TextViewUtil.setText(textView, title);
-
                     // 设置不选中的样式
                     setTextViewSelector(textView, false);
                 }
@@ -216,7 +207,6 @@ public class TabLayoutUtil {
         if ((view != null) && (mResources != null)) {
             TextView textView = view.findViewWithTag("indicator");
             View tab_indicator = view.findViewWithTag("tab_indicator");
-            
             if (selector) {
                 if (mSelectorTextSize > 0) {
                     textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mResources.getDimension(mSelectorTextSize));

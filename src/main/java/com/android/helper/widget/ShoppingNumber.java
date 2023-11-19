@@ -51,18 +51,15 @@ public class ShoppingNumber extends FrameLayout {
     private void initView(Context context, @Nullable AttributeSet attrs) {
         mInflate = LayoutInflater.from(context).inflate(R.layout.custom_shopping_number, null, false);
         // 文字
-        mTvMinusSign = (TextView) mInflate.findViewById(R.id.tv_minus_sign);
-        mTvNumber = (TextView) mInflate.findViewById(R.id.tv_number);
-        mTvPlusSign = (TextView) mInflate.findViewById(R.id.tv_plus_sign);
-
+        mTvMinusSign = mInflate.findViewById(R.id.tv_minus_sign);
+        mTvNumber = mInflate.findViewById(R.id.tv_number);
+        mTvPlusSign = mInflate.findViewById(R.id.tv_plus_sign);
         // 图片
-        mIvMinusSign = (ImageView) mInflate.findViewById(R.id.iv_minus_sign);
-        mIvPlusSign = (ImageView) mInflate.findViewById(R.id.iv_plus_sign);
-
+        mIvMinusSign = mInflate.findViewById(R.id.iv_minus_sign);
+        mIvPlusSign = mInflate.findViewById(R.id.iv_plus_sign);
         // 减号 减号的父布局
-        mFlMinusSign = (FrameLayout) mInflate.findViewById(R.id.fl_minus_sign);
-        mFlPlusSign = (FrameLayout) mInflate.findViewById(R.id.fl_plus_sign);
-
+        mFlMinusSign = mInflate.findViewById(R.id.fl_minus_sign);
+        mFlPlusSign = mInflate.findViewById(R.id.fl_plus_sign);
         addView(mInflate);
     }
 
@@ -95,12 +92,10 @@ public class ShoppingNumber extends FrameLayout {
             if (mIvMinusSign.getVisibility() != View.GONE) {
                 mIvMinusSign.setVisibility(View.GONE);
             }
-
             // 展示文字
             if (mTvMinusSign.getVisibility() != View.VISIBLE) {
                 mTvMinusSign.setVisibility(View.VISIBLE);
             }
-
             if (color > 0) {
                 mTvMinusSign.setTextColor(color);
             }
@@ -118,17 +113,14 @@ public class ShoppingNumber extends FrameLayout {
      */
     public void setPlusSignStyle(@ColorInt int color, float size) {
         if (mTvPlusSign != null) {
-
             // 隐藏图片
             if (mTvPlusSign.getVisibility() != View.GONE) {
                 mTvPlusSign.setVisibility(View.GONE);
             }
-
             // 展示文字
             if (mIvPlusSign.getVisibility() != View.VISIBLE) {
                 mIvPlusSign.setVisibility(View.VISIBLE);
             }
-
             if (color > 0) {
                 mTvPlusSign.setTextColor(color);
             }
@@ -216,7 +208,6 @@ public class ShoppingNumber extends FrameLayout {
                             numberValue--;
                             mTvNumber.setText(String.valueOf(numberValue));
                         }
-
                         if (listener != null) {
                             listener.onClick(v);
                         }
@@ -269,12 +260,10 @@ public class ShoppingNumber extends FrameLayout {
      */
     public void setMinusSignResource(int resId) {
         if (mTvMinusSign != null && resId > 0 && mIvMinusSign != null) {
-
             // 文字的隐藏
             if (mTvMinusSign.getVisibility() != View.GONE) {
                 mTvMinusSign.setVisibility(GONE);
             }
-
             // 文字的显示
             if (mIvMinusSign.getVisibility() != View.VISIBLE) {
                 mIvMinusSign.setVisibility(VISIBLE);
@@ -288,12 +277,10 @@ public class ShoppingNumber extends FrameLayout {
      */
     public void setPlusSignResource(int resId) {
         if (mTvPlusSign != null && resId > 0 && mIvPlusSign != null) {
-
             // 文字的隐藏
             if (mTvPlusSign.getVisibility() != View.GONE) {
                 mTvPlusSign.setVisibility(GONE);
             }
-
             // 文字的显示
             if (mIvPlusSign.getVisibility() != View.VISIBLE) {
                 mIvPlusSign.setVisibility(VISIBLE);

@@ -21,9 +21,7 @@ public class XmlUtil {
      * @param filePath 写入数据的文本地址
      */
     public void writeDat(String filePath, String start, String middle, String end, List<Float> list) {
-
         FileOutputStream outputStream = null;
-
         if (!TextUtils.isEmpty(filePath)) {
             File file = new File(filePath);
             if (!file.exists()) {
@@ -34,12 +32,10 @@ public class XmlUtil {
                 }
                 return;
             }
-
             if (list == null || list.size() <= 0) {
                 ToastUtil.show("写入长度异常，无法写入！");
                 return;
             }
-
             try {
                 /*
                  * 往文件<.txt>中一行一行的写入数据
@@ -81,9 +77,7 @@ public class XmlUtil {
      * @param filePath 写入数据的文本地址
      */
     public void writeDatForString(String filePath, String start, String end, List<String> list) {
-
         FileOutputStream outputStream = null;
-
         if (!TextUtils.isEmpty(filePath)) {
             File file = new File(filePath);
             if (!file.exists()) {
@@ -95,12 +89,10 @@ public class XmlUtil {
                 return;
             }
             LogUtil.e("文件是否存在：" + file.exists());
-
             if (list == null || list.size() <= 0) {
                 ToastUtil.show("写入长度异常，无法写入！");
                 return;
             }
-
             try {
                 /*
                  * 往文件<.txt>中一行一行的写入数据
@@ -118,7 +110,6 @@ public class XmlUtil {
                         e.printStackTrace();
                     }
                 }
-
                 ToastUtil.show("数据写入完毕！");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

@@ -160,7 +160,7 @@ public class MD5Utils {
      * @param bytes 目标字节数组
      * @return 转换结果
      */
-    public static String bytesToHex(byte bytes[]) {
+    public static String bytesToHex(byte[] bytes) {
         return bytesToHex(bytes, 0, bytes.length);
 
     }
@@ -173,7 +173,7 @@ public class MD5Utils {
      * @param end   结束位置（不包括该位置）
      * @return 转换结果
      */
-    public static String bytesToHex(byte bytes[], int start, int end) {
+    public static String bytesToHex(byte[] bytes, int start, int end) {
         StringBuilder sb = new StringBuilder();
         for (int i = start; i < start + end; i++) {
             sb.append(byteToHex(bytes[i]));
@@ -242,7 +242,7 @@ public class MD5Utils {
         }
         MessageDigest digest = null;
         FileInputStream in = null;
-        byte buffer[] = new byte[1024];
+        byte[] buffer = new byte[1024];
         int len;
         try {
             digest = MessageDigest.getInstance("MD5");
@@ -259,7 +259,7 @@ public class MD5Utils {
     }
 
     public static String bytesToHexString(byte[] src) {
-        StringBuilder stringBuilder = new StringBuilder("");
+        StringBuilder stringBuilder = new StringBuilder();
         if (src == null || src.length <= 0) {
             return null;
         }

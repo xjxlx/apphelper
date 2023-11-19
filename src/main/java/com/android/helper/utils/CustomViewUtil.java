@@ -29,7 +29,6 @@ public class CustomViewUtil {
         if (paint == null || (TextUtils.isEmpty(content))) {
             return null;
         }
-
         float[] ints = new float[2];
         Rect rect = new Rect();
         paint.getTextBounds(content, 0, content.length(), rect);
@@ -105,7 +104,6 @@ public class CustomViewUtil {
          */
         Paint.FontMetrics fontMetrics = paint.getFontMetrics();
         float baseLine = (fontMetrics.bottom - fontMetrics.top) / 2 - fontMetrics.bottom;
-
         return baseLine + rect.centerY();
     }
 

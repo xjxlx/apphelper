@@ -55,7 +55,6 @@ public class SendProgressView extends View {
 
     public SendProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-
         initView(context, attrs);
     }
 
@@ -74,16 +73,13 @@ public class SendProgressView extends View {
         // 多少时间走完整个圆圈（单位秒）
         time = array.getInteger(R.styleable.SendProgressView_time, 90);
         average = 360 / time;
-
         // 指定view的宽度
         int drawableWidth = array.getInteger(R.styleable.SendProgressView_drawable_width, 0);
         // 指定view的高度
         int drawableHeight = array.getInteger(R.styleable.SendProgressView_drawable_height, 0);
-
         if (displayMetrics == null) {
             displayMetrics = getResources().getDisplayMetrics();
         }
-
         // 获取圆圈的宽度
         strokeWidthValue = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, strokeWidth, displayMetrics);
         // 计算出view的精确宽度
@@ -106,7 +102,6 @@ public class SendProgressView extends View {
                 drawableHeightValue = 0;
             }
         }
-
         // 外层的画笔
         paint1 = new Paint();
         paint1.setColor(colorInner); // 设置颜色
@@ -116,7 +111,6 @@ public class SendProgressView extends View {
         // 设置线段连接处样式 Join.MITER（结合处为锐角）Join.Round(结合处为圆弧) Join.BEVEL(结合处为直线)
         paint1.setStrokeCap(Paint.Cap.ROUND); // 设置圆角
         paint1.setAntiAlias(true); // 防锯齿
-
         // 内层的画笔
         paint2 = new Paint();
         paint2.setColor(colorOuter); // 设置颜色
@@ -125,12 +119,9 @@ public class SendProgressView extends View {
         // 设置线段连接处样式 Join.MITER（结合处为锐角）Join.Round(结合处为圆弧) Join.BEVEL(结合处为直线)
         paint2.setStrokeCap(Paint.Cap.ROUND); // 设置圆角
         paint2.setAntiAlias(true); // 防锯齿
-
         paint3 = new Paint();
         paint3.setAntiAlias(true); // 防锯齿
-
         rectF = new RectF();
-
         array.recycle();
     }
 
@@ -139,9 +130,7 @@ public class SendProgressView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         height = getMeasuredHeight();
         width = getMeasuredWidth();
-
         float width2 = strokeWidthValue / 2;
-
         rectF.left = width2;
         rectF.top = width2;
         rectF.right = width - width2;
@@ -161,12 +150,10 @@ public class SendProgressView extends View {
             bitmap = getBitmap();
         }
         if (bitmap != null) {
-
             // 获取bitmap的宽度
             int drawableWidth = bitmap.getWidth();
             // 获取bitmap的高度
             int drawableHeight = bitmap.getHeight();
-
             // 左侧：view的测量宽度 - bitmap的宽度 然后 /2
             int left = (width - drawableWidth) / 2;
             // 上侧：view的高度 - bitmap的高度 然后 /2
@@ -175,7 +162,6 @@ public class SendProgressView extends View {
             int right = left + drawableWidth;
             // 下侧：上侧的位置 + bitmap的高度
             int bottom = top + drawableHeight;
-
             // canvas.drawBitmap(bitmap, null, new RectF(left, top, right, bottom), paint3);
             canvas.drawBitmap(bitmap, left, top, null);
         }
@@ -192,13 +178,10 @@ public class SendProgressView extends View {
     public Bitmap resizeImage(Bitmap bitmap, int width, int height) {
         int bmpWidth = bitmap.getWidth();
         int bmpHeight = bitmap.getHeight();
-
         float scaleWidth = ((float) width) / bmpWidth;
         float scaleHeight = ((float) height) / bmpHeight;
-
         Matrix matrix = new Matrix();
         matrix.postScale(scaleWidth, scaleHeight);
-
         return Bitmap.createBitmap(bitmap, 0, 0, bmpWidth, bmpHeight, matrix, true);
     }
 
@@ -206,7 +189,6 @@ public class SendProgressView extends View {
         // todo 下次可以尝试这个方式 drawable.setBounds();
         if (drawable instanceof BitmapDrawable) {
             Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-
             // 获取缩放的view
             Bitmap resizeBitmap = resizeImage(bitmap, (int) drawableWidthValue, (int) drawableHeightValue);
             return resizeBitmap;
@@ -252,7 +234,7 @@ public class SendProgressView extends View {
         // 创建值动画，取值的区间为 从0秒到90秒
         anim = ValueAnimator.ofFloat(0f, (time));
         // 设置的时间为 90 秒
-        anim.setDuration(time * 1000);
+        anim.setDuration(time * 1000L);
         // 匀速动画
         anim.setInterpolator(new LinearInterpolator());
         // 动画监听回调

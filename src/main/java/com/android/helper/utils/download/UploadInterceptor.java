@@ -21,7 +21,35 @@ import okhttp3.Response;
  */
 public class UploadInterceptor<T> implements Interceptor {
 
-    private UploadProgressListener<T> mListener;
+    private final UploadProgressListener<T> mListener;
+    @SuppressLint("HandlerLeak")
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (mListener != null) {
+                switch (msg.what) {
+                    case UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_START:
+                        mListener.onStart();
+                        LogUtil.e("--------->onStart");
+                        break;
+                    // case UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_PROGRESS:
+                    case 2:
+                        Bundle data = msg.getData();
+                        long progress = data.getLong("progress");
+                        long contentLength = data.getLong("contentLength");
+                        String percentage = data.getString("percentage");
+                        mListener.onProgress(progress, contentLength, percentage);
+                        break;
+                    // case UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_DATA_COMPLETE: // 数据上传完成，但是接口为完成
+                    case 3: // 数据上传完成，但是接口为完成
+                        mListener.onUploadComplete();
+                        LogUtil.e("--------->UPLOAD_DATA_COMPLETE");
+                        break;
+                }
+            }
+        }
+    };
 
     public UploadInterceptor(@NotNull UploadProgressListener<T> listener) {
         mListener = listener;
@@ -78,34 +106,4 @@ public class UploadInterceptor<T> implements Interceptor {
         });
         return builder.build();
     }
-
-    @SuppressLint("HandlerLeak")
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (mListener != null) {
-                switch (msg.what) {
-                    case UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_START:
-                        mListener.onStart();
-                        LogUtil.e("--------->onStart");
-                        break;
-                    // case UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_PROGRESS:
-                    case 2:
-                        Bundle data = msg.getData();
-                        long progress = data.getLong("progress");
-                        long contentLength = data.getLong("contentLength");
-                        String percentage = data.getString("percentage");
-
-                        mListener.onProgress(progress, contentLength, percentage);
-                        break;
-                    // case UploadManagerRetrofit.UPLOAD_TYPE.UPLOAD_DATA_COMPLETE: // 数据上传完成，但是接口为完成
-                    case 3: // 数据上传完成，但是接口为完成
-                        mListener.onUploadComplete();
-                        LogUtil.e("--------->UPLOAD_DATA_COMPLETE");
-                        break;
-                }
-            }
-        }
-    };
 }

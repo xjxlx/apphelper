@@ -17,7 +17,6 @@ public enum LifecycleAppEnum {
      * 来源于intent的启动
      */
     From_Intent("INTENT"),
-
     /**
      * 来源于Service的启动
      */

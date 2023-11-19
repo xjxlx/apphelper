@@ -80,7 +80,7 @@ public abstract class ProgressRequestBody extends RequestBody {
         onStart();
         return new ForwardingSink(sink) {
             // 当前写入字节数
-            long bytesWritten = 0l;
+            long bytesWritten = 0L;
             // 总字节长度，避免多次调用contentLength()方法
             long contentLength = 0L;
 
@@ -95,9 +95,7 @@ public abstract class ProgressRequestBody extends RequestBody {
                 bytesWritten += byteCount;
                 // 转换格式
                 String digits = NumberUtil.formatDigitsForDouble(((bytesWritten * 0.1 / contentLength * 1000)), BigDecimal.ROUND_DOWN, 2);
-
                 LogUtil.e("bytesWritten  :" + bytesWritten + "  contentLength :" + contentLength + "  digits:" + digits);
-
                 // 进度上传回调
                 onProgress(bytesWritten, contentLength, digits);
             }

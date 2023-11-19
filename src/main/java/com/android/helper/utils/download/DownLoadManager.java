@@ -61,91 +61,58 @@ public class DownLoadManager implements BaseLifecycleObserver {
 
     private HashMap<String, Integer> mMapStatus = new HashMap<>();// 当前下载状态的集合
     private HashMap<String, ProgressListener> mMapListener = new HashMap<>();//回调对象的集合
-
+    @SuppressLint("HandlerLeak")
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (mMapListener != null) {
+                Bundle data = msg.getData();
+                String id = data.getString("id");
+                ProgressListener mListener = mMapListener.get(id);
+                assert mListener != null;
+                switch (msg.what) {
+                    // case DOWNLOAD_TYPE.DOWNLOAD_START:
+                    case 1:
+                        LogUtil.e(TAG, "开始下载!");
+                        mListener.onStart(id, (long) msg.obj);
+                        break;
+                    case DOWNLOAD_TYPE.DOWNLOAD_ERROR:
+                        Throwable throwable = (Throwable) msg.obj;
+                        LogUtil.e(TAG, " 下载异常：" + throwable.getMessage());
+                        mListener.onError(id, throwable);
+                        break;
+                    case DOWNLOAD_TYPE.DOWNLOADING:
+                        long progress = data.getLong("progress");
+                        long contentLength = data.getLong("contentLength");
+                        String percentage = data.getString("percentage");
+                        mListener.onProgress(id, progress, contentLength, percentage);
+                        break;
+                    case DOWNLOAD_TYPE.DOWNLOAD_COMPLETE:
+                        LogUtil.e(TAG, "下载结束!");
+                        Object obj = msg.obj;
+                        Response response = null;
+                        if (obj != null) {
+                            response = (Response) obj;
+                        }
+                        String path = data.getString("path");
+                        mListener.onComplete(id, path, response);
+                        break;
+                }
+            }
+        }
+    };
     /**
      * 已经下载文件的长度
      */
     private long mTempDownloadLength;
-
     /**
      * 文件的总长度
      */
     private long mContentLong;
-
     private boolean mRepeatDownload;
     private FragmentActivity mActivity;
     private Fragment mFragment;
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onStart() {
-
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-        // 停止所有的请求
-        cancelAll();
-
-        // 清空状态集合
-        if (mMapStatus != null) {
-            mMapStatus.clear();
-            mMapStatus = null;
-        }
-
-        // 清空回调对象
-        if (mMapListener != null) {
-            mMapListener.clear();
-            mMapListener = null;
-        }
-
-        if (okHttpClient != null) {
-            okHttpClient = null;
-        }
-
-        if (mActivity != null) {
-            mActivity = null;
-        }
-
-        if (mFragment != null) {
-            mFragment = null;
-        }
-
-        LogUtil.e(TAG, "清空所有的数据！");
-    }
-
-    /**
-     * 当前下载的状态  1：正在下载中 ，2：下载完毕  3：下载错误  4：取消下载
-     */
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({DOWNLOAD_TYPE.DOWNLOADING, DOWNLOAD_TYPE.DOWNLOAD_COMPLETE, DOWNLOAD_TYPE.DOWNLOAD_ERROR})
-    public @interface DOWNLOAD_TYPE {
-        int DOWNLOAD_START = 1; // 开始下载
-        int DOWNLOADING = 2;  // 下载中
-        int DOWNLOAD_COMPLETE = 3; // 下载完成
-        int DOWNLOAD_ERROR = 4; // 下载异常
-        int DOWNLOAD_IDLE = 6;// 闲置的状态
-    }
 
     /**
      * 私有化构造
@@ -155,17 +122,61 @@ public class DownLoadManager implements BaseLifecycleObserver {
             mRepeatDownload = builder.mRepeatDownload;
             mActivity = builder.mActivity;
             mFragment = builder.mFragment;
-
             if (mActivity != null) {
                 Lifecycle lifecycle = mActivity.getLifecycle();
                 lifecycle.addObserver(this);
             }
-
             if (mFragment != null) {
                 Lifecycle lifecycle = mFragment.getLifecycle();
                 lifecycle.addObserver(this);
             }
         }
+    }
+
+    @Override
+    public void onCreate() {
+    }
+
+    @Override
+    public void onStart() {
+    }
+
+    @Override
+    public void onResume() {
+    }
+
+    @Override
+    public void onPause() {
+    }
+
+    @Override
+    public void onStop() {
+    }
+
+    @Override
+    public void onDestroy() {
+        // 停止所有的请求
+        cancelAll();
+        // 清空状态集合
+        if (mMapStatus != null) {
+            mMapStatus.clear();
+            mMapStatus = null;
+        }
+        // 清空回调对象
+        if (mMapListener != null) {
+            mMapListener.clear();
+            mMapListener = null;
+        }
+        if (okHttpClient != null) {
+            okHttpClient = null;
+        }
+        if (mActivity != null) {
+            mActivity = null;
+        }
+        if (mFragment != null) {
+            mFragment = null;
+        }
+        LogUtil.e(TAG, "清空所有的数据！");
     }
 
     /**
@@ -177,11 +188,9 @@ public class DownLoadManager implements BaseLifecycleObserver {
             LogUtil.e(TAG, "下载的信息异常，停止下载！");
             return;
         }
-
         String id = download.getId();
         String outFilePath = download.getOutputPath();
         String url = download.getUrl();
-
         int currentStatus = getCurrentStatus(id);
         // 如果状态是在开始下载 或者下载中，就停止下载
         // if (currentStatus == DOWNLOAD_TYPE.DOWNLOADING || currentStatus == DOWNLOAD_TYPE.DOWNLOAD_START) {
@@ -189,17 +198,14 @@ public class DownLoadManager implements BaseLifecycleObserver {
             LogUtil.e(TAG, "正在下载中，停止重复性下载！");
             return;
         }
-
         // 存入回调对象的集合
         if (mMapListener != null) {
             mMapListener.put(id, progressListener);
         }
-
         // 数据置空
         mContentLong = 0;
         // 初始化临时的状态
         mTempDownloadLength = 0;
-
         // 获取总文件的大小
         String maxLength = SpUtil.INSTANCE.getStringForMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id);
         if (!TextUtils.isEmpty(maxLength)) {
@@ -207,17 +213,14 @@ public class DownLoadManager implements BaseLifecycleObserver {
             assert maxLength != null;
             mContentLong = Long.parseLong(maxLength);
         }
-
         // 判断下载地址的url
         if (TextUtils.isEmpty(url)) {
             throw new NullPointerException("下载的路径不能为空！");
         }
-
         Request.Builder builder = new Request
                 .Builder()
                 .url(url)
                 .tag(id);
-
         // 获取文件
         File file = new File(outFilePath);
         if (file.exists()) {
@@ -234,7 +237,6 @@ public class DownLoadManager implements BaseLifecycleObserver {
                         builder.addHeader("RANGE", "bytes=" + mTempDownloadLength + "-" + mContentLong);
                     } else if (length == mContentLong) {
                         LogUtil.e(TAG, "文件已经下载成功了！");
-
                         // 重复性下载的操作
                         if (mRepeatDownload) {
                             // 重新生成一个新的文件名字
@@ -255,15 +257,12 @@ public class DownLoadManager implements BaseLifecycleObserver {
                         } else {
                             // 单一文件，只认原始的文件
                             /****************回调文件下载完成*********************/
-
                             // 下载完成的回调
                             setCurrentStatus(id, DOWNLOAD_TYPE.DOWNLOAD_COMPLETE);
-
                             // 构建bundle的对象
                             Bundle bundle = new Bundle();
                             bundle.putString("id", id);
                             bundle.putString("path", outFilePath);
-
                             Message message = mHandler.obtainMessage();
                             message.what = DOWNLOAD_TYPE.DOWNLOAD_COMPLETE;
                             message.setData(bundle);
@@ -281,18 +280,14 @@ public class DownLoadManager implements BaseLifecycleObserver {
         } else {
             LogUtil.e(TAG, "下载路径的文件不存在！");
         }
-
         Call call = okHttpClient.newCall(builder.build());
-
         // 把请求对象存入集合中，用于取消数据使用
         if (mClientMap != null) {
             mClientMap.put(id, call);
         }
-
         // 构建bundle的对象
         Bundle bundle = new Bundle();
         bundle.putString("id", id);
-
         File finalFile = file;
         LogUtil.e(TAG, "最终的文件路径为：" + finalFile.getPath());
         call.enqueue(new Callback() {
@@ -300,10 +295,8 @@ public class DownLoadManager implements BaseLifecycleObserver {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 LogUtil.e(TAG, "下载错误：" + e.getMessage());
                 call.cancel();
-
                 // 下载错误的状态
                 setCurrentStatus(id, DOWNLOAD_TYPE.DOWNLOAD_ERROR);
-
                 // 发送错误的数据
                 Message message = mHandler.obtainMessage();
                 message.what = DOWNLOAD_TYPE.DOWNLOAD_ERROR;
@@ -323,7 +316,6 @@ public class DownLoadManager implements BaseLifecycleObserver {
                     InputStream inputStream = body.byteStream();
                     int code = response.code();
                     LogUtil.e(TAG, "code:" + code);
-
                     if (code == 200) {
                         // 只记录原始文件长度
                         long contentLength = body.contentLength();
@@ -331,7 +323,6 @@ public class DownLoadManager implements BaseLifecycleObserver {
                         SpUtil.INSTANCE.putMap(KEY_DOWNLOAD_FILE_CONTENT_LENGTH, id, String.valueOf(contentLength));
                         mContentLong = contentLength;
                     }
-
                     // 文件输出流
                     try {
                         // "rw": 打开以便读取和写入。
@@ -345,7 +336,6 @@ public class DownLoadManager implements BaseLifecycleObserver {
                                 e.printStackTrace();
                             }
                         }
-
                         // 开始正式的下载
                         // setCurrentStatus(id, DOWNLOAD_TYPE.DOWNLOAD_START);
                         setCurrentStatus(id, 1);
@@ -355,24 +345,19 @@ public class DownLoadManager implements BaseLifecycleObserver {
                         message.obj = mContentLong;
                         message.setData(bundle);
                         mHandler.sendMessage(message);
-
                         // 文件下载过程中变化的进度
                         long progress = mTempDownloadLength;
-
                         // 一次性读取2048个字节
                         byte[] buf = new byte[2048];
                         int len = 0;
-
                         // 正常来讲，这里应该是放入到循环里面的，但是为了减轻代码的繁琐程度，写在了外边
                         // 下载中的状态
                         setCurrentStatus(id, DOWNLOAD_TYPE.DOWNLOADING);
                         String format = "0";
                         LogUtil.e(TAG, "下载中...");
-
                         while ((len = inputStream.read(buf)) != -1) {
                             // 写入到内存中
                             accessFile.write(buf, 0, len);
-
                             // 进度累计
                             progress += len;
                             // 格式化数据，并小数保留两位
@@ -380,21 +365,17 @@ public class DownLoadManager implements BaseLifecycleObserver {
                                 double v = (progress * 0.1) / mContentLong;
                                 format = String.format(Locale.CHINA, "%.2f", (v * 1000));
                             }
-
                             // 进度的回调
                             Message message1 = mHandler.obtainMessage();
                             message1.what = DOWNLOAD_TYPE.DOWNLOADING;
-
                             bundle.putLong("progress", progress);
                             bundle.putLong("contentLength", mContentLong);
                             bundle.putString("percentage", format);
                             message1.setData(bundle);
                             mHandler.sendMessage(message1);
                         }
-
                         // 下载完成的回调
                         setCurrentStatus(id, DOWNLOAD_TYPE.DOWNLOAD_COMPLETE);
-
                         Message message2 = mHandler.obtainMessage();
                         message2.what = DOWNLOAD_TYPE.DOWNLOAD_COMPLETE;
                         message2.obj = response;
@@ -404,7 +385,6 @@ public class DownLoadManager implements BaseLifecycleObserver {
 
                     } catch (Exception e) {
                         setCurrentStatus(id, DOWNLOAD_TYPE.DOWNLOAD_ERROR);
-
                         Message message = mHandler.obtainMessage();
                         message.what = DOWNLOAD_TYPE.DOWNLOAD_ERROR;
                         message.obj = e;
@@ -487,7 +467,6 @@ public class DownLoadManager implements BaseLifecycleObserver {
     }
 
     private void rangeFile(Request.Builder builder, long length, long contentLong) {
-
         if (contentLong > 0) {
             LogUtil.e(TAG, "文件的总大小为：" + mContentLong + "  当前文件的大小为：" + length);
             if ((length > 0) && (mContentLong > 0)) {
@@ -527,55 +506,18 @@ public class DownLoadManager implements BaseLifecycleObserver {
         mClientMap = null;
     }
 
-    @SuppressLint("HandlerLeak")
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-
-            if (mMapListener != null) {
-                Bundle data = msg.getData();
-                String id = data.getString("id");
-                ProgressListener mListener = mMapListener.get(id);
-                assert mListener != null;
-
-                switch (msg.what) {
-                    // case DOWNLOAD_TYPE.DOWNLOAD_START:
-                    case 1:
-                        LogUtil.e(TAG, "开始下载!");
-
-                        mListener.onStart(id, (long) msg.obj);
-                        break;
-
-                    case DOWNLOAD_TYPE.DOWNLOAD_ERROR:
-                        Throwable throwable = (Throwable) msg.obj;
-                        LogUtil.e(TAG, " 下载异常：" + throwable.getMessage());
-                        mListener.onError(id, throwable);
-                        break;
-
-                    case DOWNLOAD_TYPE.DOWNLOADING:
-                        long progress = data.getLong("progress");
-                        long contentLength = data.getLong("contentLength");
-                        String percentage = data.getString("percentage");
-                        mListener.onProgress(id, progress, contentLength, percentage);
-
-                        break;
-
-                    case DOWNLOAD_TYPE.DOWNLOAD_COMPLETE:
-                        LogUtil.e(TAG, "下载结束!");
-                        Object obj = msg.obj;
-                        Response response = null;
-                        if (obj != null) {
-                            response = (Response) obj;
-                        }
-                        String path = data.getString("path");
-
-                        mListener.onComplete(id, path, response);
-                        break;
-                }
-            }
-        }
-    };
+    /**
+     * 当前下载的状态  1：正在下载中 ，2：下载完毕  3：下载错误  4：取消下载
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({DOWNLOAD_TYPE.DOWNLOADING, DOWNLOAD_TYPE.DOWNLOAD_COMPLETE, DOWNLOAD_TYPE.DOWNLOAD_ERROR})
+    public @interface DOWNLOAD_TYPE {
+        int DOWNLOAD_START = 1; // 开始下载
+        int DOWNLOADING = 2;  // 下载中
+        int DOWNLOAD_COMPLETE = 3; // 下载完成
+        int DOWNLOAD_ERROR = 4; // 下载异常
+        int DOWNLOAD_IDLE = 6;// 闲置的状态
+    }
 
     public static class Builder {
         /**

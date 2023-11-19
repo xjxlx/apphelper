@@ -13,6 +13,11 @@ public class FilterPerMission {
     private String permission; // 权限名字
     private int targetVersion; // 对应的目标版本
 
+    public FilterPerMission(String permission, int targetVersion) {
+        this.permission = permission;
+        this.targetVersion = targetVersion;
+    }
+
     public String getPermission() {
         return permission;
     }
@@ -26,11 +31,6 @@ public class FilterPerMission {
     }
 
     public void setTargetVersion(int targetVersion) {
-        this.targetVersion = targetVersion;
-    }
-
-    public FilterPerMission(String permission, int targetVersion) {
-        this.permission = permission;
         this.targetVersion = targetVersion;
     }
 

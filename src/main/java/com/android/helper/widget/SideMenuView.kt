@@ -99,7 +99,8 @@ class SideMenuView : ViewGroup {
                     mLeftValue = mContentViewWidth
                 }
             }
-            LogUtil.e("mLeftValue:" + mLeftValue + " left:" + left + " mDx: " + mDx + "  mContentViewWidth: " + mContentViewWidth + "  ++： " + (mContentViewWidth + mDx) + "  mContentView Left:" + mContentView?.left + "  mMenuViewWidth：" + mMenuViewWidth)
+            LogUtil.e(
+                "mLeftValue:" + mLeftValue + " left:" + left + " mDx: " + mDx + "  mContentViewWidth: " + mContentViewWidth + "  ++： " + (mContentViewWidth + mDx) + "  mContentView Left:" + mContentView?.left + "  mMenuViewWidth：" + mMenuViewWidth)
             return mLeftValue
         }
 
@@ -123,7 +124,8 @@ class SideMenuView : ViewGroup {
                 val contentScrollTop = mContentView?.top
                 val contentScrollRight = contentScrollLeft + mContentViewWidth
                 val contentScrollBottom = mContentViewHeight
-                LogUtil.e("mContentView:  mDx:" + mDx + "  contentScrollLeft: " + contentScrollLeft + " contentScrollRight:" + contentScrollRight)
+                LogUtil.e(
+                    "mContentView:  mDx:" + mDx + "  contentScrollLeft: " + contentScrollLeft + " contentScrollRight:" + contentScrollRight)
                 mContentView?.layout(contentScrollLeft, contentScrollTop!!, contentScrollRight, contentScrollBottom)
             }
         }
@@ -202,7 +204,6 @@ class SideMenuView : ViewGroup {
             if (mContentMarginLeft <= 0) {
                 val lp = it.layoutParams as MarginLayoutParams
                 mContentMarginLeft = lp.marginStart
-
             }
 
             it.layout(mContentMarginLeft + it.left, it.top, it.left + mContentViewWidth, it.top + mContentViewHeight)
@@ -260,15 +261,15 @@ class SideMenuView : ViewGroup {
         mContentView?.let {
             mViewDragHelper.settleCapturedViewAt(0, it.top)
             // mViewDragHelper.smoothSlideViewTo(it, 0, it.top);
-            ViewCompat.postInvalidateOnAnimation(this);
+            ViewCompat.postInvalidateOnAnimation(this)
         }
     }
 
     fun open() {
         mContentView?.let {
-            mViewDragHelper.smoothSlideViewTo(it, -mMenuViewWidth, it.top);
+            mViewDragHelper.smoothSlideViewTo(it, -mMenuViewWidth, it.top)
             // mViewDragHelper.settleCapturedViewAt(-mMenuViewWidth, it.top)
-            ViewCompat.postInvalidateOnAnimation(this);
+            ViewCompat.postInvalidateOnAnimation(this)
         }
     }
 
@@ -276,7 +277,7 @@ class SideMenuView : ViewGroup {
         super.computeScroll()
         // 如果动画正在进行中，就进行view的绘制
         if (mViewDragHelper != null && mViewDragHelper.continueSettling(true)) {
-            ViewCompat.postInvalidateOnAnimation(this);
+            ViewCompat.postInvalidateOnAnimation(this)
         }
     }
 

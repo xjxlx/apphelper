@@ -6,44 +6,36 @@ public class AudioPlayerCallBackListener {
      * 数据加载完成了
      */
     public void onPrepared() {
-
     }
 
     /**
      * 开始播放
      */
     public void onStart() {
-
     }
 
     /**
      * 暂停播放
      */
     public void onPause() {
-
     }
-
-    ;
 
     /**
      * 停止播放
      */
     public void onStop() {
-
     }
 
     /**
      * 播放错误
      */
     public void onError(Exception e) {
-
     }
 
     /**
      * 播放结束
      */
     public void onComplete() {
-
     }
 
     /**
@@ -54,7 +46,6 @@ public class AudioPlayerCallBackListener {
      * @param percent 百分比
      */
     public void onBufferProgress(int total, double current, int percent) {
-
     }
 
     /**
@@ -63,11 +54,9 @@ public class AudioPlayerCallBackListener {
      * @param percent 百分比
      */
     public void onProgress(int total, int current, String percent) {
-
     }
 
     public void onNotificationCallInfo(int position, AudioEntity audioEntity) {
-
     }
 
 }

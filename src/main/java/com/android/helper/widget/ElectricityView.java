@@ -68,24 +68,20 @@ public class ElectricityView extends BaseView {
         mPaintProgressBackground = new Paint();
         mPaintProgressBackground.setAntiAlias(true);
         mPaintProgressBackground.setColor(Color.parseColor("#FFF4F5F9"));
-
         mPaintProgress = new Paint();
         mPaintProgress.setAntiAlias(true);
         mPaintProgress.setColor(Color.parseColor("#FF3FAAE4"));
-
         // 右侧的文字
         mPaintRightText = new Paint();
         mPaintRightText.setAntiAlias(true);
         mPaintRightText.setColor(Color.parseColor("#FF7A8499"));
         mPaintRightText.setTextSize(ConvertUtil.toSp(13));
-
         // 滑动的圆球
         mPaintRound = new Paint();
         mPaintRound.setStyle(Paint.Style.FILL);
         mPaintRound.setColor(Color.parseColor("#FFFFFFFF"));
         // 绘制阴影
         mPaintRound.setShadowLayer(30, 0, 0, Color.parseColor("#FF3FAAE4"));
-
         // 绘制圆球的底部文字
         mPaintBottomRoundText = new Paint();
         mPaintBottomRoundText.setAntiAlias(true);
@@ -97,10 +93,8 @@ public class ElectricityView extends BaseView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
         // 获取view的宽度
         float maxWidth = MeasureSpec.getSize(widthMeasureSpec);
-
         // 右侧的电流值
         String format = NumberUtil.dataFormat(mProgressEnd + "");
         mRightTextValue = format + "A";
@@ -111,35 +105,28 @@ public class ElectricityView extends BaseView {
         float maxHeight = Math.max(rightTextHeight, mProgressHeight);
         // 右侧文字的基准线
         mBaseLineRightText = CustomViewUtil.getBaseLine(mPaintRightText, mRightTextValue);
-
         // 进度条宽高 = 总宽度 - 右侧文字宽度 - 文字间距 - 左侧间距
         mProgressWidth = maxWidth - mPaddingLeft - rightTextWidth - mRightInterval;
         // 根据最大的范围值和当前进度条的宽度，求出每个像素占用的百分比
         mPercentage = (mProgressEnd - mProgressStart) / mProgressWidth;
         LogUtil.e("默认进度条的百分比：" + mPercentage);
-
         // 进度条距离顶部的高度 =（ 最大高度 - 文字高度 ）/2
         float v1 = (mProgressHeight - rightTextHeight) / 2;
         mTopInterval = Math.max(v1, mTopInterval);
-
         // 绘制圆球
         // 计算最大的高度
         maxHeight = Math.max(mCircleRadius * 2, maxHeight);
-
         // 顶部的距离 = ( 圆球的高度 - 进度条的高度) /2
         float v2 = (mCircleRadius * 2 - mProgressHeight) / 2;
         // 算出圆球的顶部距离
         mTopInterval = Math.max(v2, mTopInterval);
-
         // 圆球底部的文字
         mBottomTextValue = mProgressTarget + "A";
         float[] textSizeBottomRoundText = CustomViewUtil.getTextSize(mPaintBottomRoundText, mBottomTextValue);
         mBaseLineBottomText = CustomViewUtil.getBaseLine(mPaintBottomRoundText, mBottomTextValue);
         // 计算最大的高度 = 文字高度 + 原先的高度 + 间距
         maxHeight += (textSizeBottomRoundText[1] + mBottomValueInterval);
-
         maxHeight += mPaddingTop;
-
         widthMeasureSpec = resolveSize((int) maxWidth, widthMeasureSpec);
         heightMeasureSpec = resolveSize((int) maxHeight, heightMeasureSpec);
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
@@ -148,30 +135,23 @@ public class ElectricityView extends BaseView {
     @Override
     protected void onDraw(Canvas canvas) {
         // super.onDraw(canvas);
-
         // 当前的进度条
         if (mProgressTarget > 0) {
             mCurrentProgress = mProgressTarget / mPercentage;
         }
-
         // 绘制背景
         canvas.drawRoundRect(mCurrentProgress + mPaddingLeft, mTopInterval + mPaddingTop, mProgressWidth + mPaddingLeft, mProgressHeight + mTopInterval + mPaddingTop, mProgressRound, mProgressRound, mPaintProgressBackground);
-
         // 绘制进度
         canvas.drawRoundRect(mPaddingLeft, mTopInterval + mPaddingTop, mCurrentProgress + mPaddingLeft, mProgressHeight + mTopInterval + mPaddingTop, mProgressRound, mProgressRound, mPaintProgress);
-
         // 绘制右侧的电流值
         canvas.drawText(mRightTextValue, 0, mRightTextValue.length(), (mPaddingLeft + mProgressWidth + mRightInterval), (mBaseLineRightText + mTopInterval + mPaddingTop), mPaintRightText);
-
         // 圆心的x轴 = 进度的值 + 左侧的间距
         // 圆的X轴圆心
         float circleDx = mCurrentProgress + mPaddingLeft;
         // 圆心的y轴 = 进度条高度 /2 + 进度条top 的值
         // 圆的Y轴圆心
         float circleDY = mProgressHeight / 2 + mTopInterval + mPaddingTop;
-
         canvas.drawCircle(circleDx, circleDY, mCircleRadius, mPaintRound);
-
         // 绘制圆球下的文字
         int bottomTextValue = 0;
         if (mProgressTarget + mProgressStart > mProgressEnd) {
@@ -180,13 +160,10 @@ public class ElectricityView extends BaseView {
             bottomTextValue = mProgressTarget + mProgressStart;
         }
         String format = NumberUtil.dataFormat(bottomTextValue + "");
-
         // 从新计算文字的宽度
         float width = CustomViewUtil.getTextSize(mPaintBottomRoundText, mBottomTextValue)[0];
         mBottomTextValue = format + "A";
-
         LogUtil.e("⭐️⭐️⭐️ mBottomTextValue：" + mBottomTextValue);
-
         float dx = (circleDx - width / 2);// 圆球的X轴圆心 - 文字的宽度/2
         float dy = (circleDY + mCircleRadius + mBottomValueInterval + mBaseLineBottomText); // dy = 圆球的底部 + 间距 +baseLine
         canvas.drawText(mBottomTextValue, 0, mBottomTextValue.length(), dx, dy, mPaintBottomRoundText);
@@ -201,12 +178,10 @@ public class ElectricityView extends BaseView {
                 return true;
             }
         }
-
         // 限制范围区域
         mLeftBorder = mPaddingLeft;
         // 右侧的范围 = 限定值 / 百分比
         mRightBorder = mProgressEnd / mPercentage;
-
         // 如果小于这个区域，或者大于这个区域，则自己消耗掉这个事件，不继续往下面传递
         float rawX = event.getRawX();
         float x = event.getX();
@@ -226,16 +201,13 @@ public class ElectricityView extends BaseView {
     private void calculate(int x) {
         // 当前滑动的位置 = 当前的x轴位置 * 每个像素所占用的百分比
         int v = (int) (x - mPaddingLeft);
-
         // 在滑动的时候，有时候会多几个像素，可能会导致数据变大，超出范围值，
         mProgressTarget = (int) (v * mPercentage);
         if (mProgressTarget + mProgressStart > mProgressEnd) {
             mProgressTarget = mProgressEnd - mProgressStart;
         }
-
         // 重新绘制
         invalidate();
-
         if (mProgressListener != null) {
             int bottomTextValue = 0;
             if (mProgressTarget + mProgressStart > mProgressEnd) {
@@ -251,19 +223,16 @@ public class ElectricityView extends BaseView {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 LogUtil.e("⭐️⭐️⭐️ onTouchEvent ---> ACTION_DOWN ");
                 calculate((int) event.getX());
                 return mScroll;
-
             case MotionEvent.ACTION_MOVE:
                 LogUtil.e("⭐️⭐️⭐️ onTouchEvent ---> MOVE");
                 // 获取当前的x轴位置
                 calculate((int) event.getX());
                 break;
-
             case MotionEvent.ACTION_UP: // 抬起
                 if (mProgressListener != null) {
                     mProgressListener.onTouchUp(mProgressTarget + mProgressStart);

@@ -75,13 +75,6 @@ public class FileUtil implements BaseLifecycleObserver {
     }
 
     /**
-     * @return 获取sd卡的根目录的File，此目录在Android 11以后不可用
-     */
-    public File getRootFileForSd() {
-        return Environment.getExternalStorageDirectory();
-    }
-
-    /**
      * @return 根据一个原始的路径，在同一个目录下面去生成一个新的文件名字，例如：/storage/emulated/0/a_pdf_list/test_2_abc.pdf，
      * 经过优化之后，会在/storage/emulated/0/a_pdf_list/目录下，生成另外一个文件/storage/emulated/0/a_pdf_list/test_2_abc(0).pdf
      * 文件是从角标0开始生成的。
@@ -97,16 +90,13 @@ public class FileUtil implements BaseLifecycleObserver {
             if (length >= contentLength) {
                 LogUtil.e(TAG, "本地文件和文件总大小一致，需要重新命名文件名字！");
                 String newFileName = "";// 新文件的名字
-
                 if (OriginalPath.contains(".")) {
                     // 最后一个.的index位置
                     int index = OriginalPath.lastIndexOf(".");
-
                     // 获取前半部分的名字
                     String beginIndex = OriginalPath.substring(0, index);
                     // 获取.后面的文件格式
                     String endIndex = OriginalPath.substring(index);
-
                     // 这里要去判断该文件夹下面，有没有已经命名过的文件了
                     File parentFile = file.getParentFile();
                     if (parentFile != null) {
@@ -120,14 +110,12 @@ public class FileUtil implements BaseLifecycleObserver {
                                     // 包含了修改过文件的情况
                                     if ((name.contains("(")) && (name.contains(")"))) {
                                         LogUtil.e(TAG, "包含了修改过文件名字的对象，文件名字为：" + name);
-
                                         // 从角标0开始便利文件名字
                                         for (int i = 0; i < Long.MAX_VALUE; i++) {
                                             // 重新构建文件的名字
                                             newFileName = beginIndex + "(" + (i) + ")" + endIndex;
                                             File newFile = new File(newFileName);
                                             long newFileLength = newFile.length();
-
                                             // 如果新文件的大小小于等于0，或者新文件的大小小于文件的总大小，那么就找到了我们需要的文件,并且要停掉整个轮询
                                             if ((newFileLength <= 0) || (newFileLength < contentLength)) {
                                                 LogUtil.e(TAG,
@@ -158,19 +146,24 @@ public class FileUtil implements BaseLifecycleObserver {
     }
 
     /**
+     * @return 获取sd卡的根目录的File，此目录在Android 11以后不可用
+     */
+    public File getRootFileForSd() {
+        return Environment.getExternalStorageDirectory();
+    }
+
+    /**
      * @param url 文件地址的url
      * @return 根据url 获取远程文件的大小
      */
     public long getFileSizeForUrl(String url) {
         final long[] contentLength = {0};
-
         Request.Builder builder = new Request.Builder().url(url);
         OkHttpClient okHttpClient = new OkHttpClient();
         Call call = okHttpClient.newCall(builder.build());
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
             }
 
             @Override
@@ -184,7 +177,6 @@ public class FileUtil implements BaseLifecycleObserver {
                 }
             }
         });
-
         return contentLength[0];
     }
 
@@ -308,13 +300,11 @@ public class FileUtil implements BaseLifecycleObserver {
             try {
                 in = new BufferedInputStream(inputStream);
                 out = new BufferedOutputStream(new FileOutputStream(file));
-
                 int len = -1;
                 byte[] b = new byte[1024];
                 while ((len = in.read(b)) != -1) {
                     out.write(b, 0, len);
                 }
-
                 isSuccess = true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -332,7 +322,6 @@ public class FileUtil implements BaseLifecycleObserver {
                 }
             }
         }
-
         return isSuccess;
     }
 
@@ -374,13 +363,11 @@ public class FileUtil implements BaseLifecycleObserver {
         if ((file != null) && (file.exists())) {
             FileInputStream mInputStream = null;
             BufferedReader mReader = null;
-
             try {
                 mInputStream = new FileInputStream(file);
                 mReader = new BufferedReader(new InputStreamReader(mInputStream));
                 StringBuilder builder = new StringBuilder();
                 String timeLine;
-
                 while ((timeLine = mReader.readLine()) != null) {
                     builder.append(timeLine);
                 }
@@ -392,7 +379,6 @@ public class FileUtil implements BaseLifecycleObserver {
                     if (mInputStream != null) {
                         mInputStream.close();
                     }
-
                     if (mReader != null) {
                         mReader.close();
                     }
@@ -529,12 +515,9 @@ public class FileUtil implements BaseLifecycleObserver {
         if ((!TextUtils.isEmpty(parentPath)) && (!TextUtils.isEmpty(childName))) {
             // 创建父目录
             createFolder(parentPath);
-
             // 创建子文件
             File fileChild = new File(parentPath, childName);
-
             boolean exists = fileChild.exists();
-
             if (exists) {
                 file = fileChild;
             } else {
@@ -561,7 +544,6 @@ public class FileUtil implements BaseLifecycleObserver {
     public String copyFilePath(File file, String rules, long fileLength) {
         String newPath = "";
         int pathIndex = 1;// 叠加的数据
-
         if (file != null) {
             boolean exists = file.exists();
             if (exists) {
@@ -573,10 +555,8 @@ public class FileUtil implements BaseLifecycleObserver {
                         String left = path.substring(0, index);
                         String right = path.substring(index);
                         LogUtil.e(".最后出现的位置：" + index + "  left:" + left + "  right:" + right);
-
                         // 组成一个新的路径
                         newPath = left + "(" + pathIndex + ")" + right;
-
                         File parentFile = file.getParentFile();
                         if (parentFile != null) {
                             File[] files = parentFile.listFiles();

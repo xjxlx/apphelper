@@ -15,7 +15,6 @@ public class KeepActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Window window = getWindow();
         WindowManager.LayoutParams attributes = window.getAttributes();
         attributes.width = 1;
@@ -23,7 +22,6 @@ public class KeepActivity extends Activity {
         attributes.x = 0;
         attributes.y = 0;
         window.setAttributes(attributes);
-
         KeepManager.getInstance().setKeep(this);
     }
 

@@ -49,7 +49,6 @@ public class ServiceUtil {
     public static boolean isServiceRunning(Context context, Class cls) {    //活动管理器
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> runningServices = am.getRunningServices(100); //获取运行的服务,参数表示最多返回的数量
-
         for (ActivityManager.RunningServiceInfo runningServiceInfo : runningServices) {
             String className = runningServiceInfo.service.getClassName();
             if (className.equals(cls.getName())) {
@@ -69,7 +68,6 @@ public class ServiceUtil {
     public static boolean isServiceRunning(Context context, String cls) {    //活动管理器
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> runningServices = am.getRunningServices(100); //获取运行的服务,参数表示最多返回的数量
-
         for (ActivityManager.RunningServiceInfo runningServiceInfo : runningServices) {
             String className = runningServiceInfo.service.getClassName();
             if (className.equals(cls)) {
@@ -88,7 +86,6 @@ public class ServiceUtil {
         if (scheduler == null) {
             scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         }
-
         boolean hasBeenScheduled = false;
         for (JobInfo jobInfo : scheduler.getAllPendingJobs()) {
             ComponentName service = jobInfo.getService();

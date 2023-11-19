@@ -14,9 +14,9 @@ import java.lang.ref.WeakReference;
  */
 public class KeepManager {
 
+    private static KeepManager keepManager;
     private keepReceiver keepReceiver;
     private WeakReference<Activity> weakReference;
-    private static KeepManager keepManager;
 
     public static KeepManager getInstance() {
         if (keepManager == null) {

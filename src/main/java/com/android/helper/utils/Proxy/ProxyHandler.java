@@ -10,7 +10,7 @@ public class ProxyHandler implements InvocationHandler {
     /**
      * 具体执行的对象
      */
-    private Object mObject;
+    private final Object mObject;
 
     public ProxyHandler(Object object) {
         mObject = object;

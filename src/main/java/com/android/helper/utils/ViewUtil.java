@@ -18,7 +18,6 @@ public class ViewUtil {
         if ((array == null) || (array.length != 4)) {
             return;
         }
-
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
@@ -26,7 +25,6 @@ public class ViewUtil {
             int top = array[1];
             int right = array[2];
             int bottom = array[3];
-
             marginLayoutParams.setMargins(left, top, right, bottom);
             view.setLayoutParams(marginLayoutParams);
         }

@@ -15,17 +15,15 @@ public class ColorUtil {
         int startR = (startInt >> 16) & 0xff;
         int startG = (startInt >> 8) & 0xff;
         int startB = startInt & 0xff;
-
         int endInt = (Integer) endValue;
         int endA = (endInt >> 24) & 0xff;
         int endR = (endInt >> 16) & 0xff;
         int endG = (endInt >> 8) & 0xff;
         int endB = endInt & 0xff;
-
-        return (int) ((startA + (int) (fraction * (endA - startA))) << 24)
-                | (int) ((startR + (int) (fraction * (endR - startR))) << 16)
-                | (int) ((startG + (int) (fraction * (endG - startG))) << 8)
-                | (int) ((startB + (int) (fraction * (endB - startB))));
+        return ((startA + (int) (fraction * (endA - startA))) << 24)
+                | ((startR + (int) (fraction * (endR - startR))) << 16)
+                | ((startG + (int) (fraction * (endG - startG))) << 8)
+                | (startB + (int) (fraction * (endB - startB)));
     }
 
     /**
@@ -35,21 +33,19 @@ public class ColorUtil {
      * @return 根据一个比例，把一个颜色在这个规定的比例范围内，过度成另外一个颜色
      */
     public static int evaluateColor(float fraction, int startValue, int endValue) {
-        int startInt = (Integer) startValue;
+        int startInt = startValue;
         int startA = (startInt >> 24) & 0xff;
         int startR = (startInt >> 16) & 0xff;
         int startG = (startInt >> 8) & 0xff;
         int startB = startInt & 0xff;
-
-        int endInt = (Integer) endValue;
+        int endInt = endValue;
         int endA = (endInt >> 24) & 0xff;
         int endR = (endInt >> 16) & 0xff;
         int endG = (endInt >> 8) & 0xff;
         int endB = endInt & 0xff;
-
-        return (int) ((startA + (int) (fraction * (endA - startA))) << 24)
-                | (int) ((startR + (int) (fraction * (endR - startR))) << 16)
-                | (int) ((startG + (int) (fraction * (endG - startG))) << 8)
-                | (int) ((startB + (int) (fraction * (endB - startB))));
+        return ((startA + (int) (fraction * (endA - startA))) << 24)
+                | ((startR + (int) (fraction * (endR - startR))) << 16)
+                | ((startG + (int) (fraction * (endG - startG))) << 8)
+                | (startB + (int) (fraction * (endB - startB)));
     }
 }

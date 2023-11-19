@@ -171,7 +171,6 @@ public class NotificationUtil {
             this.mAutoCancel = builder.autoCancel;
             this.mOnHandlerLoopListener = builder.mOnHandlerLoopListener;
         }
-
         createNotification();
     }
 
@@ -184,15 +183,12 @@ public class NotificationUtil {
             if (mIntentActivity != null) {
                 pendingIntent = PendingIntent.getActivity(mContext, CODE_JUMP_REQUEST, mIntentActivity, PendingIntent.FLAG_UPDATE_CURRENT);
             }
-
             // 跳转的服务类
             if (mIntentService != null) {
                 pendingIntent = PendingIntent.getService(mContext, CODE_JUMP_REQUEST, mIntentService, PendingIntent.FLAG_UPDATE_CURRENT);
             }
-
             // 使用用户的包名作为渠道的id，保证唯一性
             String channelId = mContext.getPackageName();
-
             // 渠道名字
             if (TextUtils.isEmpty(mChannelName)) {
                 // 使用app的名字作为渠道的名字，用户可以看到的通知渠道的名字.
@@ -200,14 +196,11 @@ public class NotificationUtil {
                         .getResources()
                         .getString(R.string.app_name);
             }
-
             // 构建消息通知的对象
             mNotificationBuilder = new NotificationCompat.Builder(mContext, channelId);
-
             if (mWhen != 0) {
                 mNotificationBuilder.setWhen(mWhen);
             }
-
             // 是否可以手动取消
             if (!mAutoCancel) {
                 // 禁止自动取消
@@ -216,50 +209,40 @@ public class NotificationUtil {
             } else {
                 mNotificationBuilder.setAutoCancel(true);
             }
-
             // 首次出现的提示
             if (!TextUtils.isEmpty(mTickerText)) {
                 mNotificationBuilder.setTicker(mTickerText);
             }
-
             // 消息的标题
             if (!TextUtils.isEmpty(mContentTitle)) {
                 mNotificationBuilder.setContentTitle(mContentTitle);
             }
-
             // 消息的内容
             if (!TextUtils.isEmpty(mContentText)) {
                 mNotificationBuilder.setContentText(mContentText);
             }
-
             // 消息的图标
             if (mContentSmallIcon != 0) {
                 mNotificationBuilder.setSmallIcon(mContentSmallIcon);
             }
-
             // 消息的声音、灯光、震动
             if (mSound) {
                 mNotificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE);
             }
-
             // 设置消息的数量
             if (mNotificationNumber > 0) {
                 mNotificationBuilder.setNumber(mNotificationNumber);
             }
-
             //点击之后的页面
             if (pendingIntent != null) {
                 mNotificationBuilder.setContentIntent(pendingIntent);
             }
-
             // 横幅通知
             if (pendingIntent != null) {
                 mNotificationBuilder.setFullScreenIntent(pendingIntent, true);
             }
-
             // 锁屏可见
             mNotificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-
             // 当SDK大于16且小于26的时候
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 mNotification = mNotificationBuilder.setPriority(mNotificationLevel)// 设置优先级
@@ -267,42 +250,33 @@ public class NotificationUtil {
             } else {
                 // 渠道对象
                 NotificationChannel mChannel = new NotificationChannel(channelId, mChannelName, mChannelImportance);
-
                 // 默认的渠道描述
                 if (TextUtils.isEmpty(mChannelDescription)) {
                     mChannelDescription = mChannelName + "的渠道";
                 }
-
                 // 消息通知的描述 , 用户可以看到的通知渠道的描述
                 mChannel.setDescription(mChannelDescription);
-
                 // 设置通知出现时的闪灯（如果 android 设备支持的话）
                 mChannel.enableLights(true);
                 mChannel.setLightColor(Color.RED);
-
                 // 设置通知出现时的震动（如果 android 设备支持的话）
                 if (mVibrate) {
                     mChannel.enableVibration(true);
                     mChannel.setShowBadge(true);//显示logo
                     mChannel.setVibrationPattern(vibrates);
                 }
-
                 // 锁屏可见
                 mChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC); //设置锁屏可见 VISIBILITY_PUBLIC=可见
-
                 // 设置声音
                 if (mSound) {
                     mChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), Notification.AUDIO_ATTRIBUTES_DEFAULT);
                 }
-
                 // 通知Manager去创建渠道
                 manager.createNotificationChannel(mChannel);
-
                 mNotification = mNotificationBuilder.setPriority(mNotificationLevel)// 设置优先级
                         .setChannelId(channelId)// 设置渠道
                         .build();
             }
-
             // 通知栏的状态布局
             if (mRemoteViewsLayout != 0) {
                 RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), mRemoteViewsLayout);
@@ -376,7 +350,6 @@ public class NotificationUtil {
             if (id > 0) {
                 this.mService = service;
                 this.mIntervalTime = intervalTime;
-
                 Message message = mHandler.obtainMessage();
                 message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;
                 message.arg1 = id;
@@ -430,67 +403,6 @@ public class NotificationUtil {
         return this;
     }
 
-    @SuppressLint("HandlerLeak")
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-
-            // 先停止之前的消息发送，避免数据的快速轮询
-            stopAllLoop();
-
-            if (mNotification != null) {
-                int id = msg.arg1;
-                switch (msg.what) {
-                    case CODE_WHAT_SEND_START_FOREGROUND:
-                        LogUtil.e("开始了服务消息的单独发送！");
-                        if (mService != null) {
-                            mService.startForeground(id, mNotification);
-                        }
-                        break;
-
-                    case CODE_WHAT_SEND_START_FOREGROUND_LOOP:
-                        LogUtil.e("开始了服务消息的轮询发送！");
-                        if (mService != null) {
-
-                            mService.startForeground(id, mNotification);
-
-                            Message message = mHandler.obtainMessage();
-                            message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;
-                            message.arg1 = id;
-                            mHandler.sendMessageDelayed(message, mIntervalTime);
-                        }
-
-                        // 轮询的回调
-                        if (mOnHandlerLoopListener != null) {
-                            mOnHandlerLoopListener.onLoop();
-                        }
-
-                        break;
-
-                    case CODE_WHAT_SEND_START_NOTIFICATION_LOOP:
-                        LogUtil.e("开始了---消息---的轮询发送！");
-
-                        removeMessages(CODE_WHAT_SEND_START_NOTIFICATION_LOOP);
-
-                        Message message1 = mHandler.obtainMessage();
-                        message1.what = CODE_WHAT_SEND_START_NOTIFICATION_LOOP;
-                        message1.arg1 = id;
-
-                        sendNotification(id);
-
-                        mHandler.sendMessageDelayed(message1, mIntervalTime);
-
-                        // 轮询的回调
-                        if (mOnHandlerLoopListener != null) {
-                            mOnHandlerLoopListener.onLoop();
-                        }
-                        break;
-                }
-            }
-        }
-    };
-
     /**
      * @return 检测是否已经打开了通知的权限
      */
@@ -539,8 +451,115 @@ public class NotificationUtil {
         }
     }
 
+    public void clear() {
+        stopAllLoop();
+        stopForeground();
+        if (manager != null) {
+            manager = null;
+        }
+        if (mContext != null) {
+            mContext = null;
+        }
+        if (mIntentActivity != null) {
+            mIntentActivity = null;
+        }
+        if (mIntentService != null) {
+            mIntentService = null;
+        }
+        if (mTickerText != null) {
+            mTickerText = null;
+        }
+        if (mContentTitle != null) {
+            mContentTitle = null;
+        }
+        if (mContentText != null) {
+            mContentText = null;
+        }
+        if (pendingIntent != null) {
+            pendingIntent = null;
+        }
+        if (mChannelDescription != null) {
+            mChannelDescription = null;
+        }
+        if (mChannelName != null) {
+            mChannelName = null;
+        }
+        if (mViewCallBackListener != null) {
+            mViewCallBackListener = null;
+        }
+        if (mNotificationBuilder != null) {
+            mNotificationBuilder = null;
+        }
+        if (mNotification != null) {
+            mNotification = null;
+        }
+        if (mBuilder != null) {
+            mBuilder = null;
+        }
+        mNotificationNumber = 0;
+        LogUtil.e("清空了所有的Notification的对象！");
+    }
+
+    public interface OnHandlerLoopListener {
+        void onLoop();
+    }    @SuppressLint("HandlerLeak")
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            // 先停止之前的消息发送，避免数据的快速轮询
+            stopAllLoop();
+            if (mNotification != null) {
+                int id = msg.arg1;
+                switch (msg.what) {
+                    case CODE_WHAT_SEND_START_FOREGROUND:
+                        LogUtil.e("开始了服务消息的单独发送！");
+                        if (mService != null) {
+                            mService.startForeground(id, mNotification);
+                        }
+                        break;
+                    case CODE_WHAT_SEND_START_FOREGROUND_LOOP:
+                        LogUtil.e("开始了服务消息的轮询发送！");
+                        if (mService != null) {
+                            mService.startForeground(id, mNotification);
+                            Message message = mHandler.obtainMessage();
+                            message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;
+                            message.arg1 = id;
+                            mHandler.sendMessageDelayed(message, mIntervalTime);
+                        }
+                        // 轮询的回调
+                        if (mOnHandlerLoopListener != null) {
+                            mOnHandlerLoopListener.onLoop();
+                        }
+                        break;
+                    case CODE_WHAT_SEND_START_NOTIFICATION_LOOP:
+                        LogUtil.e("开始了---消息---的轮询发送！");
+                        removeMessages(CODE_WHAT_SEND_START_NOTIFICATION_LOOP);
+                        Message message1 = mHandler.obtainMessage();
+                        message1.what = CODE_WHAT_SEND_START_NOTIFICATION_LOOP;
+                        message1.arg1 = id;
+                        sendNotification(id);
+                        mHandler.sendMessageDelayed(message1, mIntervalTime);
+                        // 轮询的回调
+                        if (mOnHandlerLoopListener != null) {
+                            mOnHandlerLoopListener.onLoop();
+                        }
+                        break;
+                }
+            }
+        }
+    };
+
     public static class Builder {
         private final Context mContext;
+        /**
+         * 自定义震动
+         * <p>
+         * vibrate属性是一个长整型的数组，用于设置手机静止和振动的时长，以毫秒为单位。
+         * 参数中下标为0的值表示手机静止的时长，下标为1的值表示手机振动的时长， 下标为2的值又表示手机静止的时长，以此类推。
+         */
+        private final long[] vibrates = {0, 1000};
+        boolean autoCancel = true;                          // 是否点击取消通知
         private NotificationManager manager;
         private Intent mIntentActivity;
         private Intent mIntentService;
@@ -550,14 +569,6 @@ public class NotificationUtil {
         private int mContentSmallIcon;         // 消息的图标
         private int mNotificationNumber;       // 消息的数量
         private int mNotificationLevel = NotificationCompat.PRIORITY_DEFAULT;        // 消息的等级
-
-        /**
-         * 自定义震动
-         * <p>
-         * vibrate属性是一个长整型的数组，用于设置手机静止和振动的时长，以毫秒为单位。
-         * 参数中下标为0的值表示手机静止的时长，下标为1的值表示手机振动的时长， 下标为2的值又表示手机静止的时长，以此类推。
-         */
-        private final long[] vibrates = {0, 1000};
         private String mChannelDescription;                 // 渠道的描述
         private String mChannelName;                        // 渠道的名字
         private int mChannelImportance;                     // 渠道的等级,默认是等级3，会提示声音
@@ -566,8 +577,6 @@ public class NotificationUtil {
         private boolean mVibrate;                           // 震动
         private boolean mSound = true;                      // 是否发出声音，默认发出
         private long mWhen;                                 // 出现的时间戳
-        boolean autoCancel = true;                          // 是否点击取消通知
-
         private OnHandlerLoopListener mOnHandlerLoopListener; // handler轮询的监听器
 
         public Builder(Context context) {
@@ -576,7 +585,6 @@ public class NotificationUtil {
                 // 创建管理器
                 manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             }
-
             // 默认的渠道等级
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 mChannelImportance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -767,62 +775,6 @@ public class NotificationUtil {
 
     }
 
-    public void clear() {
-        stopAllLoop();
-        stopForeground();
 
-        if (manager != null) {
-            manager = null;
-        }
-        if (mContext != null) {
-            mContext = null;
-        }
-        if (mIntentActivity != null) {
-            mIntentActivity = null;
-        }
-        if (mIntentService != null) {
-            mIntentService = null;
-        }
-        if (mTickerText != null) {
-            mTickerText = null;
-        }
-        if (mContentTitle != null) {
-            mContentTitle = null;
-        }
-        if (mContentText != null) {
-            mContentText = null;
-        }
-        if (pendingIntent != null) {
-            pendingIntent = null;
-        }
-        if (mChannelDescription != null) {
-            mChannelDescription = null;
-        }
-        if (mChannelName != null) {
-            mChannelName = null;
-        }
-        if (mViewCallBackListener != null) {
-            mViewCallBackListener = null;
-        }
-
-        if (mNotificationBuilder != null) {
-            mNotificationBuilder = null;
-        }
-
-        if (mNotification != null) {
-            mNotification = null;
-        }
-        if (mBuilder != null) {
-            mBuilder = null;
-        }
-
-        mNotificationNumber = 0;
-
-        LogUtil.e("清空了所有的Notification的对象！");
-    }
-
-    public interface OnHandlerLoopListener {
-        void onLoop();
-    }
 
 }

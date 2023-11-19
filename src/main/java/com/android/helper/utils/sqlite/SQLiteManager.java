@@ -15,17 +15,25 @@ import com.android.common.utils.LogUtil;
 
 public class SQLiteManager extends SQLiteOpenHelper {
 
-    private String TAG = "SQLiteManager";
     private static String mSQL;// 具体的sql语句
+    private final String TAG = "SQLiteManager";
 
     /**
-     * @param sqlEntity 实体对象
-     * @return 指定一个数据库对象的名字，返回一个数据库的管理对象
+     * 构造方法
+     * (Context context, String name, CursorFactory factory,int version)
+     * 数据库创建的构造方法 数据库名称 sql_table.db ，版本号为1
+     *
+     * @param context  上下文对象
+     * @param /name    数据库名称 secb.db
+     * @param /factory 游标工厂
+     * @param /version 数据库版本
      */
-    public static synchronized SQLiteManager getInstance(Context context, SQLEntity sqlEntity) {
-        return new SQLiteManager(context, sqlEntity);
+    private SQLiteManager(Context context, @NonNull SQLEntity sqlEntity) {
+        // context :上下文 name： 数据库文件的名称 factory:用来创建cursor对象，默认传null
+        // version:数据库的版本,从android4.0之后只能升不能降。
+        // 数据库的版本号， 这个版本号只能增长，不能倒退
+        super(context, (sqlEntity.getTableName() + ".db"), null, sqlEntity.getVersionCode());
     }
-
     /**
      * + "sing_id text, " --------------->查询的唯一码
      * + "mp3_name text, " -------------->音乐的名字
@@ -49,20 +57,11 @@ public class SQLiteManager extends SQLiteOpenHelper {
     // + "creat_time text)";
 
     /**
-     * 构造方法
-     * (Context context, String name, CursorFactory factory,int version)
-     * 数据库创建的构造方法 数据库名称 sql_table.db ，版本号为1
-     *
-     * @param context  上下文对象
-     * @param /name    数据库名称 secb.db
-     * @param /factory 游标工厂
-     * @param /version 数据库版本
+     * @param sqlEntity 实体对象
+     * @return 指定一个数据库对象的名字，返回一个数据库的管理对象
      */
-    private SQLiteManager(Context context, @NonNull SQLEntity sqlEntity) {
-        // context :上下文 name： 数据库文件的名称 factory:用来创建cursor对象，默认传null
-        // version:数据库的版本,从android4.0之后只能升不能降。
-        // 数据库的版本号， 这个版本号只能增长，不能倒退
-        super(context, (sqlEntity.getTableName() + ".db"), null, sqlEntity.getVersionCode());
+    public static synchronized SQLiteManager getInstance(Context context, SQLEntity sqlEntity) {
+        return new SQLiteManager(context, sqlEntity);
     }
 
     /**
@@ -72,7 +71,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         LogUtil.e(TAG, " onCreate--->创建数据库");
-
         LogUtil.e(TAG, "onCreate：获取到的Sql语句为：" + mSQL);
         try {
             if (!TextUtils.isEmpty(mSQL)) {
@@ -97,9 +95,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
         LogUtil.e(TAG, " onUpgrade--->更新数据库");
-
         if (oldVersion >= newVersion) {
             return;
         }

@@ -48,6 +48,7 @@ import com.android.helper.common.CommonConstants;
  */
 public class AccountHelper {
 
+    private static AccountHelper mAccountHelper;
     private final LogWriteUtil logWriteUtil = new LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
     private String ACCOUNT_TYPE;
     private String ACCOUNT_NAME;
@@ -56,8 +57,6 @@ public class AccountHelper {
 
     public AccountHelper() {
     }
-
-    private static AccountHelper mAccountHelper;
 
     public static AccountHelper getInstance() {
         if (mAccountHelper == null) {
@@ -94,19 +93,16 @@ public class AccountHelper {
         try {
             if (TextUtils.isEmpty(ACCOUNT_TYPE)) {
                 logWriteUtil.write("添加账户的类型为空，停止后续的操作");
-
                 throw new NullPointerException("添加账户的类型为空");
             }
             if (TextUtils.isEmpty(ACCOUNT_NAME)) {
                 logWriteUtil.write("添加账户的名字为空，停止后续的操作");
                 throw new NullPointerException("添加账户的名字为空");
             }
-
             if (TextUtils.isEmpty(ACCOUNT_PASSWORD)) {
                 logWriteUtil.write("添加账户的密码为空，停止后续的操作");
                 throw new NullPointerException("添加账户的密码为空");
             }
-
             AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
             Account[] accounts = accountManager.getAccountsByType(ACCOUNT_TYPE);
             if (accounts != null && accounts.length > 0) {

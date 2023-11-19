@@ -59,7 +59,7 @@ public class PreferenceHelper {
     public static long readLong(Context context, String fileName, String k) {
         SharedPreferences preference = context.getSharedPreferences(fileName,
                 Context.MODE_PRIVATE);
-        return preference.getLong(k, 0l);
+        return preference.getLong(k, 0L);
     }
 
     public static long readLong(Context context, String fileName, String k,

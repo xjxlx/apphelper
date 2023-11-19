@@ -65,7 +65,6 @@ public class BitmapUtil {
         if (imageView == null) {
             return null;
         }
-
         Drawable drawable = imageView.getDrawable();
         if (drawable != null) {
             if (drawable instanceof BitmapDrawable) {
@@ -74,7 +73,6 @@ public class BitmapUtil {
                 // 获取view的宽高
                 int width = drawable.getIntrinsicWidth();
                 int height = drawable.getIntrinsicHeight();
-
                 bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                 Canvas c = new Canvas(bitmap);
                 int color = ((ColorDrawable) drawable).getColor();
@@ -103,7 +101,6 @@ public class BitmapUtil {
                 // 获取view的宽高
                 int width = drawable.getIntrinsicWidth();
                 int height = drawable.getIntrinsicHeight();
-
                 bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                 Canvas c = new Canvas(bitmap);
                 int color = ((ColorDrawable) drawable).getColor();
@@ -125,23 +122,16 @@ public class BitmapUtil {
      */
     public static Bitmap getScaleBitmap(@NotNull Bitmap bitmap, int newWidth, int newHeight) {
         Bitmap bitmapResult = null;
-
         if ((newWidth > 0) && (newHeight > 0)) {
-
             int bitmapWidth = bitmap.getWidth();
             int bitmapHeight = bitmap.getHeight();
-
             Matrix matrix = new Matrix();
-
             // 求出缩放的比例
             float scaleWidth = (float) newWidth / bitmapWidth;
             float scaleHeight = (float) newHeight / bitmapHeight;
-
             // 使用最小的缩放比例，避免变形
             matrix.postScale(scaleWidth, scaleHeight);
-
             bitmapResult = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
-
             if (!bitmap.equals(bitmapResult) && !bitmap.isRecycled()) {
                 bitmap.recycle();
             }
@@ -161,14 +151,11 @@ public class BitmapUtil {
             if ((bitmap != null) && (targetWidth != 0) && (targetHeight != 0)) {
                 int bitmapWidth = bitmap.getWidth();
                 int bitmapHeight = bitmap.getHeight();
-
                 // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
                 float scaleWidth = (float) targetWidth / bitmapWidth;
                 float scaleHeight = (float) targetHeight / bitmapHeight;
-
                 Matrix matrix = new Matrix();
                 matrix.postScale(scaleWidth, scaleHeight);
-
                 bitmapResult = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
             }
         } catch (Exception ignored) {
@@ -188,12 +175,10 @@ public class BitmapUtil {
             try {
                 int bitmapWidth = bitmap.getWidth();
                 int bitmapHeight = bitmap.getHeight();
-
                 // 求出目标宽度和图片宽度的比值，这里需要确定的是目标的比例，所以使用目标除以图片
                 float scaleWidth = targetWidth / bitmapWidth;
                 Matrix matrix = new Matrix();
                 matrix.postScale(scaleWidth, scaleWidth);
-
                 resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, false);
                 return resultBitmap;
             } catch (Exception ignored) {
@@ -217,15 +202,11 @@ public class BitmapUtil {
             bitmap = ((BitmapDrawable) drawable).getBitmap();
         }
         if (bitmap != null) {
-
             int bmpWidth = bitmap.getWidth();
             int bmpHeight = bitmap.getHeight();
-
             float scaleHeight = height / bmpHeight;
-
             Matrix matrix = new Matrix();
             matrix.postScale(scaleHeight, scaleHeight);
-
             return Bitmap.createBitmap(bitmap, 0, 0, bmpWidth, bmpHeight, matrix, true);
         } else {
             return null;
@@ -259,7 +240,6 @@ public class BitmapUtil {
 
                                     @Override
                                     public void onLoadCleared(@Nullable Drawable placeholder) {
-
                                     }
 
                                     @Override
@@ -296,7 +276,6 @@ public class BitmapUtil {
 
                     @Override
                     public void onComplete() {
-
                     }
                 });
     }
@@ -320,7 +299,6 @@ public class BitmapUtil {
 
                                     @Override
                                     public void onLoadCleared(@Nullable Drawable placeholder) {
-
                                     }
 
                                     @Override
@@ -357,7 +335,6 @@ public class BitmapUtil {
 
                     @Override
                     public void onComplete() {
-
                     }
                 });
     }
@@ -369,9 +346,7 @@ public class BitmapUtil {
         // 获取屏幕宽高
         int screenWidth = ScreenUtil.getScreenWidth(context);
         int screenHeight = ScreenUtil.getScreenHeight(context);
-
         Resources resources = context.getResources();
-
         BitmapFactory.Options opts = new BitmapFactory.Options();
         //请求图片属性但不申请内存
         opts.inJustDecodeBounds = true;
@@ -379,7 +354,6 @@ public class BitmapUtil {
         // 获取图片宽高
         int imageWidth = opts.outWidth;
         int imageHeight = opts.outHeight;
-
         // 图片的宽高除以屏幕宽高，算出宽和高的缩放比例，取较大值作为图片的缩放比例
         int scale = 1;
         int scaleX = imageWidth / screenWidth;
@@ -389,16 +363,13 @@ public class BitmapUtil {
         } else if (scaleY > scaleX && scaleY > 1) {
             scale = scaleY;
         }
-
         // * 按缩放比例加载图片
         //设置缩放比例
         opts.inSampleSize = scale;
         //为图片申请内存
         opts.inJustDecodeBounds = false;
         Bitmap bm = BitmapFactory.decodeResource(resources, id, opts);
-
         Drawable drawable = new BitmapDrawable(resources, bm);
-
         viewGroup.setBackground(drawable);
     }
 }

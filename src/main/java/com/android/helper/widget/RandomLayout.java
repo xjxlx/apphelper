@@ -22,11 +22,10 @@ import java.util.Random;
  */
 public class RandomLayout extends ViewGroup {
 
+    private final List<TextView> mTemporaryViewList = new ArrayList<>();// 临时存放生成view的集合
     private List<String> mRandomDataList; // 随机布局的内容数据
     private TextView mTextView = new TextView(getContext()); // textView的模板
     private List<TextView> mRandomViewList;// view的集合
-    private final List<TextView> mTemporaryViewList = new ArrayList<>();// 临时存放生成view的集合
-
     private Random mRandom; // 随机数
     private int mLeft, mTop, mRight, mBottom;// 整个view真实可用的区域
     private int mLoopCount;// 默认如果超过500次就开始重新轮训
@@ -55,7 +54,6 @@ public class RandomLayout extends ViewGroup {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
         measuredWidth = getMeasuredWidth();
         measuredHeight = getMeasuredHeight();
     }
@@ -72,14 +70,12 @@ public class RandomLayout extends ViewGroup {
             this.removeAllViews();
             // 清空临时的view集合
             this.mTemporaryViewList.clear();
-
             // 存放view的集合
             if (this.mRandomViewList == null) {
                 this.mRandomViewList = new ArrayList<>();
             } else {
                 mRandomViewList.clear();
             }
-
             // 把view临时存放到一个集合中去
             for (String content : list) {
                 TextView textView = getTextView();
@@ -90,13 +86,6 @@ public class RandomLayout extends ViewGroup {
         }
     }
 
-    /**
-     * @return 获取一个标准的textView模板，可以对textView进行各种设置
-     */
-    public void setTextView(@NotNull TextView templateTextView) {
-        this.mTextView = templateTextView;
-    }
-
     public TextView getTextView() {
         TextView textView = new TextView(getContext());
         textView.setTextSize(mTextView.getTextSize());
@@ -104,6 +93,13 @@ public class RandomLayout extends ViewGroup {
         textView.setGravity(mTextView.getGravity());
         textView.setTypeface(mTextView.getTypeface());
         return textView;
+    }
+
+    /**
+     * @return 获取一个标准的textView模板，可以对textView进行各种设置
+     */
+    public void setTextView(@NotNull TextView templateTextView) {
+        this.mTextView = templateTextView;
     }
 
     @SuppressLint("DrawAllocation")
@@ -120,25 +116,19 @@ public class RandomLayout extends ViewGroup {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         LogUtil.e(" --- > onDraw  <----");
-
         post(() -> {
             LogUtil.e("整个布局的位置：left:" + mLeft + "  top: " + mTop + "  right:" + mRight + "  bottom:" + mBottom);
-
             for (int i = 0; i < mTemporaryViewList.size(); i++) {
                 TextView child = mTemporaryViewList.get(i);
-
                 // 先测量子View的大小
                 int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.AT_MOST);// 为子View准备测量的参数
                 int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.AT_MOST);
                 child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-
                 // 子View测量之后的宽和高
                 int childW = child.getMeasuredWidth();
                 int childH = child.getMeasuredHeight();
-
                 mRadioWidth = 20;
                 mRadioHeight = 20;
-
                 while ((!mRandomViewList.contains(child)) && (!mLoopFlag)) {
                     ++mLoopCount;
                     if (mLoopCount > 500) {
@@ -148,7 +138,6 @@ public class RandomLayout extends ViewGroup {
                     int[] viewLocal = getViewLocal(childW, childH);
                     int newX = viewLocal[0]; // x轴坐标
                     int newY = viewLocal[1];
-
                     // view 交集的结果
                     boolean overlap = isOverlap(newX, newY, childW + mRadioWidth, childH + mRadioHeight);
                     LogUtil.e("新产生的view是否会和其他的view相交叉：" + overlap);
@@ -170,18 +159,15 @@ public class RandomLayout extends ViewGroup {
                         addView(child);
                         // 标记
                         mRandomViewList.add(child);
-
                         // 改变位置
                         child.layout(newX, newY, (newX + childW + mRadioWidth), (newY + childH + mRadioHeight));
                         LogUtil.e("成功添加了view ！");
-
                         // 设置view的旋转
                         if (mIsRatioView) {
                             int randomAngle = getAngleValue(5, -5);
                             LogUtil.e("随机的角度为：" + randomAngle);
                             child.setRotation(randomAngle);
                         }
-
                         // 设置点击事件
                         child.setOnClickListener(v -> {
                             if (mClickListener != null) {
@@ -226,15 +212,12 @@ public class RandomLayout extends ViewGroup {
                 int right = child.getRight();
                 int top = child.getTop();
                 int bottom = child.getBottom();
-
                 // 之前添加的view
                 Rect rect = new Rect(left, top, right, bottom);
-
                 // 随机生成的view
                 Rect rect1 = new Rect((newX + mRadioWidth), (newY + mRadioHeight), (newX + width + mRadioWidth), (newY + height + mRadioHeight));
                 // 交集的结果
                 isOverlap = Rect.intersects(rect, rect1);
-
                 if (isOverlap) {
                     isOverlap = true;
                     break; // 停止整个轮训
@@ -289,7 +272,6 @@ public class RandomLayout extends ViewGroup {
         } else {
             xyRet[0] = mRandom.nextInt(width);
         }
-
         int i1 = measuredHeight - (height + getPaddingBottom() + getPaddingTop());
         if (i1 > 0) {
             xyRet[1] = mRandom.nextInt(i1);

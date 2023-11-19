@@ -1,5 +1,4 @@
 package com.android.helper.utils.location;
-
 // import com.amap.api.location.AMapLocation;
 
 /**

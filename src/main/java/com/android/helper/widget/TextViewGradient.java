@@ -46,13 +46,11 @@ public class TextViewGradient extends View {
         // 文字的大小
         float textSize = typedArray.getDimension(R.styleable.TextViewGradient_tvg_text_size, ConvertUtil.toPx(5));
         mPaint.setTextSize(textSize);
-
         // 文字的内容
         String string = typedArray.getString(R.styleable.TextViewGradient_tvg_text);
         if (!TextUtils.isEmpty(string)) {
             mContent = string;
         }
-
         typedArray.recycle();
     }
 
@@ -60,7 +58,6 @@ public class TextViewGradient extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
         if (!TextUtils.isEmpty(mContent)) {
             // 获取textView的宽高
             if (mContentHeight <= 0 || mContentWidth <= 0) {
@@ -68,19 +65,16 @@ public class TextViewGradient extends View {
                 mContentWidth = textSize[0];
                 mContentHeight = textSize[1];
             }
-
             // 设置权重
             if (mIntsPositions == null) {
                 mIntsPositions = new float[]{0F, 1F};
             }
-
             if (mIntsColor != null) {
                 if (linearGradient == null) {
                     linearGradient = new LinearGradient(0, 0, mContentWidth, mContentHeight, mIntsColor, mIntsPositions, Shader.TileMode.CLAMP);
                 }
                 mPaint.setShader(linearGradient);
             }
-
             // 获取基线
             if (mBaseline <= 0) {
                 mBaseline = CustomViewUtil.getBaseLine(mPaint, mContent);
@@ -101,10 +95,8 @@ public class TextViewGradient extends View {
                 mContentWidth = textSize[0];
                 mContentHeight = textSize[1];
             }
-
             int i1 = resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec);
             int i2 = resolveSize((int) mContentHeight, heightMeasureSpec);
-
             setMeasuredDimension(i1, i2);
         }
     }
