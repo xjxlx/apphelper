@@ -39,6 +39,14 @@ android {
     lint {
         baseline = file("lint-baseline.xml")
     }
+
+    configurations.all {
+        resolutionStrategy {
+            force(libs.recyclerview)
+            force(libs.okhttp3)
+            force(libs.rxjava2)
+        }
+    }
 }
 
 dependencies {
