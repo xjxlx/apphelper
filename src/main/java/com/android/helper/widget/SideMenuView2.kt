@@ -1,5 +1,6 @@
 package com.android.helper.widget
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.GestureDetector
@@ -86,7 +87,7 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
 
     private var mDx: Int = 0
     private var mGestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-        override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+        override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
             mDx = distanceX.toInt()
 
             mContentView?.let {
@@ -111,6 +112,7 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
         }
     })
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event?.let {
             mGestureDetector.onTouchEvent(event)

@@ -90,10 +90,10 @@ class SliderView(context: Context?, attrs: AttributeSet?) : View(context, attrs)
     }
 
     @SuppressLint("DrawAllocation")
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        canvas?.let {
+        canvas.let {
 
             // 绘制背景色
             it.drawRoundRect(0f, 0f, measuredWidth.toFloat(), measuredHeight.toFloat(), mRadius, mRadius, mPaintBackground)
