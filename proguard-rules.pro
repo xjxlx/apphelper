@@ -80,3 +80,8 @@
 #   导航
     -keep class com.amap.api.navi.**{*;}
     -keep class com.autonavi.**{*;}
+
+
+
+#R8的缺少类忽略
+-dontwarn  com.tbruyelle.rxpermissions3.RxPermissions
