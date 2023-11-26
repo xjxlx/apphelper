@@ -1,10 +1,5 @@
 package com.android.helper.httpclient;
 
-//import io.reactivex.FlowableTransformer;
-//import io.reactivex.ObservableTransformer;
-//import io.reactivex.android.schedulers.AndroidSchedulers;
-//import io.reactivex.schedulers.Schedulers;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
@@ -26,12 +21,30 @@ public class RxUtil implements BaseLifecycleObserver {
     private Fragment mFragment;
     private Disposable mSubscribeCountdown;
 
+    public RxUtil(Builder builder) {
+        if (builder != null) {
+            mActivity = builder.mActivity;
+            mFragment = builder.mFragment;
+
+            if (mActivity != null) {
+                mActivity.getLifecycle()
+                        .addObserver(this);
+            }
+
+            if (mFragment != null) {
+                mFragment.getLifecycle()
+                        .addObserver(this);
+            }
+        }
+    }
+
     /**
      * @param <T>
      * @return 只做线程的转换，其实如果这里用了flatMap做一次数据转换其实会更好
      */
     public static <T> FlowableTransformer<T, T> getSchedulerFlowable() {
-        return upstream -> upstream.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        return upstream -> upstream.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     /**
@@ -39,24 +52,8 @@ public class RxUtil implements BaseLifecycleObserver {
      * @return 线程间的转换
      */
     public static <T> ObservableTransformer<T, T> getSchedulerObservable() {
-        return upstream -> upstream
-                .subscribeOn(Schedulers.io())
+        return upstream -> upstream.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public RxUtil(Builder builder) {
-        if (builder != null) {
-            mActivity = builder.mActivity;
-            mFragment = builder.mFragment;
-
-            if (mActivity != null) {
-                mActivity.getLifecycle().addObserver(this);
-            }
-
-            if (mFragment != null) {
-                mFragment.getLifecycle().addObserver(this);
-            }
-        }
     }
 
     /**
@@ -84,8 +81,8 @@ public class RxUtil implements BaseLifecycleObserver {
          */
         long[] countdown = {totalTime, 0, 0};
 
-        mSubscribeCountdown = Observable.interval(initialDelay, period, TimeUnit.MILLISECONDS).compose(RxUtil.getSchedulerObservable())
-
+        mSubscribeCountdown = Observable.interval(initialDelay, period, TimeUnit.MILLISECONDS)
+                .compose(RxUtil.getSchedulerObservable())
                 .map(aLong -> { // 转换数据，把倒计时的数据发送出去
                     // 当前的计数器
                     countdown[1] = aLong + 1;
@@ -94,10 +91,12 @@ public class RxUtil implements BaseLifecycleObserver {
                     countdown[0] -= 1000;
 
                     return countdown[0];
-                }).takeUntil(aLong -> { // 条件处理器，用来中断倒计时
+                })
+                .takeUntil(aLong -> { // 条件处理器，用来中断倒计时
                     // takeUntil takeUntil
                     return countdown[0] < 0;
-                }).subscribe(aLong -> { // 发送结果
+                })
+                .subscribe(aLong -> { // 发送结果
                     countdown[2] = aLong;
                     if (countdownListener != null) {
                         countdownListener.countdown(mSubscribeCountdown, countdown[1], countdown[2]);
@@ -112,17 +111,20 @@ public class RxUtil implements BaseLifecycleObserver {
      * @param counterListener 计数器的回调
      */
     public void counter(long totalTime, long initialDelay, long period, CounterListener counterListener) {
-        mSubscribeCountdown = Observable.interval(initialDelay, period, TimeUnit.MILLISECONDS).compose(RxUtil.getSchedulerObservable()).takeUntil(aLong -> { // 条件处理器，用来中断倒计时,
-            if (totalTime != 0) {
-                return aLong * period >= totalTime;
-            } else {
-                return false;
-            }
-        }).subscribe(aLong -> { // 发送结果
-            if (counterListener != null) {
-                counterListener.counter(mSubscribeCountdown, aLong);
-            }
-        });
+        mSubscribeCountdown = Observable.interval(initialDelay, period, TimeUnit.MILLISECONDS)
+                .compose(RxUtil.getSchedulerObservable())
+                .takeUntil(aLong -> { // 条件处理器，用来中断倒计时,
+                    if (totalTime != 0) {
+                        return aLong * period >= totalTime;
+                    } else {
+                        return false;
+                    }
+                })
+                .subscribe(aLong -> { // 发送结果
+                    if (counterListener != null) {
+                        counterListener.counter(mSubscribeCountdown, aLong);
+                    }
+                });
     }
 
     @Override
@@ -179,5 +181,4 @@ public class RxUtil implements BaseLifecycleObserver {
             return new RxUtil(this);
         }
     }
-
 }
