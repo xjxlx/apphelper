@@ -7,10 +7,12 @@ plugins {
 
 android {
     namespace = "com.android.helper"
-    compileSdk = libs.versions.compileSdks.get().toInt()
+    compileSdk = libs.versions.compileSdks.get()
+        .toInt()
 
     defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
+        minSdk = libs.versions.minSdk.get()
+            .toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -67,6 +69,9 @@ dependencies {
     }
     implementation(libs.android.pickerview)  // 日历选择器
     implementation(libs.viewpager2)
+
+    implementation(libs.rxjava2.rxandroid2) // 必要rxAndroid依赖，切线程时需要用到
+
     api(project(":refresh"))
 
     // room数据库的依赖

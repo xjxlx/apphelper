@@ -4,8 +4,8 @@ import com.android.common.utils.LogUtil
 import com.android.common.utils.SpUtil
 import com.android.helper.httpclient.BaseException
 import com.android.helper.httpclient.BaseHttpDisposableObserver
-import com.android.helper.httpclient.RetrofitHelper
 import com.android.helper.httpclient.RxUtil
+import com.android.http.client.RetrofitHelper
 import io.reactivex.Observable
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -39,8 +39,7 @@ class AppPushErrorService {
         val nameBody = SpUtil.getString("")
             .toRequestBody("text/plain;charset=UTF-8".toMediaTypeOrNull())
 
-        ApiServices
-            .uploadAppErrorLog(fileBody, serviceBody, nameBody)
+        ApiServices.uploadAppErrorLog(fileBody, serviceBody, nameBody)
             .subscribe(object : BaseHttpDisposableObserver<String>() {
                 override fun onSuccess(t: String?) {
                     t?.let {
@@ -73,8 +72,7 @@ class AppPushErrorService {
 
 object ApiServices {
     fun uploadAppErrorLog(file: MultipartBody.Part, service: RequestBody, name: RequestBody): Observable<String> {
-        return RetrofitHelper
-            .create(AppInfoApi::class.java)
+        return RetrofitHelper.create(AppInfoApi::class.java)
             .uploadAppErrorLog(file, service, name)
             .compose(RxUtil.getSchedulerObservable())
     }
@@ -84,5 +82,7 @@ interface AppInfoApi {
     @Multipart
     @POST("/")
     // 图文混排上传
-    fun uploadAppErrorLog(@Part file: MultipartBody.Part, @Part("service") service: RequestBody, @Part("name") name: RequestBody): Observable<String>
+    fun uploadAppErrorLog(@Part file: MultipartBody.Part,
+        @Part("service") service: RequestBody,
+        @Part("name") name: RequestBody): Observable<String>
 }
