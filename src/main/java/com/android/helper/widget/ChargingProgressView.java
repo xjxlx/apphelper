@@ -124,7 +124,7 @@ public class ChargingProgressView extends BaseView {
     }
 
     @Override
-    protected void initView(Context context, AttributeSet attrs) {
+    public void initView(Context context, AttributeSet attrs) {
         // 底层白色进度条的Paint
         mPaintBackground = new Paint();
         mPaintBackground.setColor(Color.parseColor("#FFF4F4F4"));
@@ -251,14 +251,19 @@ public class ChargingProgressView extends BaseView {
                 mRectFNerLayer.top = mRectFOuterLayer.top + mIntervalLayer;
                 mRectFNerLayer.right = mRectFOuterLayer.right - mIntervalLayer;
                 mRectFNerLayer.bottom = mRectFOuterLayer.bottom - mIntervalLayer;
-
             } else {
                 // 使用路径去绘制外层圆角矩形
                 mPath_w.reset();
                 mPath_w.addRoundRect(0, mTopInterval, mProgress, mProgressHeight + mTopInterval, mAngleArray, Path.Direction.CW);
                 // 使用路径去绘制内层圆角矩形
                 mPath_n.reset();
-                mPath_n.addRoundRect(mIntervalLayer, mTopInterval + mIntervalLayer, mProgress - mIntervalLayer, mProgressHeight + mTopInterval - mIntervalLayer, mAngleArray, Path.Direction.CW);
+                mPath_n.addRoundRect(mIntervalLayer,
+                        mTopInterval + mIntervalLayer,
+                        mProgress - mIntervalLayer,
+                        mProgressHeight + mTopInterval - mIntervalLayer,
+                        mAngleArray,
+                        Path.Direction.CW
+                );
             }
             // 闪电符号
             if (mBitmap != null) {
@@ -454,9 +459,21 @@ public class ChargingProgressView extends BaseView {
             // 进度大于0
             mPath_qj.reset();
             if (mPercentage > 0) {
-                mPath_qj.addRoundRect(mProgress, mTopInterval, mProgressWidth, mTopInterval + mProgressHeight, mAngleArrayRight, Path.Direction.CW);
+                mPath_qj.addRoundRect(mProgress,
+                        mTopInterval,
+                        mProgressWidth,
+                        mTopInterval + mProgressHeight,
+                        mAngleArrayRight,
+                        Path.Direction.CW
+                );
             } else {
-                mPath_qj.addRoundRect(mProgress, mTopInterval, mProgressWidth, mTopInterval + mProgressHeight, mAngleArrayLeftRight, Path.Direction.CW);
+                mPath_qj.addRoundRect(mProgress,
+                        mTopInterval,
+                        mProgressWidth,
+                        mTopInterval + mProgressHeight,
+                        mAngleArrayLeftRight,
+                        Path.Direction.CW
+                );
             }
             // 使用路径绘制内层圆角矩形
             canvas.drawPath(mPath_qj, mPaintSection);
@@ -534,7 +551,6 @@ public class ChargingProgressView extends BaseView {
                 if (!mScroll) {
                     return false;
                 }
-                log("ACTION_DOWN ---> dispatchTouchEvent --->");
                 // 如果是在区域内，则返回为true,否则返回false
                 float currentX = event.getX(); // 当前的X轴的值
                 boolean b = (currentX > mStartBorder) && (currentX < mEndBorder);
@@ -548,10 +564,8 @@ public class ChargingProgressView extends BaseView {
             case MotionEvent.ACTION_MOVE:
                 float x = event.getX();
                 if (x < mStartBorder || x > mEndBorder) {
-                    log("ACTION_MOVE ---> dispatchTouchEvent ---> 自己消耗！");
                     return true;
                 } else {
-                    log("ACTION_MOVE ---> dispatchTouchEvent ---> 交给父类去处理！");
                     return super.dispatchTouchEvent(event);
                 }
             case MotionEvent.ACTION_UP:
@@ -708,6 +722,10 @@ public class ChargingProgressView extends BaseView {
         mProgressListener = progressListener;
     }
 
+    private void log(String content) {
+        LogUtil.e(content);
+    }
+
     public interface ProgressListener {
         /**
          * @param progress 手指抬起时候，当前的百分比
@@ -716,5 +734,4 @@ public class ChargingProgressView extends BaseView {
 
         void onMove(String progress);
     }
-
 }
