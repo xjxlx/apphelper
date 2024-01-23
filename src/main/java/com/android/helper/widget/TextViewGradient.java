@@ -16,7 +16,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import com.android.helper.R;
-import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
 
 public class TextViewGradient extends View {
@@ -44,7 +43,7 @@ public class TextViewGradient extends View {
     private void initView(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TextViewGradient);
         // 文字的大小
-        float textSize = typedArray.getDimension(R.styleable.TextViewGradient_tvg_text_size, ConvertUtil.toPx(5));
+        float textSize = typedArray.getDimension(R.styleable.TextViewGradient_tvg_text_size, 5);
         mPaint.setTextSize(textSize);
         // 文字的内容
         String string = typedArray.getString(R.styleable.TextViewGradient_tvg_text);
@@ -139,5 +138,4 @@ public class TextViewGradient extends View {
         mPaint.setStyle(style);
         invalidate();
     }
-
 }

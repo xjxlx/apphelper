@@ -12,8 +12,8 @@ import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 
 import com.android.common.base.BaseView;
+import com.android.common.utils.ConvertUtil;
 import com.android.common.utils.LogUtil;
-import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
 import com.android.helper.utils.NumberUtil;
 
@@ -24,15 +24,15 @@ import com.android.helper.utils.NumberUtil;
  */
 public class ElectricityView extends BaseView {
 
-    private final float mProgressHeight = ConvertUtil.toDp(8); // 进度条的高度
-    private final float mProgressRound = ConvertUtil.toDp(5);
+    private final float mProgressHeight = ConvertUtil.dp(getContext(), 8); // 进度条的高度
+    private final float mProgressRound = ConvertUtil.dp(getContext(), 5);
     // 进度条
-    private final float mBottomValueInterval = ConvertUtil.toDp(8);
+    private final float mBottomValueInterval = ConvertUtil.dp(getContext(), 8);
     // 中间圆
-    private final float mCircleRadius = ConvertUtil.toDp(12);// 圆的半径
-    private final float mPaddingLeft = ConvertUtil.toDp(20); // view的左间距 = 圆的半径
-    private final float mPaddingTop = ConvertUtil.toDp(8);// view的上方padding值，避免遮挡阴影
-    private final float mRightInterval = ConvertUtil.toDp(4) + mPaddingLeft;
+    private final float mCircleRadius = ConvertUtil.dp(getContext(), 12);// 圆的半径
+    private final float mPaddingLeft = ConvertUtil.dp(getContext(), 20); // view的左间距 = 圆的半径
+    private final float mPaddingTop = ConvertUtil.dp(getContext(), 8);// view的上方padding值，避免遮挡阴影
+    private final float mRightInterval = ConvertUtil.dp(getContext(), 4) + mPaddingLeft;
     private float mProgressWidth; // 进度条的宽度
     private Paint mPaintProgressBackground;
     private Paint mPaintProgress;
@@ -75,7 +75,7 @@ public class ElectricityView extends BaseView {
         mPaintRightText = new Paint();
         mPaintRightText.setAntiAlias(true);
         mPaintRightText.setColor(Color.parseColor("#FF7A8499"));
-        mPaintRightText.setTextSize(ConvertUtil.toSp(13));
+        mPaintRightText.setTextSize(ConvertUtil.sp(getContext(), 13));
         // 滑动的圆球
         mPaintRound = new Paint();
         mPaintRound.setStyle(Paint.Style.FILL);
@@ -86,7 +86,7 @@ public class ElectricityView extends BaseView {
         mPaintBottomRoundText = new Paint();
         mPaintBottomRoundText.setAntiAlias(true);
         mPaintBottomRoundText.setColor(Color.parseColor("#FF3FAAE4"));
-        mPaintBottomRoundText.setTextSize(ConvertUtil.toSp(12));
+        mPaintBottomRoundText.setTextSize(ConvertUtil.sp(getContext(), 12));
     }
 
     @SuppressLint("DrawAllocation")
@@ -140,34 +140,11 @@ public class ElectricityView extends BaseView {
             mCurrentProgress = mProgressTarget / mPercentage;
         }
         // 绘制背景
-        canvas.drawRoundRect(
-                mCurrentProgress + mPaddingLeft,
-                mTopInterval + mPaddingTop,
-                mProgressWidth + mPaddingLeft,
-                mProgressHeight + mTopInterval + mPaddingTop,
-                mProgressRound,
-                mProgressRound,
-                mPaintProgressBackground
-        );
+        canvas.drawRoundRect(mCurrentProgress + mPaddingLeft, mTopInterval + mPaddingTop, mProgressWidth + mPaddingLeft, mProgressHeight + mTopInterval + mPaddingTop, mProgressRound, mProgressRound, mPaintProgressBackground);
         // 绘制进度
-        canvas.drawRoundRect(
-                mPaddingLeft,
-                mTopInterval + mPaddingTop,
-                mCurrentProgress + mPaddingLeft,
-                mProgressHeight + mTopInterval + mPaddingTop,
-                mProgressRound,
-                mProgressRound,
-                mPaintProgress
-        );
+        canvas.drawRoundRect(mPaddingLeft, mTopInterval + mPaddingTop, mCurrentProgress + mPaddingLeft, mProgressHeight + mTopInterval + mPaddingTop, mProgressRound, mProgressRound, mPaintProgress);
         // 绘制右侧的电流值
-        canvas.drawText(
-                mRightTextValue,
-                0,
-                mRightTextValue.length(),
-                (mPaddingLeft + mProgressWidth + mRightInterval),
-                (mBaseLineRightText + mTopInterval + mPaddingTop),
-                mPaintRightText
-        );
+        canvas.drawText(mRightTextValue, 0, mRightTextValue.length(), (mPaddingLeft + mProgressWidth + mRightInterval), (mBaseLineRightText + mTopInterval + mPaddingTop), mPaintRightText);
         // 圆心的x轴 = 进度的值 + 左侧的间距
         // 圆的X轴圆心
         float circleDx = mCurrentProgress + mPaddingLeft;

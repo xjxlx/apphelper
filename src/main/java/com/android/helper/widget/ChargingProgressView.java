@@ -17,11 +17,11 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
 
 import com.android.common.base.BaseView;
+import com.android.common.utils.ConvertUtil;
 import com.android.common.utils.LogUtil;
 import com.android.common.utils.LogWriteUtil;
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
-import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
 import com.android.helper.utils.NumberUtil;
 
@@ -34,25 +34,25 @@ import java.math.BigDecimal;
  */
 public class ChargingProgressView extends BaseView {
 
-    private final float mLineWidth = ConvertUtil.toDp(1);
-    private final float mAngle = ConvertUtil.toDp(10);
-    private final float mIntervalLayer = ConvertUtil.toDp(4);// 外层和内层圆形的间距
-    private final float mRightRectWidth = ConvertUtil.toDp(6);// 右侧view的宽高
-    private final float mRightRectHeight = ConvertUtil.toDp(15);// 右侧view的宽高
+    private final float mLineWidth = ConvertUtil.dp(getContext(), 1);
+    private final float mAngle = ConvertUtil.dp(getContext(), 10);
+    private final float mIntervalLayer = ConvertUtil.dp(getContext(), 4);// 外层和内层圆形的间距
+    private final float mRightRectWidth = ConvertUtil.dp(getContext(), 6);// 右侧view的宽高
+    private final float mRightRectHeight = ConvertUtil.dp(getContext(), 15);// 右侧view的宽高
     private final float[] mAngleArray = new float[]{mAngle, mAngle, 0, 0, 0, 0, mAngle, mAngle};
     private final float[] mAngleArrayRight = new float[]{0, 0, mAngle, mAngle, mAngle, mAngle, 0, 0};
     private final float[] mAngleArrayLeftRight = new float[]{mAngle, mAngle, mAngle, mAngle, mAngle, mAngle, mAngle, mAngle};
-    private final int mProgressHeight = (int) ConvertUtil.toDp(60); // 进度条的高度
-    private final float mOptimumTextInterval = ConvertUtil.toDp(13);// 最佳值和进度条的间隔高度
-    private final float mCurrentChargingTextInterval = ConvertUtil.toDp(8);
-    private final float mRemainingTimeTextInterval = ConvertUtil.toDp(8); // 运动球的半径
-    private final float mScrollTextInterval = ConvertUtil.toDp(6);
+    private final int mProgressHeight = (int) ConvertUtil.dp(getContext(), 60); // 进度条的高度
+    private final float mOptimumTextInterval = ConvertUtil.dp(getContext(), 13);// 最佳值和进度条的间隔高度
+    private final float mCurrentChargingTextInterval = ConvertUtil.dp(getContext(), 8);
+    private final float mRemainingTimeTextInterval = ConvertUtil.dp(getContext(), 8); // 运动球的半径
+    private final float mScrollTextInterval = ConvertUtil.dp(getContext(), 6);
     // private final String mSocText = "目标SOC";
-    private final float mSocLeftInterval = ConvertUtil.toDp(4f);
-    private final float mSocTextTopInterval = ConvertUtil.toDp(8.5f);
-    private final float mSocBitmapTopInterval = ConvertUtil.toDp(11.5f);
+    private final float mSocLeftInterval = ConvertUtil.dp(getContext(), 4f);
+    private final float mSocTextTopInterval = ConvertUtil.dp(getContext(), 8.5f);
+    private final float mSocBitmapTopInterval = ConvertUtil.dp(getContext(), 11.5f);
     private final float mPaddingRight = mRemainingTimeTextInterval;// 右侧的间距
-    private final float mPaddingBottom = ConvertUtil.toDp(5); // 底部的间距
+    private final float mPaddingBottom = ConvertUtil.dp(getContext(), 5); // 底部的间距
     private final LogWriteUtil mWriteUtil = new LogWriteUtil(CommonConstants.FILE_CHARGING_CENTER_NAME + ".txt");
     // 最佳进度值
     private final boolean mShowOptimum = true; // 是否展示最佳的电量值
@@ -169,7 +169,7 @@ public class ChargingProgressView extends BaseView {
         // 滑动的线
         mPaintBottomScrollLine = new Paint();
         mPaintBottomScrollLine.setColor(Color.parseColor("#FFFF9C26"));
-        mPaintBottomScrollLine.setTextSize(ConvertUtil.toSp(1f));
+        mPaintBottomScrollLine.setTextSize(ConvertUtil.sp(getContext(), 1f));
         mPaintBottomScrollLine.setStrokeWidth(mLineWidth);
         mPaintBottomScrollLine.setAntiAlias(true);
         // 区间滑动的球
@@ -185,32 +185,32 @@ public class ChargingProgressView extends BaseView {
         mPaintOptimum.setColor(Color.parseColor("#FF9AF5C1"));
         mPaintOptimum.setStyle(Paint.Style.FILL);
         mPaintOptimum.setStrokeWidth(mLineWidth);
-        mPaintOptimum.setTextSize(ConvertUtil.toSp(10.5f)); // 设置值的单位是像素
+        mPaintOptimum.setTextSize(ConvertUtil.sp(getContext(), 10.5f)); // 设置值的单位是像素
         mPaintOptimum.setAntiAlias(true);
         // 绘制当前的电量进度
         mPaintCharging = new Paint();
         mPaintCharging.setColor(Color.parseColor("#FFFFFFFF"));
-        mPaintCharging.setTextSize(ConvertUtil.toSp(18f));
+        mPaintCharging.setTextSize(ConvertUtil.sp(getContext(), 18f));
         mPaintCharging.setAntiAlias(true);
         // 充电剩余时间
         mPaintChargingRemainingTimeText = new Paint();
         mPaintChargingRemainingTimeText.setColor(Color.parseColor("#FF7A8499"));
-        mPaintChargingRemainingTimeText.setTextSize(ConvertUtil.toSp(13f));
+        mPaintChargingRemainingTimeText.setTextSize(ConvertUtil.sp(getContext(), 13f));
         mPaintChargingRemainingTimeText.setAntiAlias(true);
         // 目标Soc
         mPaintSoc = new Paint();
         mPaintSoc.setColor(Color.parseColor("#FF7A8499"));
-        mPaintSoc.setTextSize(ConvertUtil.toSp(10.5f));
+        mPaintSoc.setTextSize(ConvertUtil.sp(getContext(), 10.5f));
         mPaintSoc.setAntiAlias(true);
         mBitmapSoc = getBitmap(context, R.mipmap.icon_charging_soc);
         // SOC的进度的画笔
         Paint paintSocText = new Paint();
         paintSocText.setColor(Color.parseColor("#FF3E485A"));
-        paintSocText.setTextSize(ConvertUtil.toDp(10.5f));
+        paintSocText.setTextSize(ConvertUtil.dp(getContext(), 10.5f));
         paintSocText.setAntiAlias(true);
         mPaintScrollValue = new Paint();
         mPaintScrollValue.setColor(Color.parseColor("#FF3E485A"));
-        mPaintScrollValue.setTextSize(ConvertUtil.toDp(10.5f));
+        mPaintScrollValue.setTextSize(ConvertUtil.dp(getContext(), 10.5f));
         mPaintScrollValue.setAntiAlias(true);
     }
 
@@ -257,13 +257,7 @@ public class ChargingProgressView extends BaseView {
                 mPath_w.addRoundRect(0, mTopInterval, mProgress, mProgressHeight + mTopInterval, mAngleArray, Path.Direction.CW);
                 // 使用路径去绘制内层圆角矩形
                 mPath_n.reset();
-                mPath_n.addRoundRect(mIntervalLayer,
-                        mTopInterval + mIntervalLayer,
-                        mProgress - mIntervalLayer,
-                        mProgressHeight + mTopInterval - mIntervalLayer,
-                        mAngleArray,
-                        Path.Direction.CW
-                );
+                mPath_n.addRoundRect(mIntervalLayer, mTopInterval + mIntervalLayer, mProgress - mIntervalLayer, mProgressHeight + mTopInterval - mIntervalLayer, mAngleArray, Path.Direction.CW);
             }
             // 闪电符号
             if (mBitmap != null) {
@@ -459,21 +453,9 @@ public class ChargingProgressView extends BaseView {
             // 进度大于0
             mPath_qj.reset();
             if (mPercentage > 0) {
-                mPath_qj.addRoundRect(mProgress,
-                        mTopInterval,
-                        mProgressWidth,
-                        mTopInterval + mProgressHeight,
-                        mAngleArrayRight,
-                        Path.Direction.CW
-                );
+                mPath_qj.addRoundRect(mProgress, mTopInterval, mProgressWidth, mTopInterval + mProgressHeight, mAngleArrayRight, Path.Direction.CW);
             } else {
-                mPath_qj.addRoundRect(mProgress,
-                        mTopInterval,
-                        mProgressWidth,
-                        mTopInterval + mProgressHeight,
-                        mAngleArrayLeftRight,
-                        Path.Direction.CW
-                );
+                mPath_qj.addRoundRect(mProgress, mTopInterval, mProgressWidth, mTopInterval + mProgressHeight, mAngleArrayLeftRight, Path.Direction.CW);
             }
             // 使用路径绘制内层圆角矩形
             canvas.drawPath(mPath_qj, mPaintSection);

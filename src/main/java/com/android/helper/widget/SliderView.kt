@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.android.common.utils.ConvertUtil
 import com.android.common.utils.LogUtil
 import com.android.helper.R
 import com.android.helper.utils.*
@@ -14,7 +15,7 @@ import com.android.helper.utils.*
 /**
  * 自定义滑块 ,这里使用seekBar的控件
  */
-class SliderView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
+class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     private val mPaintBackground = Paint() // 背景色
     private val mPaintSelectorBackground = Paint() // 滑动过的颜色
@@ -29,14 +30,14 @@ class SliderView(context: Context?, attrs: AttributeSet?) : View(context, attrs)
     private var mSelectorBackgroundColor: Int = 0
     private var bitmap: Bitmap? = null
     private var mMaxScrollValue: Int = 0 // 最大的滑动值
-    private val mRadius = ConvertUtil.toDp(8f)
-    private val mPaddingRight = ConvertUtil.toDp(18f)
+    private val mRadius = ConvertUtil.dp(context, 8f)
+    private val mPaddingRight = ConvertUtil.dp(context, 18f)
     private val mTextContent = "滑动至底部即可开始"
     private var mLeft: Int = 0
     private var dxValue: Float = 0f
 
     init {
-        val toDp5 = ConvertUtil.toDp(5f)
+        val toDp5 = ConvertUtil.dp(context, 5f)
 
         // 获取属性
         val array = context?.obtainStyledAttributes(attrs, R.styleable.SliderView)
@@ -65,7 +66,7 @@ class SliderView(context: Context?, attrs: AttributeSet?) : View(context, attrs)
         mPaintBackgroundText.isDither = true
         mPaintBackgroundText.color = context?.let { Color.parseColor("#82868F") }!!
 
-        mPaintBackgroundText.textSize = ConvertUtil.toSp(12f)
+        mPaintBackgroundText.textSize = ConvertUtil.sp(context, 12f)
 
         // 设置背景划过的颜色
         mPaintSelectorBackground.isAntiAlias = true
@@ -116,8 +117,15 @@ class SliderView(context: Context?, attrs: AttributeSet?) : View(context, attrs)
                 }
 
                 // 绘制滑动过的颜色
-                it.drawRoundRect(0f, 0f, (b.width + paddingLeft + mLeft).toFloat(), measuredHeight.toFloat(), mRadius, mRadius,
-                    mPaintSelectorBackground)
+                it.drawRoundRect(
+                    0f,
+                    0f,
+                    (b.width + paddingLeft + mLeft).toFloat(),
+                    measuredHeight.toFloat(),
+                    mRadius,
+                    mRadius,
+                    mPaintSelectorBackground
+                )
 
                 val rectSrc = Rect(0, 0, b.width, b.height)
                 val top = (measuredHeight - b.height) / 2

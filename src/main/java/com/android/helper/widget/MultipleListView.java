@@ -15,8 +15,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.android.common.utils.ConvertUtil;
 import com.android.helper.R;
-import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.CustomViewUtil;
 import com.android.helper.utils.TextViewUtil;
 
@@ -59,13 +59,13 @@ public class MultipleListView extends View {
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MultipleListView);
             // 字体的大小
-            textSize = typedArray.getDimension(R.styleable.MultipleListView_mlv_text_size, ConvertUtil.toDp(18));
+            textSize = typedArray.getDimension(R.styleable.MultipleListView_mlv_text_size, ConvertUtil.dp(getContext(), 18));
             // 字体颜色
             int color = typedArray.getColor(R.styleable.MultipleListView_mlv_text_color, Color.parseColor("#ff404040"));
             // 字体
             String fontName = typedArray.getString(R.styleable.MultipleListView_mlv_text_font);
             // 间隔高度
-            float line = typedArray.getDimension(R.styleable.MultipleListView_mlv_line_height, ConvertUtil.toDp(5));
+            float line = typedArray.getDimension(R.styleable.MultipleListView_mlv_line_height, ConvertUtil.dp(getContext(), 5));
             setTextColor(color);
             setTextSize(textSize);
             setTextFont(context, fontName);
@@ -328,6 +328,5 @@ public class MultipleListView extends View {
             return rightHeight;
         }
     }
-
 }
 

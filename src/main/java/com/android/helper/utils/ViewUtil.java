@@ -3,6 +3,8 @@ package com.android.helper.utils;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.common.utils.ConvertUtil;
+
 public class ViewUtil {
 
     /**
@@ -47,7 +49,7 @@ public class ViewUtil {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
-            marginLayoutParams.topMargin = (int) ConvertUtil.toDp(topMargin);
+            marginLayoutParams.topMargin = ConvertUtil.dpi(view.getContext(), topMargin);
             view.setLayoutParams(marginLayoutParams);
         }
     }
@@ -78,7 +80,7 @@ public class ViewUtil {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
-            marginLayoutParams.leftMargin = (int) ConvertUtil.toDp(topMargin);
+            marginLayoutParams.leftMargin = ConvertUtil.dpi(view.getContext(), topMargin);
             view.setLayoutParams(marginLayoutParams);
         }
     }
@@ -87,7 +89,7 @@ public class ViewUtil {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
-            marginLayoutParams.rightMargin = (int) ConvertUtil.toDp(topMargin);
+            marginLayoutParams.rightMargin = ConvertUtil.dpi(view.getContext(), topMargin);
             view.setLayoutParams(marginLayoutParams);
         }
     }
@@ -96,7 +98,7 @@ public class ViewUtil {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
-            marginLayoutParams.setMarginStart((int) ConvertUtil.toDp(marginStart));
+            marginLayoutParams.setMarginStart(ConvertUtil.dpi(view.getContext(), marginStart));
             view.setLayoutParams(marginLayoutParams);
         }
     }
@@ -105,7 +107,7 @@ public class ViewUtil {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
-            marginLayoutParams.setMarginEnd((int) ConvertUtil.toDp(marginEnd));
+            marginLayoutParams.setMarginEnd(ConvertUtil.dpi(view.getContext(), marginEnd));
             view.setLayoutParams(marginLayoutParams);
         }
     }
@@ -257,5 +259,4 @@ public class ViewUtil {
     public interface LocationCallBackListener {
         void onLocation(int[] location);
     }
-
 }

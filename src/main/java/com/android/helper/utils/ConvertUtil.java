@@ -1,13 +1,10 @@
 package com.android.helper.utils;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
@@ -36,9 +33,7 @@ public class ConvertUtil {
      * @param view TextView的对象
      */
     public static void setPhoneNumber(TextView view) {
-        String str = view
-                .getText()
-                .toString();
+        String str = view.getText().toString();
         StringBuffer buffer = new StringBuffer(str);
         StringBuffer replace = buffer.replace(3, 7, "****");
         view.setText(replace);
@@ -173,36 +168,6 @@ public class ConvertUtil {
         return result;
     }
 
-    /**
-     * @param dp 具体的dp值
-     * @return 使用标准的dp值
-     */
-    public static float toDp(float dp) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, Resources
-                .getSystem()
-                .getDisplayMetrics());
-    }
-
-    /**
-     * @param px px的值
-     * @return 返回一个标准的px的值
-     */
-    public static float toPx(float px) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, px, Resources
-                .getSystem()
-                .getDisplayMetrics());
-    }
-
-    /**
-     * @param sp sp的值
-     * @return 返回一个标准的sp的值
-     */
-    public static float toSp(float sp) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, Resources
-                .getSystem()
-                .getDisplayMetrics());
-    }
-
     /***
      *
      * @param url 指定的url，必须是一个合理的url，否则返回一个空数组
@@ -224,25 +189,9 @@ public class ConvertUtil {
                         map.put(split2[0], split2[1]);
                     }
                 }
-
             }
         }
         return map;
-    }
-
-    /**
-     * @return 把指定的集合转换成一个String字符串
-     */
-    public static String ListToString(List<String> list) {
-        if (list != null && list.size() > 0) {
-            StringBuffer buffer = new StringBuffer();
-            for (int i = 0; i < list.size(); i++) {
-                String value = list.get(i);
-                buffer.append(value);
-            }
-            return buffer.toString();
-        }
-        return "";
     }
 
     /**
@@ -263,14 +212,5 @@ public class ConvertUtil {
         } else {
             return list;
         }
-    }
-
-    // 根据手机的分辨率从 px(像素) 的单位 转成为 dp
-    public static int px2dip(Context context, float pxValue) {
-        // 获取当前手机的像素密度（1个dp对应几个px）
-        float scale = context
-                .getResources()
-                .getDisplayMetrics().density;
-        return (int) (pxValue / scale + 0.5f); // 四舍五入取整
     }
 }

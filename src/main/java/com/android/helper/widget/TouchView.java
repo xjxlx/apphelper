@@ -17,10 +17,10 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.android.common.utils.ConvertUtil;
 import com.android.common.utils.LogUtil;
 import com.android.helper.R;
 import com.android.helper.utils.BitmapUtil;
-import com.android.helper.utils.ConvertUtil;
 import com.android.helper.utils.ToastUtil;
 
 import java.util.ArrayList;
@@ -70,9 +70,8 @@ public class TouchView extends View {
 
     private void initView(Context context, AttributeSet attrs) {
         // 获取属性
-        @SuppressLint("CustomViewStyleable")
-        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.TouchView);
-        float dp = ConvertUtil.toDp(100f);
+        @SuppressLint("CustomViewStyleable") TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.TouchView);
+        float dp = ConvertUtil.dp(getContext(), 100f);
         // drawable
         Drawable drawable = array.getDrawable(R.styleable.TouchView_tv_drawable);
         mTopValue = array.getDimension(R.styleable.TouchView_tv_padding_Top, dp);
@@ -129,8 +128,7 @@ public class TouchView extends View {
             int width = resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec) - (mRadiusPadding * 2);
             setMeasuredDimension(width, width);
         } else {
-            setMeasuredDimension(resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec) - (mRadiusPadding * 2),
-                    (int) (mBitmapHeight + mTopValue + mBottomValue));
+            setMeasuredDimension(resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec) - (mRadiusPadding * 2), (int) (mBitmapHeight + mTopValue + mBottomValue));
         }
     }
 
@@ -220,14 +218,7 @@ public class TouchView extends View {
 
     public void setOnTouchListener(TouchListener listener) {
         this.mListener = listener;
-    }    @SuppressLint("HandlerLeak")
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            startView();
-        }
-    };
+    }
 
     public interface TouchListener {
         void onDownTouch();
@@ -235,6 +226,12 @@ public class TouchView extends View {
         void onUpTouch();
     }
 
-
-
+    @SuppressLint("HandlerLeak")
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            startView();
+        }
+    };
 }
