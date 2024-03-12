@@ -46,11 +46,13 @@ public class ViewUtil {
     }
 
     public static void setTopMargin(View view, int topMargin) {
-        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
-            marginLayoutParams.topMargin = ConvertUtil.dpi(view.getContext(), topMargin);
-            view.setLayoutParams(marginLayoutParams);
+        if (view != null) {
+            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+            if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
+                marginLayoutParams.topMargin = ConvertUtil.dpi(view.getContext(), topMargin);
+                view.setLayoutParams(marginLayoutParams);
+            }
         }
     }
 
