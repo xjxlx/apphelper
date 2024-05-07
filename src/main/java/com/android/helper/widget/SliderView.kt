@@ -10,17 +10,18 @@ import android.view.View
 import com.android.common.utils.ConvertUtil
 import com.android.common.utils.LogUtil
 import com.android.helper.R
-import com.android.helper.utils.*
+import com.android.helper.utils.BitmapUtil
+import com.android.helper.utils.CustomViewUtil
+import com.android.helper.utils.ToastUtil
 
 /**
  * 自定义滑块 ,这里使用seekBar的控件
  */
 class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-
     private val mPaintBackground = Paint() // 背景色
     private val mPaintSelectorBackground = Paint() // 滑动过的颜色
 
-    private val mPaintBackgroundText = Paint()// 背景上的文字
+    private val mPaintBackgroundText = Paint() // 背景上的文字
 
     private var mDrawable: Drawable? = null
     private var mDrawableHeight: Float = 0f
@@ -40,8 +41,8 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
         val toDp5 = ConvertUtil.dp(context, 5f)
 
         // 获取属性
-        val array = context?.obtainStyledAttributes(attrs, R.styleable.SliderView)
-        array?.let {
+        val array = context.obtainStyledAttributes(attrs, R.styleable.SliderView)
+        array.let {
             // 滑块的图片
             mDrawable = it.getDrawable(R.styleable.SliderView_hk_drawable)
             mDrawableHeight = it.getDimension(R.styleable.SliderView_hk_drawable_Height, toDp5)
@@ -49,9 +50,9 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
             mBackgroundColor = it.getColor(R.styleable.SliderView_hk_background, Color.parseColor("#F9F9F9"))
             mBackgroundColorHeight = it.getDimension(R.styleable.SliderView_hk_background_Height, toDp5)
             // 划过的颜色
-            mSelectorBackgroundColor = it.getColor(R.styleable.SliderView_hk_selector_background, Color.parseColor("#F9F9F9"))
+            mSelectorBackgroundColor =
+                it.getColor(R.styleable.SliderView_hk_selector_background, Color.parseColor("#F9F9F9"))
         }
-
 
         bitmap = BitmapUtil.getBitmapScaleWidth(mDrawable, mDrawableHeight)
 
@@ -79,7 +80,10 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
         array?.recycle()
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    override fun onMeasure(
+        widthMeasureSpec: Int,
+        heightMeasureSpec: Int,
+    ) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         bitmap?.let {
             setMeasuredDimension(resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec), it.height)
@@ -95,9 +99,16 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
         super.onDraw(canvas)
 
         canvas.let {
-
             // 绘制背景色
-            it.drawRoundRect(0f, 0f, measuredWidth.toFloat(), measuredHeight.toFloat(), mRadius, mRadius, mPaintBackground)
+            it.drawRoundRect(
+                0f,
+                0f,
+                measuredWidth.toFloat(),
+                measuredHeight.toFloat(),
+                mRadius,
+                mRadius,
+                mPaintBackground
+            )
 
             // 绘制背景的文字
             val textArray = CustomViewUtil.getTextSize(mPaintBackgroundText, mTextContent)
@@ -131,13 +142,11 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
                 val top = (measuredHeight - b.height) / 2
                 val desRect = Rect((paddingLeft + mLeft), top, (b.width + paddingLeft + mLeft), top + b.height)
                 it.drawBitmap(b, rectSrc, desRect, null)
-
             }
         }
     }
 
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
-
         var startX = 0f
         var startY = 0f
 
@@ -213,10 +222,12 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
 
     interface ScrollChangeListener {
         fun onScrollMaxValue()
+
         fun onChangeValue()
     }
 
     private var mListener: ScrollChangeListener? = null
+
     fun setChangeListener(listener: ScrollChangeListener) {
         this.mListener = listener
     }

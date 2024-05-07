@@ -10,7 +10,6 @@ import android.text.TextUtils
 import androidx.annotation.RequiresPermission
 import com.android.common.utils.LogUtil
 import java.io.File
-import java.util.*
 
 /**
  * @author : 流星
@@ -18,7 +17,6 @@ import java.util.*
  * @Description:
  */
 class DeviceUtil private constructor() {
-
     @JvmField
     val fileName = "deviceId.txt"
     private val TAG = "DeviceUtil"
@@ -44,10 +42,10 @@ class DeviceUtil private constructor() {
         context?.let {
             val systemService = it.getSystemService(Context.TELEPHONY_SERVICE)
             if (systemService is TelephonyManager) {
-
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // android 10 以上，只能通过系统权限获取
-                } else //1.1:如果有权限，直接显示
-                // 8.0 以下可以用deviceId，8.0以上要使用 imeiId
+                } else {
+                    // 1.1:如果有权限，直接显示
+                    // 8.0 以下可以用deviceId，8.0以上要使用 imeiId
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // 只适用于手机，依赖于sim卡
                         deviceId = systemService.imei // 设备的SN 序列号
                         if (TextUtils.isEmpty(deviceId)) {
@@ -56,6 +54,7 @@ class DeviceUtil private constructor() {
                     } else {
                         deviceId = systemService.deviceId
                     }
+                }
 
                 // 设备的SN 序列号
                 if (TextUtils.isEmpty(deviceId)) {
@@ -77,7 +76,8 @@ class DeviceUtil private constructor() {
         val RELEASE = Build.VERSION.RELEASE
 
         LogUtil.e(
-            "fingerprint:$fingerprint\r\n 系统品牌:$BRAND \r\n 型号: $MODEL \n 系统制造商:$MANUFACTURER \n 设备参数:$DEVICE \n 手机制造商:$PRODUCT\n sdk 版本:$SDK\n 系统 版本:$RELEASE")
+            "fingerprint:$fingerprint\r\n 系统品牌:$BRAND \r\n 型号: $MODEL \n 系统制造商:$MANUFACTURER \n 设备参数:$DEVICE \n 手机制造商:$PRODUCT\n sdk 版本:$SDK\n 系统 版本:$RELEASE"
+        )
 
         val deviceId =
             uniqueId + "_" + Build.BRAND + "_" + Build.MODEL + "_" + Build.MANUFACTURER + "_" + Build.DEVICE + "_" + Build.PRODUCT
@@ -116,7 +116,10 @@ class DeviceUtil private constructor() {
     /**
      * 写入deviceId 到文件中
      */
-    fun writeDeviceId(context: Context?, androidId: String) {
+    fun writeDeviceId(
+        context: Context?,
+        androidId: String,
+    ) {
         context?.let {
             if (!TextUtils.isEmpty(androidId)) {
                 // 1:使用标准的文档地址
@@ -132,7 +135,10 @@ class DeviceUtil private constructor() {
         }
     }
 
-    private fun writeContentToFile(path: String, androidId: String) {
+    private fun writeContentToFile(
+        path: String,
+        androidId: String,
+    ) {
         LogUtil.e("path::$path")
         // 判断文档地址是否存在，不存在就创建
         val parentFile = File(path)
