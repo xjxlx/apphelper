@@ -1,8 +1,8 @@
-@Suppress("DSL_SCOPE_VIOLATION")// Remove once KTIJ-19369 is fixed
+@Suppress("DSL_SCOPE_VIOLATION") // Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.com.android.library)
     alias(libs.plugins.org.jetbrains.kotlin.android)
-    alias(libs.plugins.io.github.xjxlx.publishing)
+    // alias(libs.plugins.io.github.xjxlx.publishing)
 }
 
 android {
@@ -65,7 +65,7 @@ dependencies {
     implementation(libs.rxjava3) { // 禁止依赖的传递
         isTransitive = false
     }
-    implementation(libs.android.pickerview)  // 日历选择器
+    implementation(libs.android.pickerview) // 日历选择器
     implementation(libs.viewpager2)
 
     implementation(libs.rxjava2.rxandroid2) // 必要rxAndroid依赖，切线程时需要用到
@@ -88,6 +88,3 @@ dependencies {
 //        transitive = false// 禁止依赖的传递
 //    }
 }
-
-
-
