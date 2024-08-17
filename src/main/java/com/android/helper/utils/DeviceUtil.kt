@@ -3,6 +3,7 @@ package com.android.helper.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+
 import android.os.Environment
 import android.provider.Settings
 import android.telephony.TelephonyManager
@@ -72,7 +73,7 @@ class DeviceUtil private constructor() {
         val MANUFACTURER = Build.MANUFACTURER // 设备参数
         val DEVICE = Build.DEVICE // 手机制造商
         val PRODUCT = Build.PRODUCT // sdk 版本
-        val SDK = Build.VERSION.SDK // 系统 版本
+        val SDK = Build.VERSION.SDK_INT // 系统 版本
         val RELEASE = Build.VERSION.RELEASE
 
         LogUtil.e(
@@ -84,9 +85,7 @@ class DeviceUtil private constructor() {
         LogUtil.e("deviceId --------->$deviceId")
     }
 
-    fun getSdPath(): String {
-        return FileUtil.getInstance().getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
-    }
+    fun getSdPath(): String = FileUtil.getInstance().getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
 
     fun getFilesDirPath(context: Context?): String {
         context?.let {
@@ -189,7 +188,5 @@ class DeviceUtil private constructor() {
     /**
      * 获取设备的型号
      */
-    fun getBrand(): String {
-        return Build.BRAND
-    }
+    fun getBrand(): String = Build.BRAND
 }

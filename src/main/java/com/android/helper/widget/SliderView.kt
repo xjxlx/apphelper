@@ -17,7 +17,10 @@ import com.android.helper.utils.ToastUtil
 /**
  * 自定义滑块 ,这里使用seekBar的控件
  */
-class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+class SliderView(
+    context: Context,
+    attrs: AttributeSet?,
+) : View(context, attrs) {
     private val mPaintBackground = Paint() // 背景色
     private val mPaintSelectorBackground = Paint() // 滑动过的颜色
 
@@ -65,7 +68,7 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
         // 背景文字
         mPaintBackgroundText.isAntiAlias = true
         mPaintBackgroundText.isDither = true
-        mPaintBackgroundText.color = context?.let { Color.parseColor("#82868F") }!!
+        mPaintBackgroundText.color = context.let { Color.parseColor("#82868F") }
 
         mPaintBackgroundText.textSize = ConvertUtil.sp(context, 12f)
 
@@ -77,7 +80,7 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
             mPaintSelectorBackground.strokeWidth = it.height.toFloat()
         }
         // 释放对象
-        array?.recycle()
+        array.recycle()
     }
 
     override fun onMeasure(
