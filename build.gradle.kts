@@ -1,16 +1,22 @@
 @Suppress("DSL_SCOPE_VIOLATION") // Remove once KTIJ-19369 is fixed
 plugins {
-    alias(libs.plugins.com.android.library)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     // alias(libs.plugins.io.github.xjxlx.publishing)
 }
 
 android {
     namespace = "com.android.helper"
-    compileSdk = libs.versions.compileSdks.get().toInt()
+    compileSdk =
+        libs.versions.compileSdks
+            .get()
+            .toInt()
 
     defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
+        minSdk =
+            libs.versions.minSdk
+                .get()
+                .toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -62,7 +68,8 @@ dependencies {
     implementation(libs.eventbus) { isTransitive = false }
     implementation(libs.rxpermissions) { isTransitive = false } // rxjava3 版本
 
-    implementation(libs.rxjava3) { // 禁止依赖的传递
+    implementation(libs.rxjava3) {
+        // 禁止依赖的传递
         isTransitive = false
     }
     implementation(libs.android.pickerview) // 日历选择器
