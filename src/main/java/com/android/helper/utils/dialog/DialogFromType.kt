@@ -7,5 +7,5 @@ package com.android.helper.utils.dialog
  */
 enum class DialogFromType {
     TYPE_FRAGMENT,
-    TYPE_ACTIVITY
+    TYPE_ACTIVITY,
 }

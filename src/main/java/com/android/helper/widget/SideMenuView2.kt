@@ -16,7 +16,10 @@ import kotlin.math.abs
  * @CreateDate: 2022/12/3-23:11
  * @Description:
  */
-class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(context, attributeSet) {
+class SideMenuView2(
+    context: Context,
+    attributeSet: AttributeSet,
+) : ViewGroup(context, attributeSet) {
     val TAG_CONTENT = "content"
     val TAG_MENU = "menu"
     private var mContentView: View? = null
@@ -34,7 +37,7 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
 
     override fun onMeasure(
         widthMeasureSpec: Int,
-        heightMeasureSpec: Int
+        heightMeasureSpec: Int,
     ) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         measureChildren(widthMeasureSpec, heightMeasureSpec)
@@ -60,7 +63,7 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
         l: Int,
         t: Int,
         r: Int,
-        b: Int
+        b: Int,
     ) {
         LogUtil.run { e(" le: $l  r: $r") }
         mContentView?.let {
@@ -85,7 +88,7 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
         w: Int,
         h: Int,
         oldw: Int,
-        oldh: Int
+        oldh: Int,
     ) {
         super.onSizeChanged(w, h, oldw, oldh)
         mContentView?.let {
@@ -108,14 +111,16 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
                     e1: MotionEvent?,
                     e2: MotionEvent,
                     distanceX: Float,
-                    distanceY: Float
+                    distanceY: Float,
                 ): Boolean {
                     mDx = distanceX.toInt()
 
                     mContentView?.let {
                         val left = it.left
                         LogUtil.e(
-                            "left: " + left + "  dx: " + mDx + "  （left - mDx）" + (left - mDx) + "  mMenuViewWidth: " + mMenuViewWidth + " mContentMarginLeft: " + mContentMarginLeft
+                            "left: " + left + "  dx: " + mDx + "  （left - mDx）" + (left - mDx) + "  mMenuViewWidth: " + mMenuViewWidth +
+                                " mContentMarginLeft: " +
+                                mContentMarginLeft,
                         )
                         if (mDx > 0) { // 向左
                             if (abs(left) + mDx < (mMenuViewWidth)) {
@@ -133,7 +138,7 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
                     }
                     return super.onScroll(e1, e2, distanceX, distanceY)
                 }
-            }
+            },
         )
 
     @SuppressLint("ClickableViewAccessibility")
@@ -181,15 +186,9 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
         }
     }
 
-    override fun generateLayoutParams(p: LayoutParams?): LayoutParams {
-        return MarginLayoutParams(p)
-    }
+    override fun generateLayoutParams(p: LayoutParams?): LayoutParams = MarginLayoutParams(p)
 
-    override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
-        return MarginLayoutParams(context, attrs)
-    }
+    override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams = MarginLayoutParams(context, attrs)
 
-    override fun generateDefaultLayoutParams(): LayoutParams {
-        return MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-    }
+    override fun generateDefaultLayoutParams(): LayoutParams = MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 }

@@ -41,7 +41,7 @@ class SideMenuView : ViewGroup {
          */
             override fun tryCaptureView(
                 child: View,
-                pointerId: Int
+                pointerId: Int,
             ): Boolean {
                 // 不返回true就不会被移动
                 // 如果这里有多个View的话，返回值改变成 return child == mDragView1;
@@ -60,7 +60,7 @@ class SideMenuView : ViewGroup {
             override fun clampViewPositionHorizontal(
                 child: View,
                 left: Int,
-                dx: Int
+                dx: Int,
             ): Int {
                 LogUtil.e("clampViewPositionHorizontal: dx: $dx  mDx:$mDx  mMenuViewWidth： $mMenuViewWidth  left：$left")
 
@@ -108,7 +108,12 @@ class SideMenuView : ViewGroup {
                     }
                 }
                 LogUtil.e(
-                    "mLeftValue:" + mLeftValue + " left:" + left + " mDx: " + mDx + "  mContentViewWidth: " + mContentViewWidth + "  ++： " + (mContentViewWidth + mDx) + "  mContentView Left:" + mContentView?.left + "  mMenuViewWidth：" + mMenuViewWidth
+                    "mLeftValue:" + mLeftValue + " left:" + left + " mDx: " + mDx + "  mContentViewWidth: " + mContentViewWidth + "  ++： " +
+                        (mContentViewWidth + mDx) +
+                        "  mContentView Left:" +
+                        mContentView?.left +
+                        "  mMenuViewWidth：" +
+                        mMenuViewWidth,
                 )
                 return mLeftValue
             }
@@ -121,7 +126,7 @@ class SideMenuView : ViewGroup {
                 left: Int,
                 top: Int,
                 dx: Int,
-                dy: Int
+                dy: Int,
             ) {
                 super.onViewPositionChanged(changedView, left, top, dx, dy)
                 mDx += dx
@@ -140,7 +145,8 @@ class SideMenuView : ViewGroup {
                     val contentScrollRight = contentScrollLeft + mContentViewWidth
                     val contentScrollBottom = mContentViewHeight
                     LogUtil.e(
-                        "mContentView:  mDx:" + mDx + "  contentScrollLeft: " + contentScrollLeft + " contentScrollRight:" + contentScrollRight
+                        "mContentView:  mDx:" + mDx + "  contentScrollLeft: " + contentScrollLeft + " contentScrollRight:" +
+                            contentScrollRight,
                     )
                     mContentView?.layout(contentScrollLeft, contentScrollTop!!, contentScrollRight, contentScrollBottom)
                 }
@@ -152,7 +158,7 @@ class SideMenuView : ViewGroup {
             override fun onViewReleased(
                 releasedChild: View,
                 xvel: Float,
-                yvel: Float
+                yvel: Float,
             ) {
                 super.onViewReleased(releasedChild, xvel, yvel)
                 val left = releasedChild.left
@@ -196,7 +202,7 @@ class SideMenuView : ViewGroup {
 
     override fun onMeasure(
         widthMeasureSpec: Int,
-        heightMeasureSpec: Int
+        heightMeasureSpec: Int,
     ) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
@@ -223,7 +229,7 @@ class SideMenuView : ViewGroup {
         l: Int,
         t: Int,
         r: Int,
-        b: Int
+        b: Int,
     ) {
 //        val marginLayoutParams = layoutParams as MarginLayoutParams
 //        val rightMargin = marginLayoutParams.rightMargin
@@ -250,7 +256,7 @@ class SideMenuView : ViewGroup {
         w: Int,
         h: Int,
         oldw: Int,
-        oldh: Int
+        oldh: Int,
     ) {
         super.onSizeChanged(w, h, oldw, oldh)
         mContentView?.let {
@@ -337,7 +343,7 @@ class SideMenuView : ViewGroup {
     interface SideMenuClickListener {
         fun onClick(
             sideMenu: SideMenuView,
-            view: View
+            view: View,
         )
     }
 
@@ -348,15 +354,9 @@ class SideMenuView : ViewGroup {
         fun onStatusChange(status: Int)
     }
 
-    override fun generateLayoutParams(p: LayoutParams?): LayoutParams {
-        return MarginLayoutParams(p)
-    }
+    override fun generateLayoutParams(p: LayoutParams?): LayoutParams = MarginLayoutParams(p)
 
-    override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
-        return MarginLayoutParams(context, attrs)
-    }
+    override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams = MarginLayoutParams(context, attrs)
 
-    override fun generateDefaultLayoutParams(): LayoutParams {
-        return MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-    }
+    override fun generateDefaultLayoutParams(): LayoutParams = MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 }

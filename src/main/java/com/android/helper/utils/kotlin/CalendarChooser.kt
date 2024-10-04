@@ -20,7 +20,10 @@ import java.util.*
  * 自定义日历选择器
  * 这里使用view的方式，让别人去在xml中引用
  */
-class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs) {
+class CalendarChooser(
+    context: Context,
+    attrs: AttributeSet?,
+) : FrameLayout(context, attrs) {
     private lateinit var inflater: View
     private lateinit var options1: WheelView
     private lateinit var options2: WheelView
@@ -129,7 +132,7 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
         day: Boolean,
         hour: Boolean,
         minute: Boolean,
-        second: Boolean
+        second: Boolean,
     ): CalendarChooser {
         mShowArray[0] = year
         mShowArray[1] = month
@@ -160,7 +163,7 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
      * 设置当前的日历对象
      */
     fun setCurrentCalendar(
-        @NotNull currentCalendar: Calendar
+        @NotNull currentCalendar: Calendar,
     ): CalendarChooser {
         this.mCurrentCalendar = currentCalendar
         return this
@@ -170,7 +173,7 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
      * 设置结束的日历对象,这个对象必须是一个全新的对象，不能和设置开始对象是一个对象，否则就会导致数据混乱
      */
     fun setEndCalendar(
-        @NotNull endCalendar: Calendar
+        @NotNull endCalendar: Calendar,
     ): CalendarChooser {
         this.mEndCalendar = endCalendar
         return this
@@ -444,7 +447,10 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
                 start = mStartHour!!
                 // 这里判断，只要不是同一年，同一月，同一天，就都是end == 23,否则就是以后面的小时为准
                 end =
-                    if ((mStartYear!!.toInt() == mEndYear!!.toInt()) && (mEndMonth!!.toInt() == mStartMonth!!.toInt()) && (mEndDay!!.toInt() == mStartDay!!.toInt())) {
+                    if ((mStartYear!!.toInt() == mEndYear!!.toInt()) &&
+                        (mEndMonth!!.toInt() == mStartMonth!!.toInt()) &&
+                        (mEndDay!!.toInt() == mStartDay!!.toInt())
+                    ) {
                         mEndHour!!.toInt()
                     } else {
                         23
@@ -584,7 +590,11 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
 
                 // 如果年月日时都相同，则end以结束的分钟为准
                 end =
-                    if ((mStartYear!!.toInt() == mEndYear!!.toInt()) && (mStartMonth!!.toInt() == mEndMonth!!.toInt()) && (mStartDay!!.toInt() == mEndDay!!.toInt()) && (mStartHour!!.toInt() == mEndHour!!.toInt())) {
+                    if ((mStartYear!!.toInt() == mEndYear!!.toInt()) &&
+                        (mStartMonth!!.toInt() == mEndMonth!!.toInt()) &&
+                        (mStartDay!!.toInt() == mEndDay!!.toInt()) &&
+                        (mStartHour!!.toInt() == mEndHour!!.toInt())
+                    ) {
                         mEndMinute!!.toInt()
                     } else {
                         59
@@ -728,7 +738,12 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             if (year == mStartYear && month == mStartMonth && day == mStartDay && hour == mStartHour && minute == mStartMinute) {
                 start = mStartSecond!!
 
-                if ((mStartYear!!.toInt() == mEndYear!!.toInt()) && (mStartHour!!.toInt() == mEndHour!!.toInt()) && (mStartDay!!.toInt() == mEndDay!!.toInt()) && (mStartHour!!.toInt() == mEndHour!!.toInt()) && (mStartMinute!!.toInt() == mEndMinute!!.toInt())) {
+                if ((mStartYear!!.toInt() == mEndYear!!.toInt()) &&
+                    (mStartHour!!.toInt() == mEndHour!!.toInt()) &&
+                    (mStartDay!!.toInt() == mEndDay!!.toInt()) &&
+                    (mStartHour!!.toInt() == mEndHour!!.toInt()) &&
+                    (mStartMinute!!.toInt() == mEndMinute!!.toInt())
+                ) {
                     end = mEndSecond!!.toInt()
                 } else {
                     end = 59
@@ -930,7 +945,7 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
      */
     private fun getMaxDayForMonth(
         year: Int,
-        month: Int
+        month: Int,
     ): Int {
         val calendar: Calendar = GregorianCalendar(year, month, 0)
         return calendar.getActualMaximum(Calendar.DATE)
@@ -943,7 +958,7 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             day: String,
             hour: String,
             minute: String,
-            second: String
+            second: String,
         )
     }
 
@@ -956,7 +971,7 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     }
 
     fun setSaveTitleClickListener(
-        @NotNull saveListener: OnClickListener
+        @NotNull saveListener: OnClickListener,
     ) {
         inflater.findViewById<TextView>(R.id.tv_save_time).setOnClickListener(saveListener)
     }
@@ -1003,9 +1018,7 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
         }
     }
 
-    private fun isShowAllData(): Boolean {
-        return mIsShowAllData
-    }
+    private fun isShowAllData(): Boolean = mIsShowAllData
 
     fun setShowAllData(isShowAllData: Boolean) {
         this.mIsShowAllData = isShowAllData
@@ -1041,7 +1054,7 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
         value: Int,
         wheel: WheelView,
         isMatch: Boolean,
-        type: Int
+        type: Int,
     ): Int {
         if (list.size > 0) {
             for (index in list.indices) {

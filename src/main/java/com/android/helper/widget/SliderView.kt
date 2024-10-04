@@ -19,7 +19,7 @@ import com.android.helper.utils.ToastUtil
  */
 class SliderView(
     context: Context,
-    attrs: AttributeSet?
+    attrs: AttributeSet?,
 ) : View(context, attrs) {
     private val mPaintBackground = Paint() // 背景色
     private val mPaintSelectorBackground = Paint() // 滑动过的颜色
@@ -85,7 +85,7 @@ class SliderView(
 
     override fun onMeasure(
         widthMeasureSpec: Int,
-        heightMeasureSpec: Int
+        heightMeasureSpec: Int,
     ) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         bitmap?.let {
@@ -110,7 +110,7 @@ class SliderView(
                 measuredHeight.toFloat(),
                 mRadius,
                 mRadius,
-                mPaintBackground
+                mPaintBackground,
             )
 
             // 绘制背景的文字
@@ -138,7 +138,7 @@ class SliderView(
                     measuredHeight.toFloat(),
                     mRadius,
                     mRadius,
-                    mPaintSelectorBackground
+                    mPaintSelectorBackground,
                 )
 
                 val rectSrc = Rect(0, 0, b.width, b.height)

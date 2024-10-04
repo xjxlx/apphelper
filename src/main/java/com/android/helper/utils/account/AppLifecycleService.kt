@@ -26,14 +26,12 @@ class AppLifecycleService : Service() {
     private val CODE_NOTIFICATION = 19900713
     private val CODE_INTERVAL = 5 * 1000
 
-    override fun onBind(intent: Intent): IBinder? {
-        return null
-    }
+    override fun onBind(intent: Intent): IBinder? = null
 
     override fun onStartCommand(
         intent: Intent?,
         flags: Int,
-        startId: Int
+        startId: Int,
     ): Int {
         mWriteUtil.write("onStartCommand --->")
 
@@ -56,7 +54,9 @@ class AppLifecycleService : Service() {
 
     private fun sendNotification(type: String) {
         val builder =
-            NotificationUtil.Builder(applicationContext).setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME)
+            NotificationUtil
+                .Builder(applicationContext)
+                .setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME)
                 .setSmallIcon(R.mipmap.ic_launcher)
 
         if (TextUtils.equals(type, LifecycleAppEnum.From_Intent.from)) {
@@ -75,10 +75,19 @@ class AppLifecycleService : Service() {
     }
 
     private fun startNotificationForeground() {
-        NotificationUtil.Builder(baseContext).setWhen(System.currentTimeMillis()).setChannelName("应用保活")
-            .setChannelImportance(NotificationManager.IMPORTANCE_HIGH).setChannelDescription("应用保活的服务")
-            .setContentTitle("应用全局保活").setAutoCancel(false).setContentText("应用全局保活进行中...").setSmallIcon(R.mipmap.ic_launcher)
-            .setNotificationLevel(NotificationManager.IMPORTANCE_HIGH).setService(AppLifecycleService::class.java).build()
+        NotificationUtil
+            .Builder(baseContext)
+            .setWhen(System.currentTimeMillis())
+            .setChannelName("应用保活")
+            .setChannelImportance(NotificationManager.IMPORTANCE_HIGH)
+            .setChannelDescription("应用保活的服务")
+            .setContentTitle("应用全局保活")
+            .setAutoCancel(false)
+            .setContentText("应用全局保活进行中...")
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setNotificationLevel(NotificationManager.IMPORTANCE_HIGH)
+            .setService(AppLifecycleService::class.java)
+            .build()
             .startLoopForeground(CODE_NOTIFICATION, CODE_INTERVAL.toLong(), this)
     }
 

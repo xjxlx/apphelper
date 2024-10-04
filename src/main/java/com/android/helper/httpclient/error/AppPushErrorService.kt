@@ -36,10 +36,12 @@ class AppPushErrorService {
         val fileBody: MultipartBody.Part = MultipartBody.Part.createFormData("file", file.name, requestFile)
         val serviceBody = "App.App2021.UploadLog".toRequestBody("text/plain;charset=UTF-8".toMediaTypeOrNull())
         val nameBody =
-            SpUtil.getString("")
+            SpUtil
+                .getString("")
                 .toRequestBody("text/plain;charset=UTF-8".toMediaTypeOrNull())
 
-        ApiServices.uploadAppErrorLog(fileBody, serviceBody, nameBody)
+        ApiServices
+            .uploadAppErrorLog(fileBody, serviceBody, nameBody)
             .subscribe(
                 object : BaseHttpDisposableObserver<String>() {
                     override fun onSuccess(t: String?) {
@@ -67,7 +69,7 @@ class AppPushErrorService {
                     override fun onFailure(e: BaseException?) {
                         LogUtil.e("错误日志上传失败：： " + e?.message)
                     }
-                }
+                },
             )
     }
 }
@@ -76,12 +78,12 @@ object ApiServices {
     fun uploadAppErrorLog(
         file: MultipartBody.Part,
         service: RequestBody,
-        name: RequestBody
-    ): Observable<String> {
-        return RetrofitHelper.create(AppInfoApi::class.java)
+        name: RequestBody,
+    ): Observable<String> =
+        RetrofitHelper
+            .create(AppInfoApi::class.java)
             .uploadAppErrorLog(file, service, name)
             .compose(RxUtil.getSchedulerObservable())
-    }
 }
 
 interface AppInfoApi {
@@ -91,6 +93,6 @@ interface AppInfoApi {
     fun uploadAppErrorLog(
         @Part file: MultipartBody.Part,
         @Part("service") service: RequestBody,
-        @Part("name") name: RequestBody
+        @Part("name") name: RequestBody,
     ): Observable<String>
 }
