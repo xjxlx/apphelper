@@ -24,7 +24,6 @@ import java.io.File
  * @Description:
  */
 class AppPushErrorService {
-
     fun uploadAppErrorLog(file: File) {
         if (!file.exists()) {
             return
@@ -36,42 +35,49 @@ class AppPushErrorService {
         val requestFile: RequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
         val fileBody: MultipartBody.Part = MultipartBody.Part.createFormData("file", file.name, requestFile)
         val serviceBody = "App.App2021.UploadLog".toRequestBody("text/plain;charset=UTF-8".toMediaTypeOrNull())
-        val nameBody = SpUtil.getString("")
-            .toRequestBody("text/plain;charset=UTF-8".toMediaTypeOrNull())
+        val nameBody =
+            SpUtil.getString("")
+                .toRequestBody("text/plain;charset=UTF-8".toMediaTypeOrNull())
 
         ApiServices.uploadAppErrorLog(fileBody, serviceBody, nameBody)
-            .subscribe(object : BaseHttpDisposableObserver<String>() {
-                override fun onSuccess(t: String?) {
-                    t?.let {
-                        LogUtil.e("错误日志上传成功： $it")
-                        val jsonObject = JSONObject(it)
-                        val hasRet = jsonObject.has("ret")
-                        if (hasRet) {
-                            val ret = jsonObject.getInt("ret")
-                            if (ret == 200) {
-                                LogUtil.e("错误日志上传成功：成功： $it")
-                                val delete = file.delete()
-                                LogUtil.e("错误日志：删除成功：$delete")
-                            } else {
-                                val hasMsg = jsonObject.has("msg")
-                                if (hasMsg) {
-                                    val msgValue = jsonObject.getString("msg")
-                                    LogUtil.e("错误日志上传成功:失败：$msgValue")
+            .subscribe(
+                object : BaseHttpDisposableObserver<String>() {
+                    override fun onSuccess(t: String?) {
+                        t?.let {
+                            LogUtil.e("错误日志上传成功： $it")
+                            val jsonObject = JSONObject(it)
+                            val hasRet = jsonObject.has("ret")
+                            if (hasRet) {
+                                val ret = jsonObject.getInt("ret")
+                                if (ret == 200) {
+                                    LogUtil.e("错误日志上传成功：成功： $it")
+                                    val delete = file.delete()
+                                    LogUtil.e("错误日志：删除成功：$delete")
+                                } else {
+                                    val hasMsg = jsonObject.has("msg")
+                                    if (hasMsg) {
+                                        val msgValue = jsonObject.getString("msg")
+                                        LogUtil.e("错误日志上传成功:失败：$msgValue")
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                override fun onFailure(e: BaseException?) {
-                    LogUtil.e("错误日志上传失败：： " + e?.message)
+                    override fun onFailure(e: BaseException?) {
+                        LogUtil.e("错误日志上传失败：： " + e?.message)
+                    }
                 }
-            })
+            )
     }
 }
 
 object ApiServices {
-    fun uploadAppErrorLog(file: MultipartBody.Part, service: RequestBody, name: RequestBody): Observable<String> {
+    fun uploadAppErrorLog(
+        file: MultipartBody.Part,
+        service: RequestBody,
+        name: RequestBody
+    ): Observable<String> {
         return RetrofitHelper.create(AppInfoApi::class.java)
             .uploadAppErrorLog(file, service, name)
             .compose(RxUtil.getSchedulerObservable())
@@ -79,10 +85,12 @@ object ApiServices {
 }
 
 interface AppInfoApi {
+    // 图文混排上传
     @Multipart
     @POST("/")
-    // 图文混排上传
-    fun uploadAppErrorLog(@Part file: MultipartBody.Part,
+    fun uploadAppErrorLog(
+        @Part file: MultipartBody.Part,
         @Part("service") service: RequestBody,
-        @Part("name") name: RequestBody): Observable<String>
+        @Part("name") name: RequestBody
+    ): Observable<String>
 }

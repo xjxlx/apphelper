@@ -26,13 +26,16 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
     private var mMenuViewWidth = 0
     private var mScroller: Scroller
     private var mContentMarginLeft = 0
-    private var mLeftBorder = 0  // 左侧边界
+    private var mLeftBorder = 0 // 左侧边界
 
     init {
         mScroller = Scroller(context)
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    override fun onMeasure(
+        widthMeasureSpec: Int,
+        heightMeasureSpec: Int
+    ) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         measureChildren(widthMeasureSpec, heightMeasureSpec)
 
@@ -52,7 +55,13 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
         mLeftBorder = mMenuViewWidth / 2
     }
 
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+    override fun onLayout(
+        changed: Boolean,
+        l: Int,
+        t: Int,
+        r: Int,
+        b: Int
+    ) {
         LogUtil.run { e(" le: $l  r: $r") }
         mContentView?.let {
             if (mContentMarginLeft <= 0) {
@@ -72,7 +81,12 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
         mMenuView = findViewWithTag(TAG_MENU)
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    override fun onSizeChanged(
+        w: Int,
+        h: Int,
+        oldw: Int,
+        oldh: Int
+    ) {
         super.onSizeChanged(w, h, oldw, oldh)
         mContentView?.let {
             mContentViewWidth = it.measuredWidth
@@ -86,31 +100,41 @@ class SideMenuView2(context: Context, attributeSet: AttributeSet) : ViewGroup(co
     }
 
     private var mDx: Int = 0
-    private var mGestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-        override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-            mDx = distanceX.toInt()
+    private var mGestureDetector =
+        GestureDetector(
+            context,
+            object : GestureDetector.SimpleOnGestureListener() {
+                override fun onScroll(
+                    e1: MotionEvent?,
+                    e2: MotionEvent,
+                    distanceX: Float,
+                    distanceY: Float
+                ): Boolean {
+                    mDx = distanceX.toInt()
 
-            mContentView?.let {
-                val left = it.left
-                LogUtil.e(
-                    "left: " + left + "  dx: " + mDx + "  （left - mDx）" + (left - mDx) + "  mMenuViewWidth: " + mMenuViewWidth + " mContentMarginLeft: " + mContentMarginLeft)
-                if (mDx > 0) { // 向左
-                    if (abs(left) + mDx < (mMenuViewWidth)) {
-                        LogUtil.e("<----")
-                        it.layout(it.left - mDx, it.top, it.right - mDx, it.bottom)
-                        mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
+                    mContentView?.let {
+                        val left = it.left
+                        LogUtil.e(
+                            "left: " + left + "  dx: " + mDx + "  （left - mDx）" + (left - mDx) + "  mMenuViewWidth: " + mMenuViewWidth + " mContentMarginLeft: " + mContentMarginLeft
+                        )
+                        if (mDx > 0) { // 向左
+                            if (abs(left) + mDx < (mMenuViewWidth)) {
+                                LogUtil.e("<----")
+                                it.layout(it.left - mDx, it.top, it.right - mDx, it.bottom)
+                                mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
+                            }
+                        } else { // 向右
+                            if (left - mDx <= mContentMarginLeft) {
+                                LogUtil.e("---->")
+                                it.layout(it.left - mDx, it.top, it.right - mDx, it.bottom)
+                                mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
+                            }
+                        }
                     }
-                } else { // 向右
-                    if (left - mDx <= mContentMarginLeft) {
-                        LogUtil.e("---->")
-                        it.layout(it.left - mDx, it.top, it.right - mDx, it.bottom)
-                        mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
-                    }
+                    return super.onScroll(e1, e2, distanceX, distanceY)
                 }
             }
-            return super.onScroll(e1, e2, distanceX, distanceY)
-        }
-    })
+        )
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {

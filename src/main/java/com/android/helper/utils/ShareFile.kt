@@ -13,7 +13,6 @@ import java.io.File
  * @Description:
  */
 class ShareFile private constructor() {
-
     companion object {
         @JvmStatic
         val instance: ShareFile by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
@@ -24,7 +23,10 @@ class ShareFile private constructor() {
     /**
      * 分享指定的文件
      */
-    fun shareFile(activity: Activity, path: String) {
+    fun shareFile(
+        activity: Activity,
+        path: String
+    ) {
         val file = File(path)
         if (!file.exists()) {
             ToastUtil.show("分享的文件不存在！")

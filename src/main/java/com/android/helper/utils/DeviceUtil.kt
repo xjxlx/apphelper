@@ -3,7 +3,6 @@ package com.android.helper.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-
 import android.os.Environment
 import android.provider.Settings
 import android.telephony.TelephonyManager
@@ -117,7 +116,7 @@ class DeviceUtil private constructor() {
      */
     fun writeDeviceId(
         context: Context?,
-        androidId: String,
+        androidId: String
     ) {
         context?.let {
             if (!TextUtils.isEmpty(androidId)) {
@@ -136,7 +135,7 @@ class DeviceUtil private constructor() {
 
     private fun writeContentToFile(
         path: String,
-        androidId: String,
+        androidId: String
     ) {
         LogUtil.e("path::$path")
         // 判断文档地址是否存在，不存在就创建

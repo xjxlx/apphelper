@@ -14,7 +14,6 @@ import java.util.*
  * @Description:
  */
 object DeviceUtil {
-
     @SuppressLint("HardwareIds")
     fun getAndroidId(context: Context): String {
         return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)

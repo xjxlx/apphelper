@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
  * @Description:
  */
 class DownCountTime {
-
     private val TAG = this.javaClass.simpleName
     private var mTotal: Long = 0L
     private var mInterval: Long = 0L
@@ -31,7 +30,11 @@ class DownCountTime {
             return mTotal * mInterval
         }
 
-    fun setCountdown(total: Long = 0, interval: Long = 0, listener: CallBack) {
+    fun setCountdown(
+        total: Long = 0,
+        interval: Long = 0,
+        listener: CallBack
+    ) {
         this.mTotal = total
         this.mInterval = interval
         this.mCallBackListener = listener
@@ -63,27 +66,28 @@ class DownCountTime {
             return
         }
 
-        mJob = mScope.launch {
-            while (!isPause && (mCount <= mTotal)) {
-                mCurrent = realTotal - (mInterval * mCount)
-                // LogUtil.e(TAG, "current ----> $mCurrent")
-                mCallBackListener?.onTick(mCount, mCurrent)
-                if (mCurrent <= 0) {
-                    mCallBackListener?.onFinish()
-                }
+        mJob =
+            mScope.launch {
+                while (!isPause && (mCount <= mTotal)) {
+                    mCurrent = realTotal - (mInterval * mCount)
+                    // LogUtil.e(TAG, "current ----> $mCurrent")
+                    mCallBackListener?.onTick(mCount, mCurrent)
+                    if (mCurrent <= 0) {
+                        mCallBackListener?.onFinish()
+                    }
 
-                if (mCount == mTotal) {
-                    mCount = 0
-                    mCurrent = 0
-                    isPause = false
-                    cancel()
-                    return@launch
-                }
+                    if (mCount == mTotal) {
+                        mCount = 0
+                        mCurrent = 0
+                        isPause = false
+                        cancel()
+                        return@launch
+                    }
 
-                delay(mInterval)
-                mCount++
+                    delay(mInterval)
+                    mCount++
+                }
             }
-        }
     }
 
     fun pause() {
@@ -127,12 +131,15 @@ class DownCountTime {
     }
 
     interface CallBack {
-
         /**
          * @param current The current timer, starting at 0
          * @param countdown current countdown
          */
-        fun onTick(current: Long, countdown: Long)
+        fun onTick(
+            current: Long,
+            countdown: Long
+        )
+
         fun onFinish()
     }
 }

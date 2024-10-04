@@ -20,7 +20,6 @@ import com.android.helper.utils.ServiceUtil
  * 账号拉活的服务类，用来后台拉活
  */
 class AppLifecycleService : Service() {
-
     private val mWriteUtil: LogWriteUtil = LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt")
 
     @SuppressLint("StaticFieldLeak")
@@ -31,7 +30,11 @@ class AppLifecycleService : Service() {
         return null
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int
+    ): Int {
         mWriteUtil.write("onStartCommand --->")
 
         // 标记打开服务的来源
@@ -52,8 +55,9 @@ class AppLifecycleService : Service() {
     }
 
     private fun sendNotification(type: String) {
-        val builder = NotificationUtil.Builder(applicationContext).setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME)
-            .setSmallIcon(R.mipmap.ic_launcher)
+        val builder =
+            NotificationUtil.Builder(applicationContext).setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME)
+                .setSmallIcon(R.mipmap.ic_launcher)
 
         if (TextUtils.equals(type, LifecycleAppEnum.From_Intent.from)) {
             builder.setContentText("我是后台服务，我是被直接启动的")
@@ -71,7 +75,6 @@ class AppLifecycleService : Service() {
     }
 
     private fun startNotificationForeground() {
-
         NotificationUtil.Builder(baseContext).setWhen(System.currentTimeMillis()).setChannelName("应用保活")
             .setChannelImportance(NotificationManager.IMPORTANCE_HIGH).setChannelDescription("应用保活的服务")
             .setContentTitle("应用全局保活").setAutoCancel(false).setContentText("应用全局保活进行中...").setSmallIcon(R.mipmap.ic_launcher)
@@ -80,29 +83,30 @@ class AppLifecycleService : Service() {
     }
 
     @SuppressLint("HandlerLeak")
-    private val mHandler: Handler = object : Handler(Looper.myLooper()!!) {
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
+    private val mHandler: Handler =
+        object : Handler(Looper.myLooper()!!) {
+            override fun handleMessage(msg: Message) {
+                super.handleMessage(msg)
 
-            if (msg.what == CODE_NOTIFICATION) { // 1：删除原有的消息通知，避免重复性发送消息
-                removeMessages(CODE_NOTIFICATION)
-                removeCallbacksAndMessages(null)
+                if (msg.what == CODE_NOTIFICATION) { // 1：删除原有的消息通知，避免重复性发送消息
+                    removeMessages(CODE_NOTIFICATION)
+                    removeCallbacksAndMessages(null)
 
-                // 2:启动jobService
-                val jobServiceName: String = LifecycleManager.getInstance().jobServiceName
-                val jobServiceRunning = ServiceUtil.isJobServiceRunning(applicationContext, jobServiceName)
-                mWriteUtil.write("☆☆☆☆☆---我是后台服务，当前jobService的状态为:$jobServiceRunning")
+                    // 2:启动jobService
+                    val jobServiceName: String = LifecycleManager.getInstance().jobServiceName
+                    val jobServiceRunning = ServiceUtil.isJobServiceRunning(applicationContext, jobServiceName)
+                    mWriteUtil.write("☆☆☆☆☆---我是后台服务，当前jobService的状态为:$jobServiceRunning")
 
-                if (!jobServiceRunning) {
-                    AppJobService.startJob(applicationContext, LifecycleAppEnum.FROM_SERVICE)
+                    if (!jobServiceRunning) {
+                        AppJobService.startJob(applicationContext, LifecycleAppEnum.FROM_SERVICE)
+                    }
+
+                    // 3：轮询发送消息通知
+                    LogUtil.e("---> 开始发送了消息的轮询！")
+                    val message = this.obtainMessage()
+                    message.what = CODE_NOTIFICATION
+                    sendMessageDelayed(message, CODE_INTERVAL.toLong())
                 }
-
-                // 3：轮询发送消息通知
-                LogUtil.e("---> 开始发送了消息的轮询！")
-                val message = this.obtainMessage()
-                message.what = CODE_NOTIFICATION
-                sendMessageDelayed(message, CODE_INTERVAL.toLong())
             }
         }
-    }
 }

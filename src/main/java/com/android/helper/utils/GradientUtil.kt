@@ -6,9 +6,14 @@ package com.android.helper.utils
  * @Description:
  */
 object GradientUtil {
-
-    fun getDistance(currentTime: Float, startTime: Float, endTime: Float, startDistance: Float, endDistance: Float,
-                    isReverse: Boolean): Float {
+    fun getDistance(
+        currentTime: Float,
+        startTime: Float,
+        endTime: Float,
+        startDistance: Float,
+        endDistance: Float,
+        isReverse: Boolean
+    ): Float {
         val distance: Float
 
         val intervalTim = endTime - startTime
@@ -29,7 +34,13 @@ object GradientUtil {
     /**
      * small  to  big gradient
      */
-    fun getBigToSmallGradientValue(currentTime: Float, startTime: Float, endTime: Float, startDistance: Float, endDistance: Float): Float {
+    fun getBigToSmallGradientValue(
+        currentTime: Float,
+        startTime: Float,
+        endTime: Float,
+        startDistance: Float,
+        endDistance: Float
+    ): Float {
         val gradient: Float
         val intervalTime = endTime - startTime
         val intervalDistance = startDistance - endDistance

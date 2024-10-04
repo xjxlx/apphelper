@@ -21,7 +21,6 @@ import java.util.*
  * 这里使用view的方式，让别人去在xml中引用
  */
 class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs) {
-
     private lateinit var inflater: View
     private lateinit var options1: WheelView
     private lateinit var options2: WheelView
@@ -29,7 +28,7 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     private lateinit var options4: WheelView
     private lateinit var options5: WheelView
     private lateinit var options6: WheelView
-    private val mShowArray: BooleanArray = booleanArrayOf(true, true, true, true, true, true)// 显示view的数组，默认全都可见
+    private val mShowArray: BooleanArray = booleanArrayOf(true, true, true, true, true, true) // 显示view的数组，默认全都可见
     private val mViewArray: ArrayList<WheelView> = arrayListOf() // WheelView集合的数组
     private var mCurrentCalendar: Calendar? = null // 当前的日历对象
     private var mEndCalendar: Calendar? = null // 结束的日历对象
@@ -73,9 +72,9 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     private var mListener: SelectorListener? = null
     private var mIsShowAllData: Boolean = true // 是否显示完整的数据，有的地方需要显示完整的数据，默认显示完整的数据
     private var mIsMatchHours = false // 是否要过滤小时数据
-    private var mMatchingHours: String = ""// 匹配小时的正则表达式
+    private var mMatchingHours: String = "" // 匹配小时的正则表达式
     private var mIsMatchMinute = false // 是否要过滤分钟数据
-    private var mMatchingMinute: String = ""// 匹配分钟的正则表达式
+    private var mMatchingMinute: String = "" // 匹配分钟的正则表达式
 
     companion object {
         private const val DEFAULT_END_YEAR: Int = 5 // 设置默认增加的年份
@@ -124,7 +123,14 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     /**
      * 设置要显示的item的view，从左到右的顺序分别为，年、月、日、时、分、秒
      */
-    fun setItemShow(year: Boolean, month: Boolean, day: Boolean, hour: Boolean, minute: Boolean, second: Boolean): CalendarChooser {
+    fun setItemShow(
+        year: Boolean,
+        month: Boolean,
+        day: Boolean,
+        hour: Boolean,
+        minute: Boolean,
+        second: Boolean
+    ): CalendarChooser {
         mShowArray[0] = year
         mShowArray[1] = month
         mShowArray[2] = day
@@ -139,7 +145,6 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
      * 设置view的显示选项
      */
     private fun setShowView() {
-
         for (index in mShowArray.indices) {
             val isShow = mShowArray[index]
             val wheelView = mViewArray[index]
@@ -154,7 +159,9 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     /**
      * 设置当前的日历对象
      */
-    fun setCurrentCalendar(@NotNull currentCalendar: Calendar): CalendarChooser {
+    fun setCurrentCalendar(
+        @NotNull currentCalendar: Calendar
+    ): CalendarChooser {
         this.mCurrentCalendar = currentCalendar
         return this
     }
@@ -162,7 +169,9 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     /**
      * 设置结束的日历对象,这个对象必须是一个全新的对象，不能和设置开始对象是一个对象，否则就会导致数据混乱
      */
-    fun setEndCalendar(@NotNull endCalendar: Calendar): CalendarChooser {
+    fun setEndCalendar(
+        @NotNull endCalendar: Calendar
+    ): CalendarChooser {
         this.mEndCalendar = endCalendar
         return this
     }
@@ -171,7 +180,6 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
      * 构造数据的方法，在show方法之前，必须调用
      */
     fun build(): CalendarChooser {
-
         // 设置展示那些view
         setShowView()
 
@@ -183,7 +191,6 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
      * 初始化日期的数据
      */
     private fun initDate() {
-
         // 获取开始时间的具体年月日时分秒
         if (mCurrentCalendar != null) {
             mCurrentCalendar?.let {
@@ -294,11 +301,12 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             if (year == mStartYear) {
                 start = mStartMonth!!
                 // 此处如果还有下一年，则可以这么写，如果没有，那么就以后面月份为主
-                end = if (mStartYear!!.toInt() == mEndYear!!.toInt()) {
-                    mEndMonth!!
-                } else {
-                    12
-                }
+                end =
+                    if (mStartYear!!.toInt() == mEndYear!!.toInt()) {
+                        mEndMonth!!
+                    } else {
+                        12
+                    }
             } else if (year == mEndYear) {
                 // 说明是最后一年
                 start = 1
@@ -312,11 +320,12 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
 
             var value: String
             for (index in start..end) {
-                value = if (index < 10) {
-                    "0$index"
-                } else {
-                    index.toString()
-                }
+                value =
+                    if (index < 10) {
+                        "0$index"
+                    } else {
+                        index.toString()
+                    }
                 mOptionTimeList2.add(value + "月")
             }
 
@@ -327,11 +336,12 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             // 显示完整的月份
             var value: String
             for (index in 1..12) {
-                value = if (index < 10) {
-                    "0$index"
-                } else {
-                    index.toString()
-                }
+                value =
+                    if (index < 10) {
+                        "0$index"
+                    } else {
+                        index.toString()
+                    }
                 mOptionTimeList2.add(value + "月")
             }
             options2.adapter = ArrayWheelAdapter(mOptionTimeList2 as List<String>)
@@ -351,19 +361,20 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
         val year = mCurrentYear.replace("年", "").toInt()
         val month = mCurrentMonth.replace("月", "").toInt()
 
-        if (!isShowAllData()) {  // 显示受限制的天数
+        if (!isShowAllData()) { // 显示受限制的天数
             var start: Int
-            var end: Int  // 此处因为默认的结束日期设置的是1，所以这里要加上1
+            var end: Int // 此处因为默认的结束日期设置的是1，所以这里要加上1
 
             if ((year == mStartYear) && (month == mStartMonth)) {
                 // 说明是第一个月份
                 start = mStartDay!!
                 // 如果年月都相同，说明是同一年同一月，end 使用最后的天数
-                end = if ((year == mEndYear!!.toInt()) && (month == mEndMonth!!.toInt())) {
-                    mEndDay!!
-                } else {
-                    getMaxDayForMonth(mStartYear!!, mStartMonth!!)
-                }
+                end =
+                    if ((year == mEndYear!!.toInt()) && (month == mEndMonth!!.toInt())) {
+                        mEndDay!!
+                    } else {
+                        getMaxDayForMonth(mStartYear!!, mStartMonth!!)
+                    }
             } else if (year == mEndYear && month == mEndMonth) {
                 // 说明是最后一个月
                 start = 1
@@ -381,11 +392,12 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             LogUtil.e("天数：---> start:$start   end :$end")
             var value: String
             for (index in start..end) {
-                value = if (index < 10) {
-                    "0$index"
-                } else {
-                    index.toString()
-                }
+                value =
+                    if (index < 10) {
+                        "0$index"
+                    } else {
+                        index.toString()
+                    }
                 mOptionTimeList3.add(value + "日")
             }
             options3.adapter = ArrayWheelAdapter(mOptionTimeList3 as List<String>)
@@ -397,11 +409,12 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             val maxDayForMonth = getMaxDayForMonth(year, month)
             var value: String
             for (index in 1..maxDayForMonth) {
-                value = if (index < 10) {
-                    "0$index"
-                } else {
-                    index.toString()
-                }
+                value =
+                    if (index < 10) {
+                        "0$index"
+                    } else {
+                        index.toString()
+                    }
                 mOptionTimeList3.add(value + "日")
             }
             options3.adapter = ArrayWheelAdapter(mOptionTimeList3 as List<String>)
@@ -450,18 +463,20 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             for (index in start..end) {
                 if (mIsMatchHours) {
                     if (RegularUtils.match(index.toString(), mMatchingHours)) {
-                        value = if (index < 10) {
+                        value =
+                            if (index < 10) {
+                                "0$index"
+                            } else {
+                                index.toString()
+                            }
+                    }
+                } else {
+                    value =
+                        if (index < 10) {
                             "0$index"
                         } else {
                             index.toString()
                         }
-                    }
-                } else {
-                    value = if (index < 10) {
-                        "0$index"
-                    } else {
-                        index.toString()
-                    }
                 }
                 if (!TextUtils.isEmpty(value)) {
                     if (!mOptionTimeList4.contains(value + "时")) {
@@ -487,18 +502,20 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             for (index in 0..23) {
                 if (mIsMatchHours) {
                     if (RegularUtils.match(index.toString(), mMatchingHours)) {
-                        value = if (index < 10) {
+                        value =
+                            if (index < 10) {
+                                "0$index"
+                            } else {
+                                index.toString()
+                            }
+                    }
+                } else {
+                    value =
+                        if (index < 10) {
                             "0$index"
                         } else {
                             index.toString()
                         }
-                    }
-                } else {
-                    value = if (index < 10) {
-                        "0$index"
-                    } else {
-                        index.toString()
-                    }
                 }
                 if (!TextUtils.isEmpty(value)) {
                     if (!mOptionTimeList4.contains(value + "时")) {
@@ -585,18 +602,20 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             for (index in start..end) {
                 if (mIsMatchMinute) {
                     if (RegularUtils.match(index.toString(), mMatchingMinute)) {
-                        value = if (index < 10) {
+                        value =
+                            if (index < 10) {
+                                "0$index"
+                            } else {
+                                index.toString()
+                            }
+                    }
+                } else {
+                    value =
+                        if (index < 10) {
                             "0$index"
                         } else {
                             index.toString()
                         }
-                    }
-                } else {
-                    value = if (index < 10) {
-                        "0$index"
-                    } else {
-                        index.toString()
-                    }
                 }
                 if (!TextUtils.isEmpty(value)) {
                     if (!mOptionTimeList5.contains(value + "分")) {
@@ -624,18 +643,20 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             for (index in 0..59) {
                 if (mIsMatchMinute) {
                     if (RegularUtils.match(index.toString(), mMatchingMinute)) {
-                        value = if (index < 10) {
+                        value =
+                            if (index < 10) {
+                                "0$index"
+                            } else {
+                                index.toString()
+                            }
+                    }
+                } else {
+                    value =
+                        if (index < 10) {
                             "0$index"
                         } else {
                             index.toString()
                         }
-                    }
-                } else {
-                    value = if (index < 10) {
-                        "0$index"
-                    } else {
-                        index.toString()
-                    }
                 }
                 if (!TextUtils.isEmpty(value)) {
                     if (!mOptionTimeList5.contains(value + "分")) {
@@ -754,7 +775,6 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
      * 初始化WheelView的选项
      */
     private fun initWheelView() {
-
         // 设置数据
         options1.adapter = ArrayWheelAdapter(mOptionTimeList1 as List<String>)
 
@@ -908,13 +928,23 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     /**
      * 获取当前的最大值
      */
-    private fun getMaxDayForMonth(year: Int, month: Int): Int {
+    private fun getMaxDayForMonth(
+        year: Int,
+        month: Int
+    ): Int {
         val calendar: Calendar = GregorianCalendar(year, month, 0)
         return calendar.getActualMaximum(Calendar.DATE)
     }
 
     interface SelectorListener {
-        fun onSelector(year: String, month: String, day: String, hour: String, minute: String, second: String)
+        fun onSelector(
+            year: String,
+            month: String,
+            day: String,
+            hour: String,
+            minute: String,
+            second: String
+        )
     }
 
     fun setSelectorListener(listener: SelectorListener) {
@@ -925,7 +955,9 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
         inflater.findViewById<TextView>(R.id.tv_cancel_chooser).setOnClickListener(listener)
     }
 
-    fun setSaveTitleClickListener(@NotNull saveListener: OnClickListener) {
+    fun setSaveTitleClickListener(
+        @NotNull saveListener: OnClickListener
+    ) {
         inflater.findViewById<TextView>(R.id.tv_save_time).setOnClickListener(saveListener)
     }
 
@@ -934,34 +966,39 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
      */
     private fun filterData() {
         mListener?.let {
-            val month: String = if (mCurrentMonth.length == 1) {
-                "0$mCurrentMonth"
-            } else {
-                mCurrentMonth
-            }
+            val month: String =
+                if (mCurrentMonth.length == 1) {
+                    "0$mCurrentMonth"
+                } else {
+                    mCurrentMonth
+                }
 
-            val day: String = if (mCurrentDay.length == 1) {
-                "0$mCurrentDay"
-            } else {
-                mCurrentDay
-            }
+            val day: String =
+                if (mCurrentDay.length == 1) {
+                    "0$mCurrentDay"
+                } else {
+                    mCurrentDay
+                }
 
-            val hour: String = if (mCurrentHour.length == 1) {
-                "0$mCurrentHour"
-            } else {
-                mCurrentHour
-            }
+            val hour: String =
+                if (mCurrentHour.length == 1) {
+                    "0$mCurrentHour"
+                } else {
+                    mCurrentHour
+                }
 
-            val minute: String = if (mCurrentMinute.length == 1) {
-                "0$mCurrentMinute"
-            } else {
-                mCurrentMinute
-            }
-            val second: String = if (mCurrentSecond.length == 1) {
-                "0$mCurrentSecond"
-            } else {
-                mCurrentSecond
-            }
+            val minute: String =
+                if (mCurrentMinute.length == 1) {
+                    "0$mCurrentMinute"
+                } else {
+                    mCurrentMinute
+                }
+            val second: String =
+                if (mCurrentSecond.length == 1) {
+                    "0$mCurrentSecond"
+                } else {
+                    mCurrentSecond
+                }
             it.onSelector(mCurrentYear, month, day, hour, minute, second)
         }
     }
@@ -994,11 +1031,18 @@ class CalendarChooser(context: Context, attrs: AttributeSet?) : FrameLayout(cont
      * 根据指定的值，去设置默认的角标
      * @param type 1:年  2：月，3：日，4：时：5：分：6：秒
      */
+
     /**
      * @param list 集合
      * @param value 默认的数据
      */
-    private fun findIndexForList(list: ArrayList<String>, value: Int, wheel: WheelView, isMatch: Boolean, type: Int): Int {
+    private fun findIndexForList(
+        list: ArrayList<String>,
+        value: Int,
+        wheel: WheelView,
+        isMatch: Boolean,
+        type: Int
+    ): Int {
         if (list.size > 0) {
             for (index in list.indices) {
                 val str = list[index]
