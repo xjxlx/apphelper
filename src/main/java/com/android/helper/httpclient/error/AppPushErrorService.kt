@@ -69,7 +69,7 @@ class AppPushErrorService {
                     override fun onFailure(e: BaseException?) {
                         LogUtil.e("错误日志上传失败：： " + e?.message)
                     }
-                },
+                }
             )
     }
 }
@@ -78,7 +78,7 @@ object ApiServices {
     fun uploadAppErrorLog(
         file: MultipartBody.Part,
         service: RequestBody,
-        name: RequestBody,
+        name: RequestBody
     ): Observable<String> =
         RetrofitHelper
             .create(AppInfoApi::class.java)
@@ -93,6 +93,6 @@ interface AppInfoApi {
     fun uploadAppErrorLog(
         @Part file: MultipartBody.Part,
         @Part("service") service: RequestBody,
-        @Part("name") name: RequestBody,
+        @Part("name") name: RequestBody
     ): Observable<String>
 }

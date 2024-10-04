@@ -25,7 +25,7 @@ class ShareFile private constructor() {
      */
     fun shareFile(
         activity: Activity,
-        path: String,
+        path: String
     ) {
         val file = File(path)
         if (!file.exists()) {

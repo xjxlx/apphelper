@@ -31,7 +31,7 @@ class AppLifecycleService : Service() {
     override fun onStartCommand(
         intent: Intent?,
         flags: Int,
-        startId: Int,
+        startId: Int
     ): Int {
         mWriteUtil.write("onStartCommand --->")
 

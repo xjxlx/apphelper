@@ -56,7 +56,7 @@ class PopupWindowUtil {
 
     fun setContentView(
         fragment: Fragment,
-        view: View,
+        view: View
     ): PopupWindowUtil {
         this.mFragment = fragment
         this.mActivity = fragment.activity
@@ -67,7 +67,7 @@ class PopupWindowUtil {
 
     fun setContentView(
         activity: FragmentActivity,
-        view: View,
+        view: View
     ): PopupWindowUtil {
         this.mActivity = activity
         this.mLayout = view
@@ -77,7 +77,7 @@ class PopupWindowUtil {
 
     fun setContentView(
         fragment: Fragment,
-        resource: Int,
+        resource: Int
     ): PopupWindowUtil {
         val inflate = LayoutInflater.from(fragment.activity).inflate(resource, null, false)
         setContentView(fragment, inflate)
@@ -86,7 +86,7 @@ class PopupWindowUtil {
 
     fun setContentView(
         activity: FragmentActivity,
-        resource: Int,
+        resource: Int
     ): PopupWindowUtil {
         val inflate = LayoutInflater.from(activity).inflate(resource, null, false)
         setContentView(activity, inflate)
@@ -240,7 +240,7 @@ class PopupWindowUtil {
 
     fun setText(
         @IdRes id: Int,
-        text: String,
+        text: String
     ): PopupWindowUtil {
         mLayout?.let {
             val view = it.findViewById<View>(id)
@@ -253,7 +253,7 @@ class PopupWindowUtil {
 
     fun setText(
         textView: TextView,
-        text: String,
+        text: String
     ): PopupWindowUtil {
         TextViewUtil.setText(textView, text)
         return this
@@ -261,7 +261,7 @@ class PopupWindowUtil {
 
     fun setClickListener(
         @IdRes id: Int,
-        listener: View.OnClickListener,
+        listener: View.OnClickListener
     ): PopupWindowUtil {
         mLayout?.let {
             val view = it.findViewById<View>(id)
@@ -272,7 +272,7 @@ class PopupWindowUtil {
 
     fun setClickListener(
         view: View,
-        listener: View.OnClickListener,
+        listener: View.OnClickListener
     ): PopupWindowUtil {
         view.setOnClickListener(listener)
         return this
@@ -307,7 +307,7 @@ class PopupWindowUtil {
     fun showAtLocation(
         view: View?,
         xOff: Int,
-        yOff: Int,
+        yOff: Int
     ) {
         if (!isBuild) {
             throw NullPointerException("Build方法未调用！")
@@ -329,7 +329,7 @@ class PopupWindowUtil {
     fun showAsDropDown(
         view: View?,
         xOff: Int,
-        yOff: Int,
+        yOff: Int
     ) {
         if (!isBuild) {
             throw NullPointerException("Build方法未调用！")
@@ -363,21 +363,21 @@ class PopupWindowUtil {
     interface ViewCreatedListener {
         fun onViewCreated(
             rootView: View?,
-            popupWindow: PopupWindowUtil,
+            popupWindow: PopupWindowUtil
         )
     }
 
     interface OnShowListener {
         fun onShow(
             view: View?,
-            popupWindow: PopupWindowUtil,
+            popupWindow: PopupWindowUtil
         )
     }
 
     interface OnDismissListener {
         fun onDismiss(
             view: View?,
-            popupWindow: PopupWindowUtil,
+            popupWindow: PopupWindowUtil
         )
     }
 }

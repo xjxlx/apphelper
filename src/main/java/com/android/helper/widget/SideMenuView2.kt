@@ -18,7 +18,7 @@ import kotlin.math.abs
  */
 class SideMenuView2(
     context: Context,
-    attributeSet: AttributeSet,
+    attributeSet: AttributeSet
 ) : ViewGroup(context, attributeSet) {
     val TAG_CONTENT = "content"
     val TAG_MENU = "menu"
@@ -37,7 +37,7 @@ class SideMenuView2(
 
     override fun onMeasure(
         widthMeasureSpec: Int,
-        heightMeasureSpec: Int,
+        heightMeasureSpec: Int
     ) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         measureChildren(widthMeasureSpec, heightMeasureSpec)
@@ -63,7 +63,7 @@ class SideMenuView2(
         l: Int,
         t: Int,
         r: Int,
-        b: Int,
+        b: Int
     ) {
         LogUtil.run { e(" le: $l  r: $r") }
         mContentView?.let {
@@ -88,7 +88,7 @@ class SideMenuView2(
         w: Int,
         h: Int,
         oldw: Int,
-        oldh: Int,
+        oldh: Int
     ) {
         super.onSizeChanged(w, h, oldw, oldh)
         mContentView?.let {
@@ -111,7 +111,7 @@ class SideMenuView2(
                     e1: MotionEvent?,
                     e2: MotionEvent,
                     distanceX: Float,
-                    distanceY: Float,
+                    distanceY: Float
                 ): Boolean {
                     mDx = distanceX.toInt()
 
@@ -120,7 +120,7 @@ class SideMenuView2(
                         LogUtil.e(
                             "left: " + left + "  dx: " + mDx + "  （left - mDx）" + (left - mDx) + "  mMenuViewWidth: " + mMenuViewWidth +
                                 " mContentMarginLeft: " +
-                                mContentMarginLeft,
+                                mContentMarginLeft
                         )
                         if (mDx > 0) { // 向左
                             if (abs(left) + mDx < (mMenuViewWidth)) {
@@ -138,7 +138,7 @@ class SideMenuView2(
                     }
                     return super.onScroll(e1, e2, distanceX, distanceY)
                 }
-            },
+            }
         )
 
     @SuppressLint("ClickableViewAccessibility")

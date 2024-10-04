@@ -33,7 +33,7 @@ class DownCountTime {
     fun setCountdown(
         total: Long = 0,
         interval: Long = 0,
-        listener: CallBack,
+        listener: CallBack
     ) {
         this.mTotal = total
         this.mInterval = interval
@@ -137,7 +137,7 @@ class DownCountTime {
          */
         fun onTick(
             current: Long,
-            countdown: Long,
+            countdown: Long
         )
 
         fun onFinish()

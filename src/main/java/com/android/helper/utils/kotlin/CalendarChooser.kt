@@ -22,7 +22,7 @@ import java.util.*
  */
 class CalendarChooser(
     context: Context,
-    attrs: AttributeSet?,
+    attrs: AttributeSet?
 ) : FrameLayout(context, attrs) {
     private lateinit var inflater: View
     private lateinit var options1: WheelView
@@ -132,7 +132,7 @@ class CalendarChooser(
         day: Boolean,
         hour: Boolean,
         minute: Boolean,
-        second: Boolean,
+        second: Boolean
     ): CalendarChooser {
         mShowArray[0] = year
         mShowArray[1] = month
@@ -163,7 +163,7 @@ class CalendarChooser(
      * 设置当前的日历对象
      */
     fun setCurrentCalendar(
-        @NotNull currentCalendar: Calendar,
+        @NotNull currentCalendar: Calendar
     ): CalendarChooser {
         this.mCurrentCalendar = currentCalendar
         return this
@@ -173,7 +173,7 @@ class CalendarChooser(
      * 设置结束的日历对象,这个对象必须是一个全新的对象，不能和设置开始对象是一个对象，否则就会导致数据混乱
      */
     fun setEndCalendar(
-        @NotNull endCalendar: Calendar,
+        @NotNull endCalendar: Calendar
     ): CalendarChooser {
         this.mEndCalendar = endCalendar
         return this
@@ -945,7 +945,7 @@ class CalendarChooser(
      */
     private fun getMaxDayForMonth(
         year: Int,
-        month: Int,
+        month: Int
     ): Int {
         val calendar: Calendar = GregorianCalendar(year, month, 0)
         return calendar.getActualMaximum(Calendar.DATE)
@@ -958,7 +958,7 @@ class CalendarChooser(
             day: String,
             hour: String,
             minute: String,
-            second: String,
+            second: String
         )
     }
 
@@ -971,7 +971,7 @@ class CalendarChooser(
     }
 
     fun setSaveTitleClickListener(
-        @NotNull saveListener: OnClickListener,
+        @NotNull saveListener: OnClickListener
     ) {
         inflater.findViewById<TextView>(R.id.tv_save_time).setOnClickListener(saveListener)
     }
@@ -1054,7 +1054,7 @@ class CalendarChooser(
         value: Int,
         wheel: WheelView,
         isMatch: Boolean,
-        type: Int,
+        type: Int
     ): Int {
         if (list.size > 0) {
             for (index in list.indices) {

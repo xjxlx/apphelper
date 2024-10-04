@@ -76,7 +76,7 @@ class DeviceUtil private constructor() {
         val RELEASE = Build.VERSION.RELEASE
 
         LogUtil.e(
-            "fingerprint:$fingerprint\r\n 系统品牌:$BRAND \r\n 型号: $MODEL \n 系统制造商:$MANUFACTURER \n 设备参数:$DEVICE \n 手机制造商:$PRODUCT\n sdk 版本:$SDK\n 系统 版本:$RELEASE",
+            "fingerprint:$fingerprint\r\n 系统品牌:$BRAND \r\n 型号: $MODEL \n 系统制造商:$MANUFACTURER \n 设备参数:$DEVICE \n 手机制造商:$PRODUCT\n sdk 版本:$SDK\n 系统 版本:$RELEASE"
         )
 
         val deviceId =
@@ -116,7 +116,7 @@ class DeviceUtil private constructor() {
      */
     fun writeDeviceId(
         context: Context?,
-        androidId: String,
+        androidId: String
     ) {
         context?.let {
             if (!TextUtils.isEmpty(androidId)) {
@@ -135,7 +135,7 @@ class DeviceUtil private constructor() {
 
     private fun writeContentToFile(
         path: String,
-        androidId: String,
+        androidId: String
     ) {
         LogUtil.e("path::$path")
         // 判断文档地址是否存在，不存在就创建

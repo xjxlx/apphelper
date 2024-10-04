@@ -12,7 +12,7 @@ object GradientUtil {
         endTime: Float,
         startDistance: Float,
         endDistance: Float,
-        isReverse: Boolean,
+        isReverse: Boolean
     ): Float {
         val distance: Float
 
@@ -39,7 +39,7 @@ object GradientUtil {
         startTime: Float,
         endTime: Float,
         startDistance: Float,
-        endDistance: Float,
+        endDistance: Float
     ): Float {
         val gradient: Float
         val intervalTime = endTime - startTime
