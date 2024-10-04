@@ -290,6 +290,7 @@ class CalendarChooser(
         mOptionTimeList2.clear()
 
         if (!isShowAllData()) { // 显示受限制的数据
+
             /**
              * 业务逻辑：
              *      1：计算出当前年份剩下的月份
@@ -1043,11 +1044,6 @@ class CalendarChooser(
     /**
      * 根据指定的值，去设置默认的角标
      * @param type 1:年  2：月，3：日，4：时：5：分：6：秒
-     */
-
-    /**
-     * @param list 集合
-     * @param value 默认的数据
      */
     private fun findIndexForList(
         list: ArrayList<String>,

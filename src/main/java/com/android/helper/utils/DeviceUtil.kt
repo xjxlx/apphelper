@@ -76,7 +76,8 @@ class DeviceUtil private constructor() {
         val RELEASE = Build.VERSION.RELEASE
 
         LogUtil.e(
-            "fingerprint:$fingerprint\r\n 系统品牌:$BRAND \r\n 型号: $MODEL \n 系统制造商:$MANUFACTURER \n 设备参数:$DEVICE \n 手机制造商:$PRODUCT\n sdk 版本:$SDK\n 系统 版本:$RELEASE"
+            "fingerprint:$fingerprint\r\n 系统品牌:$BRAND \r\n 型号: $MODEL \n 系统制造商:$MANUFACTURER \n " +
+                "设备参数:$DEVICE \n 手机制造商:$PRODUCT\n sdk 版本:$SDK\n 系统 版本:$RELEASE"
         )
 
         val deviceId =
