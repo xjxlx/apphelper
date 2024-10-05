@@ -36,9 +36,9 @@ class SideMenuView : ViewGroup {
 
     private val mCallBack =
         object : ViewDragHelper.Callback() {
-        /*
-         * 3:哪一个view可以被移动，这是一个抽象类，必须去实现，也只有在这个方法返回true的时候下面的方法才会生效
-         */
+            /*
+             * 3:哪一个view可以被移动，这是一个抽象类，必须去实现，也只有在这个方法返回true的时候下面的方法才会生效
+             */
             override fun tryCaptureView(
                 child: View,
                 pointerId: Int
@@ -49,9 +49,9 @@ class SideMenuView : ViewGroup {
                 return true
             }
 
-        /*
-         * 4：先限制一下横向滑动范围，给一个最大值
-         */
+            /*
+             * 4：先限制一下横向滑动范围，给一个最大值
+             */
             override fun getViewHorizontalDragRange(child: View): Int {
                 return child.measuredWidth // 只要返回大于0的值就行
             }
@@ -118,9 +118,9 @@ class SideMenuView : ViewGroup {
                 return mLeftValue
             }
 
-        /*
-         * 6：view滑动的改变，
-         */
+            /*
+             * 6：view滑动的改变，
+             */
             override fun onViewPositionChanged(
                 changedView: View,
                 left: Int,
