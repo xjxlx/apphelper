@@ -77,6 +77,11 @@ dependencies {
 
     api(project(":refresh"))
 
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.ui.test.junit4)
+
     // room数据库的依赖
 //    implementation()("androidx.room:room-runtime:2.4.2") {// 禁止依赖的传递
 //        transitive = false
