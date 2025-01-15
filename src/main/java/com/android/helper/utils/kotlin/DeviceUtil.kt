@@ -5,8 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.provider.Settings
 import com.android.common.utils.LogUtil
-import com.android.helper.utils.MD5Utils
-import java.util.*
+import com.android.common.utils.MD5Utils
 
 /**
  * @author : 流星

@@ -9,6 +9,7 @@ import android.telephony.TelephonyManager
 import android.text.TextUtils
 import androidx.annotation.RequiresPermission
 import com.android.common.utils.LogUtil
+import com.android.common.utils.MD5Utils
 import java.io.File
 
 /**
@@ -173,7 +174,11 @@ class DeviceUtil private constructor() {
         var deviceId = ""
         context?.let {
             // 获取android的id值
-            deviceId = Settings.Secure.getString(it.applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
+            deviceId =
+                Settings.Secure.getString(
+                    it.applicationContext.contentResolver,
+                    Settings.Secure.ANDROID_ID
+                )
             if (TextUtils.isEmpty(deviceId)) {
                 // 设备的唯一标识。由设备的多个信息拼接合成
                 deviceId = Build.FINGERPRINT
