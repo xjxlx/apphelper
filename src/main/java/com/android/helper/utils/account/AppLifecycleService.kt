@@ -10,7 +10,7 @@ import android.os.Looper
 import android.os.Message
 import android.text.TextUtils
 import com.android.common.utils.LogUtil
-import com.android.common.utils.LogWriteUtil
+import com.android.common.utils.WriteLogUtil
 import com.android.helper.R
 import com.android.helper.common.CommonConstants
 import com.android.helper.utils.NotificationUtil
@@ -20,7 +20,7 @@ import com.android.helper.utils.ServiceUtil
  * 账号拉活的服务类，用来后台拉活
  */
 class AppLifecycleService : Service() {
-    private val mWriteUtil: LogWriteUtil = LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt")
+    private var mWriteUtil: WriteLogUtil? = null
 
     @SuppressLint("StaticFieldLeak")
     private val CODE_NOTIFICATION = 19900713
@@ -28,12 +28,19 @@ class AppLifecycleService : Service() {
 
     override fun onBind(intent: Intent): IBinder? = null
 
+    override fun onCreate() {
+        super.onCreate()
+        if (mWriteUtil == null) {
+            mWriteUtil = WriteLogUtil(context = baseContext, CommonConstants.FILE_LIFECYCLE_NAME + ".txt")
+        }
+    }
+
     override fun onStartCommand(
         intent: Intent?,
         flags: Int,
         startId: Int
     ): Int {
-        mWriteUtil.write("onStartCommand --->")
+        mWriteUtil?.write("onStartCommand --->")
 
         // 标记打开服务的来源
         val fromType = intent!!.getStringExtra(CommonConstants.KEY_LIFECYCLE_FROM)
@@ -61,13 +68,13 @@ class AppLifecycleService : Service() {
 
         if (TextUtils.equals(type, LifecycleAppEnum.From_Intent.from)) {
             builder.setContentText("我是后台服务，我是被直接启动的")
-            mWriteUtil.write("我是后台服务，我是被直接启动的")
+            mWriteUtil?.write("我是后台服务，我是被直接启动的")
         } else if (TextUtils.equals(type, LifecycleAppEnum.FROM_JOB.from)) {
             builder.setContentText("我是后台服务，我是被JobService启动的")
-            mWriteUtil.write("我是后台服务，我是被JobService启动的")
+            mWriteUtil?.write("我是后台服务，我是被JobService启动的")
         } else if (TextUtils.equals(type, LifecycleAppEnum.FROM_ACCOUNT.from)) {
             builder.setContentText("我是后台服务，我是被账号拉活的")
-            mWriteUtil.write("我是后台服务，我是被账号拉活的")
+            mWriteUtil?.write("我是后台服务，我是被账号拉活的")
         }
         builder.setWhen(System.currentTimeMillis())
         val notificationUtil = builder.build()
@@ -104,7 +111,7 @@ class AppLifecycleService : Service() {
                     // 2:启动jobService
                     val jobServiceName: String = LifecycleManager.getInstance().jobServiceName
                     val jobServiceRunning = ServiceUtil.isJobServiceRunning(applicationContext, jobServiceName)
-                    mWriteUtil.write("☆☆☆☆☆---我是后台服务，当前jobService的状态为:$jobServiceRunning")
+                    mWriteUtil?.write("☆☆☆☆☆---我是后台服务，当前jobService的状态为:$jobServiceRunning")
 
                     if (!jobServiceRunning) {
                         AppJobService.startJob(applicationContext, LifecycleAppEnum.FROM_SERVICE)
