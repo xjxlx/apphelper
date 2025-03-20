@@ -9,8 +9,8 @@ import android.text.TextUtils;
 import androidx.fragment.app.FragmentActivity;
 
 import com.android.common.utils.LogUtil;
-import com.android.common.utils.LogWriteUtil;
 import com.android.common.utils.SpUtil;
+import com.android.common.utils.WriteLogUtil;
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.utils.ActivityUtil;
@@ -28,7 +28,7 @@ public class LifecycleManager {
 
     private static LifecycleManager mLifecycleManager;
     private static String mServiceName, mJobServiceName;// 需要启动的服务名字
-    private final LogWriteUtil logWriteUtil = new LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
+    private final WriteLogUtil logWriteUtil = new WriteLogUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
     private NotificationUtil mNotificationUtil;
     private DialogUtil mDialogUtil;
     private SystemUtil mSystemUtil;
@@ -49,11 +49,12 @@ public class LifecycleManager {
      */
     public void startLifecycle(Context application, String serviceName, String jobName) {
         if ((application != null) && (!TextUtils.isEmpty(serviceName)) && (!TextUtils.isEmpty(jobName))) {
+            logWriteUtil.init(application);
             mServiceName = serviceName;
             mJobServiceName = jobName;
             // 保存名字
-            SpUtil.INSTANCE.putString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME, serviceName);
-            SpUtil.INSTANCE.putString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME, jobName);
+            SpUtil.putString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME, serviceName);
+            SpUtil.putString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME, jobName);
             // 1:账号保活
             AccountHelper accountHelper = AccountHelper.getInstance();
             accountHelper.addAccountType(application.getResources().getString(R.string.account_type))

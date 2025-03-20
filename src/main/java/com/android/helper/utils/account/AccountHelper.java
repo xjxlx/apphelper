@@ -7,7 +7,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.android.common.utils.LogWriteUtil;
+import com.android.common.utils.WriteLogUtil;
 import com.android.helper.common.CommonConstants;
 
 /**
@@ -49,7 +49,7 @@ import com.android.helper.common.CommonConstants;
 public class AccountHelper {
 
     private static AccountHelper mAccountHelper;
-    private final LogWriteUtil logWriteUtil = new LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
+    private final WriteLogUtil logWriteUtil = new WriteLogUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
     private String ACCOUNT_TYPE;
     private String ACCOUNT_NAME;
     private String ACCOUNT_PASSWORD;
@@ -91,6 +91,7 @@ public class AccountHelper {
 
     public AccountHelper addAccount(Context context) {
         try {
+            logWriteUtil.init(context);
             if (TextUtils.isEmpty(ACCOUNT_TYPE)) {
                 logWriteUtil.write("添加账户的类型为空，停止后续的操作");
                 throw new NullPointerException("添加账户的类型为空");

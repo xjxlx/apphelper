@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 
 import com.android.common.utils.LogUtil;
-import com.android.common.utils.LogWriteUtil;
+import com.android.common.utils.WriteLogUtil;
 import com.android.helper.common.CommonConstants;
 
 /**
@@ -25,7 +25,7 @@ import com.android.helper.common.CommonConstants;
  */
 public class SyncService extends Service {
 
-    private static final LogWriteUtil logWriteUtil = new LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
+    private static final WriteLogUtil logWriteUtil = new WriteLogUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
 
     private SyncAdapter syncAdapter;
 
@@ -35,6 +35,7 @@ public class SyncService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        logWriteUtil.init(getBaseContext());
         syncAdapter = new SyncAdapter(getApplicationContext(), true);
     }
 

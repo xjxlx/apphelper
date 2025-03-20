@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.android.common.utils.LogWriteUtil;
+import com.android.common.utils.WriteLogUtil;
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.utils.NotificationUtil;
@@ -16,10 +16,11 @@ import com.android.helper.utils.ServiceUtil;
  */
 public class LifecycleReceiver extends BroadcastReceiver {
 
-    private static final LogWriteUtil logWriteUtil = new LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
+    private static final WriteLogUtil logWriteUtil = new WriteLogUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        logWriteUtil.init(context);
         String action = intent.getAction();
         if (TextUtils.equals(action, "com.android.helper.lifecycle")) {
             logWriteUtil.write("接收到了账号同步的信息！");

@@ -12,7 +12,7 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import com.android.common.utils.LogUtil;
-import com.android.common.utils.LogWriteUtil;
+import com.android.common.utils.WriteLogUtil;
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.utils.NotificationUtil;
@@ -23,7 +23,7 @@ import com.android.helper.utils.ServiceUtil;
  */
 public class AppJobService extends JobService {
 
-    private static final LogWriteUtil logWriteUtil = new LogWriteUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
+    private static final WriteLogUtil logWriteUtil = new WriteLogUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt");
 
     /**
      * job的id
@@ -46,6 +46,7 @@ public class AppJobService extends JobService {
      * @param appEnum 启动的数据类型
      */
     public static void startJob(Context context, LifecycleAppEnum appEnum) {
+        logWriteUtil.init(context);
         logWriteUtil.write("执行了startJob命令！");
         mAppEnum = appEnum;
         // 1:发送对应的通知
