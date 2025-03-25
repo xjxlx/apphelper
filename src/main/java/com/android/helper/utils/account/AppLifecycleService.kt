@@ -123,9 +123,4 @@ class AppLifecycleService : Service() {
                 }
             }
         }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mWriteUtil.destroy()
-    }
 }

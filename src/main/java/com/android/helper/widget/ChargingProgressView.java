@@ -12,18 +12,16 @@ import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-
 import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
-
 import com.android.common.base.BaseView;
 import com.android.common.utils.ConvertUtil;
 import com.android.common.utils.LogUtil;
+import com.android.common.utils.WriteLogUtil;
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.utils.CustomViewUtil;
 import com.android.helper.utils.NumberUtil;
-
 import java.math.BigDecimal;
 
 /**
@@ -52,7 +50,7 @@ public class ChargingProgressView extends BaseView {
     private final float mSocBitmapTopInterval = ConvertUtil.dp(getContext(), 11.5f);
     private final float mPaddingRight = mRemainingTimeTextInterval;// 右侧的间距
     private final float mPaddingBottom = ConvertUtil.dp(getContext(), 5); // 底部的间距
-
+    private final WriteLogUtil mWriteUtil = new WriteLogUtil(CommonConstants.FILE_CHARGING_CENTER_NAME + ".txt");
     // 最佳进度值
     private final boolean mShowOptimum = true; // 是否展示最佳的电量值
     private int mMaxWidth, mMaxHeight;
@@ -490,6 +488,8 @@ public class ChargingProgressView extends BaseView {
             // 文字宽度 - 直径 - 距离
             float dy = (circleY + mScrollTextHeight / 2); // dy = 圆角的y轴 + 文字的高度 /2 +
             canvas.drawText(mSocCurrentText, 0, mSocCurrentText.length(), dx, dy, mPaintScrollValue);
+        } else {
+            mWriteUtil.write("绘制滑动的区间值：小于0 ，不执行逻辑！");
         }
         // 绘制最佳的进度
         if (mShowOptimum && (mPercentageOptimum > 0)) {
@@ -688,8 +688,10 @@ public class ChargingProgressView extends BaseView {
     public void setCurrentSoc(@FloatRange(from = 0.6f, to = 1.0f) float socValue) {
         if (socValue >= 0.6) {
             this.mBottomScrollProgress = socValue;
+            mWriteUtil.write("充电中心--->接收到正常的SOC值！");
         } else {
             this.mBottomScrollProgress = 0.6f;
+            mWriteUtil.write("充电中心--->接收到异常的SOC值: " + socValue + "，默认设置成0.6");
         }
         requestLayout();
         invalidate();
@@ -710,5 +712,11 @@ public class ChargingProgressView extends BaseView {
         void onTouchUp(String progress);
 
         void onMove(String progress);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mWriteUtil.init(getContext());
     }
 }
