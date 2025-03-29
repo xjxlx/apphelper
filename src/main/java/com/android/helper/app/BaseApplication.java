@@ -17,8 +17,7 @@ import okhttp3.Interceptor;
 public class BaseApplication {
 
     private static ApplicationInterface mApplication;
-    private static AppBarStatusListener mAppBarStatusListener;
-    private static BaseApplication INSTANCE;
+    private static volatile BaseApplication INSTANCE;
     /**
      * 一个项目中通用的对象，该对象一般情况杨下不会被销毁，因为加载的时机比较特殊，只能写成这种方式
      */
@@ -35,6 +34,19 @@ public class BaseApplication {
         return INSTANCE;
     }
 
+    // <editor-fold desc="initData" defaultstate="collapsed">
+    public void initApp() {
+        // refresh init
+        ApplicationManager.init(getApplication());
+
+        ScreenUtil.getScreenHeight(getApplication());
+    }
+
+    public Application getApplication() {
+        return mApplication.getApplication();
+    }
+    // </editor-fold>
+
     public BaseApplication setApplication(ApplicationInterface iCommonApplication) {
         mApplication = iCommonApplication;
         if (mApplication != null) {
@@ -43,25 +55,6 @@ public class BaseApplication {
             mApplication.initApp();
         }
         return this;
-    }
-
-    public BaseApplication setAppBarStatusListener(AppBarStatusListener appBarStatusListener) {
-        mAppBarStatusListener = appBarStatusListener;
-        return this;
-    }
-
-    // <editor-fold desc="initData" defaultstate="collapsed">
-
-    public void initApp() {
-        // refresh init
-        ApplicationManager.init(getApplication());
-
-        ScreenUtil.getScreenHeight(getApplication());
-    }
-    // </editor-fold>
-
-    public Application getApplication() {
-        return mApplication.getApplication();
     }
 
     public boolean isDebug() {
@@ -104,23 +97,6 @@ public class BaseApplication {
         return interceptors;
     }
 
-    public int getAppBarStatusColor() {
-        int color = 0;
-        if (mAppBarStatusListener != null) {
-            color = mAppBarStatusListener.getAppBarStatusColor();
-        }
-        return color;
-    }
-
-    public boolean getAppBarStatusFontDark() {
-        boolean dark = false;
-        if (mAppBarStatusListener != null) {
-            dark = mAppBarStatusListener.getAppBarStatusFontDark();
-        }
-        return dark;
-    }
-
-
     public FragmentActivity getCommonLivedata() {
         return mFragmentActivity;
     }
@@ -132,5 +108,4 @@ public class BaseApplication {
     public boolean isNull() {
         return mApplication == null;
     }
-
 }
