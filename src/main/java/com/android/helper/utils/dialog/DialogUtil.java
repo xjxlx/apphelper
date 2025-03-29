@@ -400,7 +400,7 @@ public class DialogUtil implements BaseLifecycleObserver {
 
     @Override
     public void onStop() {
-        LogUtil.e("dialog--->stop:");
+        // LogUtil.e("dialog--->stop:");
         if (stopDialog) {
             dismiss();
         }
