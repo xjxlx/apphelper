@@ -32,7 +32,7 @@ object DeviceUtil {
         val fingerprint = Build.FINGERPRINT
         LogUtil.e("设备的唯一识别码为：$fingerprint")
         val value = androidId + fingerprint
-        val md5: String = MD5Utils.getMD5String(value)
+        val md5: String = MD5Utils.md5(value)
         LogUtil.e("设备的唯一识别码的Md5为：$md5")
         return md5
     }

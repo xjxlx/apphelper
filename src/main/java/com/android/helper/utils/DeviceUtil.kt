@@ -184,7 +184,7 @@ class DeviceUtil private constructor() {
                 deviceId = Build.FINGERPRINT
             }
             if (!TextUtils.isEmpty(deviceId)) {
-                return MD5Utils.getMD5String(deviceId)
+                return MD5Utils.md5(deviceId)
             }
         }
         return deviceId
