@@ -3,6 +3,7 @@ package com.android.helper.utils;
 import android.text.TextUtils;
 
 import com.android.common.utils.LogUtil;
+import com.android.common.utils.ToastUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;

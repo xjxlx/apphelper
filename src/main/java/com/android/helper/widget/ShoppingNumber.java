@@ -12,9 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
-
+import com.android.common.utils.ToastUtil;
 import com.android.helper.R;
-import com.android.helper.utils.ToastUtil;
 
 /**
  * @author : 流星

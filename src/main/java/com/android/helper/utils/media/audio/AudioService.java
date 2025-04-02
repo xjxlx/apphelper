@@ -21,8 +21,8 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import com.android.common.utils.LogUtil;
+import com.android.common.utils.ToastUtil;
 import com.android.helper.httpclient.RxUtil;
-import com.android.helper.utils.ToastUtil;
 
 import java.io.IOException;
 import java.util.Locale;

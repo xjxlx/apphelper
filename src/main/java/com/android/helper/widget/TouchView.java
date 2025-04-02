@@ -21,8 +21,7 @@ import com.android.common.utils.ConvertUtil;
 import com.android.common.utils.LogUtil;
 import com.android.helper.R;
 import com.android.helper.utils.BitmapUtil;
-import com.android.helper.utils.ToastUtil;
-
+import com.android.common.utils.ToastUtil;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -9,10 +9,10 @@ import android.view.MotionEvent
 import android.view.View
 import com.android.common.utils.ConvertUtil
 import com.android.common.utils.LogUtil
+import com.android.common.utils.ToastUtil
 import com.android.helper.R
 import com.android.helper.utils.BitmapUtil
 import com.android.helper.utils.CustomViewUtil
-import com.android.helper.utils.ToastUtil
 
 /**
  * 自定义滑块 ,这里使用seekBar的控件
