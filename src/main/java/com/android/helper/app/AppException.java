@@ -119,6 +119,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
      * @return true:处理了该异常信息;否则返回false
      */
     private boolean handleException(Thread thread, Throwable ex) {
+        LogUtil.e("全局捕获的异常："+ex.getMessage());
         LogUtil.e(TAG, "uncaughtException -----> handleException ！");
         if (thread == null || ex == null || mContext == null) {
             LogUtil.e(TAG, "uncaughtException -----> handleException  false = null ！ ");
