@@ -41,11 +41,11 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
 
     @SuppressLint("StaticFieldLeak")
     private static AppException INSTANCE;
+    private static String mFileTag = "";
     private final UncaughtExceptionHandler mDefaultHandler;
     private final Context mContext;
     private final HashMap<String, String> mMapParameter = new LinkedHashMap<>();
-    private static String mFileTag = "";
-    private String TAG = "AppException";
+    private final String TAG = "AppException";
     private int mTargetVersion = 30;// 默认是30，高版本
 
     private AppException(Context context) {
@@ -58,6 +58,30 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             INSTANCE = new AppException(context);
         }
         return INSTANCE;
+    }
+
+    /**
+     * 处理错误的异常信息
+     */
+    public static String exception(Throwable e) {
+        String msg = "";
+        if (e != null) {
+            String message = e.getMessage();
+            if (e instanceof HttpException) {
+                msg = "Http异常：" + message;
+            } else if (e instanceof JsonParseException || e instanceof JSONException || e instanceof ParseException) {
+                msg = "数据解析异常：" + message;
+            } else if (e instanceof ConnectException) {
+                msg = "服务链接异常：" + message;
+            } else if (e instanceof javax.net.ssl.SSLHandshakeException) {
+                msg = "SSL异常：" + message;
+            } else if (e instanceof SocketTimeoutException) {
+                msg = "读取超时：" + message;
+            } else {
+                msg = "未知异常：" + message;
+            }
+        }
+        return msg;
     }
 
     @Override
@@ -99,10 +123,22 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             for (Entry<String, String> entry : parameter.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
-                pw.println(key + " : " + value);
+                String line = key + " : " + value;
+                pw.println(line);
+                Log.e(TAG, line);
             }
-            pw.println("Exception: " + ex.getMessage() + "\n");
-            ex.printStackTrace(pw);
+
+            String exceptionMsg = "Exception: " + ex.getMessage() + "\n";
+            pw.println(exceptionMsg);
+            Log.e(TAG, exceptionMsg);
+
+            java.io.StringWriter sw = new java.io.StringWriter();
+            java.io.PrintWriter pwForLog = new java.io.PrintWriter(sw);
+            ex.printStackTrace(pwForLog);
+            String stackTrace = sw.toString();
+            pw.println(stackTrace);
+            Log.e(TAG, stackTrace);
+
             pw.close();
             fw.close();
             return true;
@@ -153,34 +189,9 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
     }
 
     /**
-     * 处理错误的异常信息
-     */
-    public static String exception(Throwable e) {
-        String msg = "";
-        if (e != null) {
-            String message = e.getMessage();
-            if (e instanceof HttpException) {
-                msg = "Http异常：" + message;
-            } else if (e instanceof JsonParseException || e instanceof JSONException || e instanceof ParseException) {
-                msg = "数据解析异常：" + message;
-            } else if (e instanceof ConnectException) {
-                msg = "服务链接异常：" + message;
-            } else if (e instanceof javax.net.ssl.SSLHandshakeException) {
-                msg = "SSL异常：" + message;
-            } else if (e instanceof SocketTimeoutException) {
-                msg = "读取超时：" + message;
-            } else {
-                msg = "未知异常：" + message;
-            }
-        }
-        return msg;
-    }
-
-    /**
      * @return 返回一个应用目录下的File文件的路径，这里不适用sd卡的路径，在高版本手机上，很多权限被拒绝，这里尽量避免类似的情况
      */
     public String getErrorLogPath() {
-        LogUtil.e(TAG, "getErrorLogPath:  ---> ");
         if (mContext != null) {
             String fileName = "";
             if (!TextUtils.isEmpty(mFileTag)) {
@@ -203,13 +214,9 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
                         sdkPath + File.separator + mContext.getPackageName() + File.separator + "error" + File.separator);
             }
 
-            boolean exists = parentFile.exists();
-            LogUtil.e(TAG, "getErrorLogPath: parentFile ---> exists: " + exists);
-
-            if (!exists) {
-                boolean mkdirs = parentFile.mkdirs();
-                LogUtil.e(TAG, "getErrorLogPath: parentFile ---> mkdirs: " + mkdirs);
-            }
+            if (!parentFile.exists()) {
+                parentFile.mkdirs();
+             }
 
             File file = new File(parentFile, fileName);
             boolean existsFile = file.exists();
@@ -229,7 +236,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
     }
 
     public void setFileTag(String fileName) {
-        this.mFileTag = fileName;
+        mFileTag = fileName;
     }
 
     public void setTargetVersion(int targetVersion) {
