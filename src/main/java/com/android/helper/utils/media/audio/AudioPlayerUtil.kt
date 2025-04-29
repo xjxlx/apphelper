@@ -359,15 +359,17 @@ class AudioPlayerUtil(
         // 播放按钮的点击事件
         view.setOnClickListener(
             View.OnClickListener { v: View? ->
-                val initialized: Boolean = mAudioBinder!!.initialized()
-                if (initialized) {
-                    if (mAudioBinder!!.isPlaying()) {
-                        pause()
+                mAudioBinder?.let {
+                    val initialized: Boolean = it.initialized()
+                    if (initialized) {
+                        if (it.isPlaying()) {
+                            pause()
+                        } else {
+                            start()
+                        }
                     } else {
-                        start()
+                        setResource(mAudioPath)
                     }
-                } else {
-                    setResource(mAudioPath)
                 }
             }
         )

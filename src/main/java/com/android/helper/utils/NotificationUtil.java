@@ -19,11 +19,9 @@ import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
-
 import androidx.annotation.DrawableRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
 import com.android.common.utils.LogUtil;
 import com.android.helper.R;
 import com.android.helper.interfaces.listener.ViewCallBackListener;
@@ -244,39 +242,34 @@ public class NotificationUtil {
             // 锁屏可见
             mNotificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
             // 当SDK大于16且小于26的时候
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                mNotification = mNotificationBuilder.setPriority(mNotificationLevel)// 设置优先级
-                        .build();
-            } else {
-                // 渠道对象
-                NotificationChannel mChannel = new NotificationChannel(channelId, mChannelName, mChannelImportance);
-                // 默认的渠道描述
-                if (TextUtils.isEmpty(mChannelDescription)) {
-                    mChannelDescription = mChannelName + "的渠道";
-                }
-                // 消息通知的描述 , 用户可以看到的通知渠道的描述
-                mChannel.setDescription(mChannelDescription);
-                // 设置通知出现时的闪灯（如果 android 设备支持的话）
-                mChannel.enableLights(true);
-                mChannel.setLightColor(Color.RED);
-                // 设置通知出现时的震动（如果 android 设备支持的话）
-                if (mVibrate) {
-                    mChannel.enableVibration(true);
-                    mChannel.setShowBadge(true);//显示logo
-                    mChannel.setVibrationPattern(vibrates);
-                }
-                // 锁屏可见
-                mChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC); //设置锁屏可见 VISIBILITY_PUBLIC=可见
-                // 设置声音
-                if (mSound) {
-                    mChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), Notification.AUDIO_ATTRIBUTES_DEFAULT);
-                }
-                // 通知Manager去创建渠道
-                manager.createNotificationChannel(mChannel);
-                mNotification = mNotificationBuilder.setPriority(mNotificationLevel)// 设置优先级
-                        .setChannelId(channelId)// 设置渠道
-                        .build();
+            // 渠道对象
+            NotificationChannel mChannel = new NotificationChannel(channelId, mChannelName, mChannelImportance);
+            // 默认的渠道描述
+            if (TextUtils.isEmpty(mChannelDescription)) {
+                mChannelDescription = mChannelName + "的渠道";
             }
+            // 消息通知的描述 , 用户可以看到的通知渠道的描述
+            mChannel.setDescription(mChannelDescription);
+            // 设置通知出现时的闪灯（如果 android 设备支持的话）
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.RED);
+            // 设置通知出现时的震动（如果 android 设备支持的话）
+            if (mVibrate) {
+                mChannel.enableVibration(true);
+                mChannel.setShowBadge(true);//显示logo
+                mChannel.setVibrationPattern(vibrates);
+            }
+            // 锁屏可见
+            mChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC); //设置锁屏可见 VISIBILITY_PUBLIC=可见
+            // 设置声音
+            if (mSound) {
+                mChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), Notification.AUDIO_ATTRIBUTES_DEFAULT);
+            }
+            // 通知Manager去创建渠道
+            manager.createNotificationChannel(mChannel);
+            mNotification = mNotificationBuilder.setPriority(mNotificationLevel)// 设置优先级
+                    .setChannelId(channelId)// 设置渠道
+                    .build();
             // 通知栏的状态布局
             if (mRemoteViewsLayout != 0) {
                 RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), mRemoteViewsLayout);
@@ -502,54 +495,7 @@ public class NotificationUtil {
 
     public interface OnHandlerLoopListener {
         void onLoop();
-    }    @SuppressLint("HandlerLeak")
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            // 先停止之前的消息发送，避免数据的快速轮询
-            stopAllLoop();
-            if (mNotification != null) {
-                int id = msg.arg1;
-                switch (msg.what) {
-                    case CODE_WHAT_SEND_START_FOREGROUND:
-                        LogUtil.e("开始了服务消息的单独发送！");
-                        if (mService != null) {
-                            mService.startForeground(id, mNotification);
-                        }
-                        break;
-                    case CODE_WHAT_SEND_START_FOREGROUND_LOOP:
-                        LogUtil.e("开始了服务消息的轮询发送！");
-                        if (mService != null) {
-                            mService.startForeground(id, mNotification);
-                            Message message = mHandler.obtainMessage();
-                            message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;
-                            message.arg1 = id;
-                            mHandler.sendMessageDelayed(message, mIntervalTime);
-                        }
-                        // 轮询的回调
-                        if (mOnHandlerLoopListener != null) {
-                            mOnHandlerLoopListener.onLoop();
-                        }
-                        break;
-                    case CODE_WHAT_SEND_START_NOTIFICATION_LOOP:
-                        LogUtil.e("开始了---消息---的轮询发送！");
-                        removeMessages(CODE_WHAT_SEND_START_NOTIFICATION_LOOP);
-                        Message message1 = mHandler.obtainMessage();
-                        message1.what = CODE_WHAT_SEND_START_NOTIFICATION_LOOP;
-                        message1.arg1 = id;
-                        sendNotification(id);
-                        mHandler.sendMessageDelayed(message1, mIntervalTime);
-                        // 轮询的回调
-                        if (mOnHandlerLoopListener != null) {
-                            mOnHandlerLoopListener.onLoop();
-                        }
-                        break;
-                }
-            }
-        }
-    };
-
+    }
     public static class Builder {
         private final Context mContext;
         /**
@@ -772,9 +718,53 @@ public class NotificationUtil {
         public NotificationUtil build() {
             return new NotificationUtil(this);
         }
-
-    }
-
+    }@SuppressLint("HandlerLeak")
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            // 先停止之前的消息发送，避免数据的快速轮询
+            stopAllLoop();
+            if (mNotification != null) {
+                int id = msg.arg1;
+                switch (msg.what) {
+                    case CODE_WHAT_SEND_START_FOREGROUND:
+                        LogUtil.e("开始了服务消息的单独发送！");
+                        if (mService != null) {
+                            mService.startForeground(id, mNotification);
+                        }
+                        break;
+                    case CODE_WHAT_SEND_START_FOREGROUND_LOOP:
+                        LogUtil.e("开始了服务消息的轮询发送！");
+                        if (mService != null) {
+                            mService.startForeground(id, mNotification);
+                            Message message = mHandler.obtainMessage();
+                            message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;
+                            message.arg1 = id;
+                            mHandler.sendMessageDelayed(message, mIntervalTime);
+                        }
+                        // 轮询的回调
+                        if (mOnHandlerLoopListener != null) {
+                            mOnHandlerLoopListener.onLoop();
+                        }
+                        break;
+                    case CODE_WHAT_SEND_START_NOTIFICATION_LOOP:
+                        LogUtil.e("开始了---消息---的轮询发送！");
+                        removeMessages(CODE_WHAT_SEND_START_NOTIFICATION_LOOP);
+                        Message message1 = mHandler.obtainMessage();
+                        message1.what = CODE_WHAT_SEND_START_NOTIFICATION_LOOP;
+                        message1.arg1 = id;
+                        sendNotification(id);
+                        mHandler.sendMessageDelayed(message1, mIntervalTime);
+                        // 轮询的回调
+                        if (mOnHandlerLoopListener != null) {
+                            mOnHandlerLoopListener.onLoop();
+                        }
+                        break;
+                }
+            }
+        }
+    };
 
 
 }
