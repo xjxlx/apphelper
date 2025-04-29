@@ -147,9 +147,7 @@ class AudioService : Service() {
                 val percentFloat = percent / 100.0 // 注意：两个整数相除的结果是整数
                 // 缓冲比例 乘以 总数大小 == 当前缓冲的进度
                 val currentProgress = mDuration * percentFloat
-                if (mCallBackListener != null) {
-                    mCallBackListener!!.onBufferProgress(mDuration, currentProgress, percent)
-                }
+                mCallBackListener?.onBufferProgress(mDuration, currentProgress, percent)
             }
         }
 
@@ -190,15 +188,11 @@ class AudioService : Service() {
      * 初始化监听器
      */
     fun initListener() {
-        if (mediaPlayer != null) {
-            mediaPlayer!!.setOnPreparedListener(onPreparedListener)
-            mediaPlayer!!.setOnErrorListener(onErrorListener)
-            mediaPlayer!!.setOnCompletionListener(onCompletionListener)
-            mediaPlayer!!.setOnInfoListener(mInfoListener)
-            mediaPlayer!!.setOnBufferingUpdateListener(onBufferingUpdateListener)
-            // 获取当前的进度
-            this.progress
-        }
+        mediaPlayer?.setOnPreparedListener(onPreparedListener)
+        mediaPlayer?.setOnErrorListener(onErrorListener)
+        mediaPlayer?.setOnCompletionListener(onCompletionListener)
+        mediaPlayer?.setOnInfoListener(mInfoListener)
+        mediaPlayer?.setOnBufferingUpdateListener(onBufferingUpdateListener)
     }
 
     /**
@@ -244,16 +238,14 @@ class AudioService : Service() {
                 // 初始化监听
                 initListener()
                 // 指定参数为音频文件
-                mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
-                mediaPlayer!!.setDataSource(mAudioPath) // 为多媒体对象设置播放路径
-                mediaPlayer!!.prepareAsync() // 异步准备（准备播放
+                mediaPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
+                mediaPlayer?.setDataSource(mAudioPath) // 为多媒体对象设置播放路径
+                mediaPlayer?.prepareAsync() // 异步准备（准备播放
                 LogUtil.e(AudioConstant.TAG, "player--->重新重置了资源，并设置了数据！")
             } catch (e: IOException) {
                 e.printStackTrace()
                 LogUtil.e(AudioConstant.TAG, "player--->设置数据异常：" + e.message)
-                if (mCallBackListener != null) {
-                    mCallBackListener!!.onError(Exception("player--->" + e.message))
-                }
+                mCallBackListener?.onError(Exception("player--->" + e.message))
             }
         } else {
             show("播放地址不能为空！")
@@ -277,12 +269,12 @@ class AudioService : Service() {
                     } else {
                         LogUtil.e(AudioConstant.TAG, "start--->开始播放！")
                         // 暂停状态或者其他状态下，直接开始
-                        mediaPlayer!!.start()
+                        mediaPlayer?.start()
                         STATUS_TYPE = AudioConstant.STATUS_PLAYING
                         // 开始轮询的统计
                         mSendProgress = true
                         if (mCallBackListener != null) {
-                            mCallBackListener!!.onStart()
+                            mCallBackListener?.onStart()
                             // 路径更换
                             mOldAudioPath = mAudioPath
                         }
@@ -297,9 +289,7 @@ class AudioService : Service() {
             }
         } catch (e: Exception) {
             LogUtil.e(AudioConstant.TAG, "start--->开始播放失败--->" + e.message)
-            if (mCallBackListener != null) {
-                mCallBackListener!!.onError(Exception("start--->" + e.message))
-            }
+            mCallBackListener?.onError(Exception("start--->" + e.message))
         }
         return false
     }
@@ -316,18 +306,14 @@ class AudioService : Service() {
                 mediaPlayer!!.pause()
                 // 更改状态
                 STATUS_TYPE = AudioConstant.STATUS_PAUSE
-                if (mCallBackListener != null) {
-                    mCallBackListener!!.onPause()
-                }
+                mCallBackListener?.onPause()
                 // 暂停轮询的统计
                 mSendProgress = false
                 LogUtil.e(AudioConstant.TAG, "pause--->走入了暂停的方法中，成功暂停了！")
                 return true
             } catch (e: Exception) {
                 LogUtil.e("暂停失败")
-                if (mCallBackListener != null) {
-                    mCallBackListener!!.onError(Exception("pause--->" + e.message))
-                }
+                mCallBackListener?.onError(Exception("pause--->" + e.message))
                 LogUtil.e(
                     AudioConstant.TAG,
                     "pause--->走入了暂停的方法中，暂停异常了--->" + e.message
@@ -344,14 +330,12 @@ class AudioService : Service() {
             if (mediaPlayer != null) {
                 if (this.isPlaying) {
                     if (initialized) {
-                        mediaPlayer!!.pause()
-                        mediaPlayer!!.seekTo(0)
+                        mediaPlayer?.pause()
+                        mediaPlayer?.seekTo(0)
                         STATUS_TYPE = AudioConstant.STATUS_STOP
                         // 暂停轮询的统计
                         mSendProgress = false
-                        if (mCallBackListener != null) {
-                            mCallBackListener!!.onStop()
-                        }
+                        mCallBackListener?.onStop()
                         // 重新去执行播放的资源
                         mOldAudioPath = ""
                         LogUtil.e(AudioConstant.TAG, "stop--->正常停止了播放")
@@ -361,9 +345,7 @@ class AudioService : Service() {
             }
         } catch (e: Exception) {
             LogUtil.e(AudioConstant.TAG, "stop--->停止失败--->" + e.message)
-            if (mCallBackListener != null) {
-                mCallBackListener!!.onError(Exception("stop--->" + e.message))
-            }
+            mCallBackListener?.onError(Exception("stop--->" + e.message))
         }
         return false
     }
@@ -456,9 +438,7 @@ class AudioService : Service() {
                 STATUS_TYPE = AudioConstant.STATUS_PREPARED
                 initialized = true
                 LogUtil.e(AudioConstant.TAG, "onPrepared--->数据准备完成了！")
-                if (mCallBackListener != null) {
-                    mCallBackListener!!.onPrepared()
-                }
+                mCallBackListener?.onPrepared()
                 // 加载完毕，就开始播放
                 start()
             }
@@ -470,10 +450,8 @@ class AudioService : Service() {
     fun reset() {
         LogUtil.e(AudioConstant.TAG, "reset--->走入了清空资源的方法中！")
         mDuration = 0
-        if (mediaPlayer != null) {
-            mediaPlayer!!.reset()
-            LogUtil.e(AudioConstant.TAG, "reset--->清空了资源！")
-        }
+        mediaPlayer?.reset()
+        LogUtil.e(AudioConstant.TAG, "reset--->清空了资源！")
     }
 
     val progress: Unit
@@ -481,9 +459,7 @@ class AudioService : Service() {
          * 每隔1秒轮询一次当前的进度
          */
         get() {
-            if (disposableSubscriber != null) {
-                disposableSubscriber!!.dispose()
-            }
+            disposableSubscriber?.dispose()
             disposableSubscriber =
                 Flowable
                     .interval(1000, TimeUnit.MILLISECONDS)
@@ -548,9 +524,7 @@ class AudioService : Service() {
         LogUtil.e(AudioConstant.TAG, "clear--->走入了clear的方法中！")
         if (mediaPlayer != null) {
             if (initialized) {
-                if (disposableSubscriber != null) {
-                    disposableSubscriber!!.dispose()
-                }
+                disposableSubscriber?.dispose()
                 stop()
                 mediaPlayer!!.release()
                 LogUtil.e(AudioConstant.TAG, "clear--->正常清空了mediaPlayer！")
