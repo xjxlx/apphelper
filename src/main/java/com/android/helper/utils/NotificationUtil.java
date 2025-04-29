@@ -718,53 +718,54 @@ public class NotificationUtil {
         public NotificationUtil build() {
             return new NotificationUtil(this);
         }
-    }@SuppressLint("HandlerLeak")
-    private final Handler mHandler = new Handler() {
+  }
+
+  @SuppressLint("HandlerLeak")
+  private final Handler mHandler =
+      new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            // 先停止之前的消息发送，避免数据的快速轮询
-            stopAllLoop();
-            if (mNotification != null) {
-                int id = msg.arg1;
-                switch (msg.what) {
-                    case CODE_WHAT_SEND_START_FOREGROUND:
-                        LogUtil.e("开始了服务消息的单独发送！");
-                        if (mService != null) {
-                            mService.startForeground(id, mNotification);
-                        }
-                        break;
-                    case CODE_WHAT_SEND_START_FOREGROUND_LOOP:
-                        LogUtil.e("开始了服务消息的轮询发送！");
-                        if (mService != null) {
-                            mService.startForeground(id, mNotification);
-                            Message message = mHandler.obtainMessage();
-                            message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;
-                            message.arg1 = id;
-                            mHandler.sendMessageDelayed(message, mIntervalTime);
-                        }
-                        // 轮询的回调
-                        if (mOnHandlerLoopListener != null) {
-                            mOnHandlerLoopListener.onLoop();
-                        }
-                        break;
-                    case CODE_WHAT_SEND_START_NOTIFICATION_LOOP:
-                        LogUtil.e("开始了---消息---的轮询发送！");
-                        removeMessages(CODE_WHAT_SEND_START_NOTIFICATION_LOOP);
-                        Message message1 = mHandler.obtainMessage();
-                        message1.what = CODE_WHAT_SEND_START_NOTIFICATION_LOOP;
-                        message1.arg1 = id;
-                        sendNotification(id);
-                        mHandler.sendMessageDelayed(message1, mIntervalTime);
-                        // 轮询的回调
-                        if (mOnHandlerLoopListener != null) {
-                            mOnHandlerLoopListener.onLoop();
-                        }
-                        break;
+          super.handleMessage(msg);
+          // 先停止之前的消息发送，避免数据的快速轮询
+          stopAllLoop();
+          if (mNotification != null) {
+            int id = msg.arg1;
+            switch (msg.what) {
+              case CODE_WHAT_SEND_START_FOREGROUND:
+                LogUtil.e("开始了服务消息的单独发送！");
+                if (mService != null) {
+                  mService.startForeground(id, mNotification);
                 }
+                break;
+              case CODE_WHAT_SEND_START_FOREGROUND_LOOP:
+                LogUtil.e("开始了服务消息的轮询发送！");
+                if (mService != null) {
+                  mService.startForeground(id, mNotification);
+                  Message message = mHandler.obtainMessage();
+                  message.what = CODE_WHAT_SEND_START_FOREGROUND_LOOP;
+                  message.arg1 = id;
+                  mHandler.sendMessageDelayed(message, mIntervalTime);
+                }
+                // 轮询的回调
+                if (mOnHandlerLoopListener != null) {
+                  mOnHandlerLoopListener.onLoop();
+                }
+                break;
+              case CODE_WHAT_SEND_START_NOTIFICATION_LOOP:
+                LogUtil.e("开始了---消息---的轮询发送！");
+                removeMessages(CODE_WHAT_SEND_START_NOTIFICATION_LOOP);
+                Message message1 = mHandler.obtainMessage();
+                message1.what = CODE_WHAT_SEND_START_NOTIFICATION_LOOP;
+                message1.arg1 = id;
+                sendNotification(id);
+                mHandler.sendMessageDelayed(message1, mIntervalTime);
+                // 轮询的回调
+                if (mOnHandlerLoopListener != null) {
+                  mOnHandlerLoopListener.onLoop();
+                }
+                break;
             }
+          }
         }
-    };
-
-
+      };
 }
