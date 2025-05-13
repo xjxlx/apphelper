@@ -10,9 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 public class SystemUtil {
 
@@ -71,7 +69,6 @@ public class SystemUtil {
     /**
      * 申请白名单
      */
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public void requestIgnoreBatteryOptimizations(Activity activity) {
         if (activity != null) {
             try {

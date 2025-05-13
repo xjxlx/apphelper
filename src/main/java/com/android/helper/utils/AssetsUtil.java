@@ -3,22 +3,17 @@ package com.android.helper.utils;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.text.TextUtils;
-
 import com.android.helper.httpclient.RxUtil;
 import com.android.helper.interfaces.listener.CallBackListener;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.subscribers.DisposableSubscriber;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class AssetsUtil {
 
@@ -115,42 +110,6 @@ public class AssetsUtil {
         return result;
     }
 
-    /**
-     * @param fileName 例如：c62.crt
-     * @return 获取资源目录下的文件，返回一个字节数组
-     */
-    public byte[] getAssetsResource(Context context, String fileName) {
-        byte[] bytes = null;
-        InputStream inputStream = null;
-        ByteArrayOutputStream output = null;
-        AssetManager assets = context.getAssets();
-        try {
-            inputStream = assets.open(fileName);
-            output = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024 * 4];
-            int n = 0;
-            while (-1 != (n = inputStream.read(buffer))) {
-                output.write(buffer, 0, n);
-            }
-            bytes = output.toByteArray();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                // 先开的后关闭，后打开的先关闭
-                if (output != null) {
-                    output.close();
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return bytes;
-    }
 
     public void clear() {
     }

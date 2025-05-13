@@ -12,8 +12,8 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.android.common.utils.LogUtil
+import com.android.common.utils.TextViewUtil
 import com.android.helper.interfaces.lifecycle.LifecycleDestroyObserver
-import com.android.helper.utils.TextViewUtil
 
 /**
  * @author : 流星

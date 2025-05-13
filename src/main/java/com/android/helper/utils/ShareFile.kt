@@ -3,7 +3,6 @@ package com.android.helper.utils
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import androidx.core.content.FileProvider
 import com.android.common.utils.ToastUtil
 import java.io.File
@@ -34,13 +33,9 @@ class ShareFile private constructor() {
             return
         }
         val share = Intent(Intent.ACTION_SEND)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val contentUri: Uri = FileProvider.getUriForFile(activity, activity.packageName + ".FileProvider", file)
-            share.putExtra(Intent.EXTRA_STREAM, contentUri)
-            share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        } else {
-            share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file))
-        }
+        val contentUri: Uri = FileProvider.getUriForFile(activity, activity.packageName + ".FileProvider", file)
+        share.putExtra(Intent.EXTRA_STREAM, contentUri)
+        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         share.type = "application/vnd.ms-excel" // 显示可以展示的文件，这里显示的是表格文件
         share.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

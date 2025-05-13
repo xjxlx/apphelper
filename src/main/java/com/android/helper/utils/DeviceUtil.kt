@@ -9,7 +9,7 @@ import android.telephony.TelephonyManager
 import android.text.TextUtils
 import androidx.annotation.RequiresPermission
 import com.android.common.utils.LogUtil
-import com.android.common.utils.MD5Utils
+import com.android.common.utils.Md5Util
 import java.io.File
 
 /**
@@ -184,7 +184,7 @@ class DeviceUtil private constructor() {
                 deviceId = Build.FINGERPRINT
             }
             if (!TextUtils.isEmpty(deviceId)) {
-                return MD5Utils.md5(deviceId)
+                return Md5Util.md5(deviceId)
             }
         }
         return deviceId

@@ -5,12 +5,7 @@ import android.app.Activity
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.ServiceConnection
+import android.content.*
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.media.MediaPlayer
@@ -26,6 +21,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.android.common.utils.LogUtil
+import com.android.common.utils.TextViewUtil
 import com.android.helper.R
 import com.android.helper.interfaces.listener.CallBackListener
 import com.android.helper.interfaces.listener.ViewCallBackListener
@@ -33,7 +29,6 @@ import com.android.helper.utils.BitmapUtil
 import com.android.helper.utils.DateUtil
 import com.android.helper.utils.NotificationUtil
 import com.android.helper.utils.ServiceUtil
-import com.android.helper.utils.TextViewUtil
 import com.android.helper.utils.dialog.DialogClickListener
 import com.android.helper.utils.dialog.DialogUtil
 

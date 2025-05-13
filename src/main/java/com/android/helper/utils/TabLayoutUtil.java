@@ -1,5 +1,6 @@
 package com.android.helper.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
@@ -7,18 +8,16 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
-
+import com.android.common.utils.TextViewUtil;
 import com.android.helper.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-
 import java.util.List;
 
 /**
@@ -146,6 +145,7 @@ public class TabLayoutUtil {
     /**
      * 自定义Tab的View
      */
+    @SuppressLint("InflateParams")
     private View getTabView(int currentPosition) {
         View view = null;
         if (mAdapterCount > 0) {
@@ -156,12 +156,14 @@ public class TabLayoutUtil {
             if (mViewPagerType == 1) {
                 if ((mAdapter != null) && (mContext != null)) {
                     CharSequence pageTitle = mAdapter.getPageTitle(currentPosition);
-                    TextViewUtil.setText(textView, pageTitle);
+                    if (pageTitle != null) {
+                        TextViewUtil.setText(textView, (String) pageTitle);
+                    }
                     // 设置不选中的样式
                     setTextViewSelector(textView, false);
                 }
             } else if (mViewPagerType == 2) {
-                if (mListViewPager2Title != null && mListViewPager2Title.size() > 0) {
+                if (mListViewPager2Title != null && !mListViewPager2Title.isEmpty()) {
                     String title = mListViewPager2Title.get(currentPosition);
                     TextViewUtil.setText(textView, title);
                     // 设置不选中的样式

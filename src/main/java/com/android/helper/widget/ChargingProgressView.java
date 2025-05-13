@@ -21,7 +21,6 @@ import com.android.common.utils.WriteLogUtil;
 import com.android.helper.R;
 import com.android.helper.common.CommonConstants;
 import com.android.helper.utils.CustomViewUtil;
-import com.android.helper.utils.NumberUtil;
 import java.math.BigDecimal;
 
 /**
@@ -275,8 +274,8 @@ public class ChargingProgressView extends BaseView {
                 }
             }
         }
-        // 当前电量的进度值
-        String multiply = NumberUtil.multiply(String.valueOf(mPercentage), String.valueOf(100));
+    // 当前电量的进度值
+    String multiply = multiply(String.valueOf(mPercentage), String.valueOf(100));
         // log("当前的进度为：" + mPercentage + " 计算后的值：" + multiply);
         mCurrentChargingText = multiply + "%";
         mCurrentChargingTextSize = CustomViewUtil.getTextSize(mPaintCharging, mCurrentChargingText);
@@ -309,7 +308,7 @@ public class ChargingProgressView extends BaseView {
         // 滑动的进度
         if (mBottomScrollProgress > 0) {
             mBottomScrollProgressValue = mBottomScrollProgress * mProgressWidth;
-            String multiply1 = NumberUtil.multiply(mBottomScrollProgress + "", 100 + "");
+      String multiply1 = multiply(mBottomScrollProgress + "", 100 + "");
             mSocCurrentText = multiply1 + "%";
             float[] textSize = CustomViewUtil.getTextSize(mPaintScrollValue, mSocCurrentText);
             if (textSize != null) {
@@ -321,8 +320,8 @@ public class ChargingProgressView extends BaseView {
         if (mShowOptimum) {
             if (mPercentageOptimum > 0) {
                 mOptimumPosition = mProgressWidth * mPercentageOptimum;
-                // 最佳的数据值
-                String formatZj = NumberUtil.multiply(String.valueOf(mPercentageOptimum), String.valueOf(100));
+        // 最佳的数据值
+        String formatZj = multiply(String.valueOf(mPercentageOptimum), String.valueOf(100));
                 OptimumContent = formatZj + "%最佳";
                 mOptimumTextSize = CustomViewUtil.getTextSize(mPaintOptimum, OptimumContent);
             }
@@ -403,8 +402,8 @@ public class ChargingProgressView extends BaseView {
         // }
         // 绘制当前电量的进度
         if (mPercentage >= 0) {
-            // 重新计算当前的电量
-            String multiply = NumberUtil.multiply(String.valueOf(mPercentage), String.valueOf(100));
+      // 重新计算当前的电量
+      String multiply = multiply(String.valueOf(mPercentage), String.valueOf(100));
             mCurrentChargingText = multiply + "%";
             mCurrentChargingTextSize = CustomViewUtil.getTextSize(mPaintCharging, mCurrentChargingText);
             if (mCurrentChargingTextSize != null) {
@@ -580,12 +579,12 @@ public class ChargingProgressView extends BaseView {
     }
 
     private void calculate(float x) {
-        // 获取两位的小数，作为进度值使用
-        String format1 = NumberUtil.dataFormatDigits((x / mProgressWidth) + "", BigDecimal.ROUND_HALF_UP, 2);
+    // 获取两位的小数，作为进度值使用
+    String format1 = dataFormatDigits((x / mProgressWidth) + "", BigDecimal.ROUND_HALF_UP, 2);
         // 换算成整数，用来取余数
         float v1 = Float.parseFloat(format1);
         int v2 = (int) (v1 * 100);
-        mDivideAndRemainder = NumberUtil.divideAndRemainder(v2, 5);
+    mDivideAndRemainder = divideAndRemainder(v2, 5);
         LogUtil.e("format: " + format1 + "  v2:" + v2 + "   mDivideAndRemainder:" + mDivideAndRemainder);
         /**
          * 改版 ：被5整除才可以
@@ -595,8 +594,8 @@ public class ChargingProgressView extends BaseView {
             mBottomScrollProgress = v1;
             // 重新获取竖线的left值
             mBottomScrollProgressValue = mBottomScrollProgress * mProgressWidth;
-            // 文字的滑动数值
-            mMultiply = NumberUtil.multiply(mBottomScrollProgress + "", 100 + "");
+      // 文字的滑动数值
+      mMultiply = multiply(mBottomScrollProgress + "", 100 + "");
             // 文字的值
             mSocCurrentText = mMultiply + "%";
             // 区间的结束值 = 滑动的百分比值 * 进度条的总宽度
@@ -705,6 +704,62 @@ public class ChargingProgressView extends BaseView {
         LogUtil.e(content);
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mWriteUtil.init(getContext());
+    }
+
+  /**
+   * @param value 原来的数据
+   * @param roundingMode 模式
+   * @param digits 位数
+   * @return 保留指定的位数
+   */
+  private String dataFormatDigits(String value, int roundingMode, int digits) {
+    if (!TextUtils.isEmpty(value)) {
+      // 转换为大整形运算
+      BigDecimal decimal = new BigDecimal(value);
+      return decimal
+          .setScale(digits, roundingMode) // 数据模式
+          .toPlainString();
+    } else {
+      return "";
+    }
+  }
+
+  /**
+   * @param value1 第一个值
+   * @param value2 第二个值
+   * @return 大整形乘法的运算
+   */
+  private String multiply(String value1, String value2) {
+    String result = "";
+    BigDecimal decimal1 = new BigDecimal(value1);
+    BigDecimal decimal2 = new BigDecimal(value2);
+    //  加法
+    BigDecimal multiply = decimal1.multiply(decimal2);
+    result =
+        multiply
+            .stripTrailingZeros() // 去掉多余的0;
+            .toPlainString(); // 科学计数法;
+    return result;
+  }
+
+  /**
+   * @param value 除数
+   * @param divideAndRemainder 被除数
+   * @return 取余
+   */
+  private String divideAndRemainder(int value, int divideAndRemainder) {
+    // 转换为大整形运算
+    BigDecimal bg = BigDecimal.valueOf(value);
+    BigDecimal om2 = BigDecimal.valueOf(divideAndRemainder);
+    // 取余
+    BigDecimal decimal = bg.divideAndRemainder(om2)[1];
+    return decimal.toString();
+  }
+
     public interface ProgressListener {
         /**
          * @param progress 手指抬起时候，当前的百分比
@@ -712,11 +767,5 @@ public class ChargingProgressView extends BaseView {
         void onTouchUp(String progress);
 
         void onMove(String progress);
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mWriteUtil.init(getContext());
     }
 }

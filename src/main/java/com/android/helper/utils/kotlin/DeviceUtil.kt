@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.provider.Settings
 import com.android.common.utils.LogUtil
-import com.android.common.utils.MD5Utils
+import com.android.common.utils.Md5Util
 
 /**
  * @author : 流星
@@ -32,7 +32,7 @@ object DeviceUtil {
         val fingerprint = Build.FINGERPRINT
         LogUtil.e("设备的唯一识别码为：$fingerprint")
         val value = androidId + fingerprint
-        val md5: String = MD5Utils.md5(value)
+        val md5: String = Md5Util.md5(value)
         LogUtil.e("设备的唯一识别码的Md5为：$md5")
         return md5
     }

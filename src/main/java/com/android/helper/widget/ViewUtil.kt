@@ -1,7 +1,7 @@
-package com.android.helper.utils
+package com.android.helper.widget
 
 import android.view.View
-import android.view.ViewGroup.MarginLayoutParams
+import android.view.ViewGroup
 import com.android.common.utils.ConvertUtil
 
 object ViewUtil {
@@ -23,7 +23,7 @@ object ViewUtil {
             return
         }
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             val left = array[0]
             val top = array[1]
@@ -44,7 +44,7 @@ object ViewUtil {
         bottom: Int
     ) {
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             marginLayoutParams.bottomMargin = bottom
             view.layoutParams = marginLayoutParams
@@ -58,7 +58,7 @@ object ViewUtil {
     ) {
         if (view != null) {
             val layoutParams = view.layoutParams
-            if (layoutParams is MarginLayoutParams) {
+            if (layoutParams is ViewGroup.MarginLayoutParams) {
                 val marginLayoutParams = layoutParams
                 marginLayoutParams.topMargin = ConvertUtil.dp(view.context, topMargin).toInt()
                 view.layoutParams = marginLayoutParams
@@ -69,7 +69,7 @@ object ViewUtil {
     fun getMarginEnd(view: View?): Int {
         if (view != null) {
             val layoutParams = view.layoutParams
-            if (layoutParams is MarginLayoutParams) {
+            if (layoutParams is ViewGroup.MarginLayoutParams) {
                 return layoutParams.marginEnd
             }
         }
@@ -79,19 +79,20 @@ object ViewUtil {
     fun getMarginStart(view: View?): Int {
         if (view != null) {
             val layoutParams = view.layoutParams
-            if (layoutParams is MarginLayoutParams) {
+            if (layoutParams is ViewGroup.MarginLayoutParams) {
                 return layoutParams.marginStart
             }
         }
         return 0
     }
 
+    @JvmStatic
     fun setLeftMargin(
         view: View,
         topMargin: Float
     ) {
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             marginLayoutParams.leftMargin = ConvertUtil.dp(view.context, topMargin).toInt()
             view.layoutParams = marginLayoutParams
@@ -103,7 +104,7 @@ object ViewUtil {
         topMargin: Float
     ) {
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             marginLayoutParams.rightMargin = ConvertUtil.dp(view.context, topMargin).toInt()
             view.layoutParams = marginLayoutParams
@@ -115,7 +116,7 @@ object ViewUtil {
         marginStart: Float
     ) {
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             marginLayoutParams.marginStart = ConvertUtil.dp(view.context, marginStart).toInt()
             view.layoutParams = marginLayoutParams
@@ -127,7 +128,7 @@ object ViewUtil {
         marginEnd: Float
     ) {
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             marginLayoutParams.marginEnd = ConvertUtil.dp(view.context, marginEnd).toInt()
             view.layoutParams = marginLayoutParams
@@ -139,7 +140,7 @@ object ViewUtil {
         marginLeft: Int
     ) {
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             marginLayoutParams.leftMargin = marginLeft
             view.layoutParams = marginLayoutParams
@@ -151,7 +152,7 @@ object ViewUtil {
         marginTop: Int
     ) {
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             marginLayoutParams.topMargin = marginTop
             view.layoutParams = marginLayoutParams
@@ -163,7 +164,7 @@ object ViewUtil {
         marginRight: Int
     ) {
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             marginLayoutParams.rightMargin = marginRight
             view.layoutParams = marginLayoutParams
@@ -175,7 +176,7 @@ object ViewUtil {
         marginBottom: Int
     ) {
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             marginLayoutParams.bottomMargin = marginBottom
             view.layoutParams = marginLayoutParams
@@ -187,7 +188,7 @@ object ViewUtil {
         marginStart: Int
     ) {
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             marginLayoutParams.marginStart = marginStart
             view.layoutParams = marginLayoutParams
@@ -199,7 +200,7 @@ object ViewUtil {
         marginEnd: Int
     ) {
         val layoutParams = view.layoutParams
-        if (layoutParams is MarginLayoutParams) {
+        if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
             marginLayoutParams.marginEnd = marginEnd
             view.layoutParams = marginLayoutParams
@@ -250,7 +251,7 @@ object ViewUtil {
     fun getMarginLeft(view: View?): Int {
         if (view != null) {
             val layoutParams = view.layoutParams
-            if (layoutParams is MarginLayoutParams) {
+            if (layoutParams is ViewGroup.MarginLayoutParams) {
                 return layoutParams.leftMargin
             }
         }
@@ -261,7 +262,7 @@ object ViewUtil {
     fun getMarginRight(view: View?): Int {
         if (view != null) {
             val layoutParams = view.layoutParams
-            if (layoutParams is MarginLayoutParams) {
+            if (layoutParams is ViewGroup.MarginLayoutParams) {
                 return layoutParams.rightMargin
             }
         }
@@ -271,7 +272,7 @@ object ViewUtil {
     fun getMarginTop(view: View?): Int {
         if (view != null) {
             val layoutParams = view.layoutParams
-            if (layoutParams is MarginLayoutParams) {
+            if (layoutParams is ViewGroup.MarginLayoutParams) {
                 return layoutParams.topMargin
             }
         }
@@ -281,25 +282,10 @@ object ViewUtil {
     fun getMarginBottom(view: View?): Int {
         if (view != null) {
             val layoutParams = view.layoutParams
-            if (layoutParams is MarginLayoutParams) {
+            if (layoutParams is ViewGroup.MarginLayoutParams) {
                 return layoutParams.bottomMargin
             }
         }
         return 0
-    }
-
-    fun getLocationOnScreen(
-        view: View?,
-        locationCallBackListener: LocationCallBackListener?
-    ) {
-        view?.post {
-            val location = IntArray(2)
-            view.getLocationOnScreen(location)
-            locationCallBackListener?.onLocation(location)
-        }
-    }
-
-    interface LocationCallBackListener {
-        fun onLocation(location: IntArray?)
     }
 }

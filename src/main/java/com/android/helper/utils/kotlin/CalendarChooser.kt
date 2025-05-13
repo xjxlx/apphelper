@@ -10,11 +10,11 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import com.android.common.utils.LogUtil
 import com.android.helper.R
-import com.android.helper.utils.RegularUtils
 import com.bigkoo.pickerview.adapter.ArrayWheelAdapter
 import com.contrarywind.view.WheelView
 import org.jetbrains.annotations.NotNull
 import java.util.*
+import java.util.regex.Pattern
 
 /**
  * 自定义日历选择器
@@ -152,9 +152,9 @@ class CalendarChooser(
             val isShow = mShowArray[index]
             val wheelView = mViewArray[index]
             if (!isShow) {
-                wheelView.visibility = View.GONE
+                wheelView.visibility = GONE
             } else {
-                wheelView.visibility = View.VISIBLE
+                wheelView.visibility = VISIBLE
             }
         }
     }
@@ -469,7 +469,7 @@ class CalendarChooser(
             var value = ""
             for (index in start..end) {
                 if (mIsMatchHours) {
-                    if (RegularUtils.match(index.toString(), mMatchingHours)) {
+                    if (match(index.toString(), mMatchingHours)) {
                         value =
                             if (index < 10) {
                                 "0$index"
@@ -508,7 +508,7 @@ class CalendarChooser(
             var value = ""
             for (index in 0..23) {
                 if (mIsMatchHours) {
-                    if (RegularUtils.match(index.toString(), mMatchingHours)) {
+                    if (match(index.toString(), mMatchingHours)) {
                         value =
                             if (index < 10) {
                                 "0$index"
@@ -612,7 +612,7 @@ class CalendarChooser(
             var value = ""
             for (index in start..end) {
                 if (mIsMatchMinute) {
-                    if (RegularUtils.match(index.toString(), mMatchingMinute)) {
+                    if (match(index.toString(), mMatchingMinute)) {
                         value =
                             if (index < 10) {
                                 "0$index"
@@ -653,7 +653,7 @@ class CalendarChooser(
             var value = ""
             for (index in 0..59) {
                 if (mIsMatchMinute) {
-                    if (RegularUtils.match(index.toString(), mMatchingMinute)) {
+                    if (match(index.toString(), mMatchingMinute)) {
                         value =
                             if (index < 10) {
                                 "0$index"
@@ -1078,5 +1078,18 @@ class CalendarChooser(
         }
         LogUtil.e("type:$type")
         return 0
+    }
+
+    fun match(
+        content: String?,
+        regular: String?
+    ): Boolean {
+        if (TextUtils.isEmpty(content) || TextUtils.isEmpty(regular)) {
+            return false
+        } else {
+            val p = Pattern.compile(regular)
+            val m = p.matcher(content)
+            return m.find()
+        }
     }
 }
