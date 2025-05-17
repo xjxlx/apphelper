@@ -13,7 +13,8 @@ import com.android.helper.R
 import com.bigkoo.pickerview.adapter.ArrayWheelAdapter
 import com.contrarywind.view.WheelView
 import org.jetbrains.annotations.NotNull
-import java.util.*
+import java.util.Calendar
+import java.util.GregorianCalendar
 import java.util.regex.Pattern
 
 /**
