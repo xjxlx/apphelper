@@ -64,7 +64,7 @@ dependencies {
 
     // 私有的类库引用
     implementation(libs.eventbus) { isTransitive = false }
-    implementation(libs.rxpermissions) { isTransitive = false } // rxjava3 版本
+    // implementation(libs.rxpermissions) { isTransitive = false } // rxjava3 版本
 
     implementation(libs.rxjava3) {
         // 禁止依赖的传递

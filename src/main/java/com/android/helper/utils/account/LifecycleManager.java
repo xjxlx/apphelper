@@ -1,13 +1,10 @@
 package com.android.helper.utils.account;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.text.TextUtils;
-
 import androidx.fragment.app.FragmentActivity;
-
 import com.android.common.utils.LogUtil;
 import com.android.common.utils.SpUtil;
 import com.android.common.utils.WriteLogUtil;
@@ -19,7 +16,6 @@ import com.android.helper.utils.ServiceUtil;
 import com.android.helper.utils.SystemUtil;
 import com.android.helper.utils.account.keep.KeepManager;
 import com.android.helper.utils.dialog.DialogUtil;
-import com.android.helper.utils.permission.RxPermissionsUtil;
 
 /**
  * 保活方案的管理器
@@ -133,13 +129,17 @@ public class LifecycleManager {
      * 检测sd卡的读取权限
      */
     public void checkSdPermissions(FragmentActivity activity) {
-        if (activity != null) {
-            // 请求app的读写权限
-            new RxPermissionsUtil.Builder(activity, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE).setSinglePerMissionListener((status, permission) -> LogUtil.e("权限：" + permission + " 状态：" + status))
-                    .build().startRequestPermission();
+    if (activity != null) {
+      // 请求app的读写权限
+      //            new RxPermissionsUtil.Builder(activity,
+      // Manifest.permission.READ_EXTERNAL_STORAGE,
+      // Manifest.permission.WRITE_EXTERNAL_STORAGE).setSinglePerMissionListener((status,
+      // permission) -> LogUtil.e("权限：" + permission + " 状态：" + status))
+      //                    .build().startRequestPermission();
 
-        }
+      // TODO 需要增加权限请求
     }
+  }
 
     /**
      * 检测电池优化的权限，这个权限只有在android6.0之后才会去执行，低版本的手机也不用去考虑了，版本过低的话，也不会杀进程那么快的
