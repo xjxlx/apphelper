@@ -732,7 +732,7 @@ class AudioPlayerUtil(
                 val playing: Boolean = mAudioBinder!!.isPlaying()
                 LogUtil.e("-------------------------------->AudioReceiver ---> onReceive:$action   --->player:$playing")
                 when (action) {
-                    AudioConstant.ACTION_START, AudioConstant.ACTION_PAUSE ->
+                    AudioConstant.ACTION_START, AudioConstant.ACTION_PAUSE -> {
                         if (mAudioBinder!!.initialized()) {
                             if (playing) {
                                 pause()
@@ -742,9 +742,15 @@ class AudioPlayerUtil(
                         } else {
                             setResource(mAudioPath)
                         }
+                    }
 
-                    AudioConstant.ACTION_LEFT -> onPage()
-                    AudioConstant.ACTION_RIGHT -> nextPage()
+                    AudioConstant.ACTION_LEFT -> {
+                        onPage()
+                    }
+
+                    AudioConstant.ACTION_RIGHT -> {
+                        nextPage()
+                    }
                 }
             }
         }

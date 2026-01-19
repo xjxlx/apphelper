@@ -60,8 +60,10 @@ class AudioService : Service() {
                 LogUtil.e(AudioConstant.TAG, "onError--->发生了错误！ what:$what")
                 STATUS_TYPE = AudioConstant.STATUS_ERROR
                 when (what) {
-                    MediaPlayer.MEDIA_ERROR_UNKNOWN -> // 未指定的媒体播放器错误。
+                    MediaPlayer.MEDIA_ERROR_UNKNOWN -> {
+                        // 未指定的媒体播放器错误。
                         setErrorData(Exception("未指定的媒体播放器错误"))
+                    }
 
                     MediaPlayer.MEDIA_ERROR_SERVER_DIED -> {
                         // 媒体服务器死了。在这种情况下，应用程序必须释放
@@ -72,18 +74,29 @@ class AudioService : Service() {
                         setErrorData(Exception("媒体服务器死了"))
                     }
 
-                    MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK -> // 视频流，其容器对逐行扫描无效。
+                    MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK -> {
+                        // 视频流，其容器对逐行扫描无效。
                         setErrorData(Exception("视频流，其容器对逐行扫描无效"))
+                    }
 
-                    MediaPlayer.MEDIA_ERROR_IO -> setErrorData(Exception("IO刘错误"))
-                    MediaPlayer.MEDIA_ERROR_MALFORMED -> // 位流不符合相关编码标准或文件规范。
+                    MediaPlayer.MEDIA_ERROR_IO -> {
+                        setErrorData(Exception("IO刘错误"))
+                    }
+
+                    MediaPlayer.MEDIA_ERROR_MALFORMED -> {
+                        // 位流不符合相关编码标准或文件规范。
                         setErrorData(Exception("位流不符合相关编码标准或文件规范"))
+                    }
 
-                    MediaPlayer.MEDIA_ERROR_TIMED_OUT -> // 超时
+                    MediaPlayer.MEDIA_ERROR_TIMED_OUT -> {
+                        // 超时
                         setErrorData(Exception("链接超时"))
+                    }
 
-                    else -> // 如果一旦遇到了这个错误，则需要整体重置一下播放器
+                    else -> {
+                        // 如果一旦遇到了这个错误，则需要整体重置一下播放器
                         clear()
+                    }
                 }
                 LogUtil.e("what:$what --- extra:$extra")
                 return true
@@ -100,28 +113,51 @@ class AudioService : Service() {
             ): Boolean {
                 when (arg1) {
                     MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING -> {}
+
                     MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {}
-                    MediaPlayer.MEDIA_INFO_BUFFERING_START -> LogUtil.e("开始缓冲！")
-                    MediaPlayer.MEDIA_INFO_BUFFERING_END -> LogUtil.e("缓冲结束！")
+
+                    MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
+                        LogUtil.e("开始缓冲！")
+                    }
+
+                    MediaPlayer.MEDIA_INFO_BUFFERING_END -> {
+                        LogUtil.e("缓冲结束！")
+                    }
+
                     MediaPlayer.MEDIA_INFO_BAD_INTERLEAVING -> {}
+
                     MediaPlayer.MEDIA_INFO_NOT_SEEKABLE -> {}
+
                     MediaPlayer.MEDIA_INFO_METADATA_UPDATE -> {}
+
                     MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE -> {}
+
                     MediaPlayer.MEDIA_INFO_SUBTITLE_TIMED_OUT -> {}
-                    MediaPlayer.MEDIA_ERROR_TIMED_OUT -> // LogUtil.e("media_error_timed_out:网络连接超时！");
+
+                    MediaPlayer.MEDIA_ERROR_TIMED_OUT -> {
+                        // LogUtil.e("media_error_timed_out:网络连接超时！");
                         setErrorData(Exception("网络连接超时"))
+                    }
 
-                    MediaPlayer.MEDIA_ERROR_UNSUPPORTED -> // LogUtil.e("media_error_unsupported:数据不支持！");
+                    MediaPlayer.MEDIA_ERROR_UNSUPPORTED -> {
+                        // LogUtil.e("media_error_unsupported:数据不支持！");
                         setErrorData(Exception("数据不支持"))
+                    }
 
-                    MediaPlayer.MEDIA_ERROR_IO -> // LogUtil.e("media_error_unsupported:IO错误！");
+                    MediaPlayer.MEDIA_ERROR_IO -> {
+                        // LogUtil.e("media_error_unsupported:IO错误！");
                         setErrorData(Exception("IO流错误"))
+                    }
 
-                    MediaPlayer.MEDIA_ERROR_SERVER_DIED -> // LogUtil.e("media_error_unsupported:视频中断，一般是视频源异常或者不支持的视频类型！");
+                    MediaPlayer.MEDIA_ERROR_SERVER_DIED -> {
+                        // LogUtil.e("media_error_unsupported:视频中断，一般是视频源异常或者不支持的视频类型！");
                         setErrorData(Exception("视频中断，音频源异常"))
+                    }
 
-                    -1000 -> // LogUtil.e("一般是视频源有问题或者数据格式不支持，比如音频不是AAC之类的！");
+                    -1000 -> {
+                        // LogUtil.e("一般是视频源有问题或者数据格式不支持，比如音频不是AAC之类的！");
                         setErrorData(Exception("视频中断，音频格式错误"))
+                    }
 
                     MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK -> {}
                 }
