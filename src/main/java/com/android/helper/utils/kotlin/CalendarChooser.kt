@@ -32,7 +32,8 @@ class CalendarChooser(
     private lateinit var options4: WheelView
     private lateinit var options5: WheelView
     private lateinit var options6: WheelView
-    private val mShowArray: BooleanArray = booleanArrayOf(true, true, true, true, true, true) // 显示view的数组，默认全都可见
+    private val mShowArray: BooleanArray =
+        booleanArrayOf(true, true, true, true, true, true) // 显示view的数组，默认全都可见
     private val mViewArray: ArrayList<WheelView> = arrayListOf() // WheelView集合的数组
     private var mCurrentCalendar: Calendar? = null // 当前的日历对象
     private var mEndCalendar: Calendar? = null // 结束的日历对象
@@ -92,7 +93,11 @@ class CalendarChooser(
 
     @SuppressLint("InflateParams")
     private fun initView() {
-        inflater = LayoutInflater.from(context).inflate(R.layout.custom_calendar_chooser, null, false)
+        inflater =
+            LayoutInflater
+                .from(
+                    context
+                ).inflate(R.layout.custom_calendar_chooser, null, false)
 
         // 获取年月日时分秒的view
         options1 = inflater.findViewById(R.id.options1)
@@ -213,7 +218,9 @@ class CalendarChooser(
                 mCurrentMinute = mStartMinute.toString()
                 mCurrentSecond = mStartSecond.toString()
 
-                LogUtil.e("~~~~~~~ $mCurrentYear $mCurrentMonth  $mCurrentDay $mCurrentHour  $mCurrentMinute  $mCurrentSecond")
+                LogUtil.e(
+                    "~~~~~~~ $mCurrentYear $mCurrentMonth  $mCurrentDay $mCurrentHour  $mCurrentMinute  $mCurrentSecond"
+                )
             }
         } else {
             LogUtil.e("获取当前时间的日期失败")
@@ -536,7 +543,8 @@ class CalendarChooser(
             val hour = mCurrentCalendar!!.get(Calendar.HOUR_OF_DAY)
 
             // 重新设置默认的角标
-            val index = findIndexForList(mOptionTimeList4, hour, options4, mIsMatchHours, 4)
+            val index =
+                findIndexForList(mOptionTimeList4, hour, options4, mIsMatchHours, 4)
             // 设置默认的数据
             val str = mOptionTimeList4[index]
             if (!TextUtils.isEmpty(str)) {
@@ -587,7 +595,9 @@ class CalendarChooser(
             val day = mCurrentDay.replace("日", "").toInt()
             val hour = mCurrentHour.replace("时", "").toInt()
 
-            if (year == mStartYear && month == mStartMonth && day == mStartDay && hour == mStartHour) {
+            if (year == mStartYear && month == mStartMonth && day == mStartDay &&
+                hour == mStartHour
+            ) {
                 start = mStartMinute!!
 
                 // 如果年月日时都相同，则end以结束的分钟为准
@@ -601,7 +611,9 @@ class CalendarChooser(
                     } else {
                         59
                     }
-            } else if (year == mEndYear && month == mEndMonth && day == mEndDay && hour == mEndHour) {
+            } else if (year == mEndYear && month == mEndMonth && day == mEndDay &&
+                hour == mEndHour
+            ) {
                 start = 0
                 end = mEndMinute!!
             } else {
@@ -681,7 +693,8 @@ class CalendarChooser(
             val minute = mCurrentCalendar!!.get(Calendar.MINUTE)
 
             // 重新设置默认的角标
-            val index = findIndexForList(mOptionTimeList5, minute, options5, mIsMatchMinute, 5)
+            val index =
+                findIndexForList(mOptionTimeList5, minute, options5, mIsMatchMinute, 5)
             // 设置默认的数据
             val s = mOptionTimeList5[index]
             if (!TextUtils.isEmpty(s)) {
@@ -700,7 +713,8 @@ class CalendarChooser(
                         // 设置小时的数据
                         mOptionTimeList4.removeAt(0)
                         // 重新刷新小时的适配器
-                        options4.adapter = ArrayWheelAdapter(mOptionTimeList4 as List<String>)
+                        options4.adapter =
+                            ArrayWheelAdapter(mOptionTimeList4 as List<String>)
                         // 重新设置默认的角标
                         options4.currentItem = 0
 
@@ -737,7 +751,10 @@ class CalendarChooser(
             val hour = mCurrentHour.replace("时", "").toInt()
             val minute = mCurrentMinute.replace("分", "").toInt()
 
-            if (year == mStartYear && month == mStartMonth && day == mStartDay && hour == mStartHour && minute == mStartMinute) {
+            if (year == mStartYear && month == mStartMonth && day == mStartDay &&
+                hour == mStartHour &&
+                minute == mStartMinute
+            ) {
                 start = mStartSecond!!
 
                 if ((mStartYear!!.toInt() == mEndYear!!.toInt()) &&
@@ -750,7 +767,10 @@ class CalendarChooser(
                 } else {
                     end = 59
                 }
-            } else if (year == mEndYear && month == mEndMonth && day == mEndDay && hour == mEndHour && minute == mEndMinute) {
+            } else if (year == mEndYear && month == mEndMonth && day == mEndDay &&
+                hour == mEndHour &&
+                minute == mEndMinute
+            ) {
                 start = 0
                 end = mEndSecond!!
             } else {
@@ -969,13 +989,19 @@ class CalendarChooser(
     }
 
     fun setCancelTitleListener(listener: OnClickListener) {
-        inflater.findViewById<TextView>(R.id.tv_cancel_chooser).setOnClickListener(listener)
+        inflater
+            .findViewById<TextView>(
+                R.id.tv_cancel_chooser
+            ).setOnClickListener(listener)
     }
 
     fun setSaveTitleClickListener(
         @NotNull saveListener: OnClickListener
     ) {
-        inflater.findViewById<TextView>(R.id.tv_save_time).setOnClickListener(saveListener)
+        inflater
+            .findViewById<TextView>(
+                R.id.tv_save_time
+            ).setOnClickListener(saveListener)
     }
 
     /**

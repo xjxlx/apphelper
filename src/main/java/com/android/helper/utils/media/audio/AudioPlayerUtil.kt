@@ -93,7 +93,8 @@ class AudioPlayerUtil(
         }
         // 绑定前台的服务,禁止冲洗请的绑定
         if (!mBindService) {
-            mBindService = mContext.bindService(intent!!, connection!!, Context.BIND_AUTO_CREATE)
+            mBindService =
+                mContext.bindService(intent!!, connection!!, Context.BIND_AUTO_CREATE)
         }
         LogUtil.e(AudioConstant.TAG, "bindService--->后台服务绑定成功：$mBindService")
     }
@@ -188,7 +189,10 @@ class AudioPlayerUtil(
                             mRemoteViews = remoteViews
                             // 左侧的按钮
                             if (mNotificationLeft != 0) {
-                                remoteViews.setImageViewResource(R.id.iv_to_left, mNotificationLeft)
+                                remoteViews.setImageViewResource(
+                                    R.id.iv_to_left,
+                                    mNotificationLeft
+                                )
                             }
                             // 中间的按钮
                             if (mAudioBinder?.isPlaying() == true) {
@@ -224,7 +228,10 @@ class AudioPlayerUtil(
                                     intentStart,
                                     PendingIntent.FLAG_UPDATE_CURRENT
                                 )
-                            remoteViews.setOnClickPendingIntent(R.id.iv_start, btPendingIntentStart)
+                            remoteViews.setOnClickPendingIntent(
+                                R.id.iv_start,
+                                btPendingIntentStart
+                            )
                             // 左侧按钮点击事件的处理
                             val intentLeft = Intent()
                             intentLeft.setAction(AudioConstant.ACTION_LEFT)
@@ -305,7 +312,9 @@ class AudioPlayerUtil(
                             val mediaPlayer: MediaPlayer? = it.getMediaPlayer()
                             if (mediaPlayer != null) {
                                 val status: Int = it.getStatus()
-                                if ((status != AudioConstant.STATUS_IDLE) && (status != AudioConstant.STATUS_ERROR)) {
+                                if ((status != AudioConstant.STATUS_IDLE) &&
+                                    (status != AudioConstant.STATUS_ERROR)
+                                ) {
                                     mediaPlayer.seekTo(progress)
                                 }
                             }
@@ -384,7 +393,9 @@ class AudioPlayerUtil(
         current: Double,
         percent: Int
     ) {
-        LogUtil.e("onBufferProgress:-->total:$total  --->current:$current --->percent:$percent")
+        LogUtil.e(
+            "onBufferProgress:-->total:$total  --->current:$current --->percent:$percent"
+        )
         mSeekBar?.setMax(total)
         mSeekBar?.setSecondaryProgress(current.toInt())
         if (total > 0) {
@@ -473,11 +484,19 @@ class AudioPlayerUtil(
             if (!TextUtils.isEmpty(mNotificationTitle)) {
                 mRemoteViews?.setTextViewText(R.id.tv_title, mNotificationTitle)
                 mRemoteViews?.setTextColor(R.id.tv_title, Color.BLACK)
-                mRemoteViews?.setTextViewTextSize(R.id.tv_title, TypedValue.COMPLEX_UNIT_SP, 16f)
+                mRemoteViews?.setTextViewTextSize(
+                    R.id.tv_title,
+                    TypedValue.COMPLEX_UNIT_SP,
+                    16f
+                )
             }
         }
         // 发送间隔的轮询
-        mNotificationUtil?.startLoopForeground(1, mNotificationLoopInterVal.toLong(), mAudioService)
+        mNotificationUtil?.startLoopForeground(
+            1,
+            mNotificationLoopInterVal.toLong(),
+            mAudioService
+        )
     }
 
     override fun onPause() {
@@ -563,7 +582,9 @@ class AudioPlayerUtil(
     fun nextPage() {
         LogUtil.e("播放下一首的方法")
         if ((mAudioList != null) && (mAudioList!!.isNotEmpty())) {
-            LogUtil.e("播放下一首的方法--->对象不为空，数据不为空，当前的position为：$mAudioPosition --->当前的url：$mAudioPath")
+            LogUtil.e(
+                "播放下一首的方法--->对象不为空，数据不为空，当前的position为：$mAudioPosition --->当前的url：$mAudioPath"
+            )
             if (mAudioPosition != -1) {
                 if (mAudioPosition < mAudioList!!.size - 1) {
                     mAudioPosition += 1
@@ -593,7 +614,9 @@ class AudioPlayerUtil(
     fun onPage() {
         LogUtil.e("播放上一首的方法")
         if ((mAudioList != null) && (mAudioList!!.isNotEmpty())) {
-            LogUtil.e("播放上一首的方法--->对象不为空，数据不为空，当前的position为：$mAudioPosition --->当前的url：$mAudioPath")
+            LogUtil.e(
+                "播放上一首的方法--->对象不为空，数据不为空，当前的position为：$mAudioPosition --->当前的url：$mAudioPath"
+            )
             if (mAudioPosition != -1) {
                 if (mAudioPosition > 0) {
                     mAudioPosition -= 1
@@ -641,7 +664,9 @@ class AudioPlayerUtil(
                     }
                 }
             }
-            LogUtil.e("当前的角标为：$mAudioPosition  ---> mNotificationImage:$mNotificationImage   mNotificationTitle:$mNotificationTitle")
+            LogUtil.e(
+                "当前的角标为：$mAudioPosition  ---> mNotificationImage:$mNotificationImage   mNotificationTitle:$mNotificationTitle"
+            )
         }
 
     internal inner class AudioServiceConnection : ServiceConnection {
@@ -704,8 +729,13 @@ class AudioPlayerUtil(
                                             "如果不打开通知权限，则可能后台播放的时候会断开连接！"
                                         ).setOnClickListener(
                                             R.id.tv_qd,
-                                            DialogClickListener { v: View?, builder: DialogUtil? ->
-                                                mNotificationUtil!!.goToSetNotify(mContext)
+                                            DialogClickListener {
+                                                v: View?,
+                                                builder: DialogUtil?
+                                                ->
+                                                mNotificationUtil!!.goToSetNotify(
+                                                    mContext
+                                                )
                                             }
                                         )
                             }
@@ -730,7 +760,9 @@ class AudioPlayerUtil(
             if ((intent != null) && (mAudioBinder != null)) {
                 val action = intent.action
                 val playing: Boolean = mAudioBinder!!.isPlaying()
-                LogUtil.e("-------------------------------->AudioReceiver ---> onReceive:$action   --->player:$playing")
+                LogUtil.e(
+                    "-------------------------------->AudioReceiver ---> onReceive:$action   --->player:$playing"
+                )
                 when (action) {
                     AudioConstant.ACTION_START, AudioConstant.ACTION_PAUSE -> {
                         if (mAudioBinder!!.initialized()) {

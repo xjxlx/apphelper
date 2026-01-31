@@ -502,12 +502,14 @@ class AudioService : Service() {
                     .filter(
                         object : Predicate<Long?> {
                             @Throws(Exception::class)
-                            override fun test(aLong: Long): Boolean = mSendProgress && initialized
+                            override fun test(aLong: Long): Boolean =
+                                mSendProgress && initialized
                         }
                     ).filter(
                         object : Predicate<Long?> {
                             @Throws(Exception::class)
-                            override fun test(aLong: Long): Boolean = (mediaPlayer != null) && isPlaying
+                            override fun test(aLong: Long): Boolean =
+                                (mediaPlayer != null) && isPlaying
                         }
                     ).compose<Long?>(RxUtil.getSchedulerFlowable<Long?>())
                     .subscribeWith(
@@ -597,7 +599,9 @@ class AudioService : Service() {
             this@AudioService.mSendProgress = sendProgress
         }
 
-        override fun setAudioCallBackListener(callBackListener: AudioPlayerCallBackListener?) {
+        override fun setAudioCallBackListener(
+            callBackListener: AudioPlayerCallBackListener?
+        ) {
             this@AudioService.setAudioCallBackListener(callBackListener)
         }
 

@@ -20,7 +20,8 @@ import com.android.helper.utils.ServiceUtil
  * 账号拉活的服务类，用来后台拉活
  */
 class AppLifecycleService : Service() {
-    private val mWriteUtil: WriteLogUtil = WriteLogUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt")
+    private val mWriteUtil: WriteLogUtil =
+        WriteLogUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt")
 
     @SuppressLint("StaticFieldLeak")
     private val CODE_NOTIFICATION = 19900713
@@ -107,12 +108,24 @@ class AppLifecycleService : Service() {
                     removeCallbacksAndMessages(null)
 
                     // 2:启动jobService
-                    val jobServiceName: String = LifecycleManager.getInstance().jobServiceName
-                    val jobServiceRunning = ServiceUtil.isJobServiceRunning(applicationContext, jobServiceName)
-                    mWriteUtil?.write("☆☆☆☆☆---我是后台服务，当前jobService的状态为:$jobServiceRunning")
+                    val jobServiceName: String =
+                        LifecycleManager
+                            .getInstance()
+                            .jobServiceName
+                    val jobServiceRunning =
+                        ServiceUtil.isJobServiceRunning(
+                            applicationContext,
+                            jobServiceName
+                        )
+                    mWriteUtil?.write(
+                        "☆☆☆☆☆---我是后台服务，当前jobService的状态为:$jobServiceRunning"
+                    )
 
                     if (!jobServiceRunning) {
-                        AppJobService.startJob(applicationContext, LifecycleAppEnum.FROM_SERVICE)
+                        AppJobService.startJob(
+                            applicationContext,
+                            LifecycleAppEnum.FROM_SERVICE
+                        )
                     }
 
                     // 3：轮询发送消息通知

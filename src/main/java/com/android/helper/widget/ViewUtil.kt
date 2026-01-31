@@ -60,7 +60,8 @@ object ViewUtil {
             val layoutParams = view.layoutParams
             if (layoutParams is ViewGroup.MarginLayoutParams) {
                 val marginLayoutParams = layoutParams
-                marginLayoutParams.topMargin = ConvertUtil.dp(view.context, topMargin).toInt()
+                marginLayoutParams.topMargin =
+                    ConvertUtil.dp(view.context, topMargin).toInt()
                 view.layoutParams = marginLayoutParams
             }
         }
@@ -94,7 +95,8 @@ object ViewUtil {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
-            marginLayoutParams.leftMargin = ConvertUtil.dp(view.context, topMargin).toInt()
+            marginLayoutParams.leftMargin =
+                ConvertUtil.dp(view.context, topMargin).toInt()
             view.layoutParams = marginLayoutParams
         }
     }
@@ -106,7 +108,8 @@ object ViewUtil {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
-            marginLayoutParams.rightMargin = ConvertUtil.dp(view.context, topMargin).toInt()
+            marginLayoutParams.rightMargin =
+                ConvertUtil.dp(view.context, topMargin).toInt()
             view.layoutParams = marginLayoutParams
         }
     }
@@ -118,7 +121,8 @@ object ViewUtil {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
-            marginLayoutParams.marginStart = ConvertUtil.dp(view.context, marginStart).toInt()
+            marginLayoutParams.marginStart =
+                ConvertUtil.dp(view.context, marginStart).toInt()
             view.layoutParams = marginLayoutParams
         }
     }

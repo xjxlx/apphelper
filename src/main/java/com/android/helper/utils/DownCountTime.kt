@@ -117,7 +117,10 @@ class DownCountTime {
                 it.cancel()
                 LogUtil.e(TAG, "restart ... cancel job ...")
             } else {
-                LogUtil.e(TAG, "restart the current status is not running, can't cancel ...")
+                LogUtil.e(
+                    TAG,
+                    "restart the current status is not running, can't cancel ..."
+                )
             }
         }
     }

@@ -82,11 +82,16 @@ class DeviceUtil private constructor() {
         )
 
         val deviceId =
-            uniqueId + "_" + Build.BRAND + "_" + Build.MODEL + "_" + Build.MANUFACTURER + "_" + Build.DEVICE + "_" + Build.PRODUCT
+            uniqueId + "_" + Build.BRAND + "_" + Build.MODEL + "_" + Build.MANUFACTURER +
+                "_" +
+                Build.DEVICE +
+                "_" +
+                Build.PRODUCT
         LogUtil.e("deviceId --------->$deviceId")
     }
 
-    fun getSdPath(): String = FileUtil.getInstance().getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
+    fun getSdPath(): String =
+        FileUtil.getInstance().getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
 
     fun getFilesDirPath(context: Context?): String {
         context?.let {
@@ -156,7 +161,11 @@ class DeviceUtil private constructor() {
 
                 if (childFile.exists()) {
                     // 写入数据
-                    val success = FileUtil.getInstance().writeContentToFile(childFile, androidId)
+                    val success =
+                        FileUtil.getInstance().writeContentToFile(
+                            childFile,
+                            androidId
+                        )
                     LogUtil.e(TAG, "Device 文件写入成功：$success")
                 } else {
                     LogUtil.e(TAG, "Device 子类文件创建失败！")

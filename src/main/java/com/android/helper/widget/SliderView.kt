@@ -52,13 +52,22 @@ class SliderView(
         array.let {
             // 滑块的图片
             mDrawable = it.getDrawable(R.styleable.SliderView_hk_drawable)
-            mDrawableHeight = it.getDimension(R.styleable.SliderView_hk_drawable_Height, toDp5)
+            mDrawableHeight =
+                it.getDimension(R.styleable.SliderView_hk_drawable_Height, toDp5)
             // 背景的颜色
-            mBackgroundColor = it.getColor(R.styleable.SliderView_hk_background, Color.parseColor("#F9F9F9"))
-            mBackgroundColorHeight = it.getDimension(R.styleable.SliderView_hk_background_Height, toDp5)
+            mBackgroundColor =
+                it.getColor(
+                    R.styleable.SliderView_hk_background,
+                    Color.parseColor("#F9F9F9")
+                )
+            mBackgroundColorHeight =
+                it.getDimension(R.styleable.SliderView_hk_background_Height, toDp5)
             // 划过的颜色
             mSelectorBackgroundColor =
-                it.getColor(R.styleable.SliderView_hk_selector_background, Color.parseColor("#F9F9F9"))
+                it.getColor(
+                    R.styleable.SliderView_hk_selector_background,
+                    Color.parseColor("#F9F9F9")
+                )
         }
 
         bitmap = BitmapUtil.getBitmapScaleWidth(mDrawable, mDrawableHeight)
@@ -93,7 +102,10 @@ class SliderView(
     ) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         bitmap?.let {
-            setMeasuredDimension(resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec), it.height)
+            setMeasuredDimension(
+                resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec),
+                it.height
+            )
 
             if (!it.isRecycled) {
                 mMaxScrollValue = (measuredWidth - bitmap!!.width)
@@ -147,7 +159,16 @@ class SliderView(
 
                 val rectSrc = Rect(0, 0, b.width, b.height)
                 val top = (measuredHeight - b.height) / 2
-                val desRect = Rect((paddingLeft + mLeft), top, (b.width + paddingLeft + mLeft), top + b.height)
+                val desRect =
+                    Rect(
+                        (paddingLeft + mLeft),
+                        top,
+                        (
+                            b.width + paddingLeft +
+                                mLeft
+                        ),
+                        top + b.height
+                    )
                 it.drawBitmap(b, rectSrc, desRect, null)
             }
         }

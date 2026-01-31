@@ -33,7 +33,12 @@ class ShareFile private constructor() {
             return
         }
         val share = Intent(Intent.ACTION_SEND)
-        val contentUri: Uri = FileProvider.getUriForFile(activity, activity.packageName + ".FileProvider", file)
+        val contentUri: Uri =
+            FileProvider.getUriForFile(
+                activity,
+                activity.packageName + ".FileProvider",
+                file
+            )
         share.putExtra(Intent.EXTRA_STREAM, contentUri)
         share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         share.type = "application/vnd.ms-excel" // 显示可以展示的文件，这里显示的是表格文件

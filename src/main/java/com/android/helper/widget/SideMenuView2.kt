@@ -72,7 +72,12 @@ class SideMenuView2(
                 mContentMarginLeft = lp.marginStart
             }
 
-            it.layout(mContentMarginLeft + it.left, it.top, it.left + mContentViewWidth, it.top + mContentViewHeight)
+            it.layout(
+                mContentMarginLeft + it.left,
+                it.top,
+                it.left + mContentViewWidth,
+                it.top + mContentViewHeight
+            )
             mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
         }
         LogUtil.e(" le: " + mContentView?.left)
@@ -118,21 +123,44 @@ class SideMenuView2(
                     mContentView?.let {
                         val left = it.left
                         LogUtil.e(
-                            "left: " + left + "  dx: " + mDx + "  （left - mDx）" + (left - mDx) + "  mMenuViewWidth: " + mMenuViewWidth +
+                            "left: " + left + "  dx: " + mDx + "  （left - mDx）" +
+                                (left - mDx) +
+                                "  mMenuViewWidth: " +
+                                mMenuViewWidth +
                                 " mContentMarginLeft: " +
                                 mContentMarginLeft
                         )
                         if (mDx > 0) { // 向左
                             if (abs(left) + mDx < (mMenuViewWidth)) {
                                 LogUtil.e("<----")
-                                it.layout(it.left - mDx, it.top, it.right - mDx, it.bottom)
-                                mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
+                                it.layout(
+                                    it.left - mDx,
+                                    it.top,
+                                    it.right - mDx,
+                                    it.bottom
+                                )
+                                mMenuView?.layout(
+                                    it.right,
+                                    it.top,
+                                    it.right + mMenuViewWidth,
+                                    it.bottom
+                                )
                             }
                         } else { // 向右
                             if (left - mDx <= mContentMarginLeft) {
                                 LogUtil.e("---->")
-                                it.layout(it.left - mDx, it.top, it.right - mDx, it.bottom)
-                                mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
+                                it.layout(
+                                    it.left - mDx,
+                                    it.top,
+                                    it.right - mDx,
+                                    it.bottom
+                                )
+                                mMenuView?.layout(
+                                    it.right,
+                                    it.top,
+                                    it.right + mMenuViewWidth,
+                                    it.bottom
+                                )
                             }
                         }
                     }
@@ -146,7 +174,9 @@ class SideMenuView2(
         event?.let {
             mGestureDetector.onTouchEvent(event)
         }
-        if (event?.action == MotionEvent.ACTION_CANCEL || event?.action == MotionEvent.ACTION_UP) {
+        if (event?.action == MotionEvent.ACTION_CANCEL ||
+            event?.action == MotionEvent.ACTION_UP
+        ) {
             mContentView?.let {
                 val left = it.left
                 LogUtil.e("up --- left:" + left + "  mDx: " + mDx)
@@ -172,7 +202,12 @@ class SideMenuView2(
 
     private fun close() {
         mContentView?.let {
-            it.layout(mContentMarginLeft, it.top, mContentMarginLeft + mContentViewWidth, it.bottom)
+            it.layout(
+                mContentMarginLeft,
+                it.top,
+                mContentMarginLeft + mContentViewWidth,
+                it.bottom
+            )
             mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
             mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
         }
@@ -186,9 +221,12 @@ class SideMenuView2(
         }
     }
 
-    override fun generateLayoutParams(p: LayoutParams?): LayoutParams = MarginLayoutParams(p)
+    override fun generateLayoutParams(p: LayoutParams?): LayoutParams =
+        MarginLayoutParams(p)
 
-    override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams = MarginLayoutParams(context, attrs)
+    override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams =
+        MarginLayoutParams(context, attrs)
 
-    override fun generateDefaultLayoutParams(): LayoutParams = MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+    override fun generateDefaultLayoutParams(): LayoutParams =
+        MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 }

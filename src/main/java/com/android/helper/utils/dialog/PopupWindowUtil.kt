@@ -79,7 +79,11 @@ class PopupWindowUtil {
         fragment: Fragment,
         resource: Int
     ): PopupWindowUtil {
-        val inflate = LayoutInflater.from(fragment.activity).inflate(resource, null, false)
+        val inflate =
+            LayoutInflater
+                .from(
+                    fragment.activity
+                ).inflate(resource, null, false)
         setContentView(fragment, inflate)
         return this
     }
