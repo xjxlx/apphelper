@@ -1,0 +1,108 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:CalendarChooser.kt$CalendarChooser$(mStartYear!!.toInt() == mEndYear!!.toInt()) &amp;&amp; (mStartHour!!.toInt() == mEndHour!!.toInt()) &amp;&amp; (mStartDay!!.toInt() == mEndDay!!.toInt()) &amp;&amp; (mStartHour!!.toInt() == mEndHour!!.toInt()) &amp;&amp; (mStartMinute!!.toInt() == mEndMinute!!.toInt())</ID>
+    <ID>ComplexCondition:CalendarChooser.kt$CalendarChooser$(mStartYear!!.toInt() == mEndYear!!.toInt()) &amp;&amp; (mStartMonth!!.toInt() == mEndMonth!!.toInt()) &amp;&amp; (mStartDay!!.toInt() == mEndDay!!.toInt()) &amp;&amp; (mStartHour!!.toInt() == mEndHour!!.toInt())</ID>
+    <ID>ComplexCondition:CalendarChooser.kt$CalendarChooser$year == mEndYear &amp;&amp; month == mEndMonth &amp;&amp; day == mEndDay &amp;&amp; hour == mEndHour</ID>
+    <ID>ComplexCondition:CalendarChooser.kt$CalendarChooser$year == mEndYear &amp;&amp; month == mEndMonth &amp;&amp; day == mEndDay &amp;&amp; hour == mEndHour &amp;&amp; minute == mEndMinute</ID>
+    <ID>ComplexCondition:CalendarChooser.kt$CalendarChooser$year == mStartYear &amp;&amp; month == mStartMonth &amp;&amp; day == mStartDay &amp;&amp; hour == mStartHour</ID>
+    <ID>ComplexCondition:CalendarChooser.kt$CalendarChooser$year == mStartYear &amp;&amp; month == mStartMonth &amp;&amp; day == mStartDay &amp;&amp; hour == mStartHour &amp;&amp; minute == mStartMinute</ID>
+    <ID>CyclomaticComplexMethod:CalendarChooser.kt$CalendarChooser$private fun setHourForDay()</ID>
+    <ID>CyclomaticComplexMethod:CalendarChooser.kt$CalendarChooser$private fun setMinuteForHour()</ID>
+    <ID>CyclomaticComplexMethod:CalendarChooser.kt$CalendarChooser$private fun setSecondForMinute()</ID>
+    <ID>EmptyFunctionBlock:AudioService.kt$AudioService.&lt;no name provided&gt;${ }</ID>
+    <ID>LargeClass:CalendarChooser.kt$CalendarChooser : FrameLayout</ID>
+    <ID>LongMethod:AudioPlayerUtil.kt$AudioPlayerUtil$private fun initNotification()</ID>
+    <ID>LongMethod:AudioPlayerUtil.kt$AudioPlayerUtil.AudioServiceConnection$override fun onServiceConnected( name: ComponentName?, service: IBinder? )</ID>
+    <ID>LongMethod:CalendarChooser.kt$CalendarChooser$private fun initDate()</ID>
+    <ID>LongMethod:CalendarChooser.kt$CalendarChooser$private fun initWheelView()</ID>
+    <ID>LongMethod:CalendarChooser.kt$CalendarChooser$private fun setHourForDay()</ID>
+    <ID>LongMethod:CalendarChooser.kt$CalendarChooser$private fun setMinuteForHour()</ID>
+    <ID>LongMethod:CalendarChooser.kt$CalendarChooser$private fun setSecondForMinute()</ID>
+    <ID>LongParameterList:CalendarChooser.kt$CalendarChooser$( year: Boolean, month: Boolean, day: Boolean, hour: Boolean, minute: Boolean, second: Boolean )</ID>
+    <ID>LongParameterList:CalendarChooser.kt$CalendarChooser.SelectorListener$( year: String, month: String, day: String, hour: String, minute: String, second: String )</ID>
+    <ID>MagicNumber:AppLifecycleService.kt$AppLifecycleService$1000</ID>
+    <ID>MagicNumber:AppLifecycleService.kt$AppLifecycleService$111</ID>
+    <ID>MagicNumber:AppLifecycleService.kt$AppLifecycleService$19900713</ID>
+    <ID>MagicNumber:AppLifecycleService.kt$AppLifecycleService$5</ID>
+    <ID>MagicNumber:AppPushErrorService.kt$AppPushErrorService.&lt;no name provided&gt;$200</ID>
+    <ID>MagicNumber:AudioPlayerUtil.kt$AudioPlayerUtil$10000</ID>
+    <ID>MagicNumber:AudioPlayerUtil.kt$AudioPlayerUtil$16f</ID>
+    <ID>MagicNumber:AudioPlayerUtil.kt$AudioPlayerUtil$3</ID>
+    <ID>MagicNumber:AudioService.kt$AudioService$1000</ID>
+    <ID>MagicNumber:AudioService.kt$AudioService.&lt;no name provided&gt;$100.0</ID>
+    <ID>MagicNumber:AudioService.kt$AudioService.&lt;no name provided&gt;$1000</ID>
+    <ID>MagicNumber:CalendarChooser.kt$CalendarChooser$10</ID>
+    <ID>MagicNumber:CalendarChooser.kt$CalendarChooser$11</ID>
+    <ID>MagicNumber:CalendarChooser.kt$CalendarChooser$12</ID>
+    <ID>MagicNumber:CalendarChooser.kt$CalendarChooser$23</ID>
+    <ID>MagicNumber:CalendarChooser.kt$CalendarChooser$3</ID>
+    <ID>MagicNumber:CalendarChooser.kt$CalendarChooser$31</ID>
+    <ID>MagicNumber:CalendarChooser.kt$CalendarChooser$4</ID>
+    <ID>MagicNumber:CalendarChooser.kt$CalendarChooser$5</ID>
+    <ID>MagicNumber:CalendarChooser.kt$CalendarChooser$59</ID>
+    <ID>MagicNumber:CalendarChooser.kt$CalendarChooser$6</ID>
+    <ID>MagicNumber:SliderView.kt$SliderView$12f</ID>
+    <ID>MagicNumber:SliderView.kt$SliderView$18f</ID>
+    <ID>MagicNumber:SliderView.kt$SliderView$5f</ID>
+    <ID>MagicNumber:SliderView.kt$SliderView$8f</ID>
+    <ID>MagicNumber:ViewUtil.kt$ViewUtil$3</ID>
+    <ID>MagicNumber:ViewUtil.kt$ViewUtil$4</ID>
+    <ID>MaxLineLength:AudioPlayerUtil.kt$AudioPlayerUtil$"当前的角标为：$mAudioPosition ---&gt; mNotificationImage:$mNotificationImage mNotificationTitle:$mNotificationTitle"</ID>
+    <ID>MaxLineLength:PopupWindowUtil.kt$PopupWindowUtil$// attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES</ID>
+    <ID>MemberNameEqualsClassName:ShareFile.kt$ShareFile$fun shareFile( activity: Activity, path: String )</ID>
+    <ID>NestedBlockDepth:AudioPlayerUtil.kt$AudioPlayerUtil$fun nextPage()</ID>
+    <ID>NestedBlockDepth:AudioPlayerUtil.kt$AudioPlayerUtil$fun onPage()</ID>
+    <ID>NestedBlockDepth:AudioPlayerUtil.kt$AudioPlayerUtil$override fun onBufferProgress( total: Int, current: Double, percent: Int )</ID>
+    <ID>NestedBlockDepth:AudioPlayerUtil.kt$AudioPlayerUtil.AudioReceiver$override fun onReceive( context: Context?, intent: Intent? )</ID>
+    <ID>NestedBlockDepth:AudioPlayerUtil.kt$AudioPlayerUtil.AudioServiceConnection$override fun onServiceConnected( name: ComponentName?, service: IBinder? )</ID>
+    <ID>NestedBlockDepth:AudioService.kt$AudioService$fun start(): Boolean</ID>
+    <ID>NestedBlockDepth:AudioService.kt$AudioService$fun stop(): Boolean</ID>
+    <ID>NestedBlockDepth:AudioService.kt$AudioService.&lt;no name provided&gt;$override fun onNext(aLong: Long?)</ID>
+    <ID>NestedBlockDepth:CalendarChooser.kt$CalendarChooser$private fun findIndexForList( list: ArrayList&lt;String&gt;, value: Int, wheel: WheelView, isMatch: Boolean, type: Int ): Int</ID>
+    <ID>NestedBlockDepth:CalendarChooser.kt$CalendarChooser$private fun setHourForDay()</ID>
+    <ID>NestedBlockDepth:CalendarChooser.kt$CalendarChooser$private fun setMinuteForHour()</ID>
+    <ID>NestedBlockDepth:DeviceUtil.kt$DeviceUtil$@SuppressLint("HardwareIds") @RequiresPermission("android.permission.READ_PRIVILEGED_PHONE_STATE") private fun getDeviceId(context: Context?): String</ID>
+    <ID>NestedBlockDepth:SliderView.kt$SliderView$override fun dispatchTouchEvent(event: MotionEvent?): Boolean</ID>
+    <ID>PrintStackTrace:AudioService.kt$AudioService$e</ID>
+    <ID>ReturnCount:CalendarChooser.kt$CalendarChooser$private fun findIndexForList( list: ArrayList&lt;String&gt;, value: Int, wheel: WheelView, isMatch: Boolean, type: Int ): Int</ID>
+    <ID>ReturnCount:DownCountTime.kt$DownCountTime$fun start()</ID>
+    <ID>ReturnCount:SliderView.kt$SliderView$override fun dispatchTouchEvent(event: MotionEvent?): Boolean</ID>
+    <ID>SwallowedException:DeviceUtil.kt$DeviceUtil$ex: Exception</ID>
+    <ID>TooGenericExceptionCaught:AudioPlayerUtil.kt$AudioPlayerUtil$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:AudioPlayerUtil.kt$AudioPlayerUtil.AudioServiceConnection$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:AudioService.kt$AudioService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:AudioService.kt$AudioService.&lt;no name provided&gt;$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:DeviceUtil.kt$DeviceUtil$ex: Exception</ID>
+    <ID>TooManyFunctions:AudioPlayerUtil.kt$AudioPlayerUtil : AudioPlayerCallBackListener</ID>
+    <ID>TooManyFunctions:AudioService.kt$AudioService : Service</ID>
+    <ID>TooManyFunctions:AudioService.kt$AudioService$AudioBinder : BinderAudioControlInterface</ID>
+    <ID>TooManyFunctions:CalendarChooser.kt$CalendarChooser : FrameLayout</ID>
+    <ID>TooManyFunctions:PopupWindowUtil.kt$PopupWindowUtil</ID>
+    <ID>TooManyFunctions:SideMenuView.kt$SideMenuView : ViewGroup</ID>
+    <ID>TooManyFunctions:SideMenuView2.kt$SideMenuView2 : ViewGroup</ID>
+    <ID>TooManyFunctions:ViewUtil.kt$ViewUtil</ID>
+    <ID>UnusedParameter:AudioPlayerUtil.kt$AudioPlayerUtil$data: Intent?</ID>
+    <ID>UnusedParameter:AudioPlayerUtil.kt$AudioPlayerUtil$resultCode: Int</ID>
+    <ID>UnusedPrivateMember:DeviceUtil.kt$DeviceUtil$@SuppressLint("HardwareIds") @RequiresPermission("android.permission.READ_PRIVILEGED_PHONE_STATE") private fun getDeviceId(context: Context?): String</ID>
+    <ID>UnusedPrivateMember:DeviceUtil.kt$DeviceUtil$private fun getDeviceId2(uniqueId: String)</ID>
+    <ID>VariableNaming:AppLifecycleService.kt$AppLifecycleService$@SuppressLint("StaticFieldLeak") private val CODE_NOTIFICATION = 19900713</ID>
+    <ID>VariableNaming:AppLifecycleService.kt$AppLifecycleService$private val CODE_INTERVAL = 5 * 1000</ID>
+    <ID>VariableNaming:AudioService.kt$AudioService$// 当前的状态，默认等于闲置的状态 private var STATUS_TYPE = AudioConstant.STATUS_IDLE</ID>
+    <ID>VariableNaming:DeviceUtil.kt$DeviceUtil$private val TAG = "DeviceUtil"</ID>
+    <ID>VariableNaming:DeviceUtil.kt$DeviceUtil$val BRAND = Build.BRAND // 型号</ID>
+    <ID>VariableNaming:DeviceUtil.kt$DeviceUtil$val DEVICE = Build.DEVICE // 手机制造商</ID>
+    <ID>VariableNaming:DeviceUtil.kt$DeviceUtil$val MANUFACTURER = Build.MANUFACTURER // 设备参数</ID>
+    <ID>VariableNaming:DeviceUtil.kt$DeviceUtil$val MODEL = Build.MODEL // 系统制造商</ID>
+    <ID>VariableNaming:DeviceUtil.kt$DeviceUtil$val PRODUCT = Build.PRODUCT // sdk 版本</ID>
+    <ID>VariableNaming:DeviceUtil.kt$DeviceUtil$val RELEASE = Build.VERSION.RELEASE</ID>
+    <ID>VariableNaming:DeviceUtil.kt$DeviceUtil$val SDK = Build.VERSION.SDK_INT // 系统 版本</ID>
+    <ID>VariableNaming:DownCountTime.kt$DownCountTime$private val TAG = this.javaClass.simpleName</ID>
+    <ID>VariableNaming:PopupWindowUtil.kt$PopupWindowUtil$private val TAG = "PopupWindowUtil2"</ID>
+    <ID>VariableNaming:SideMenuView.kt$SideMenuView$val TAG_CONTENT = "content"</ID>
+    <ID>VariableNaming:SideMenuView.kt$SideMenuView$val TAG_MENU = "menu"</ID>
+    <ID>VariableNaming:SideMenuView2.kt$SideMenuView2$val TAG_CONTENT = "content"</ID>
+    <ID>VariableNaming:SideMenuView2.kt$SideMenuView2$val TAG_MENU = "menu"</ID>
+  </CurrentIssues>
+</SmellBaseline>
