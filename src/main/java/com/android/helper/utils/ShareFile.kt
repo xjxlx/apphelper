@@ -20,10 +20,7 @@ class ShareFile private constructor() {
     }
 
     /** 分享指定的文件 */
-    fun shareFile(
-        activity: Activity,
-        path: String
-    ) {
+    fun shareFile(activity: Activity, path: String) {
         val file = File(path)
         if (!file.exists()) {
             ToastUtil.show("分享的文件不存在！")
@@ -34,7 +31,7 @@ class ShareFile private constructor() {
             FileProvider.getUriForFile(
                 activity,
                 activity.packageName + ".FileProvider",
-                file
+                file,
             )
         share.putExtra(Intent.EXTRA_STREAM, contentUri)
         share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

@@ -97,7 +97,8 @@ class DeviceUtil private constructor() {
         LogUtil.e("deviceId --------->$deviceId")
     }
 
-    fun getSdPath(): String = FileUtil.getInstance().getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
+    fun getSdPath(): String =
+        FileUtil.getInstance().getSdTypePublicPath(Environment.DIRECTORY_DOCUMENTS)
 
     fun getFilesDirPath(context: Context?): String {
         context?.let {
@@ -123,10 +124,7 @@ class DeviceUtil private constructor() {
     }
 
     /** 写入deviceId 到文件中 */
-    fun writeDeviceId(
-        context: Context?,
-        androidId: String
-    ) {
+    fun writeDeviceId(context: Context?, androidId: String) {
         context?.let {
             if (!TextUtils.isEmpty(androidId)) {
                 // 1:使用标准的文档地址
@@ -142,10 +140,7 @@ class DeviceUtil private constructor() {
         }
     }
 
-    private fun writeContentToFile(
-        path: String,
-        androidId: String
-    ) {
+    private fun writeContentToFile(path: String, androidId: String) {
         LogUtil.e("path::$path")
         // 判断文档地址是否存在，不存在就创建
         val parentFile = File(path)
@@ -185,7 +180,7 @@ class DeviceUtil private constructor() {
             deviceId =
                 Settings.Secure.getString(
                     it.applicationContext.contentResolver,
-                    Settings.Secure.ANDROID_ID
+                    Settings.Secure.ANDROID_ID,
                 )
             if (TextUtils.isEmpty(deviceId)) {
                 // 设备的唯一标识。由设备的多个信息拼接合成

@@ -12,16 +12,14 @@ import com.android.common.utils.LogUtil
 import com.android.helper.R
 import com.bigkoo.pickerview.adapter.ArrayWheelAdapter
 import com.contrarywind.view.WheelView
-import org.jetbrains.annotations.NotNull
 import java.util.Calendar
 import java.util.GregorianCalendar
 import java.util.regex.Pattern
+import org.jetbrains.annotations.NotNull
 
 /** 自定义日历选择器 这里使用view的方式，让别人去在xml中引用 */
-class CalendarChooser(
-    context: Context,
-    attrs: AttributeSet?
-) : FrameLayout(context, attrs) {
+class CalendarChooser(context: Context, attrs: AttributeSet?) :
+    FrameLayout(context, attrs) {
     private lateinit var inflater: View
     private lateinit var options1: WheelView
     private lateinit var options2: WheelView
@@ -91,8 +89,7 @@ class CalendarChooser(
     @SuppressLint("InflateParams")
     private fun initView() {
         inflater =
-            LayoutInflater
-                .from(context)
+            LayoutInflater.from(context)
                 .inflate(R.layout.custom_calendar_chooser, null, false)
 
         // 获取年月日时分秒的view
@@ -132,7 +129,7 @@ class CalendarChooser(
         day: Boolean,
         hour: Boolean,
         minute: Boolean,
-        second: Boolean
+        second: Boolean,
     ): CalendarChooser {
         mShowArray[0] = year
         mShowArray[1] = month
@@ -158,17 +155,13 @@ class CalendarChooser(
     }
 
     /** 设置当前的日历对象 */
-    fun setCurrentCalendar(
-        @NotNull currentCalendar: Calendar
-    ): CalendarChooser {
+    fun setCurrentCalendar(@NotNull currentCalendar: Calendar): CalendarChooser {
         this.mCurrentCalendar = currentCalendar
         return this
     }
 
     /** 设置结束的日历对象,这个对象必须是一个全新的对象，不能和设置开始对象是一个对象，否则就会导致数据混乱 */
-    fun setEndCalendar(
-        @NotNull endCalendar: Calendar
-    ): CalendarChooser {
+    fun setEndCalendar(@NotNull endCalendar: Calendar): CalendarChooser {
         this.mEndCalendar = endCalendar
         return this
     }
@@ -431,8 +424,8 @@ class CalendarChooser(
                 end =
                     if (
                         (mStartYear!!.toInt() == mEndYear!!.toInt()) &&
-                        (mEndMonth!!.toInt() == mStartMonth!!.toInt()) &&
-                        (mEndDay!!.toInt() == mStartDay!!.toInt())
+                            (mEndMonth!!.toInt() == mStartMonth!!.toInt()) &&
+                            (mEndDay!!.toInt() == mStartDay!!.toInt())
                     ) {
                         mEndHour!!.toInt()
                     } else {
@@ -569,9 +562,9 @@ class CalendarChooser(
 
             if (
                 year == mStartYear &&
-                month == mStartMonth &&
-                day == mStartDay &&
-                hour == mStartHour
+                    month == mStartMonth &&
+                    day == mStartDay &&
+                    hour == mStartHour
             ) {
                 start = mStartMinute!!
 
@@ -579,9 +572,9 @@ class CalendarChooser(
                 end =
                     if (
                         (mStartYear!!.toInt() == mEndYear!!.toInt()) &&
-                        (mStartMonth!!.toInt() == mEndMonth!!.toInt()) &&
-                        (mStartDay!!.toInt() == mEndDay!!.toInt()) &&
-                        (mStartHour!!.toInt() == mEndHour!!.toInt())
+                            (mStartMonth!!.toInt() == mEndMonth!!.toInt()) &&
+                            (mStartDay!!.toInt() == mEndDay!!.toInt()) &&
+                            (mStartHour!!.toInt() == mEndHour!!.toInt())
                     ) {
                         mEndMinute!!.toInt()
                     } else {
@@ -589,9 +582,9 @@ class CalendarChooser(
                     }
             } else if (
                 year == mEndYear &&
-                month == mEndMonth &&
-                day == mEndDay &&
-                hour == mEndHour
+                    month == mEndMonth &&
+                    day == mEndDay &&
+                    hour == mEndHour
             ) {
                 start = 0
                 end = mEndMinute!!
@@ -730,19 +723,19 @@ class CalendarChooser(
 
             if (
                 year == mStartYear &&
-                month == mStartMonth &&
-                day == mStartDay &&
-                hour == mStartHour &&
-                minute == mStartMinute
+                    month == mStartMonth &&
+                    day == mStartDay &&
+                    hour == mStartHour &&
+                    minute == mStartMinute
             ) {
                 start = mStartSecond!!
 
                 if (
                     (mStartYear!!.toInt() == mEndYear!!.toInt()) &&
-                    (mStartHour!!.toInt() == mEndHour!!.toInt()) &&
-                    (mStartDay!!.toInt() == mEndDay!!.toInt()) &&
-                    (mStartHour!!.toInt() == mEndHour!!.toInt()) &&
-                    (mStartMinute!!.toInt() == mEndMinute!!.toInt())
+                        (mStartHour!!.toInt() == mEndHour!!.toInt()) &&
+                        (mStartDay!!.toInt() == mEndDay!!.toInt()) &&
+                        (mStartHour!!.toInt() == mEndHour!!.toInt()) &&
+                        (mStartMinute!!.toInt() == mEndMinute!!.toInt())
                 ) {
                     end = mEndSecond!!.toInt()
                 } else {
@@ -750,10 +743,10 @@ class CalendarChooser(
                 }
             } else if (
                 year == mEndYear &&
-                month == mEndMonth &&
-                day == mEndDay &&
-                hour == mEndHour &&
-                minute == mEndMinute
+                    month == mEndMonth &&
+                    day == mEndDay &&
+                    hour == mEndHour &&
+                    minute == mEndMinute
             ) {
                 start = 0
                 end = mEndSecond!!
@@ -945,10 +938,7 @@ class CalendarChooser(
     }
 
     /** 获取当前的最大值 */
-    private fun getMaxDayForMonth(
-        year: Int,
-        month: Int
-    ): Int {
+    private fun getMaxDayForMonth(year: Int, month: Int): Int {
         val calendar: Calendar = GregorianCalendar(year, month, 0)
         return calendar.getActualMaximum(Calendar.DATE)
     }
@@ -960,7 +950,7 @@ class CalendarChooser(
             day: String,
             hour: String,
             minute: String,
-            second: String
+            second: String,
         )
     }
 
@@ -974,9 +964,7 @@ class CalendarChooser(
             .setOnClickListener(listener)
     }
 
-    fun setSaveTitleClickListener(
-        @NotNull saveListener: OnClickListener
-    ) {
+    fun setSaveTitleClickListener(@NotNull saveListener: OnClickListener) {
         inflater
             .findViewById<TextView>(R.id.tv_save_time)
             .setOnClickListener(saveListener)
@@ -1050,7 +1038,7 @@ class CalendarChooser(
         value: Int,
         wheel: WheelView,
         isMatch: Boolean,
-        type: Int
+        type: Int,
     ): Int {
         if (list.size > 0) {
             for (index in list.indices) {
@@ -1080,10 +1068,7 @@ class CalendarChooser(
         return 0
     }
 
-    fun match(
-        content: String?,
-        regular: String?
-    ): Boolean {
+    fun match(content: String?, regular: String?): Boolean {
         if (TextUtils.isEmpty(content) || TextUtils.isEmpty(regular)) {
             return false
         } else {

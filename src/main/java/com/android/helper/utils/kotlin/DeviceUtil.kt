@@ -14,7 +14,8 @@ import com.android.common.utils.Md5Util
  */
 object DeviceUtil {
     @SuppressLint("HardwareIds")
-    fun getAndroidId(context: Context): String = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    fun getAndroidId(context: Context): String =
+        Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
 
     fun getFingerprint(): String {
         // 设备的唯一标识。由设备的多个信息拼接合成

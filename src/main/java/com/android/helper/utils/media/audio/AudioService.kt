@@ -53,7 +53,7 @@ class AudioService : Service() {
             override fun onError(
                 iMediaPlayer: MediaPlayer?,
                 what: Int,
-                extra: Int
+                extra: Int,
             ): Boolean {
                 LogUtil.e(AudioConstant.TAG, "onError--->发生了错误！ what:$what")
                 STATUS_TYPE = AudioConstant.STATUS_ERROR
@@ -104,11 +104,7 @@ class AudioService : Service() {
     // 播放信息的回调
     private val mInfoListener: MediaPlayer.OnInfoListener =
         object : MediaPlayer.OnInfoListener {
-            override fun onInfo(
-                mp: MediaPlayer?,
-                arg1: Int,
-                arg2: Int
-            ): Boolean {
+            override fun onInfo(mp: MediaPlayer?, arg1: Int, arg2: Int): Boolean {
                 when (arg1) {
                     MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING -> {}
 
@@ -166,13 +162,10 @@ class AudioService : Service() {
     // 播放进度的回调
     private val onBufferingUpdateListener: MediaPlayer.OnBufferingUpdateListener =
         object : MediaPlayer.OnBufferingUpdateListener {
-            override fun onBufferingUpdate(
-                mp: MediaPlayer?,
-                percent: Int
-            ) {
+            override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
                 LogUtil.e(
                     AudioConstant.TAG,
-                    "onBufferingUpdate--->播放进度的回调，当前的缓冲百分比为:$percent"
+                    "onBufferingUpdate--->播放进度的回调，当前的缓冲百分比为:$percent",
                 )
                 if (mDuration <= 0) {
                     mDuration = duration
@@ -198,11 +191,7 @@ class AudioService : Service() {
         mediaPlayer = getMediaPlayer()
     }
 
-    override fun onStartCommand(
-        intent: Intent?,
-        flags: Int,
-        startId: Int
-    ): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // 创建对象
         mediaPlayer = getMediaPlayer()
         return super.onStartCommand(intent, flags, startId)
@@ -456,19 +445,22 @@ class AudioService : Service() {
         get() {
             disposableSubscriber?.dispose()
             disposableSubscriber =
-                Flowable
-                    .interval(1000, TimeUnit.MILLISECONDS)
+                Flowable.interval(1000, TimeUnit.MILLISECONDS)
                     .filter(
                         object : Predicate<Long?> {
                             @Throws(Exception::class)
-                            override fun test(aLong: Long): Boolean = mSendProgress && initialized
+                            override fun test(aLong: Long): Boolean =
+                                mSendProgress && initialized
                         }
-                    ).filter(
+                    )
+                    .filter(
                         object : Predicate<Long?> {
                             @Throws(Exception::class)
-                            override fun test(aLong: Long): Boolean = (mediaPlayer != null) && isPlaying
+                            override fun test(aLong: Long): Boolean =
+                                (mediaPlayer != null) && isPlaying
                         }
-                    ).compose<Long?>(RxUtil.getSchedulerFlowable<Long?>())
+                    )
+                    .compose<Long?>(RxUtil.getSchedulerFlowable<Long?>())
                     .subscribeWith(
                         object : DisposableSubscriber<Long?>() {
                             override fun onNext(aLong: Long?) {
@@ -488,13 +480,13 @@ class AudioService : Service() {
                                                 String.format(
                                                     Locale.CHINA,
                                                     "%.2f",
-                                                    ((currentPosition * 1.0) / mDuration)
+                                                    ((currentPosition * 1.0) / mDuration),
                                                 )
                                         }
                                         mCallBackListener!!.onProgress(
                                             mDuration,
                                             currentPosition,
-                                            value
+                                            value,
                                         )
                                     }
                                 } catch (e: Exception) {
@@ -526,9 +518,7 @@ class AudioService : Service() {
         }
     }
 
-    inner class AudioBinder :
-        Binder(),
-        AudioControlInterface {
+    inner class AudioBinder : Binder(), AudioControlInterface {
         override fun getMediaPlayer(): MediaPlayer? = this@AudioService.getMediaPlayer()
 
         override fun getStatus(): Int = STATUS_TYPE
@@ -551,7 +541,9 @@ class AudioService : Service() {
             this@AudioService.mSendProgress = sendProgress
         }
 
-        override fun setAudioCallBackListener(callBackListener: AudioPlayerCallBackListener?) {
+        override fun setAudioCallBackListener(
+            callBackListener: AudioPlayerCallBackListener?
+        ) {
             this@AudioService.setAudioCallBackListener(callBackListener)
         }
 
