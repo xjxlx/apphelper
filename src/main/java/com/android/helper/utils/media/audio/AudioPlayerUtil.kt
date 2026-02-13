@@ -38,8 +38,9 @@ import com.android.helper.utils.dialog.DialogClickListener
 import com.android.helper.utils.dialog.DialogUtil
 
 /** 音频播放的工具类 */
-class AudioPlayerUtil(private val mContext: FragmentActivity) :
-    AudioPlayerCallBackListener() {
+class AudioPlayerUtil(
+    private val mContext: FragmentActivity
+) : AudioPlayerCallBackListener() {
     private var connection: AudioServiceConnection? = null
     private var mBindService = false
     private var mBindServiceListener: BindServiceListener? = null
@@ -158,7 +159,8 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
 
     private fun initNotification() {
         mNotificationUtil =
-            NotificationUtil.Builder(mContext)
+            NotificationUtil
+                .Builder(mContext)
                 .setSmallIcon(mNotificationSmallIcon)
                 .setNotificationLevel(Notification.PRIORITY_DEFAULT)
                 .setActivity(mPendingIntentActivity)
@@ -173,7 +175,7 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                             if (mNotificationLeft != 0) {
                                 remoteViews.setImageViewResource(
                                     R.id.iv_to_left,
-                                    mNotificationLeft,
+                                    mNotificationLeft
                                 )
                             }
                             // 中间的按钮
@@ -181,14 +183,14 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                                 if (mNotificationPause != 0) {
                                     remoteViews.setImageViewResource(
                                         R.id.iv_start,
-                                        mNotificationPause,
+                                        mNotificationPause
                                     )
                                 }
                             } else {
                                 if (mNotificationStart != 0) {
                                     remoteViews.setImageViewResource(
                                         R.id.iv_start,
-                                        mNotificationStart,
+                                        mNotificationStart
                                     )
                                 }
                             }
@@ -196,7 +198,7 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                             if (mNotificationRight != 0) {
                                 remoteViews.setImageViewResource(
                                     R.id.iv_to_right,
-                                    mNotificationRight,
+                                    mNotificationRight
                                 )
                             }
                             // 播放按钮点击事件的处理
@@ -208,11 +210,11 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                                     mContext,
                                     AudioConstant.CODE_SEND_BROADCAST_RECEIVER,
                                     intentStart,
-                                    PendingIntent.FLAG_UPDATE_CURRENT,
+                                    PendingIntent.FLAG_UPDATE_CURRENT
                                 )
                             remoteViews.setOnClickPendingIntent(
                                 R.id.iv_start,
-                                btPendingIntentStart,
+                                btPendingIntentStart
                             )
                             // 左侧按钮点击事件的处理
                             val intentLeft = Intent()
@@ -222,11 +224,11 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                                     mContext,
                                     AudioConstant.CODE_SEND_BROADCAST_RECEIVER,
                                     intentLeft,
-                                    PendingIntent.FLAG_UPDATE_CURRENT,
+                                    PendingIntent.FLAG_UPDATE_CURRENT
                                 )
                             remoteViews.setOnClickPendingIntent(
                                 R.id.iv_to_left,
-                                btPendingIntentLeft,
+                                btPendingIntentLeft
                             )
                             // 左侧按钮点击事件的处理
                             val intentRight = Intent()
@@ -236,21 +238,24 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                                     mContext,
                                     AudioConstant.CODE_SEND_BROADCAST_RECEIVER,
                                     intentRight,
-                                    PendingIntent.FLAG_UPDATE_CURRENT,
+                                    PendingIntent.FLAG_UPDATE_CURRENT
                                 )
                             remoteViews.setOnClickPendingIntent(
                                 R.id.iv_to_right,
-                                btPendingIntentRight,
+                                btPendingIntentRight
                             )
                         }
-                    },
-                )
-                .build()
+                    }
+                ).build()
                 .sendNotification(1)
                 .startForeground(1, mAudioService)
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
         if (requestCode == NotificationUtil.CODE_REQUEST_ACTIVITY_NOTIFICATION) {
             mNotificationUtil?.let {
                 if (it.checkOpenNotify(mContext)) {
@@ -282,7 +287,7 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
-                    fromUser: Boolean,
+                    fromUser: Boolean
                 ) {
                     if (fromUser) {
                         mAudioBinder?.let {
@@ -291,7 +296,7 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                                 val status: Int = it.getStatus()
                                 if (
                                     (status != AudioConstant.STATUS_IDLE) &&
-                                        (status != AudioConstant.STATUS_ERROR)
+                                    (status != AudioConstant.STATUS_ERROR)
                                 ) {
                                     mediaPlayer.seekTo(progress)
                                 }
@@ -360,7 +365,11 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
         mStartButton?.isSelected = selector
     }
 
-    override fun onBufferProgress(total: Int, current: Double, percent: Int) {
+    override fun onBufferProgress(
+        total: Int,
+        current: Double,
+        percent: Int
+    ) {
         LogUtil.e(
             "onBufferProgress:-->total:$total  --->current:$current --->percent:$percent"
         )
@@ -390,7 +399,11 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
         }
     }
 
-    override fun onProgress(total: Int, current: Int, percent: String?) {
+    override fun onProgress(
+        total: Int,
+        current: Int,
+        percent: String?
+    ) {
         mSeekBar?.setMax(total)
         mSeekBar?.progress = current
         // 设置总的进度
@@ -439,7 +452,7 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                             // 发送间隔的轮询
                             mNotificationUtil?.startForeground(1, mAudioService)
                         }
-                    },
+                    }
                 )
             }
             // 中间的标题头
@@ -449,7 +462,7 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                 mRemoteViews?.setTextViewTextSize(
                     R.id.tv_title,
                     TypedValue.COMPLEX_UNIT_SP,
-                    16f,
+                    16f
                 )
             }
         }
@@ -457,7 +470,7 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
         mNotificationUtil?.startLoopForeground(
             1,
             mNotificationLoopInterVal.toLong(),
-            mAudioService,
+            mAudioService
         )
     }
 
@@ -504,7 +517,7 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
         @DrawableRes notificationStart: Int,
         @DrawableRes notificationPause: Int,
         @DrawableRes notificationLeft: Int,
-        @DrawableRes notificationRight: Int,
+        @DrawableRes notificationRight: Int
     ) {
         mNotificationStart = notificationStart
         mNotificationPause = notificationPause
@@ -516,7 +529,10 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
      * @param notificationImage notification左侧的图标
      * @param notificationTitle notification的标题
      */
-    fun setNotificationMessage(notificationImage: String?, notificationTitle: String?) {
+    fun setNotificationMessage(
+        notificationImage: String?,
+        notificationTitle: String?
+    ) {
         mNotificationImage = notificationImage
         mNotificationTitle = notificationTitle
     }
@@ -623,7 +639,10 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
         }
 
     internal inner class AudioServiceConnection : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        override fun onServiceConnected(
+            name: ComponentName?,
+            service: IBinder?
+        ) {
             LogUtil.e("-----@@@@@@----> onServiceConnected!")
             if (service is AudioService.AudioBinder) {
                 mAudioBinder = service
@@ -639,7 +658,7 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                     if (mAutoPlayer) {
                         LogUtil.e(
                             AudioConstant.TAG,
-                            "onServiceConnected--->服务回调成功,开始自动播放！",
+                            "onServiceConnected--->服务回调成功,开始自动播放！"
                         )
                         if (!TextUtils.isEmpty(mAudioPath)) {
                             setResource(mAudioPath)
@@ -658,7 +677,7 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                             mContext,
                             mAudioReceiver,
                             intentFilter,
-                            ContextCompat.RECEIVER_NOT_EXPORTED,
+                            ContextCompat.RECEIVER_NOT_EXPORTED
                         )
                     }
                     // 在数据回调成功的时候去创建消息通知工具
@@ -669,26 +688,26 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
                             val openNotify = mNotificationUtil!!.checkOpenNotify(mContext)
                             if (!openNotify) {
                                 mDialogUtil =
-                                    DialogUtil.Builder(
+                                    DialogUtil
+                                        .Builder(
                                             mContext,
-                                            R.layout.base_default_dialog,
-                                        )
-                                        .setClose(R.id.tv_qx)
+                                            R.layout.base_default_dialog
+                                        ).setClose(R.id.tv_qx)
                                         .Build()
                                         .setText(R.id.tv_title, "是否打开通知权限？")
                                         .setText(
                                             R.id.tv_msg,
-                                            "如果不打开通知权限，则可能后台播放的时候会断开连接！",
-                                        )
-                                        .setOnClickListener(
+                                            "如果不打开通知权限，则可能后台播放的时候会断开连接！"
+                                        ).setOnClickListener(
                                             R.id.tv_qd,
                                             DialogClickListener {
                                                 v: View?,
-                                                builder: DialogUtil? ->
+                                                builder: DialogUtil?
+                                                ->
                                                 mNotificationUtil!!.goToSetNotify(
                                                     mContext
                                                 )
-                                            },
+                                            }
                                         )
                             }
                         }
@@ -705,7 +724,10 @@ class AudioPlayerUtil(private val mContext: FragmentActivity) :
     }
 
     inner class AudioReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
+        override fun onReceive(
+            context: Context?,
+            intent: Intent?
+        ) {
             if ((intent != null) && (mAudioBinder != null)) {
                 val action = intent.action
                 val playing: Boolean = mAudioBinder!!.isPlaying()

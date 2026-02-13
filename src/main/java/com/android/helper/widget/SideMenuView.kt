@@ -35,7 +35,10 @@ class SideMenuView : ViewGroup {
             /*
              * 3:哪一个view可以被移动，这是一个抽象类，必须去实现，也只有在这个方法返回true的时候下面的方法才会生效
              */
-            override fun tryCaptureView(child: View, pointerId: Int): Boolean {
+            override fun tryCaptureView(
+                child: View,
+                pointerId: Int
+            ): Boolean {
                 // 不返回true就不会被移动
                 // 如果这里有多个View的话，返回值改变成 return child == mDragView1;
                 // 那么只有MDragView1可以被拖拽，其他View不能
@@ -53,7 +56,7 @@ class SideMenuView : ViewGroup {
             override fun clampViewPositionHorizontal(
                 child: View,
                 left: Int,
-                dx: Int,
+                dx: Int
             ): Int {
                 LogUtil.e(
                     "clampViewPositionHorizontal: dx: $dx  mDx:$mDx  mMenuViewWidth： $mMenuViewWidth  left：$left"
@@ -129,7 +132,7 @@ class SideMenuView : ViewGroup {
                 left: Int,
                 top: Int,
                 dx: Int,
-                dy: Int,
+                dy: Int
             ) {
                 super.onViewPositionChanged(changedView, left, top, dx, dy)
                 mDx += dx
@@ -150,7 +153,7 @@ class SideMenuView : ViewGroup {
                         menuScrollLeft,
                         menuScrollTop!!,
                         menuScrollRight,
-                        menuScrollBottom,
+                        menuScrollBottom
                     )
                 } else if (changedView == mMenuView) {
                     // 左侧  =
@@ -170,13 +173,17 @@ class SideMenuView : ViewGroup {
                         contentScrollLeft,
                         contentScrollTop!!,
                         contentScrollRight,
-                        contentScrollBottom,
+                        contentScrollBottom
                     )
                 }
             }
 
             /** 7：手指松开时候的处理 */
-            override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
+            override fun onViewReleased(
+                releasedChild: View,
+                xvel: Float,
+                yvel: Float
+            ) {
                 super.onViewReleased(releasedChild, xvel, yvel)
                 val left = releasedChild.left
                 if (releasedChild == mContentView) {
@@ -215,7 +222,10 @@ class SideMenuView : ViewGroup {
         mWidthPixels = ScreenUtil.getScreenWidth(context)
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    override fun onMeasure(
+        widthMeasureSpec: Int,
+        heightMeasureSpec: Int
+    ) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
         measureChildren(widthMeasureSpec, heightMeasureSpec)
@@ -236,7 +246,13 @@ class SideMenuView : ViewGroup {
 
     private var mContentMarginLeft = 0
 
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+    override fun onLayout(
+        changed: Boolean,
+        l: Int,
+        t: Int,
+        r: Int,
+        b: Int
+    ) {
         //        val marginLayoutParams = layoutParams as MarginLayoutParams
         //        val rightMargin = marginLayoutParams.rightMargin
 
@@ -250,7 +266,7 @@ class SideMenuView : ViewGroup {
                 mContentMarginLeft + it.left,
                 it.top,
                 it.left + mContentViewWidth,
-                it.top + mContentViewHeight,
+                it.top + mContentViewHeight
             )
 
             mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
@@ -263,7 +279,12 @@ class SideMenuView : ViewGroup {
         mMenuView = findViewWithTag(TAG_MENU)
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    override fun onSizeChanged(
+        w: Int,
+        h: Int,
+        oldw: Int,
+        oldh: Int
+    ) {
         super.onSizeChanged(w, h, oldw, oldh)
         mContentView?.let {
             mContentViewWidth = it.measuredWidth
@@ -341,7 +362,10 @@ class SideMenuView : ViewGroup {
     }
 
     interface SideMenuClickListener {
-        fun onClick(sideMenu: SideMenuView, view: View)
+        fun onClick(
+            sideMenu: SideMenuView,
+            view: View
+        )
     }
 
     interface DragCallBackListener {
@@ -349,12 +373,9 @@ class SideMenuView : ViewGroup {
         fun onStatusChange(status: Int)
     }
 
-    override fun generateLayoutParams(p: LayoutParams?): LayoutParams =
-        MarginLayoutParams(p)
+    override fun generateLayoutParams(p: LayoutParams?): LayoutParams = MarginLayoutParams(p)
 
-    override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams =
-        MarginLayoutParams(context, attrs)
+    override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams = MarginLayoutParams(context, attrs)
 
-    override fun generateDefaultLayoutParams(): LayoutParams =
-        MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+    override fun generateDefaultLayoutParams(): LayoutParams = MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 }

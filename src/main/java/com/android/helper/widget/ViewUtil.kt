@@ -12,7 +12,10 @@ object ViewUtil {
      * @param array 左上右下的顺序
      */
     @JvmStatic
-    fun setMargin(view: View?, array: IntArray?) {
+    fun setMargin(
+        view: View?,
+        array: IntArray?
+    ) {
         if (view == null) {
             return
         }
@@ -36,7 +39,10 @@ object ViewUtil {
      * @param bottom 需要设置的bottom的高度，单位是dp
      */
     @JvmStatic
-    fun setBottomMargin(view: View, bottom: Int) {
+    fun setBottomMargin(
+        view: View,
+        bottom: Int
+    ) {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
@@ -46,7 +52,10 @@ object ViewUtil {
     }
 
     @JvmStatic
-    fun setTopMargin(view: View?, topMargin: Float) {
+    fun setTopMargin(
+        view: View?,
+        topMargin: Float
+    ) {
         if (view != null) {
             val layoutParams = view.layoutParams
             if (layoutParams is ViewGroup.MarginLayoutParams) {
@@ -79,7 +88,10 @@ object ViewUtil {
     }
 
     @JvmStatic
-    fun setLeftMargin(view: View, topMargin: Float) {
+    fun setLeftMargin(
+        view: View,
+        topMargin: Float
+    ) {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
@@ -89,7 +101,10 @@ object ViewUtil {
         }
     }
 
-    fun setRightMargin(view: View, topMargin: Float) {
+    fun setRightMargin(
+        view: View,
+        topMargin: Float
+    ) {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
@@ -99,7 +114,10 @@ object ViewUtil {
         }
     }
 
-    fun setMarginStart(view: View, marginStart: Float) {
+    fun setMarginStart(
+        view: View,
+        marginStart: Float
+    ) {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
@@ -109,7 +127,10 @@ object ViewUtil {
         }
     }
 
-    fun setMarginEnd(view: View, marginEnd: Float) {
+    fun setMarginEnd(
+        view: View,
+        marginEnd: Float
+    ) {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
@@ -118,7 +139,10 @@ object ViewUtil {
         }
     }
 
-    fun setMarginLeftPx(view: View, marginLeft: Int) {
+    fun setMarginLeftPx(
+        view: View,
+        marginLeft: Int
+    ) {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
@@ -127,7 +151,10 @@ object ViewUtil {
         }
     }
 
-    fun setMarginTopPx(view: View, marginTop: Int) {
+    fun setMarginTopPx(
+        view: View,
+        marginTop: Int
+    ) {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
@@ -136,7 +163,10 @@ object ViewUtil {
         }
     }
 
-    fun setMarginRightPx(view: View, marginRight: Int) {
+    fun setMarginRightPx(
+        view: View,
+        marginRight: Int
+    ) {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
@@ -145,7 +175,10 @@ object ViewUtil {
         }
     }
 
-    fun setMarginBottomPx(view: View, marginBottom: Int) {
+    fun setMarginBottomPx(
+        view: View,
+        marginBottom: Int
+    ) {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
@@ -154,7 +187,10 @@ object ViewUtil {
         }
     }
 
-    fun setMarginStartPx(view: View, marginStart: Int) {
+    fun setMarginStartPx(
+        view: View,
+        marginStart: Int
+    ) {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
@@ -163,7 +199,10 @@ object ViewUtil {
         }
     }
 
-    fun setMarginEndPx(view: View, marginEnd: Int) {
+    fun setMarginEndPx(
+        view: View,
+        marginEnd: Int
+    ) {
         val layoutParams = view.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             val marginLayoutParams = layoutParams
@@ -178,7 +217,10 @@ object ViewUtil {
      * @param view view
      * @param visibility 状态
      */
-    fun setVisibility(view: View?, visibility: Int) {
+    fun setVisibility(
+        view: View?,
+        visibility: Int
+    ) {
         if (view != null) {
             val viewVisibility = view.visibility
             if (visibility != viewVisibility) {
@@ -191,7 +233,10 @@ object ViewUtil {
      * @param view 指定view
      * @param visible true:可见，false:不可见
      */
-    fun setViewVisible(view: View?, visible: Boolean) {
+    fun setViewVisible(
+        view: View?,
+        visible: Boolean
+    ) {
         if (view != null) {
             val visibility = view.visibility
             if (visible) {

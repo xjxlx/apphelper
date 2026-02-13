@@ -41,19 +41,23 @@ class PopupWindowUtil {
     private val mCloseList: ArrayList<View> = arrayListOf()
     private var isBuild = false
 
-    private val mLifecycleObserver = LifecycleDestroyObserver {
-        LogUtil.e(TAG, "onDestroy")
-        // 手动关闭弹窗，避免崩溃
-        if (isShowing()) {
-            dismiss()
+    private val mLifecycleObserver =
+        LifecycleDestroyObserver {
+            LogUtil.e(TAG, "onDestroy")
+            // 手动关闭弹窗，避免崩溃
+            if (isShowing()) {
+                dismiss()
+            }
+
+            if (popupWindow != null) {
+                popupWindow = null
+            }
         }
 
-        if (popupWindow != null) {
-            popupWindow = null
-        }
-    }
-
-    fun setContentView(fragment: Fragment, view: View): PopupWindowUtil {
+    fun setContentView(
+        fragment: Fragment,
+        view: View
+    ): PopupWindowUtil {
         this.mFragment = fragment
         this.mActivity = fragment.activity
         this.mLayout = view
@@ -61,21 +65,30 @@ class PopupWindowUtil {
         return this
     }
 
-    fun setContentView(activity: FragmentActivity, view: View): PopupWindowUtil {
+    fun setContentView(
+        activity: FragmentActivity,
+        view: View
+    ): PopupWindowUtil {
         this.mActivity = activity
         this.mLayout = view
         mTypeFromPage = DialogFromType.TYPE_ACTIVITY
         return this
     }
 
-    fun setContentView(fragment: Fragment, resource: Int): PopupWindowUtil {
+    fun setContentView(
+        fragment: Fragment,
+        resource: Int
+    ): PopupWindowUtil {
         val inflate =
             LayoutInflater.from(fragment.activity).inflate(resource, null, false)
         setContentView(fragment, inflate)
         return this
     }
 
-    fun setContentView(activity: FragmentActivity, resource: Int): PopupWindowUtil {
+    fun setContentView(
+        activity: FragmentActivity,
+        resource: Int
+    ): PopupWindowUtil {
         val inflate = LayoutInflater.from(activity).inflate(resource, null, false)
         setContentView(activity, inflate)
         return this
@@ -217,7 +230,10 @@ class PopupWindowUtil {
         return this
     }
 
-    fun setText(@IdRes id: Int, text: String): PopupWindowUtil {
+    fun setText(
+        @IdRes id: Int,
+        text: String
+    ): PopupWindowUtil {
         mLayout?.let {
             val view = it.findViewById<View>(id)
             if (view is TextView) {
@@ -227,14 +243,17 @@ class PopupWindowUtil {
         return this
     }
 
-    fun setText(textView: TextView, text: String): PopupWindowUtil {
+    fun setText(
+        textView: TextView,
+        text: String
+    ): PopupWindowUtil {
         TextViewUtil.setText(textView, text)
         return this
     }
 
     fun setClickListener(
         @IdRes id: Int,
-        listener: View.OnClickListener,
+        listener: View.OnClickListener
     ): PopupWindowUtil {
         mLayout?.let {
             val view = it.findViewById<View>(id)
@@ -243,7 +262,10 @@ class PopupWindowUtil {
         return this
     }
 
-    fun setClickListener(view: View, listener: View.OnClickListener): PopupWindowUtil {
+    fun setClickListener(
+        view: View,
+        listener: View.OnClickListener
+    ): PopupWindowUtil {
         view.setOnClickListener(listener)
         return this
     }
@@ -274,7 +296,11 @@ class PopupWindowUtil {
         showAtLocation(view, 0, 0)
     }
 
-    fun showAtLocation(view: View?, xOff: Int, yOff: Int) {
+    fun showAtLocation(
+        view: View?,
+        xOff: Int,
+        yOff: Int
+    ) {
         if (!isBuild) {
             throw NullPointerException("Build方法未调用！")
         }
@@ -292,7 +318,11 @@ class PopupWindowUtil {
         showAsDropDown(view, 0, 0)
     }
 
-    fun showAsDropDown(view: View?, xOff: Int, yOff: Int) {
+    fun showAsDropDown(
+        view: View?,
+        xOff: Int,
+        yOff: Int
+    ) {
         if (!isBuild) {
             throw NullPointerException("Build方法未调用！")
         }
@@ -323,14 +353,23 @@ class PopupWindowUtil {
     }
 
     interface ViewCreatedListener {
-        fun onViewCreated(rootView: View?, popupWindow: PopupWindowUtil)
+        fun onViewCreated(
+            rootView: View?,
+            popupWindow: PopupWindowUtil
+        )
     }
 
     interface OnShowListener {
-        fun onShow(view: View?, popupWindow: PopupWindowUtil)
+        fun onShow(
+            view: View?,
+            popupWindow: PopupWindowUtil
+        )
     }
 
     interface OnDismissListener {
-        fun onDismiss(view: View?, popupWindow: PopupWindowUtil)
+        fun onDismiss(
+            view: View?,
+            popupWindow: PopupWindowUtil
+        )
     }
 }

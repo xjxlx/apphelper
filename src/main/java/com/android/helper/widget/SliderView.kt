@@ -19,7 +19,10 @@ import com.android.helper.utils.BitmapUtil
 import com.android.helper.utils.CustomViewUtil
 
 /** 自定义滑块 ,这里使用seekBar的控件 */
-class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+class SliderView(
+    context: Context,
+    attrs: AttributeSet?
+) : View(context, attrs) {
     private val mPaintBackground = Paint() // 背景色
     private val mPaintSelectorBackground = Paint() // 滑动过的颜色
 
@@ -53,7 +56,7 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
             mBackgroundColor =
                 it.getColor(
                     R.styleable.SliderView_hk_background,
-                    Color.parseColor("#F9F9F9"),
+                    Color.parseColor("#F9F9F9")
                 )
             mBackgroundColorHeight =
                 it.getDimension(R.styleable.SliderView_hk_background_Height, toDp5)
@@ -61,7 +64,7 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
             mSelectorBackgroundColor =
                 it.getColor(
                     R.styleable.SliderView_hk_selector_background,
-                    Color.parseColor("#F9F9F9"),
+                    Color.parseColor("#F9F9F9")
                 )
         }
 
@@ -89,12 +92,15 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
         array.recycle()
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    override fun onMeasure(
+        widthMeasureSpec: Int,
+        heightMeasureSpec: Int
+    ) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         bitmap?.let {
             setMeasuredDimension(
                 resolveSize(MeasureSpec.getSize(widthMeasureSpec), widthMeasureSpec),
-                it.height,
+                it.height
             )
 
             if (!it.isRecycled) {
@@ -116,7 +122,7 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
                 measuredHeight.toFloat(),
                 mRadius,
                 mRadius,
-                mPaintBackground,
+                mPaintBackground
             )
 
             // 绘制背景的文字
@@ -144,7 +150,7 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
                     measuredHeight.toFloat(),
                     mRadius,
                     mRadius,
-                    mPaintSelectorBackground,
+                    mPaintSelectorBackground
                 )
 
                 val rectSrc = Rect(0, 0, b.width, b.height)
@@ -154,7 +160,7 @@ class SliderView(context: Context, attrs: AttributeSet?) : View(context, attrs) 
                         (paddingLeft + mLeft),
                         top,
                         (b.width + paddingLeft + mLeft),
-                        top + b.height,
+                        top + b.height
                     )
                 it.drawBitmap(b, rectSrc, desRect, null)
             }
