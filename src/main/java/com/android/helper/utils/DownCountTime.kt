@@ -30,19 +30,13 @@ class DownCountTime {
             return mTotal * mInterval
         }
 
-    fun setCountdown(
-        total: Long = 0,
-        interval: Long = 0,
-        listener: CallBack
-    ) {
+    fun setCountdown(total: Long = 0, interval: Long = 0, listener: CallBack) {
         this.mTotal = total
         this.mInterval = interval
         this.mCallBackListener = listener
     }
 
-    /**
-     * The countdown runs on the main thread
-     */
+    /** The countdown runs on the main thread */
     fun start() {
         mJob?.let {
             if (it.isActive) {
@@ -119,7 +113,7 @@ class DownCountTime {
             } else {
                 LogUtil.e(
                     TAG,
-                    "restart the current status is not running, can't cancel ..."
+                    "restart the current status is not running, can't cancel ...",
                 )
             }
         }
@@ -138,10 +132,7 @@ class DownCountTime {
          * @param current The current timer, starting at 0
          * @param countdown current countdown
          */
-        fun onTick(
-            current: Long,
-            countdown: Long
-        )
+        fun onTick(current: Long, countdown: Long)
 
         fun onFinish()
     }

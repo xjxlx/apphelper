@@ -24,12 +24,8 @@ class SideMenuView : ViewGroup {
     private var mContentViewWidth = 0
     private var mContentViewHeight = 0
     private var mMenuViewWidth = 0
-    private val mMiddleValue by lazy {
-        mMenuViewWidth / 2
-    }
-    private val mStartX by lazy {
-        mContentViewWidth - mMenuViewWidth
-    }
+    private val mMiddleValue by lazy { mMenuViewWidth / 2 }
+    private val mStartX by lazy { mContentViewWidth - mMenuViewWidth }
     private var mWidthPixels: Int = 0
     private var mDx = 0
     private var mDragCallBackListener: DragCallBackListener? = null
@@ -39,10 +35,7 @@ class SideMenuView : ViewGroup {
             /*
              * 3:哪一个view可以被移动，这是一个抽象类，必须去实现，也只有在这个方法返回true的时候下面的方法才会生效
              */
-            override fun tryCaptureView(
-                child: View,
-                pointerId: Int
-            ): Boolean {
+            override fun tryCaptureView(child: View, pointerId: Int): Boolean {
                 // 不返回true就不会被移动
                 // 如果这里有多个View的话，返回值改变成 return child == mDragView1;
                 // 那么只有MDragView1可以被拖拽，其他View不能
@@ -60,7 +53,7 @@ class SideMenuView : ViewGroup {
             override fun clampViewPositionHorizontal(
                 child: View,
                 left: Int,
-                dx: Int
+                dx: Int,
             ): Int {
                 LogUtil.e(
                     "clampViewPositionHorizontal: dx: $dx  mDx:$mDx  mMenuViewWidth： $mMenuViewWidth  left：$left"
@@ -110,7 +103,12 @@ class SideMenuView : ViewGroup {
                     }
                 }
                 LogUtil.e(
-                    "mLeftValue:" + mLeftValue + " left:" + left + " mDx: " + mDx +
+                    "mLeftValue:" +
+                        mLeftValue +
+                        " left:" +
+                        left +
+                        " mDx: " +
+                        mDx +
                         "  mContentViewWidth: " +
                         mContentViewWidth +
                         "  ++： " +
@@ -131,12 +129,13 @@ class SideMenuView : ViewGroup {
                 left: Int,
                 top: Int,
                 dx: Int,
-                dy: Int
+                dy: Int,
             ) {
                 super.onViewPositionChanged(changedView, left, top, dx, dy)
                 mDx += dx
                 LogUtil.e(
-                    "onViewPositionChanged:$left  dx:$mDx" + "  mMenuViewWidth: " +
+                    "onViewPositionChanged:$left  dx:$mDx" +
+                        "  mMenuViewWidth: " +
                         mMenuViewWidth +
                         "  left: " +
                         left
@@ -151,7 +150,7 @@ class SideMenuView : ViewGroup {
                         menuScrollLeft,
                         menuScrollTop!!,
                         menuScrollRight,
-                        menuScrollBottom
+                        menuScrollBottom,
                     )
                 } else if (changedView == mMenuView) {
                     // 左侧  =
@@ -160,7 +159,9 @@ class SideMenuView : ViewGroup {
                     val contentScrollRight = contentScrollLeft + mContentViewWidth
                     val contentScrollBottom = mContentViewHeight
                     LogUtil.e(
-                        "mContentView:  mDx:" + mDx + "  contentScrollLeft: " +
+                        "mContentView:  mDx:" +
+                            mDx +
+                            "  contentScrollLeft: " +
                             contentScrollLeft +
                             " contentScrollRight:" +
                             contentScrollRight
@@ -169,19 +170,13 @@ class SideMenuView : ViewGroup {
                         contentScrollLeft,
                         contentScrollTop!!,
                         contentScrollRight,
-                        contentScrollBottom
+                        contentScrollBottom,
                     )
                 }
             }
 
-            /**
-             * 7：手指松开时候的处理
-             */
-            override fun onViewReleased(
-                releasedChild: View,
-                xvel: Float,
-                yvel: Float
-            ) {
+            /** 7：手指松开时候的处理 */
+            override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
                 super.onViewReleased(releasedChild, xvel, yvel)
                 val left = releasedChild.left
                 if (releasedChild == mContentView) {
@@ -199,9 +194,7 @@ class SideMenuView : ViewGroup {
                 }
             }
 
-            /**
-             * 状态的改变
-             */
+            /** 状态的改变 */
             override fun onViewDragStateChanged(state: Int) {
                 super.onViewDragStateChanged(state)
                 LogUtil.e(" state ::: " + state)
@@ -222,10 +215,7 @@ class SideMenuView : ViewGroup {
         mWidthPixels = ScreenUtil.getScreenWidth(context)
     }
 
-    override fun onMeasure(
-        widthMeasureSpec: Int,
-        heightMeasureSpec: Int
-    ) {
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
         measureChildren(widthMeasureSpec, heightMeasureSpec)
@@ -246,15 +236,9 @@ class SideMenuView : ViewGroup {
 
     private var mContentMarginLeft = 0
 
-    override fun onLayout(
-        changed: Boolean,
-        l: Int,
-        t: Int,
-        r: Int,
-        b: Int
-    ) {
-//        val marginLayoutParams = layoutParams as MarginLayoutParams
-//        val rightMargin = marginLayoutParams.rightMargin
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        //        val marginLayoutParams = layoutParams as MarginLayoutParams
+        //        val rightMargin = marginLayoutParams.rightMargin
 
         mContentView?.let {
             if (mContentMarginLeft <= 0) {
@@ -266,7 +250,7 @@ class SideMenuView : ViewGroup {
                 mContentMarginLeft + it.left,
                 it.top,
                 it.left + mContentViewWidth,
-                it.top + mContentViewHeight
+                it.top + mContentViewHeight,
             )
 
             mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
@@ -279,20 +263,13 @@ class SideMenuView : ViewGroup {
         mMenuView = findViewWithTag(TAG_MENU)
     }
 
-    override fun onSizeChanged(
-        w: Int,
-        h: Int,
-        oldw: Int,
-        oldh: Int
-    ) {
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         mContentView?.let {
             mContentViewWidth = it.measuredWidth
             mContentViewHeight = it.measuredHeight
         }
-        mMenuView?.let {
-            mMenuViewWidth = it.measuredWidth
-        }
+        mMenuView?.let { mMenuViewWidth = it.measuredWidth }
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
@@ -349,17 +326,13 @@ class SideMenuView : ViewGroup {
 
     fun setMenuClickListener(listener: SideMenuClickListener?) {
         mMenuView?.let {
-            it.setOnClickListener {
-                listener?.onClick(this@SideMenuView, this)
-            }
+            it.setOnClickListener { listener?.onClick(this@SideMenuView, this) }
         }
     }
 
     fun setContentClickListener(listener: SideMenuClickListener?) {
         mContentView?.let {
-            it.setOnClickListener {
-                listener?.onClick(this@SideMenuView, this)
-            }
+            it.setOnClickListener { listener?.onClick(this@SideMenuView, this) }
         }
     }
 
@@ -368,16 +341,11 @@ class SideMenuView : ViewGroup {
     }
 
     interface SideMenuClickListener {
-        fun onClick(
-            sideMenu: SideMenuView,
-            view: View
-        )
+        fun onClick(sideMenu: SideMenuView, view: View)
     }
 
     interface DragCallBackListener {
-        /**
-         * 1:拖拽中 2：停止
-         */
+        /** 1:拖拽中 2：停止 */
         fun onStatusChange(status: Int)
     }
 

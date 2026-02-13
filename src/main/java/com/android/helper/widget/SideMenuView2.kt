@@ -16,10 +16,8 @@ import kotlin.math.abs
  * @CreateDate: 2022/12/3-23:11
  * @Description:
  */
-class SideMenuView2(
-    context: Context,
-    attributeSet: AttributeSet
-) : ViewGroup(context, attributeSet) {
+class SideMenuView2(context: Context, attributeSet: AttributeSet) :
+    ViewGroup(context, attributeSet) {
     val TAG_CONTENT = "content"
     val TAG_MENU = "menu"
     private var mContentView: View? = null
@@ -35,10 +33,7 @@ class SideMenuView2(
         mScroller = Scroller(context)
     }
 
-    override fun onMeasure(
-        widthMeasureSpec: Int,
-        heightMeasureSpec: Int
-    ) {
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         measureChildren(widthMeasureSpec, heightMeasureSpec)
 
@@ -58,13 +53,7 @@ class SideMenuView2(
         mLeftBorder = mMenuViewWidth / 2
     }
 
-    override fun onLayout(
-        changed: Boolean,
-        l: Int,
-        t: Int,
-        r: Int,
-        b: Int
-    ) {
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         LogUtil.run { e(" le: $l  r: $r") }
         mContentView?.let {
             if (mContentMarginLeft <= 0) {
@@ -76,7 +65,7 @@ class SideMenuView2(
                 mContentMarginLeft + it.left,
                 it.top,
                 it.left + mContentViewWidth,
-                it.top + mContentViewHeight
+                it.top + mContentViewHeight,
             )
             mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
         }
@@ -89,20 +78,13 @@ class SideMenuView2(
         mMenuView = findViewWithTag(TAG_MENU)
     }
 
-    override fun onSizeChanged(
-        w: Int,
-        h: Int,
-        oldw: Int,
-        oldh: Int
-    ) {
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         mContentView?.let {
             mContentViewWidth = it.measuredWidth
             mContentViewHeight = it.measuredHeight
         }
-        mMenuView?.let {
-            mMenuViewWidth = it.measuredWidth
-        }
+        mMenuView?.let { mMenuViewWidth = it.measuredWidth }
 
         mLeftBorder = mMenuViewWidth / 2
     }
@@ -116,14 +98,18 @@ class SideMenuView2(
                     e1: MotionEvent?,
                     e2: MotionEvent,
                     distanceX: Float,
-                    distanceY: Float
+                    distanceY: Float,
                 ): Boolean {
                     mDx = distanceX.toInt()
 
                     mContentView?.let {
                         val left = it.left
                         LogUtil.e(
-                            "left: " + left + "  dx: " + mDx + "  （left - mDx）" +
+                            "left: " +
+                                left +
+                                "  dx: " +
+                                mDx +
+                                "  （left - mDx）" +
                                 (left - mDx) +
                                 "  mMenuViewWidth: " +
                                 mMenuViewWidth +
@@ -137,13 +123,13 @@ class SideMenuView2(
                                     it.left - mDx,
                                     it.top,
                                     it.right - mDx,
-                                    it.bottom
+                                    it.bottom,
                                 )
                                 mMenuView?.layout(
                                     it.right,
                                     it.top,
                                     it.right + mMenuViewWidth,
-                                    it.bottom
+                                    it.bottom,
                                 )
                             }
                         } else { // 向右
@@ -153,29 +139,28 @@ class SideMenuView2(
                                     it.left - mDx,
                                     it.top,
                                     it.right - mDx,
-                                    it.bottom
+                                    it.bottom,
                                 )
                                 mMenuView?.layout(
                                     it.right,
                                     it.top,
                                     it.right + mMenuViewWidth,
-                                    it.bottom
+                                    it.bottom,
                                 )
                             }
                         }
                     }
                     return super.onScroll(e1, e2, distanceX, distanceY)
                 }
-            }
+            },
         )
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        event?.let {
-            mGestureDetector.onTouchEvent(event)
-        }
-        if (event?.action == MotionEvent.ACTION_CANCEL ||
-            event?.action == MotionEvent.ACTION_UP
+        event?.let { mGestureDetector.onTouchEvent(event) }
+        if (
+            event?.action == MotionEvent.ACTION_CANCEL ||
+                event?.action == MotionEvent.ACTION_UP
         ) {
             mContentView?.let {
                 val left = it.left
@@ -206,7 +191,7 @@ class SideMenuView2(
                 mContentMarginLeft,
                 it.top,
                 mContentMarginLeft + mContentViewWidth,
-                it.bottom
+                it.bottom,
             )
             mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)
             mMenuView?.layout(it.right, it.top, it.right + mMenuViewWidth, it.bottom)

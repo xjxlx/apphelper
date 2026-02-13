@@ -12,19 +12,14 @@ import com.android.common.utils.LogUtil
 import com.android.helper.R
 import com.bigkoo.pickerview.adapter.ArrayWheelAdapter
 import com.contrarywind.view.WheelView
-import org.jetbrains.annotations.NotNull
 import java.util.Calendar
 import java.util.GregorianCalendar
 import java.util.regex.Pattern
+import org.jetbrains.annotations.NotNull
 
-/**
- * 自定义日历选择器
- * 这里使用view的方式，让别人去在xml中引用
- */
-class CalendarChooser(
-    context: Context,
-    attrs: AttributeSet?
-) : FrameLayout(context, attrs) {
+/** 自定义日历选择器 这里使用view的方式，让别人去在xml中引用 */
+class CalendarChooser(context: Context, attrs: AttributeSet?) :
+    FrameLayout(context, attrs) {
     private lateinit var inflater: View
     private lateinit var options1: WheelView
     private lateinit var options2: WheelView
@@ -94,10 +89,8 @@ class CalendarChooser(
     @SuppressLint("InflateParams")
     private fun initView() {
         inflater =
-            LayoutInflater
-                .from(
-                    context
-                ).inflate(R.layout.custom_calendar_chooser, null, false)
+            LayoutInflater.from(context)
+                .inflate(R.layout.custom_calendar_chooser, null, false)
 
         // 获取年月日时分秒的view
         options1 = inflater.findViewById(R.id.options1)
@@ -129,16 +122,14 @@ class CalendarChooser(
         addView(inflater)
     }
 
-    /**
-     * 设置要显示的item的view，从左到右的顺序分别为，年、月、日、时、分、秒
-     */
+    /** 设置要显示的item的view，从左到右的顺序分别为，年、月、日、时、分、秒 */
     fun setItemShow(
         year: Boolean,
         month: Boolean,
         day: Boolean,
         hour: Boolean,
         minute: Boolean,
-        second: Boolean
+        second: Boolean,
     ): CalendarChooser {
         mShowArray[0] = year
         mShowArray[1] = month
@@ -150,9 +141,7 @@ class CalendarChooser(
         return this
     }
 
-    /**
-     * 设置view的显示选项
-     */
+    /** 设置view的显示选项 */
     private fun setShowView() {
         for (index in mShowArray.indices) {
             val isShow = mShowArray[index]
@@ -165,29 +154,19 @@ class CalendarChooser(
         }
     }
 
-    /**
-     * 设置当前的日历对象
-     */
-    fun setCurrentCalendar(
-        @NotNull currentCalendar: Calendar
-    ): CalendarChooser {
+    /** 设置当前的日历对象 */
+    fun setCurrentCalendar(@NotNull currentCalendar: Calendar): CalendarChooser {
         this.mCurrentCalendar = currentCalendar
         return this
     }
 
-    /**
-     * 设置结束的日历对象,这个对象必须是一个全新的对象，不能和设置开始对象是一个对象，否则就会导致数据混乱
-     */
-    fun setEndCalendar(
-        @NotNull endCalendar: Calendar
-    ): CalendarChooser {
+    /** 设置结束的日历对象,这个对象必须是一个全新的对象，不能和设置开始对象是一个对象，否则就会导致数据混乱 */
+    fun setEndCalendar(@NotNull endCalendar: Calendar): CalendarChooser {
         this.mEndCalendar = endCalendar
         return this
     }
 
-    /**
-     * 构造数据的方法，在show方法之前，必须调用
-     */
+    /** 构造数据的方法，在show方法之前，必须调用 */
     fun build(): CalendarChooser {
         // 设置展示那些view
         setShowView()
@@ -196,9 +175,7 @@ class CalendarChooser(
         return this
     }
 
-    /**
-     * 初始化日期的数据
-     */
+    /** 初始化日期的数据 */
     private fun initDate() {
         // 获取开始时间的具体年月日时分秒
         if (mCurrentCalendar != null) {
@@ -291,20 +268,13 @@ class CalendarChooser(
         filterData()
     }
 
-    /**
-     * 根据年份设置月份
-     */
+    /** 根据年份设置月份 */
     private fun setMonthForYear() {
         mOptionTimeList2.clear()
 
         if (!isShowAllData()) { // 显示受限制的数据
 
-            /**
-             * 业务逻辑：
-             *      1：计算出当前年份剩下的月份
-             *      2：计算出最后一年剩余的月份
-             *      3：中间的年份都是12个月的
-             */
+            /** 业务逻辑： 1：计算出当前年份剩下的月份 2：计算出最后一年剩余的月份 3：中间的年份都是12个月的 */
             var start: Int
             var end: Int
 
@@ -365,9 +335,7 @@ class CalendarChooser(
         }
     }
 
-    /**
-     * 根据年月去获取当前月份一共剩余几天
-     */
+    /** 根据年月去获取当前月份一共剩余几天 */
     private fun setDayForMonth() {
         mOptionTimeList3.clear()
         val year = mCurrentYear.replace("年", "").toInt()
@@ -438,9 +406,7 @@ class CalendarChooser(
         }
     }
 
-    /**
-     * 根据每一天设置当前的小时
-     */
+    /** 根据每一天设置当前的小时 */
     private fun setHourForDay() {
         mOptionTimeList4.clear()
         if (!isShowAllData()) {
@@ -456,9 +422,10 @@ class CalendarChooser(
                 start = mStartHour!!
                 // 这里判断，只要不是同一年，同一月，同一天，就都是end == 23,否则就是以后面的小时为准
                 end =
-                    if ((mStartYear!!.toInt() == mEndYear!!.toInt()) &&
-                        (mEndMonth!!.toInt() == mStartMonth!!.toInt()) &&
-                        (mEndDay!!.toInt() == mStartDay!!.toInt())
+                    if (
+                        (mStartYear!!.toInt() == mEndYear!!.toInt()) &&
+                            (mEndMonth!!.toInt() == mStartMonth!!.toInt()) &&
+                            (mEndDay!!.toInt() == mStartDay!!.toInt())
                     ) {
                         mEndHour!!.toInt()
                     } else {
@@ -580,9 +547,7 @@ class CalendarChooser(
         }
     }
 
-    /**
-     * 根据您每一小时设置当前一共多少分钟
-     */
+    /** 根据您每一小时设置当前一共多少分钟 */
     private fun setMinuteForHour() {
         mOptionTimeList5.clear()
 
@@ -595,24 +560,31 @@ class CalendarChooser(
             val day = mCurrentDay.replace("日", "").toInt()
             val hour = mCurrentHour.replace("时", "").toInt()
 
-            if (year == mStartYear && month == mStartMonth && day == mStartDay &&
-                hour == mStartHour
+            if (
+                year == mStartYear &&
+                    month == mStartMonth &&
+                    day == mStartDay &&
+                    hour == mStartHour
             ) {
                 start = mStartMinute!!
 
                 // 如果年月日时都相同，则end以结束的分钟为准
                 end =
-                    if ((mStartYear!!.toInt() == mEndYear!!.toInt()) &&
-                        (mStartMonth!!.toInt() == mEndMonth!!.toInt()) &&
-                        (mStartDay!!.toInt() == mEndDay!!.toInt()) &&
-                        (mStartHour!!.toInt() == mEndHour!!.toInt())
+                    if (
+                        (mStartYear!!.toInt() == mEndYear!!.toInt()) &&
+                            (mStartMonth!!.toInt() == mEndMonth!!.toInt()) &&
+                            (mStartDay!!.toInt() == mEndDay!!.toInt()) &&
+                            (mStartHour!!.toInt() == mEndHour!!.toInt())
                     ) {
                         mEndMinute!!.toInt()
                     } else {
                         59
                     }
-            } else if (year == mEndYear && month == mEndMonth && day == mEndDay &&
-                hour == mEndHour
+            } else if (
+                year == mEndYear &&
+                    month == mEndMonth &&
+                    day == mEndDay &&
+                    hour == mEndHour
             ) {
                 start = 0
                 end = mEndMinute!!
@@ -735,9 +707,7 @@ class CalendarChooser(
         }
     }
 
-    /**
-     *根据您每一分钟设置当前的秒数
-     */
+    /** 根据您每一分钟设置当前的秒数 */
     private fun setSecondForMinute() {
         mOptionTimeList6.clear()
 
@@ -751,25 +721,32 @@ class CalendarChooser(
             val hour = mCurrentHour.replace("时", "").toInt()
             val minute = mCurrentMinute.replace("分", "").toInt()
 
-            if (year == mStartYear && month == mStartMonth && day == mStartDay &&
-                hour == mStartHour &&
-                minute == mStartMinute
+            if (
+                year == mStartYear &&
+                    month == mStartMonth &&
+                    day == mStartDay &&
+                    hour == mStartHour &&
+                    minute == mStartMinute
             ) {
                 start = mStartSecond!!
 
-                if ((mStartYear!!.toInt() == mEndYear!!.toInt()) &&
-                    (mStartHour!!.toInt() == mEndHour!!.toInt()) &&
-                    (mStartDay!!.toInt() == mEndDay!!.toInt()) &&
-                    (mStartHour!!.toInt() == mEndHour!!.toInt()) &&
-                    (mStartMinute!!.toInt() == mEndMinute!!.toInt())
+                if (
+                    (mStartYear!!.toInt() == mEndYear!!.toInt()) &&
+                        (mStartHour!!.toInt() == mEndHour!!.toInt()) &&
+                        (mStartDay!!.toInt() == mEndDay!!.toInt()) &&
+                        (mStartHour!!.toInt() == mEndHour!!.toInt()) &&
+                        (mStartMinute!!.toInt() == mEndMinute!!.toInt())
                 ) {
                     end = mEndSecond!!.toInt()
                 } else {
                     end = 59
                 }
-            } else if (year == mEndYear && month == mEndMonth && day == mEndDay &&
-                hour == mEndHour &&
-                minute == mEndMinute
+            } else if (
+                year == mEndYear &&
+                    month == mEndMonth &&
+                    day == mEndDay &&
+                    hour == mEndHour &&
+                    minute == mEndMinute
             ) {
                 start = 0
                 end = mEndSecond!!
@@ -808,9 +785,7 @@ class CalendarChooser(
         }
     }
 
-    /**
-     * 初始化WheelView的选项
-     */
+    /** 初始化WheelView的选项 */
     private fun initWheelView() {
         // 设置数据
         options1.adapter = ArrayWheelAdapter(mOptionTimeList1 as List<String>)
@@ -962,13 +937,8 @@ class CalendarChooser(
         }
     }
 
-    /**
-     * 获取当前的最大值
-     */
-    private fun getMaxDayForMonth(
-        year: Int,
-        month: Int
-    ): Int {
+    /** 获取当前的最大值 */
+    private fun getMaxDayForMonth(year: Int, month: Int): Int {
         val calendar: Calendar = GregorianCalendar(year, month, 0)
         return calendar.getActualMaximum(Calendar.DATE)
     }
@@ -980,7 +950,7 @@ class CalendarChooser(
             day: String,
             hour: String,
             minute: String,
-            second: String
+            second: String,
         )
     }
 
@@ -990,23 +960,17 @@ class CalendarChooser(
 
     fun setCancelTitleListener(listener: OnClickListener) {
         inflater
-            .findViewById<TextView>(
-                R.id.tv_cancel_chooser
-            ).setOnClickListener(listener)
+            .findViewById<TextView>(R.id.tv_cancel_chooser)
+            .setOnClickListener(listener)
     }
 
-    fun setSaveTitleClickListener(
-        @NotNull saveListener: OnClickListener
-    ) {
+    fun setSaveTitleClickListener(@NotNull saveListener: OnClickListener) {
         inflater
-            .findViewById<TextView>(
-                R.id.tv_save_time
-            ).setOnClickListener(saveListener)
+            .findViewById<TextView>(R.id.tv_save_time)
+            .setOnClickListener(saveListener)
     }
 
-    /**
-     * 重新过滤数据
-     */
+    /** 重新过滤数据 */
     private fun filterData() {
         mListener?.let {
             val month: String =
@@ -1052,17 +1016,13 @@ class CalendarChooser(
         this.mIsShowAllData = isShowAllData
     }
 
-    /**
-     * 过滤分钟的数据
-     */
+    /** 过滤分钟的数据 */
     fun setMatchFilterMinute(matchingMinute: String) {
         mIsMatchMinute = true
         mMatchingMinute = matchingMinute
     }
 
-    /**
-     * 过滤小时的数据
-     */
+    /** 过滤小时的数据 */
     fun setMatchFilterHours(matchingHours: String) {
         mIsMatchHours = true
         mMatchingHours = matchingHours
@@ -1070,14 +1030,15 @@ class CalendarChooser(
 
     /**
      * 根据指定的值，去设置默认的角标
-     * @param type 1:年  2：月，3：日，4：时：5：分：6：秒
+     *
+     * @param type 1:年 2：月，3：日，4：时：5：分：6：秒
      */
     private fun findIndexForList(
         list: ArrayList<String>,
         value: Int,
         wheel: WheelView,
         isMatch: Boolean,
-        type: Int
+        type: Int,
     ): Int {
         if (list.size > 0) {
             for (index in list.indices) {
@@ -1107,10 +1068,7 @@ class CalendarChooser(
         return 0
     }
 
-    fun match(
-        content: String?,
-        regular: String?
-    ): Boolean {
+    fun match(content: String?, regular: String?): Boolean {
         if (TextUtils.isEmpty(content) || TextUtils.isEmpty(regular)) {
             return false
         } else {

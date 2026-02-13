@@ -32,9 +32,7 @@ class AudioService : Service() {
     private var disposableSubscriber: DisposableSubscriber<Long?>? = null
     private var mSendProgress = true // 是否正常发送当前的进度，默认为true
 
-    /**
-     * 播放完成的监听
-     */
+    /** 播放完成的监听 */
     private val onCompletionListener: MediaPlayer.OnCompletionListener =
         object : MediaPlayer.OnCompletionListener {
             override fun onCompletion(iMediaPlayer: MediaPlayer?) {
@@ -55,7 +53,7 @@ class AudioService : Service() {
             override fun onError(
                 iMediaPlayer: MediaPlayer?,
                 what: Int,
-                extra: Int
+                extra: Int,
             ): Boolean {
                 LogUtil.e(AudioConstant.TAG, "onError--->发生了错误！ what:$what")
                 STATUS_TYPE = AudioConstant.STATUS_ERROR
@@ -106,11 +104,7 @@ class AudioService : Service() {
     // 播放信息的回调
     private val mInfoListener: MediaPlayer.OnInfoListener =
         object : MediaPlayer.OnInfoListener {
-            override fun onInfo(
-                mp: MediaPlayer?,
-                arg1: Int,
-                arg2: Int
-            ): Boolean {
+            override fun onInfo(mp: MediaPlayer?, arg1: Int, arg2: Int): Boolean {
                 when (arg1) {
                     MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING -> {}
 
@@ -168,13 +162,10 @@ class AudioService : Service() {
     // 播放进度的回调
     private val onBufferingUpdateListener: MediaPlayer.OnBufferingUpdateListener =
         object : MediaPlayer.OnBufferingUpdateListener {
-            override fun onBufferingUpdate(
-                mp: MediaPlayer?,
-                percent: Int
-            ) {
+            override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
                 LogUtil.e(
                     AudioConstant.TAG,
-                    "onBufferingUpdate--->播放进度的回调，当前的缓冲百分比为:$percent"
+                    "onBufferingUpdate--->播放进度的回调，当前的缓冲百分比为:$percent",
                 )
                 if (mDuration <= 0) {
                     mDuration = duration
@@ -200,11 +191,7 @@ class AudioService : Service() {
         mediaPlayer = getMediaPlayer()
     }
 
-    override fun onStartCommand(
-        intent: Intent?,
-        flags: Int,
-        startId: Int
-    ): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // 创建对象
         mediaPlayer = getMediaPlayer()
         return super.onStartCommand(intent, flags, startId)
@@ -220,9 +207,7 @@ class AudioService : Service() {
         return mediaPlayer
     }
 
-    /**
-     * 初始化监听器
-     */
+    /** 初始化监听器 */
     fun initListener() {
         mediaPlayer?.setOnPreparedListener(onPreparedListener)
         mediaPlayer?.setOnErrorListener(onErrorListener)
@@ -231,9 +216,7 @@ class AudioService : Service() {
         mediaPlayer?.setOnBufferingUpdateListener(onBufferingUpdateListener)
     }
 
-    /**
-     * @param audioPath 设置播放资源
-     */
+    /** @param audioPath 设置播放资源 */
     fun setResource(audioPath: String?) {
         LogUtil.e(AudioConstant.TAG, "走入到setResource方法中！")
         if (TextUtils.isEmpty(audioPath)) {
@@ -247,9 +230,7 @@ class AudioService : Service() {
         player()
     }
 
-    /**
-     * 开始去准备播放音频
-     */
+    /** 开始去准备播放音频 */
     fun player() {
         // 清空数据
         LogUtil.e(AudioConstant.TAG, "走入到player方法中！")
@@ -288,9 +269,7 @@ class AudioService : Service() {
         }
     }
 
-    /**
-     * 开始播放
-     */
+    /** 开始播放 */
     fun start(): Boolean {
         LogUtil.e(AudioConstant.TAG, "走入到了start的方法中！")
         try {
@@ -330,9 +309,7 @@ class AudioService : Service() {
         return false
     }
 
-    /**
-     * 暂停
-     */
+    /** 暂停 */
     fun pause(): Boolean {
         mediaPlayer = getMediaPlayer()
         val playing = this.isPlaying
@@ -350,10 +327,7 @@ class AudioService : Service() {
             } catch (e: Exception) {
                 LogUtil.e("暂停失败")
                 mCallBackListener?.onError(Exception("pause--->" + e.message))
-                LogUtil.e(
-                    AudioConstant.TAG,
-                    "pause--->走入了暂停的方法中，暂停异常了--->" + e.message
-                )
+                LogUtil.e(AudioConstant.TAG, "pause--->走入了暂停的方法中，暂停异常了--->" + e.message)
             }
         }
         return false
@@ -387,9 +361,7 @@ class AudioService : Service() {
     }
 
     val isPlaying: Boolean
-        /**
-         * @return 当前是否是在播放中
-         */
+        /** @return 当前是否是在播放中 */
         get() {
             mediaPlayer = getMediaPlayer()
             var playing = false
@@ -402,10 +374,7 @@ class AudioService : Service() {
                     }
                 }
             } catch (e: Exception) {
-                LogUtil.e(
-                    AudioConstant.TAG,
-                    "isPlaying--->播放状态异常--->" + e.message
-                )
+                LogUtil.e(AudioConstant.TAG, "isPlaying--->播放状态异常--->" + e.message)
                 mCallBackListener?.onError(Exception("isPlaying--->" + e.message))
             }
             return playing
@@ -417,16 +386,12 @@ class AudioService : Service() {
         clear()
     }
 
-    /**
-     * @param callBackListener 回调的监听
-     */
+    /** @param callBackListener 回调的监听 */
     fun setAudioCallBackListener(callBackListener: AudioPlayerCallBackListener?) {
         mCallBackListener = callBackListener
     }
 
-    /**
-     * @param e 错误的处理
-     */
+    /** @param e 错误的处理 */
     private fun setErrorData(e: Exception) {
         LogUtil.e(AudioConstant.TAG, "setErrorData--->音频播放器错误：" + e.message)
         // 清空播放器，然后重新去搞一次
@@ -437,37 +402,24 @@ class AudioService : Service() {
     }
 
     val duration: Int
-        /**
-         * @return 获取资源的时长
-         */
+        /** @return 获取资源的时长 */
         get() {
-            LogUtil.e(
-                AudioConstant.TAG,
-                "getDuration--->走入了获取视频时长的方法中！"
-            )
+            LogUtil.e(AudioConstant.TAG, "getDuration--->走入了获取视频时长的方法中！")
             var result = 0
             try {
                 if (mediaPlayer != null) {
                     if (initialized) {
                         result = mediaPlayer!!.duration
-                        LogUtil.e(
-                            AudioConstant.TAG,
-                            "getDuration--->正常获取视频的时长:$result"
-                        )
+                        LogUtil.e(AudioConstant.TAG, "getDuration--->正常获取视频的时长:$result")
                     }
                 }
             } catch (e: Exception) {
-                LogUtil.e(
-                    AudioConstant.TAG,
-                    "getDuration--->异常了--->" + e.message
-                )
+                LogUtil.e(AudioConstant.TAG, "getDuration--->异常了--->" + e.message)
             }
             return result
         }
 
-    /**
-     * 加载的回调
-     */
+    /** 加载的回调 */
     private val onPreparedListener: MediaPlayer.OnPreparedListener =
         object : MediaPlayer.OnPreparedListener {
             override fun onPrepared(iMediaPlayer: MediaPlayer?) {
@@ -480,9 +432,7 @@ class AudioService : Service() {
             }
         }
 
-    /**
-     * 清空资源
-     */
+    /** 清空资源 */
     fun reset() {
         LogUtil.e(AudioConstant.TAG, "reset--->走入了清空资源的方法中！")
         mDuration = 0
@@ -491,30 +441,28 @@ class AudioService : Service() {
     }
 
     val progress: Unit
-        /**
-         * 每隔1秒轮询一次当前的进度
-         */
+        /** 每隔1秒轮询一次当前的进度 */
         get() {
             disposableSubscriber?.dispose()
             disposableSubscriber =
-                Flowable
-                    .interval(1000, TimeUnit.MILLISECONDS)
+                Flowable.interval(1000, TimeUnit.MILLISECONDS)
                     .filter(
                         object : Predicate<Long?> {
                             @Throws(Exception::class)
                             override fun test(aLong: Long): Boolean =
                                 mSendProgress && initialized
                         }
-                    ).filter(
+                    )
+                    .filter(
                         object : Predicate<Long?> {
                             @Throws(Exception::class)
                             override fun test(aLong: Long): Boolean =
                                 (mediaPlayer != null) && isPlaying
                         }
-                    ).compose<Long?>(RxUtil.getSchedulerFlowable<Long?>())
+                    )
+                    .compose<Long?>(RxUtil.getSchedulerFlowable<Long?>())
                     .subscribeWith(
-                        object :
-                            DisposableSubscriber<Long?>() {
+                        object : DisposableSubscriber<Long?>() {
                             override fun onNext(aLong: Long?) {
                                 try {
                                     if (mCallBackListener != null) {
@@ -532,13 +480,13 @@ class AudioService : Service() {
                                                 String.format(
                                                     Locale.CHINA,
                                                     "%.2f",
-                                                    ((currentPosition * 1.0) / mDuration)
+                                                    ((currentPosition * 1.0) / mDuration),
                                                 )
                                         }
                                         mCallBackListener!!.onProgress(
                                             mDuration,
                                             currentPosition,
-                                            value
+                                            value,
                                         )
                                     }
                                 } catch (e: Exception) {
@@ -546,18 +494,14 @@ class AudioService : Service() {
                                 }
                             }
 
-                            override fun onError(t: Throwable?) {
-                            }
+                            override fun onError(t: Throwable?) {}
 
-                            override fun onComplete() {
-                            }
+                            override fun onComplete() {}
                         }
                     )
         }
 
-    /**
-     * 清空资源
-     */
+    /** 清空资源 */
     fun clear() {
         LogUtil.e(AudioConstant.TAG, "clear--->走入了clear的方法中！")
         if (mediaPlayer != null) {
@@ -574,9 +518,7 @@ class AudioService : Service() {
         }
     }
 
-    inner class AudioBinder :
-        Binder(),
-        AudioControlInterface {
+    inner class AudioBinder : Binder(), AudioControlInterface {
         override fun getMediaPlayer(): MediaPlayer? = this@AudioService.getMediaPlayer()
 
         override fun getStatus(): Int = STATUS_TYPE

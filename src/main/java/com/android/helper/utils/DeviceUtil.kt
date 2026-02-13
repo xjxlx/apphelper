@@ -18,23 +18,20 @@ import java.io.File
  * @Description:
  */
 class DeviceUtil private constructor() {
-    @JvmField
-    val fileName = "deviceId.txt"
+    @JvmField val fileName = "deviceId.txt"
     private val TAG = "DeviceUtil"
 
     companion object {
         @JvmStatic
-        val instance: DeviceUtil by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
-            DeviceUtil()
-        }
+        val instance: DeviceUtil by
+            lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) { DeviceUtil() }
     }
 
     /**
-     * 必须添加权限
-     * android 11 以下，使用权限
-     *      <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"/>
-     * android 11 以上，额外另加一个权限
-     *      <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+     * 必须添加权限 android 11 以下，使用权限 <uses-permission
+     * android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"/> android 11
+     * 以上，额外另加一个权限 <uses-permission android:name="android.permission.READ_PHONE_NUMBERS"
+     * />
      */
     @SuppressLint("HardwareIds")
     @RequiresPermission("android.permission.READ_PRIVILEGED_PHONE_STATE")
@@ -43,11 +40,15 @@ class DeviceUtil private constructor() {
         context?.let {
             val systemService = it.getSystemService(Context.TELEPHONY_SERVICE)
             if (systemService is TelephonyManager) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // android 10 以上，只能通过系统权限获取
+                if (
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                ) { // android 10 以上，只能通过系统权限获取
                 } else {
                     // 1.1:如果有权限，直接显示
                     // 8.0 以下可以用deviceId，8.0以上要使用 imeiId
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // 只适用于手机，依赖于sim卡
+                    if (
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                    ) { // 只适用于手机，依赖于sim卡
                         deviceId = systemService.imei // 设备的SN 序列号
                         if (TextUtils.isEmpty(deviceId)) {
                             deviceId = Build.getSerial()
@@ -82,7 +83,13 @@ class DeviceUtil private constructor() {
         )
 
         val deviceId =
-            uniqueId + "_" + Build.BRAND + "_" + Build.MODEL + "_" + Build.MANUFACTURER +
+            uniqueId +
+                "_" +
+                Build.BRAND +
+                "_" +
+                Build.MODEL +
+                "_" +
+                Build.MANUFACTURER +
                 "_" +
                 Build.DEVICE +
                 "_" +
@@ -106,9 +113,7 @@ class DeviceUtil private constructor() {
         return ""
     }
 
-    /**
-     * 获取 deviceId
-     */
+    /** 获取 deviceId */
     fun getDeviceIdForFile(path: String): String {
         var content = ""
         val file = File(path + File.separator, fileName)
@@ -118,13 +123,8 @@ class DeviceUtil private constructor() {
         return content
     }
 
-    /**
-     * 写入deviceId 到文件中
-     */
-    fun writeDeviceId(
-        context: Context?,
-        androidId: String
-    ) {
+    /** 写入deviceId 到文件中 */
+    fun writeDeviceId(context: Context?, androidId: String) {
         context?.let {
             if (!TextUtils.isEmpty(androidId)) {
                 // 1:使用标准的文档地址
@@ -140,10 +140,7 @@ class DeviceUtil private constructor() {
         }
     }
 
-    private fun writeContentToFile(
-        path: String,
-        androidId: String
-    ) {
+    private fun writeContentToFile(path: String, androidId: String) {
         LogUtil.e("path::$path")
         // 判断文档地址是否存在，不存在就创建
         val parentFile = File(path)
@@ -162,10 +159,7 @@ class DeviceUtil private constructor() {
                 if (childFile.exists()) {
                     // 写入数据
                     val success =
-                        FileUtil.getInstance().writeContentToFile(
-                            childFile,
-                            androidId
-                        )
+                        FileUtil.getInstance().writeContentToFile(childFile, androidId)
                     LogUtil.e(TAG, "Device 文件写入成功：$success")
                 } else {
                     LogUtil.e(TAG, "Device 子类文件创建失败！")
@@ -186,7 +180,7 @@ class DeviceUtil private constructor() {
             deviceId =
                 Settings.Secure.getString(
                     it.applicationContext.contentResolver,
-                    Settings.Secure.ANDROID_ID
+                    Settings.Secure.ANDROID_ID,
                 )
             if (TextUtils.isEmpty(deviceId)) {
                 // 设备的唯一标识。由设备的多个信息拼接合成
@@ -199,8 +193,6 @@ class DeviceUtil private constructor() {
         return deviceId
     }
 
-    /**
-     * 获取设备的型号
-     */
+    /** 获取设备的型号 */
     fun getBrand(): String = Build.BRAND
 }

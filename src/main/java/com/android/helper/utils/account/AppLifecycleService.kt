@@ -16,15 +16,12 @@ import com.android.helper.common.CommonConstants
 import com.android.helper.utils.NotificationUtil
 import com.android.helper.utils.ServiceUtil
 
-/**
- * 账号拉活的服务类，用来后台拉活
- */
+/** 账号拉活的服务类，用来后台拉活 */
 class AppLifecycleService : Service() {
     private val mWriteUtil: WriteLogUtil =
         WriteLogUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt")
 
-    @SuppressLint("StaticFieldLeak")
-    private val CODE_NOTIFICATION = 19900713
+    @SuppressLint("StaticFieldLeak") private val CODE_NOTIFICATION = 19900713
     private val CODE_INTERVAL = 5 * 1000
 
     override fun onBind(intent: Intent): IBinder? = null
@@ -34,11 +31,7 @@ class AppLifecycleService : Service() {
         mWriteUtil.init(baseContext)
     }
 
-    override fun onStartCommand(
-        intent: Intent?,
-        flags: Int,
-        startId: Int
-    ): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         mWriteUtil.write("onStartCommand --->")
 
         // 标记打开服务的来源
@@ -60,8 +53,7 @@ class AppLifecycleService : Service() {
 
     private fun sendNotification(type: String) {
         val builder =
-            NotificationUtil
-                .Builder(applicationContext)
+            NotificationUtil.Builder(applicationContext)
                 .setChannelName(CommonConstants.KEY_LIFECYCLE_NOTIFICATION_CHANNEL_NAME)
                 .setSmallIcon(R.mipmap.ic_launcher)
 
@@ -81,8 +73,7 @@ class AppLifecycleService : Service() {
     }
 
     private fun startNotificationForeground() {
-        NotificationUtil
-            .Builder(baseContext)
+        NotificationUtil.Builder(baseContext)
             .setWhen(System.currentTimeMillis())
             .setChannelName("应用保活")
             .setChannelImportance(NotificationManager.IMPORTANCE_HIGH)
@@ -109,13 +100,11 @@ class AppLifecycleService : Service() {
 
                     // 2:启动jobService
                     val jobServiceName: String =
-                        LifecycleManager
-                            .getInstance()
-                            .jobServiceName
+                        LifecycleManager.getInstance().jobServiceName
                     val jobServiceRunning =
                         ServiceUtil.isJobServiceRunning(
                             applicationContext,
-                            jobServiceName
+                            jobServiceName,
                         )
                     mWriteUtil?.write(
                         "☆☆☆☆☆---我是后台服务，当前jobService的状态为:$jobServiceRunning"
@@ -124,7 +113,7 @@ class AppLifecycleService : Service() {
                     if (!jobServiceRunning) {
                         AppJobService.startJob(
                             applicationContext,
-                            LifecycleAppEnum.FROM_SERVICE
+                            LifecycleAppEnum.FROM_SERVICE,
                         )
                     }
 

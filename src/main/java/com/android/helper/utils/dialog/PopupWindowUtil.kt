@@ -41,23 +41,19 @@ class PopupWindowUtil {
     private val mCloseList: ArrayList<View> = arrayListOf()
     private var isBuild = false
 
-    private val mLifecycleObserver =
-        LifecycleDestroyObserver {
-            LogUtil.e(TAG, "onDestroy")
-            // 手动关闭弹窗，避免崩溃
-            if (isShowing()) {
-                dismiss()
-            }
-
-            if (popupWindow != null) {
-                popupWindow = null
-            }
+    private val mLifecycleObserver = LifecycleDestroyObserver {
+        LogUtil.e(TAG, "onDestroy")
+        // 手动关闭弹窗，避免崩溃
+        if (isShowing()) {
+            dismiss()
         }
 
-    fun setContentView(
-        fragment: Fragment,
-        view: View
-    ): PopupWindowUtil {
+        if (popupWindow != null) {
+            popupWindow = null
+        }
+    }
+
+    fun setContentView(fragment: Fragment, view: View): PopupWindowUtil {
         this.mFragment = fragment
         this.mActivity = fragment.activity
         this.mLayout = view
@@ -65,33 +61,21 @@ class PopupWindowUtil {
         return this
     }
 
-    fun setContentView(
-        activity: FragmentActivity,
-        view: View
-    ): PopupWindowUtil {
+    fun setContentView(activity: FragmentActivity, view: View): PopupWindowUtil {
         this.mActivity = activity
         this.mLayout = view
         mTypeFromPage = DialogFromType.TYPE_ACTIVITY
         return this
     }
 
-    fun setContentView(
-        fragment: Fragment,
-        resource: Int
-    ): PopupWindowUtil {
+    fun setContentView(fragment: Fragment, resource: Int): PopupWindowUtil {
         val inflate =
-            LayoutInflater
-                .from(
-                    fragment.activity
-                ).inflate(resource, null, false)
+            LayoutInflater.from(fragment.activity).inflate(resource, null, false)
         setContentView(fragment, inflate)
         return this
     }
 
-    fun setContentView(
-        activity: FragmentActivity,
-        resource: Int
-    ): PopupWindowUtil {
+    fun setContentView(activity: FragmentActivity, resource: Int): PopupWindowUtil {
         val inflate = LayoutInflater.from(activity).inflate(resource, null, false)
         setContentView(activity, inflate)
         return this
@@ -118,7 +102,8 @@ class PopupWindowUtil {
         //     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         //        val window = it.window
         //        val attributes = window.attributes
-        //        attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        //        attributes.layoutInDisplayCutoutMode =
+        // WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         //        window.attributes = attributes
         //    }
         // }
@@ -161,9 +146,7 @@ class PopupWindowUtil {
 
                     // close view
                     for (item in mCloseList) {
-                        item.setOnClickListener {
-                            this@PopupWindowUtil.dismiss()
-                        }
+                        item.setOnClickListener { this@PopupWindowUtil.dismiss() }
                     }
                 }
 
@@ -196,17 +179,13 @@ class PopupWindowUtil {
         return this
     }
 
-    /**
-     * @param width ViewGroup.LayoutParams.WRAP_CONTENT
-     */
+    /** @param width ViewGroup.LayoutParams.WRAP_CONTENT */
     fun setWidth(width: Int): PopupWindowUtil {
         this.mWidth = width
         return this
     }
 
-    /**
-     * @param height ViewGroup.LayoutParams.WRAP_CONTENT
-     */
+    /** @param height ViewGroup.LayoutParams.WRAP_CONTENT */
     fun setHeight(height: Int): PopupWindowUtil {
         this.mHeight = height
         return this
@@ -226,26 +205,19 @@ class PopupWindowUtil {
         return this
     }
 
-    /**
-     * @param focusable 是否拥有焦点，默认拥有
-     */
+    /** @param focusable 是否拥有焦点，默认拥有 */
     fun setFocusable(focusable: Boolean): PopupWindowUtil {
         this.focusable = focusable
         return this
     }
 
-    /**
-     * @return 是否可以超出屏幕显示，false :可以，true:不可以，默认不可以
-     */
+    /** @return 是否可以超出屏幕显示，false :可以，true:不可以，默认不可以 */
     fun setClippingEnabled(clippingEnabled: Boolean): PopupWindowUtil {
         this.mClippingEnabled = clippingEnabled
         return this
     }
 
-    fun setText(
-        @IdRes id: Int,
-        text: String
-    ): PopupWindowUtil {
+    fun setText(@IdRes id: Int, text: String): PopupWindowUtil {
         mLayout?.let {
             val view = it.findViewById<View>(id)
             if (view is TextView) {
@@ -255,17 +227,14 @@ class PopupWindowUtil {
         return this
     }
 
-    fun setText(
-        textView: TextView,
-        text: String
-    ): PopupWindowUtil {
+    fun setText(textView: TextView, text: String): PopupWindowUtil {
         TextViewUtil.setText(textView, text)
         return this
     }
 
     fun setClickListener(
         @IdRes id: Int,
-        listener: View.OnClickListener
+        listener: View.OnClickListener,
     ): PopupWindowUtil {
         mLayout?.let {
             val view = it.findViewById<View>(id)
@@ -274,10 +243,7 @@ class PopupWindowUtil {
         return this
     }
 
-    fun setClickListener(
-        view: View,
-        listener: View.OnClickListener
-    ): PopupWindowUtil {
+    fun setClickListener(view: View, listener: View.OnClickListener): PopupWindowUtil {
         view.setOnClickListener(listener)
         return this
     }
@@ -308,11 +274,7 @@ class PopupWindowUtil {
         showAtLocation(view, 0, 0)
     }
 
-    fun showAtLocation(
-        view: View?,
-        xOff: Int,
-        yOff: Int
-    ) {
+    fun showAtLocation(view: View?, xOff: Int, yOff: Int) {
         if (!isBuild) {
             throw NullPointerException("Build方法未调用！")
         }
@@ -330,11 +292,7 @@ class PopupWindowUtil {
         showAsDropDown(view, 0, 0)
     }
 
-    fun showAsDropDown(
-        view: View?,
-        xOff: Int,
-        yOff: Int
-    ) {
+    fun showAsDropDown(view: View?, xOff: Int, yOff: Int) {
         if (!isBuild) {
             throw NullPointerException("Build方法未调用！")
         }
@@ -365,23 +323,14 @@ class PopupWindowUtil {
     }
 
     interface ViewCreatedListener {
-        fun onViewCreated(
-            rootView: View?,
-            popupWindow: PopupWindowUtil
-        )
+        fun onViewCreated(rootView: View?, popupWindow: PopupWindowUtil)
     }
 
     interface OnShowListener {
-        fun onShow(
-            view: View?,
-            popupWindow: PopupWindowUtil
-        )
+        fun onShow(view: View?, popupWindow: PopupWindowUtil)
     }
 
     interface OnDismissListener {
-        fun onDismiss(
-            view: View?,
-            popupWindow: PopupWindowUtil
-        )
+        fun onDismiss(view: View?, popupWindow: PopupWindowUtil)
     }
 }

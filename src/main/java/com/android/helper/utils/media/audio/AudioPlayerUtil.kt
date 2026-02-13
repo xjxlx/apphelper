@@ -37,12 +37,9 @@ import com.android.helper.utils.ServiceUtil
 import com.android.helper.utils.dialog.DialogClickListener
 import com.android.helper.utils.dialog.DialogUtil
 
-/**
- * 音频播放的工具类
- */
-class AudioPlayerUtil(
-    private val mContext: FragmentActivity
-) : AudioPlayerCallBackListener() {
+/** 音频播放的工具类 */
+class AudioPlayerUtil(private val mContext: FragmentActivity) :
+    AudioPlayerCallBackListener() {
     private var connection: AudioServiceConnection? = null
     private var mBindService = false
     private var mBindServiceListener: BindServiceListener? = null
@@ -75,9 +72,7 @@ class AudioPlayerUtil(
     private var mAudioService: AudioService? = null // 音乐播放器的服务类
     private var mDialogUtil: DialogUtil? = null
 
-    /**
-     * 绑定服务
-     */
+    /** 绑定服务 */
     fun bindService(bindServiceListener: BindServiceListener?) {
         this.mBindServiceListener = bindServiceListener
         LogUtil.e(AudioConstant.TAG, "bindService--->开始绑定服务！")
@@ -99,29 +94,21 @@ class AudioPlayerUtil(
         LogUtil.e(AudioConstant.TAG, "bindService--->后台服务绑定成功：$mBindService")
     }
 
-    /**
-     * 解绑服务
-     */
+    /** 解绑服务 */
     fun unBindService() {
         if (mBindService) {
-            connection?.let {
-                mContext.unbindService(it)
-            }
+            connection?.let { mContext.unbindService(it) }
             mBindService = false
         }
     }
 
-    /**
-     * @param audioPath 播放地址
-     */
+    /** @param audioPath 播放地址 */
     fun setResource(audioPath: String?) {
         this.mAudioPath = audioPath
         mAudioBinder?.setAudioResource(audioPath)
     }
 
-    /**
-     * @param autoPlayer 是否自动播放
-     */
+    /** @param autoPlayer 是否自动播放 */
     fun autoPlayer(autoPlayer: Boolean) {
         this.mAutoPlayer = autoPlayer
     }
@@ -138,9 +125,7 @@ class AudioPlayerUtil(
         mAudioBinder?.stop()
     }
 
-    /**
-     * 页面停止不可见时候的处理
-     */
+    /** 页面停止不可见时候的处理 */
     fun destroy() {
         if (mBindService) {
             unBindService()
@@ -166,17 +151,14 @@ class AudioPlayerUtil(
         mAutoPlayer = false
     }
 
-    /**
-     * 轮询间隔的时间
-     */
+    /** 轮询间隔的时间 */
     fun setLoopInterval(loopInterval: Int) {
         this.mNotificationLoopInterVal = loopInterval
     }
 
     private fun initNotification() {
         mNotificationUtil =
-            NotificationUtil
-                .Builder(mContext)
+            NotificationUtil.Builder(mContext)
                 .setSmallIcon(mNotificationSmallIcon)
                 .setNotificationLevel(Notification.PRIORITY_DEFAULT)
                 .setActivity(mPendingIntentActivity)
@@ -191,7 +173,7 @@ class AudioPlayerUtil(
                             if (mNotificationLeft != 0) {
                                 remoteViews.setImageViewResource(
                                     R.id.iv_to_left,
-                                    mNotificationLeft
+                                    mNotificationLeft,
                                 )
                             }
                             // 中间的按钮
@@ -199,14 +181,14 @@ class AudioPlayerUtil(
                                 if (mNotificationPause != 0) {
                                     remoteViews.setImageViewResource(
                                         R.id.iv_start,
-                                        mNotificationPause
+                                        mNotificationPause,
                                     )
                                 }
                             } else {
                                 if (mNotificationStart != 0) {
                                     remoteViews.setImageViewResource(
                                         R.id.iv_start,
-                                        mNotificationStart
+                                        mNotificationStart,
                                     )
                                 }
                             }
@@ -214,7 +196,7 @@ class AudioPlayerUtil(
                             if (mNotificationRight != 0) {
                                 remoteViews.setImageViewResource(
                                     R.id.iv_to_right,
-                                    mNotificationRight
+                                    mNotificationRight,
                                 )
                             }
                             // 播放按钮点击事件的处理
@@ -226,11 +208,11 @@ class AudioPlayerUtil(
                                     mContext,
                                     AudioConstant.CODE_SEND_BROADCAST_RECEIVER,
                                     intentStart,
-                                    PendingIntent.FLAG_UPDATE_CURRENT
+                                    PendingIntent.FLAG_UPDATE_CURRENT,
                                 )
                             remoteViews.setOnClickPendingIntent(
                                 R.id.iv_start,
-                                btPendingIntentStart
+                                btPendingIntentStart,
                             )
                             // 左侧按钮点击事件的处理
                             val intentLeft = Intent()
@@ -240,11 +222,11 @@ class AudioPlayerUtil(
                                     mContext,
                                     AudioConstant.CODE_SEND_BROADCAST_RECEIVER,
                                     intentLeft,
-                                    PendingIntent.FLAG_UPDATE_CURRENT
+                                    PendingIntent.FLAG_UPDATE_CURRENT,
                                 )
                             remoteViews.setOnClickPendingIntent(
                                 R.id.iv_to_left,
-                                btPendingIntentLeft
+                                btPendingIntentLeft,
                             )
                             // 左侧按钮点击事件的处理
                             val intentRight = Intent()
@@ -254,24 +236,21 @@ class AudioPlayerUtil(
                                     mContext,
                                     AudioConstant.CODE_SEND_BROADCAST_RECEIVER,
                                     intentRight,
-                                    PendingIntent.FLAG_UPDATE_CURRENT
+                                    PendingIntent.FLAG_UPDATE_CURRENT,
                                 )
                             remoteViews.setOnClickPendingIntent(
                                 R.id.iv_to_right,
-                                btPendingIntentRight
+                                btPendingIntentRight,
                             )
                         }
-                    }
-                ).build()
+                    },
+                )
+                .build()
                 .sendNotification(1)
                 .startForeground(1, mAudioService)
     }
 
-    fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    ) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == NotificationUtil.CODE_REQUEST_ACTIVITY_NOTIFICATION) {
             mNotificationUtil?.let {
                 if (it.checkOpenNotify(mContext)) {
@@ -281,9 +260,7 @@ class AudioPlayerUtil(
         }
     }
 
-    /**
-     * @param callBackListener 数据回调
-     */
+    /** @param callBackListener 数据回调 */
     fun setAudioCallBackListener(callBackListener: AudioPlayerCallBackListener?) {
         if (callBackListener != null) {
             this.mCallBackListener = callBackListener
@@ -305,15 +282,16 @@ class AudioPlayerUtil(
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
-                    fromUser: Boolean
+                    fromUser: Boolean,
                 ) {
                     if (fromUser) {
                         mAudioBinder?.let {
                             val mediaPlayer: MediaPlayer? = it.getMediaPlayer()
                             if (mediaPlayer != null) {
                                 val status: Int = it.getStatus()
-                                if ((status != AudioConstant.STATUS_IDLE) &&
-                                    (status != AudioConstant.STATUS_ERROR)
+                                if (
+                                    (status != AudioConstant.STATUS_IDLE) &&
+                                        (status != AudioConstant.STATUS_ERROR)
                                 ) {
                                     mediaPlayer.seekTo(progress)
                                 }
@@ -333,18 +311,14 @@ class AudioPlayerUtil(
         )
     }
 
-    /**
-     * @param progressTimeView 设置SeekBar不停变换进度的view
-     */
+    /** @param progressTimeView 设置SeekBar不停变换进度的view */
     fun setSeekBarProgressTime(progressTimeView: TextView?) {
         this.mSeekBarProgressView = progressTimeView
         // 设置默认的进度
         TextViewUtil.setText(mSeekBarProgressView, "00:00")
     }
 
-    /**
-     * @param totalTimeView 设置SeekBar固定不变的view
-     */
+    /** @param totalTimeView 设置SeekBar固定不变的view */
     fun setSeekBarTotalTime(totalTimeView: TextView?) {
         if (totalTimeView == null) {
             return
@@ -354,9 +328,7 @@ class AudioPlayerUtil(
         TextViewUtil.setText(mSeekBarTotalView, "00:00")
     }
 
-    /**
-     * @param view 设置开关按钮的变换
-     */
+    /** @param view 设置开关按钮的变换 */
     fun setStartButton(view: View?) {
         if (view == null) {
             return
@@ -388,11 +360,7 @@ class AudioPlayerUtil(
         mStartButton?.isSelected = selector
     }
 
-    override fun onBufferProgress(
-        total: Int,
-        current: Double,
-        percent: Int
-    ) {
+    override fun onBufferProgress(total: Int, current: Double, percent: Int) {
         LogUtil.e(
             "onBufferProgress:-->total:$total  --->current:$current --->percent:$percent"
         )
@@ -422,11 +390,7 @@ class AudioPlayerUtil(
         }
     }
 
-    override fun onProgress(
-        total: Int,
-        current: Int,
-        percent: String?
-    ) {
+    override fun onProgress(total: Int, current: Int, percent: String?) {
         mSeekBar?.setMax(total)
         mSeekBar?.progress = current
         // 设置总的进度
@@ -457,9 +421,7 @@ class AudioPlayerUtil(
         setNotificationInfo()
     }
 
-    /**
-     * 设置消息通知的具体数据
-     */
+    /** 设置消息通知的具体数据 */
     private fun setNotificationInfo() {
         // 获取当前view的角标
         this.currentInfo
@@ -477,7 +439,7 @@ class AudioPlayerUtil(
                             // 发送间隔的轮询
                             mNotificationUtil?.startForeground(1, mAudioService)
                         }
-                    }
+                    },
                 )
             }
             // 中间的标题头
@@ -487,7 +449,7 @@ class AudioPlayerUtil(
                 mRemoteViews?.setTextViewTextSize(
                     R.id.tv_title,
                     TypedValue.COMPLEX_UNIT_SP,
-                    16f
+                    16f,
                 )
             }
         }
@@ -495,7 +457,7 @@ class AudioPlayerUtil(
         mNotificationUtil?.startLoopForeground(
             1,
             mNotificationLoopInterVal.toLong(),
-            mAudioService
+            mAudioService,
         )
     }
 
@@ -535,14 +497,14 @@ class AudioPlayerUtil(
     /**
      * @param notificationStart notification开始的按钮
      * @param notificationPause notification暂停的按钮
-     * @param notificationLeft  notification左侧的按钮
+     * @param notificationLeft notification左侧的按钮
      * @param notificationRight notification右侧的按钮
      */
     fun setNotificationIcon(
         @DrawableRes notificationStart: Int,
         @DrawableRes notificationPause: Int,
         @DrawableRes notificationLeft: Int,
-        @DrawableRes notificationRight: Int
+        @DrawableRes notificationRight: Int,
     ) {
         mNotificationStart = notificationStart
         mNotificationPause = notificationPause
@@ -554,10 +516,7 @@ class AudioPlayerUtil(
      * @param notificationImage notification左侧的图标
      * @param notificationTitle notification的标题
      */
-    fun setNotificationMessage(
-        notificationImage: String?,
-        notificationTitle: String?
-    ) {
+    fun setNotificationMessage(notificationImage: String?, notificationTitle: String?) {
         mNotificationImage = notificationImage
         mNotificationTitle = notificationTitle
     }
@@ -576,9 +535,7 @@ class AudioPlayerUtil(
         this.mPendingIntentActivity = cls
     }
 
-    /**
-     * 下一曲
-     */
+    /** 下一曲 */
     fun nextPage() {
         LogUtil.e("播放下一首的方法")
         if ((mAudioList != null) && (mAudioList!!.isNotEmpty())) {
@@ -608,9 +565,7 @@ class AudioPlayerUtil(
         }
     }
 
-    /**
-     * 上一曲
-     */
+    /** 上一曲 */
     fun onPage() {
         LogUtil.e("播放上一首的方法")
         if ((mAudioList != null) && (mAudioList!!.isNotEmpty())) {
@@ -641,9 +596,7 @@ class AudioPlayerUtil(
     }
 
     val currentInfo: Unit
-        /**
-         * 获取当前音频播放对应的角信息
-         */
+        /** 获取当前音频播放对应的角信息 */
         get() {
             mAudioPosition = -1
             if ((mAudioList != null) && (mAudioList!!.isNotEmpty())) {
@@ -670,10 +623,7 @@ class AudioPlayerUtil(
         }
 
     internal inner class AudioServiceConnection : ServiceConnection {
-        override fun onServiceConnected(
-            name: ComponentName?,
-            service: IBinder?
-        ) {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             LogUtil.e("-----@@@@@@----> onServiceConnected!")
             if (service is AudioService.AudioBinder) {
                 mAudioBinder = service
@@ -689,7 +639,7 @@ class AudioPlayerUtil(
                     if (mAutoPlayer) {
                         LogUtil.e(
                             AudioConstant.TAG,
-                            "onServiceConnected--->服务回调成功,开始自动播放！"
+                            "onServiceConnected--->服务回调成功,开始自动播放！",
                         )
                         if (!TextUtils.isEmpty(mAudioPath)) {
                             setResource(mAudioPath)
@@ -708,7 +658,7 @@ class AudioPlayerUtil(
                             mContext,
                             mAudioReceiver,
                             intentFilter,
-                            ContextCompat.RECEIVER_NOT_EXPORTED
+                            ContextCompat.RECEIVER_NOT_EXPORTED,
                         )
                     }
                     // 在数据回调成功的时候去创建消息通知工具
@@ -719,24 +669,26 @@ class AudioPlayerUtil(
                             val openNotify = mNotificationUtil!!.checkOpenNotify(mContext)
                             if (!openNotify) {
                                 mDialogUtil =
-                                    DialogUtil
-                                        .Builder(mContext, R.layout.base_default_dialog)
+                                    DialogUtil.Builder(
+                                            mContext,
+                                            R.layout.base_default_dialog,
+                                        )
                                         .setClose(R.id.tv_qx)
                                         .Build()
                                         .setText(R.id.tv_title, "是否打开通知权限？")
                                         .setText(
                                             R.id.tv_msg,
-                                            "如果不打开通知权限，则可能后台播放的时候会断开连接！"
-                                        ).setOnClickListener(
+                                            "如果不打开通知权限，则可能后台播放的时候会断开连接！",
+                                        )
+                                        .setOnClickListener(
                                             R.id.tv_qd,
                                             DialogClickListener {
                                                 v: View?,
-                                                builder: DialogUtil?
-                                                ->
+                                                builder: DialogUtil? ->
                                                 mNotificationUtil!!.goToSetNotify(
                                                     mContext
                                                 )
-                                            }
+                                            },
                                         )
                             }
                         }
@@ -753,10 +705,7 @@ class AudioPlayerUtil(
     }
 
     inner class AudioReceiver : BroadcastReceiver() {
-        override fun onReceive(
-            context: Context?,
-            intent: Intent?
-        ) {
+        override fun onReceive(context: Context?, intent: Intent?) {
             if ((intent != null) && (mAudioBinder != null)) {
                 val action = intent.action
                 val playing: Boolean = mAudioBinder!!.isPlaying()
@@ -764,7 +713,8 @@ class AudioPlayerUtil(
                     "-------------------------------->AudioReceiver ---> onReceive:$action   --->player:$playing"
                 )
                 when (action) {
-                    AudioConstant.ACTION_START, AudioConstant.ACTION_PAUSE -> {
+                    AudioConstant.ACTION_START,
+                    AudioConstant.ACTION_PAUSE -> {
                         if (mAudioBinder!!.initialized()) {
                             if (playing) {
                                 pause()
