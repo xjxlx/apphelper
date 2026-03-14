@@ -21,7 +21,8 @@ class AppLifecycleService : Service() {
     private val mWriteUtil: WriteLogUtil =
         WriteLogUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt")
 
-    @SuppressLint("StaticFieldLeak") private val CODE_NOTIFICATION = 19900713
+    @SuppressLint("StaticFieldLeak")
+    private val CODE_NOTIFICATION = 19900713
     private val CODE_INTERVAL = 5 * 1000
 
     override fun onBind(intent: Intent): IBinder? = null
@@ -83,7 +84,7 @@ class AppLifecycleService : Service() {
             .setContentText("应用全局保活进行中...")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setNotificationLevel(NotificationManager.IMPORTANCE_HIGH)
-            .setService(AppLifecycleService::class.java)
+            // .setService(AppLifecycleService::class.java)
             .build()
             .startLoopForeground(CODE_NOTIFICATION, CODE_INTERVAL.toLong(), this)
     }

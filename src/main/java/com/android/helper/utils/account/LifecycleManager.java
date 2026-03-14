@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.text.TextUtils;
+
 import androidx.fragment.app.FragmentActivity;
+
 import com.android.common.utils.LogUtil;
 import com.android.common.utils.SpUtil;
 import com.android.common.utils.WriteLogUtil;
@@ -52,12 +54,14 @@ public class LifecycleManager {
             SpUtil.putString(CommonConstants.FILE_LIFECYCLE_SERVICE_NAME, serviceName);
             SpUtil.putString(CommonConstants.FILE_LIFECYCLE_JOB_SERVICE_NAME, jobName);
             // 1:账号保活
-            AccountHelper accountHelper = AccountHelper.getInstance();
-            accountHelper.addAccountType(application.getResources().getString(R.string.account_type))
-                    .addAccountAuthority(application.getResources().getString(R.string.account_authority))
-                    .addAccountName(application.getResources().getString(R.string.account_name))
-                    .addAccountPassword(application.getResources().getString(R.string.account_password)).addAccount(application);// 添加账户
-            accountHelper.autoSync();
+            //AccountHelper accountHelper = AccountHelper.getInstance();
+
+            //    accountHelper.addAccountType(application.getResources().getString(R.string.account_type))
+            //            .addAccountAuthority(application.getResources().getString(R.string.account_authority))
+            //            .addAccountName(application.getResources().getString(R.string.account_name))
+            //            .addAccountPassword(application.getResources().getString(R.string.account_password)).addAccount(application);// 添加账户
+            //    accountHelper.autoSync();
+
             // 2:后台服务写日志
             boolean serviceRunning = ServiceUtil.isServiceRunning(application, serviceName);
             logWriteUtil.write("☆☆☆☆☆---我是Manager，当前后台服务的状态为：" + serviceRunning);
@@ -129,17 +133,17 @@ public class LifecycleManager {
      * 检测sd卡的读取权限
      */
     public void checkSdPermissions(FragmentActivity activity) {
-    if (activity != null) {
-      // 请求app的读写权限
-      //            new RxPermissionsUtil.Builder(activity,
-      // Manifest.permission.READ_EXTERNAL_STORAGE,
-      // Manifest.permission.WRITE_EXTERNAL_STORAGE).setSinglePerMissionListener((status,
-      // permission) -> LogUtil.e("权限：" + permission + " 状态：" + status))
-      //                    .build().startRequestPermission();
+        if (activity != null) {
+            // 请求app的读写权限
+            //            new RxPermissionsUtil.Builder(activity,
+            // Manifest.permission.READ_EXTERNAL_STORAGE,
+            // Manifest.permission.WRITE_EXTERNAL_STORAGE).setSinglePerMissionListener((status,
+            // permission) -> LogUtil.e("权限：" + permission + " 状态：" + status))
+            //                    .build().startRequestPermission();
 
-      // TODO 需要增加权限请求
+            // TODO 需要增加权限请求
+        }
     }
-  }
 
     /**
      * 检测电池优化的权限，这个权限只有在android6.0之后才会去执行，低版本的手机也不用去考虑了，版本过低的话，也不会杀进程那么快的
