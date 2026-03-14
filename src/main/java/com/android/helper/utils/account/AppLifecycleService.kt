@@ -21,8 +21,7 @@ class AppLifecycleService : Service() {
     private val mWriteUtil: WriteLogUtil =
         WriteLogUtil(CommonConstants.FILE_LIFECYCLE_NAME + ".txt")
 
-    @SuppressLint("StaticFieldLeak")
-    private val CODE_NOTIFICATION = 19900713
+    @SuppressLint("StaticFieldLeak") private val CODE_NOTIFICATION = 19900713
     private val CODE_INTERVAL = 5 * 1000
 
     override fun onBind(intent: Intent): IBinder? = null
