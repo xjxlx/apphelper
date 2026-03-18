@@ -101,10 +101,13 @@ public class DialogUtil implements BaseLifecycleObserver {
 
     public DialogUtil show() {
         if (mActivity != null && mDialog != null) {
-            if ((!mActivity.isFinishing()) && (!mActivity.isDestroyed()) && (mDialog != null) && (!mDialog.isShowing())) {
-                mDialog.show();
-            } else {
-                LogUtil.e("dialog打开失败：activity:" + mActivity + " isFinishing:" + (mActivity.isFinishing()) + " dialog:" + mDialog + " isShowing:" + (mDialog.isShowing()));
+            // 增加 isDestroyed() 和 Window 状态检查
+            if (!mActivity.isFinishing() && !mActivity.isDestroyed() && !mDialog.isShowing()) {
+                try {
+                    mDialog.show();
+                } catch (Exception e) {
+                    LogUtil.e("Dialog show failed: " + e.getMessage());
+                }
             }
         }
         return this;
@@ -123,8 +126,15 @@ public class DialogUtil implements BaseLifecycleObserver {
      * 关闭弹窗
      */
     public void dismiss() {
-        if (mDialog != null) {
-            mDialog.dismiss();
+        if (mDialog != null && mDialog.isShowing()) {
+            // 关键：判断 Activity 是否还在运行，如果已经销毁，不需要手动 dismiss
+            if (mActivity != null && !mActivity.isFinishing() && !mActivity.isDestroyed()) {
+                try {
+                    mDialog.dismiss();
+                } catch (Exception e) {
+                    LogUtil.e("Dialog dismiss failed: " + e.getMessage());
+                }
+            }
         }
     }
 
@@ -408,6 +418,16 @@ public class DialogUtil implements BaseLifecycleObserver {
 
     @Override
     public void onDestroy() {
+        // 页面销毁时，静默释放资源，不要再触发 UI 动作
+        if (mDialog != null) {
+            if (mDialog.isShowing()) {
+                try {
+                    mDialog.dismiss();
+                } catch (Exception ignored) {
+                }
+            }
+            mDialog = null; // 彻底断开引用
+        }
         // 在页面不可见的时候，自动关闭dialog
         release();
     }
